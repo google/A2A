@@ -15,11 +15,11 @@ This agent takes text requests from the client and, if any details are missing, 
 
 1. Navigate to the samples directory:
     ```bash
-    cd samples/python
+    cd samples/python/agents
     ```
 2. Create a file named .env under agents/google_adk.
     ```bash
-    touch agents/google_adk/.env
+    touch google_adk/.env
     ```
 3. Add `GOOGLE_API_KEY` to .env  (sample uses Google Gemini by default)
 

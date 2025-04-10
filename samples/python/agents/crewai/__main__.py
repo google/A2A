@@ -10,6 +10,8 @@ from common.server import A2AServer
 from common.types import AgentCapabilities, AgentCard, AgentSkill, MissingAPIKeyError
 import logging
 import os
+from dotenv import load_dotenv
+load_dotenv()
 from task_manager import AgentTaskManager
 
 logger = logging.getLogger(__name__)
