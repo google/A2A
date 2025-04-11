@@ -15,33 +15,34 @@ import {
   // Type for the agent card
   AgentCard,
 } from "./schema.js";
-
-// --- ANSI Colors ---
-const colors = {
-  reset: "\x1b[0m",
-  bright: "\x1b[1m",
-  dim: "\x1b[2m",
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  blue: "\x1b[34m",
-  magenta: "\x1b[35m",
-  cyan: "\x1b[36m",
-  gray: "\x1b[90m",
-};
+import { colorize, colors } from "./colors.js";
+import { DaytonaRunner } from "./daytona.js";
 
 // --- Helper Functions ---
-function colorize(color: keyof typeof colors, text: string): string {
-  return `${colors[color]}${text}${colors.reset}`;
-}
-
 function generateTaskId(): string {
   return crypto.randomUUID();
 }
 
 // --- State ---
 let currentTaskId: string = generateTaskId();
-const serverUrl = process.argv[2] || "http://localhost:41241";
+let serverUrl = "http://localhost:41241"; // Default server URL
+let useDaytona = false;
+
+// Process command line arguments
+for (let i = 2; i < process.argv.length; i++) {
+  const arg = process.argv[i];
+  if (arg === "--daytona") {
+    useDaytona = true;
+  } else if (!arg.startsWith("--")) {
+    serverUrl = arg;
+  }
+}
+
+// Check npm environment variable for Daytona
+if (process.env.npm_config_daytona === "true") {
+  useDaytona = true;
+}
+
 const client = new A2AClient(serverUrl);
 let agentName = "Agent"; // Default, try to get from agent card later
 
@@ -52,8 +53,13 @@ const rl = readline.createInterface({
   prompt: colorize("cyan", "You: "),
 });
 
+// Initialize Daytona runner
+let daytonaRunner: DaytonaRunner | null = null;
+if (useDaytona) {
+  daytonaRunner = new DaytonaRunner(rl);
+}
+
 // --- Response Handling ---
-// Function now accepts the unwrapped event payload directly
 function printAgentEvent(
   event: TaskStatusUpdateEvent | TaskArtifactUpdateEvent
 ) {
@@ -106,6 +112,7 @@ function printAgentEvent(
         update.artifact.name || "(unnamed)"
       } (Index: ${update.artifact.index ?? 0})`
     );
+    
     printMessageContent({ role: "agent", parts: update.artifact.parts }); // Reuse message printing logic
   } else {
     // This case should ideally not happen if the stream yields correctly typed events
@@ -122,6 +129,8 @@ function printMessageContent(message: Message) {
     const partPrefix = colorize("gray", `  Part ${index + 1}:`);
     if ("text" in part) {
       console.log(`${partPrefix} ${colorize("green", "📝 Text:")}`, part.text);
+      
+      // We'll handle code blocks after the full response is received
     } else if ("file" in part) {
       const filePart = part as FilePart;
       console.log(
@@ -181,9 +190,17 @@ async function fetchAndDisplayAgentCard() {
 
 // --- Main Loop ---
 async function main() {
-  // Make main async
   console.log(colorize("bright", `A2A Terminal Client`));
   console.log(colorize("dim", `Agent URL: ${serverUrl}`));
+
+  // Initialize Daytona if needed
+  if (useDaytona && daytonaRunner) {
+    const daytonaAvailable = await daytonaRunner.init();
+    if (!daytonaAvailable) {
+      useDaytona = false;
+      daytonaRunner = null;
+    }
+  }
 
   await fetchAndDisplayAgentCard(); // Fetch the card before starting the loop
 
@@ -196,6 +213,11 @@ async function main() {
 
   rl.on("line", async (line) => {
     const input = line.trim();
+
+    // Skip processing if waiting for Daytona response
+    if (daytonaRunner && daytonaRunner.isWaitingForDaytonaResponse) {
+      return;
+    }
 
     if (!input) {
       rl.prompt();
@@ -225,12 +247,41 @@ async function main() {
       console.log(colorize("gray", "Sending...")); // Indicate request is sent
       // Pass only the params object to the client method
       const stream = client.sendTaskSubscribe(params);
+      
+      // Collect artifacts that can be run in Daytona
+      const runnableArtifacts: Array<{name: string, content: string}> = [];
+      
       // Iterate over the unwrapped event payloads
       for await (const event of stream) {
         printAgentEvent(event); // Use the updated handler function
-      }
+        
+        // Collect artifacts
+        if ("artifact" in event && useDaytona && daytonaRunner && event.artifact.name) {
+          let codeContent = '';
+          for (const part of event.artifact.parts) {
+            if ("text" in part) {
+              codeContent = part.text;
+              break;
+            }
+          }
+          
+          if (codeContent) {
+            runnableArtifacts.push({
+              name: event.artifact.name,
+              content: codeContent
+            });
+          }
+        }
+      }      
       // Add a small visual cue that the stream for *this* message ended
       console.log(colorize("dim", `--- End of response for this input ---`));
+      
+      // Offer to run collected artifacts in Daytona
+      if (runnableArtifacts.length > 0) {
+        for (const artifact of runnableArtifacts) {
+          daytonaRunner?.offerToRunInDaytona(artifact.name, artifact.content);
+        }
+      }
     } catch (error: any) {
       console.error(
         colorize("red", `\n❌ Error communicating with agent (${agentName}):`),
