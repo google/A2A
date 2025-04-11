@@ -1,4 +1,5 @@
 ![image info](images/A2A_banner.png)
+[![Apache License](https://img.shields.io/badge/License-Apache%202.0-brightgreen.svg)](./LICENSE)
 
 **_An open protocol enabling communication and interoperability between opaque agentic applications._**
 
@@ -94,4 +95,4 @@ Future plans include improvements to the protocol itself and enhancements to the
 
 ### **About**
 
-A2A Protocol is an open source project run by Google LLC, under [License](LICENSE) and open to contributions from the entire community.
+A2A Protocol is an open source project run by Google LLC, under [Apache License](LICENSE) and open to contributions from the entire community.
