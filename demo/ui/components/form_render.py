@@ -209,7 +209,7 @@ def input_field(
     me.input(
       key=f"{id}_{key}",
       label=element.label,
-      value=element.value,
+      value=value,
       appearance="outline",
       color="warn" if key in form.errors else "primary",
       style=me.Style(width=width),
