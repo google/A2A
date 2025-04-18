@@ -16,12 +16,12 @@ request_ids = set()
 def create_request_form(date: Optional[str] = None, amount: Optional[str] = None, purpose: Optional[str] = None) -> dict[str, Any]:
   """
    Create a request form for the employee to fill out.
-   
+
    Args:
        date (str): The date of the request. Can be an empty string.
        amount (str): The requested amount. Can be an empty string.
        purpose (str): The purpose of the request. Can be an empty string.
-       
+
    Returns:
        dict[str, Any]: A dictionary containing the request form data.
    """
@@ -35,20 +35,20 @@ def create_request_form(date: Optional[str] = None, amount: Optional[str] = None
   }
 
 def return_form(
-    form_request: dict[str, Any],    
+    form_request: dict[str, Any],
     tool_context: ToolContext,
     instructions: Optional[str] = None) -> dict[str, Any]:
   """
    Returns a structured json object indicating a form to complete.
-   
+
    Args:
        form_request (dict[str, Any]): The request form data.
        tool_context (ToolContext): The context in which the tool operates.
-       instructions (str): Instructions for processing the form. Can be an empty string.       
-       
+       instructions (str): Instructions for processing the form. Can be an empty string.
+
    Returns:
        dict[str, Any]: A JSON dictionary for the form response.
-   """  
+   """
   if isinstance(form_request, str):
     form_request = json.loads(form_request)
 
