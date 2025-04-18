@@ -16,6 +16,9 @@ dependencies = [
     "uvicorn>=0.34.0",
 ]
 
+[project.scripts]
+google-a2a-cli = "google_a2a.hosts.cli.__main__:main"
+
 [tool.hatch.build.targets.wheel]
 packages = ["src/google_a2a"]
 
