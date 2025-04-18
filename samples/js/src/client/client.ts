@@ -269,66 +269,68 @@ export class A2AClient {
         }
 
         buffer += value;
-        const lines = buffer.replace(/\r/g, "").split("\n\n"); // SSE messages end with \n\n
-        buffer = lines.pop() || ""; // Keep potential partial message
-        for (const message of lines) {
-          if (message.startsWith("data: ")) {
-            const dataLine = message.substring("data: ".length).trim();
-            if (dataLine) {
-              // Ensure data is not empty
-              try {
-                // Parse as the specific JSONRPCResponse type StreamRes
-                const parsedData = JSON.parse(dataLine) as StreamRes;
-                // Basic validation of streamed data structure
-                if (
-                  typeof parsedData !== "object" ||
-                  parsedData === null ||
-                  !("jsonrpc" in parsedData && parsedData.jsonrpc === "2.0")
-                ) {
-                  console.error(
-                    `Invalid SSE data structure received for method ${expectedMethod}:`,
-                    dataLine
-                  );
-                  continue; // Skip invalid data
-                }
+        const sseMessages = buffer.replace(/\r/g, "").split("\n\n"); // SSE messages end with \n\n
+        buffer = sseMessages.pop() || ""; // Keep potential partial message
+        for (const sseMessage of sseMessages) {
+          for (const sseLine of sseMessage.split("\n")) { // SSE field split with \n
+            if (sseLine.startsWith("data: ")) {
+              const dataLine = sseLine.substring("data: ".length).trim();
+              if (dataLine) {
+                // Ensure data is not empty
+                try {
+                  // Parse as the specific JSONRPCResponse type StreamRes
+                  const parsedData = JSON.parse(dataLine) as StreamRes;
+                  // Basic validation of streamed data structure
+                  if (
+                    typeof parsedData !== "object" ||
+                    parsedData === null ||
+                    !("jsonrpc" in parsedData && parsedData.jsonrpc === "2.0")
+                  ) {
+                    console.error(
+                      `Invalid SSE data structure received for method ${expectedMethod}:`,
+                      dataLine
+                    );
+                    continue; // Skip invalid data
+                  }
 
-                // Check for errors within the streamed message
-                if (parsedData.error) {
+                  // Check for errors within the streamed message
+                  if (parsedData.error) {
+                    console.error(
+                      `Error received in SSE stream for method ${expectedMethod}:`,
+                      parsedData.error
+                    );
+                    // Depending on requirements, you might want to:
+                    // 1. Yield an error object
+                    // 2. Throw an error (terminating the stream)
+                    // 3. Just log and continue (current behavior)
+                    // Throw an error to terminate the stream
+                    throw new RpcError(
+                      parsedData.error.code,
+                      parsedData.error.message,
+                      parsedData.error.data
+                    );
+                  } else if (parsedData.result !== undefined) {
+                    // Yield ONLY the result payload, with an explicit cast if needed
+                    yield parsedData.result as StreamRes["result"];
+                  } else {
+                    // Should not happen if error and result are mutually exclusive per spec
+                    console.warn(
+                      `SSE data for ${expectedMethod} has neither result nor error:`,
+                      parsedData
+                    );
+                  }
+                } catch (e) {
                   console.error(
-                    `Error received in SSE stream for method ${expectedMethod}:`,
-                    parsedData.error
-                  );
-                  // Depending on requirements, you might want to:
-                  // 1. Yield an error object
-                  // 2. Throw an error (terminating the stream)
-                  // 3. Just log and continue (current behavior)
-                  // Throw an error to terminate the stream
-                  throw new RpcError(
-                    parsedData.error.code,
-                    parsedData.error.message,
-                    parsedData.error.data
-                  );
-                } else if (parsedData.result !== undefined) {
-                  // Yield ONLY the result payload, with an explicit cast if needed
-                  yield parsedData.result as StreamRes["result"];
-                } else {
-                  // Should not happen if error and result are mutually exclusive per spec
-                  console.warn(
-                    `SSE data for ${expectedMethod} has neither result nor error:`,
-                    parsedData
+                    `Failed to parse SSE data line for method ${expectedMethod}:`,
+                    dataLine,
+                    e
                   );
                 }
-              } catch (e) {
-                console.error(
-                  `Failed to parse SSE data line for method ${expectedMethod}:`,
-                  dataLine,
-                  e
-                );
               }
+            } else {
+              // Handle other SSE lines if necessary (e.g., 'event:', 'id:', 'retry:')
+              // console.debug(`Received non-data SSE line: ${message}`);
             }
-          } else if (message.trim()) {
-            // Handle other SSE lines if necessary (e.g., 'event:', 'id:', 'retry:')
-            // console.debug(`Received non-data SSE line: ${message}`);
           }
         }
       }
