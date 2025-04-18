@@ -1,12 +1,12 @@
 import logging
 
 import click
-from common.server import A2AServer
-from common.types import AgentCapabilities, AgentCard, AgentSkill
-from common.utils.push_notification_auth import PushNotificationSenderAuth
+from google_a2a.common.server import A2AServer
+from google_a2a.common.types import AgentCapabilities, AgentCard, AgentSkill
+from google_a2a.common.utils.push_notification_auth import PushNotificationSenderAuth
 from dotenv import load_dotenv
 
-from agents.semantickernel.task_manager import TaskManager
+from google_a2a.agents.semantickernel.task_manager import TaskManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -26,12 +26,12 @@ sequenceDiagram
 
     Workflow-->>Server: Stream LogEvent about chat processing
     Server-->>Client: Stream status update
-    
+
     Workflow->>Services: LLM Chat (with document context if available)
     Services->>Workflow: Structured LLM Response
     Workflow-->>Server: Stream LogEvent about response processing
     Server-->>Client: Stream status update
-    
+
     Workflow->>Server: Return final ChatResponseEvent
     Server->>Client: Return response with citations (if available)
 
@@ -61,7 +61,7 @@ sequenceDiagram
 1. Navigate to the samples directory:
 
    ```bash
-   cd samples/python/agents/llama_index_file_chat
+   cd samples/python/src/google_a2a/agents/llama_index_file_chat
    ```
 
 2. Create an environment file with your API keys:
@@ -81,11 +81,11 @@ sequenceDiagram
    uv run . --host 0.0.0.0 --port 8080
    ```
 
-4. In a separate terminal, run an A2A [client](/samples/python/hosts/README.md):
+4. In a separate terminal, run an A2A [client](/samples/python/src/google_a2a/hosts/README.md):
 
    ```bash
    cd samples/python
-   uv run hosts/cli --agent http://localhost:10010
+   uv run src/google_a2a/hosts/cli --agent http://localhost:10010
    ```
 
    Download a file to parse, or link to your own file. For example:
@@ -99,7 +99,7 @@ sequenceDiagram
    ```bash
    ======= Agent Card ========
    {"name":"Parse and Chat","description":"Parses a file and then chats with a user using the parsed content as context.","url":"http://localhost:10000/","version":"1.0.0","capabilities":{"streaming":true,"pushNotifications":true,"stateTransitionHistory":false},"defaultInputModes":["text","text/plain"],"defaultOutputModes":["text","text/plain"],"skills":[{"id":"parse_and_chat","name":"Parse and Chat","description":"Parses a file and then chats with a user using the parsed content as context.","tags":["parse","chat","file","llama_parse"],"examples":["What does this file talk about?"]}]}
-   =========  starting a new task ======== 
+   =========  starting a new task ========
 
    What do you want to send to the agent? (:q or quit to exit): What does this file talk about?
    Select a file path to attach? (press enter to skip): ./attention.pdf

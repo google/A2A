@@ -1,6 +1,6 @@
 from typing import Callable
 import uuid
-from common.types import (
+from google_a2a.common.types import (
     AgentCard,
     Task,
     TaskSendParams,
@@ -9,7 +9,7 @@ from common.types import (
     TaskStatus,
     TaskState,
 )
-from common.client import A2AClient
+from google_a2a.common.client import A2AClient
 
 TaskCallbackArg = Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent
 TaskUpdateCallback = Callable[[TaskCallbackArg, AgentCard], Task]

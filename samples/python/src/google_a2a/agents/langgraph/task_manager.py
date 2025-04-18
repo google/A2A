@@ -1,5 +1,5 @@
 from typing import AsyncIterable
-from common.types import (
+from google_a2a.common.types import (
     SendTaskRequest,
     TaskSendParams,
     Message,
@@ -23,10 +23,10 @@ from common.types import (
     TaskNotFoundError,
     InvalidParamsError,
 )
-from common.server.task_manager import InMemoryTaskManager
-from agents.langgraph.agent import CurrencyAgent
-from common.utils.push_notification_auth import PushNotificationSenderAuth
-import common.server.utils as utils
+from google_a2a.common.server.task_manager import InMemoryTaskManager
+from google_a2a.agents.langgraph.agent import CurrencyAgent
+from google_a2a.common.utils.push_notification_auth import PushNotificationSenderAuth
+import google_a2a.common.server.utils as utils
 from typing import Union
 import asyncio
 import logging

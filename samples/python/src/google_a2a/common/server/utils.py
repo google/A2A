@@ -1,4 +1,4 @@
-from common.types import (
+from google_a2a.common.types import (
     JSONRPCResponse,
     ContentTypeNotSupportedError,
     UnsupportedOperationError,

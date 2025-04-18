@@ -12,7 +12,7 @@ This sample demonstrates how to implement a travel agent built on [Semantic Kern
 sequenceDiagram
     participant Client as A2A Client
     participant Server as A2A Server
-    participant TM as TravelManagerAgent 
+    participant TM as TravelManagerAgent
     participant CE as CurrencyExchangeAgent (Plugin)
     participant AP as ActivityPlannerAgent (Plugin)
     participant API as Frankfurter API (Plugin)
@@ -50,7 +50,7 @@ sequenceDiagram
 1. **Navigate to the samples directory**:
 
 ```bash
-cd samples/python/agents/semantickernel
+cd samples/python/src/google_a2a/agents/semantickernel
 ```
 
 2. **Create an environment file (.env) with your API key and the model ID (e.g., "gpt-4.1"):**:
@@ -73,7 +73,7 @@ source .venv/bin/activate
 
 Choose one of the following options:
 
-> Make sure you run `uv run .` from the following directory: `samples/python/agents/semantickernel`
+> Make sure you run `uv run .` from the following directory: `samples/python/src/google_a2a/agents/semantickernel`
 
 ```bash
 # Basic run on default port 10020
@@ -88,10 +88,10 @@ uv run . --host 0.0.0.0 --port 8080
 
 5. **In a separate terminal, run the A2A client:
 
-> Make sure you run `uv run hosts/cli` from the following directory: `samples/python`
+> Make sure you run `uv run src/google_a2a/hosts/cli` from the following directory: `samples/python`
 
 ```bash
-uv run hosts/cli --agent http://localhost:10020
+uv run src/google_a2a/hosts/cli --agent http://localhost:10020
 ```
 
 ## Limitations

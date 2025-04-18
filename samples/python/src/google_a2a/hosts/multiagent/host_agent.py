@@ -18,8 +18,8 @@ from .remote_agent_connection import (
     RemoteAgentConnections,
     TaskUpdateCallback
 )
-from common.client import A2ACardResolver
-from common.types import (
+from google_a2a.common.client import A2ACardResolver
+from google_a2a.common.types import (
     AgentCard,
     Message,
     TaskState,

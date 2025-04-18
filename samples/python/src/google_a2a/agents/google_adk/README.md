@@ -15,7 +15,7 @@ This agent takes text requests from the client and, if any details are missing, 
 
 1. Navigate to the samples directory:
     ```bash
-    cd samples/python/agents/google_adk
+    cd samples/python/src/google_a2a/agents/google_adk
     ```
 2. Create an environment file with your API key:
 
@@ -27,4 +27,4 @@ This agent takes text requests from the client and, if any details are missing, 
     ```bash
     uv run .
     ```
-5. Run one of the [client apps](/samples/python/hosts/README.md)
+5. Run one of the [client apps](/samples/python/src/google_a2a/hosts/README.md)

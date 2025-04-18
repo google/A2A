@@ -2,8 +2,8 @@ import asyncio
 import logging
 from typing import AsyncIterable
 
-from common.server.task_manager import InMemoryTaskManager
-from common.types import (
+from google_a2a.common.server.task_manager import InMemoryTaskManager
+from google_a2a.common.types import (
     Artifact,
     InternalError,
     InvalidParamsError,
@@ -18,9 +18,9 @@ from common.types import (
     TaskStatus,
     TaskStatusUpdateEvent,
 )
-from common.utils.push_notification_auth import PushNotificationSenderAuth
+from google_a2a.common.utils.push_notification_auth import PushNotificationSenderAuth
 
-from agents.semantickernel.agent import SemanticKernelTravelAgent
+from google_a2a.agents.semantickernel.agent import SemanticKernelTravelAgent
 
 logger = logging.getLogger(__name__)
 

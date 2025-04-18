@@ -6,8 +6,8 @@ and starts the server to handle incoming requests.
 
 from agent import ImageGenerationAgent
 import click
-from common.server import A2AServer
-from common.types import AgentCapabilities, AgentCard, AgentSkill, MissingAPIKeyError
+from google_a2a.common.server import A2AServer
+from google_a2a.common.types import AgentCapabilities, AgentCard, AgentSkill, MissingAPIKeyError
 import logging
 import os
 from task_manager import AgentTaskManager

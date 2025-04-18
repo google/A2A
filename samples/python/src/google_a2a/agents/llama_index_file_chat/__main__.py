@@ -1,8 +1,8 @@
-from common.server import A2AServer
-from common.types import AgentCard, AgentCapabilities, AgentSkill, MissingAPIKeyError
-from common.utils.push_notification_auth import PushNotificationSenderAuth
-from agents.llama_index_file_chat.task_manager import LlamaIndexTaskManager
-from agents.llama_index_file_chat.agent import ParseAndChat
+from google_a2a.common.server import A2AServer
+from google_a2a.common.types import AgentCard, AgentCapabilities, AgentSkill, MissingAPIKeyError
+from google_a2a.common.utils.push_notification_auth import PushNotificationSenderAuth
+from google_a2a.agents.llama_index_file_chat.task_manager import LlamaIndexTaskManager
+from google_a2a.agents.llama_index_file_chat.agent import ParseAndChat
 import click
 import os
 import logging

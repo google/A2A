@@ -3,9 +3,9 @@
 import logging
 from typing import AsyncIterable
 from agent import ImageGenerationAgent
-from common.server.task_manager import InMemoryTaskManager
-from common.server import utils
-from common.types import (
+from google_a2a.common.server.task_manager import InMemoryTaskManager
+from google_a2a.common.server import utils
+from google_a2a.common.types import (
     Artifact,
     FileContent,
     FilePart,

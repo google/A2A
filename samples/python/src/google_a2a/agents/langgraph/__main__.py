@@ -1,8 +1,8 @@
-from common.server import A2AServer
-from common.types import AgentCard, AgentCapabilities, AgentSkill, MissingAPIKeyError
-from common.utils.push_notification_auth import PushNotificationSenderAuth
-from agents.langgraph.task_manager import AgentTaskManager
-from agents.langgraph.agent import CurrencyAgent
+from google_a2a.common.server import A2AServer
+from google_a2a.common.types import AgentCard, AgentCapabilities, AgentSkill, MissingAPIKeyError
+from google_a2a.common.utils.push_notification_auth import PushNotificationSenderAuth
+from google_a2a.agents.langgraph.task_manager import AgentTaskManager
+from google_a2a.agents.langgraph.agent import CurrencyAgent
 import click
 import os
 import logging

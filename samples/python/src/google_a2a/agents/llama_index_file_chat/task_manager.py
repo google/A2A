@@ -3,10 +3,10 @@ import base64
 import logging
 import traceback
 from typing import AsyncIterable, Union, Dict, Any
-import common.server.utils as utils
+import google_a2a.common.server.utils as utils
 
-from agents.llama_index_file_chat.agent import ParseAndChat, InputEvent, LogEvent, ChatResponseEvent
-from common.types import (
+from google_a2a.agents.llama_index_file_chat.agent import ParseAndChat, InputEvent, LogEvent, ChatResponseEvent
+from google_a2a.common.types import (
     SendTaskRequest,
     TaskSendParams,
     Message,
@@ -27,8 +27,8 @@ from common.types import (
     PushNotificationConfig,
     InvalidParamsError,
 )
-from common.server.task_manager import InMemoryTaskManager
-from common.utils.push_notification_auth import PushNotificationSenderAuth
+from google_a2a.common.server.task_manager import InMemoryTaskManager
+from google_a2a.common.utils.push_notification_auth import PushNotificationSenderAuth
 
 from llama_index.core.workflow import Context
 

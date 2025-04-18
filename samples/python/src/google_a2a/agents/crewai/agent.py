@@ -11,7 +11,7 @@ import os
 import re
 from typing import Any, AsyncIterable, Dict, List
 from uuid import uuid4
-from common.utils.in_memory_cache import InMemoryCache
+from google_a2a.common.utils.in_memory_cache import InMemoryCache
 from crewai import Agent, Crew, LLM, Task
 from crewai.process import Process
 from crewai.tools import tool
