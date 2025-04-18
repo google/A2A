@@ -7,8 +7,8 @@ requires-python = ">=3.12"
 dependencies = [
     "crewai[tools]>=0.95.0",
     "google-genai>=1.9.0",
-    "a2a-samples",
+    "google-a2a",
 ]
 
 [tool.uv.sources]
-a2a-samples = { workspace = true }
+google-a2a = { workspace = true }

@@ -5,7 +5,7 @@ description = "Google ADK-based host agent that can communicate with other agent
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "a2a-samples",
+    "google-a2a",
     "google-genai>=1.9.0",
     "google-adk>=0.0.3",
 ]
@@ -14,7 +14,7 @@ dependencies = [
 packages = ["."]
 
 [tool.uv.sources]
-a2a-samples = { workspace = true }
+google-a2a = { workspace = true }
 
 [build-system]
 requires = ["hatchling"]
