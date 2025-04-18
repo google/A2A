@@ -1,3 +1,14 @@
 .DS_Store
 __pycache__
 .env
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
