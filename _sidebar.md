@@ -3,6 +3,18 @@
 * [Home](/)
 * [Blog Post](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
 * [Technical Documentation](documentation.md)
+* Tutorials
+   * [Python](tutorials/python/1_introduction.md)
+     * [1. Introduction](tutorials/python/1_introduction.md)
+     * [2. Setup your environment](tutorials/python/2_setup.md)
+     * [3. Creating a project](tutorials/python/3_create_a_project.md)
+     * [4. Defining Agent Skills](tutorials/python/4_agent_skills.md)
+     * [5. Adding an Agent Card](tutorials/python/5_add_agent_card.md)
+     * [6. Starting a server](tutorials/python/6_start_server.md)
+     * [7. Interacting with your server](tutorials/python/7_interact_with_server.md)
+     * [8. Adding Agent Capabilities](tutorials/python/8_agent_capabilities.md)
+     * [9. Using a local Ollama Model](tutorials/python/9_ollama_agent.md)
+     * [10. Next Steps](tutorials/python/10_next_steps.md)
 * Review Key Topics
   * [A2A and MCP](topics/a2a_and_mcp.md)
   * [Agent Discovery](topics/agent_discovery.md)
