@@ -1,0 +1,22 @@
+[project]
+name = "a2a-sample-client-cli"
+version = "0.1.0"
+description = "A CLI application that demonstrates the capabilities of an A2AClient."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "google-a2a",
+    "asyncclick>=8.1.8",
+    "sse-starlette>=2.2.1",
+    "starlette>=0.46.1",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.uv.sources]
+google-a2a = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
