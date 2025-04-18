@@ -38,6 +38,39 @@ The following example will run the langgraph agent with the python CLI host:
     ```
     uv run .
     ```
+
+## Quickstart
+1. Install google-a2a
+    ```bash
+    pip install git+https://github.com/google/A2A.git#subdirectory=samples/python
+    ```
+2. Implement your task manager
+    ```python
+    import google_a2a
+    import google_a2a.common
+    import google_a2a.common.server
+    import google_a2a.common.server.task_manager
+    import google_a2a.common.types
+    class MyTaskManager(google_a2a.common.server.task_manager.InMemoryTaskManager):
+        def __init__(
+            self,
+        ):
+            super().__init__()
+    ```
+3. Run a server
+    ```python
+    import google_a2a
+    import google_a2a.common
+    import google_a2a.common.server
+    import google_a2a.common.types
+    def main():
+        # See examples
+        server = google_a2a.common.server.A2AServer(
+            # Fill in parameters
+        )
+        server.start()
+    ```
+
 ---
 **NOTE:**
 This is sample code and not production-quality libraries.
