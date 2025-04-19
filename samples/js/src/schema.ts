@@ -96,6 +96,7 @@ export type TaskState =
   | "completed"
   | "canceled"
   | "failed"
+  | "rejected"
   | "unknown";
 
 /**
