@@ -35,6 +35,8 @@ from google.adk.events.event_actions import EventActions as ADKEventActions
 from google.genai import types
 import base64
 
+from utils.config import config
+
 
 class ADKHostManager(ApplicationManager):
   """An implementation of memory based management with fake agent actions
@@ -57,12 +59,12 @@ class ADKHostManager(ApplicationManager):
     self._tasks = []
     self._events = {}
     self._pending_message_ids = []
-    self._agents = []
     self._artifact_chunks = {}
     self._session_service = InMemorySessionService()
     self._artifact_service = InMemoryArtifactService()
     self._memory_service = InMemoryMemoryService()
-    self._host_agent = HostAgent([], self.task_callback)
+    self._host_agent = HostAgent(config.remote_agent_addresses, self.task_callback)
+    self._agents = list(self._host_agent.cards.values())
     self.user_id = "test_user"
     self.app_name = "A2A"
     self.api_key = api_key or os.environ.get("GOOGLE_API_KEY", "")

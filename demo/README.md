@@ -62,4 +62,6 @@ Click on the task list to see all the A2A task updates from the remote agents
     ```bash
     uv run main.py
     ```
-Note: The application runs on port 12000 by default
+Note: 
+1. The application runs on port 12000 by default
+2. The initial remoteAgent address can be configured in `config/config.toml`

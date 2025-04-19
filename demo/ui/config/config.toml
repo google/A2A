@@ -1,0 +1,5 @@
+# Global configuration
+[remote_agent_addresses]
+#langgraph = "http://localhost:10000"
+#crewai = "http://localhost:10001"
+#adk = "http://localhost:10002"
