@@ -241,5 +241,5 @@ def convert_part(part: Part, tool_context: ToolContext):
     tool_context.actions.skip_summarization = True
     tool_context.actions.escalate = True
     return DataPart(data = {"artifact-file-id": file_id})
-  return f"Unknown type: {p.type}"
+  return f"Unknown type: {part.type}"
 
