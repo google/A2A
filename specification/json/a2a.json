@@ -72,7 +72,7 @@
           },
           "url": {
             "title": "Url",
-            "type": "string"            
+            "type": "string"
           },
           "provider": {
             "anyOf": [
@@ -717,7 +717,7 @@
         },
         "title": "GetTaskPushNotificationResponse",
         "type": "object"
-      },      
+      },
       "GetTaskRequest": {
         "properties": {
           "jsonrpc": {
@@ -1146,7 +1146,7 @@
             },
             "title": "Parts",
             "type": "array"
-          },          
+          },
           "metadata": {
             "anyOf": [
               {
@@ -1212,7 +1212,7 @@
           },
           "token": {
             "title": "Token",
-            "anyOf": [              
+            "anyOf": [
               {
                 "type": "string"
               },
@@ -1291,7 +1291,7 @@
         ],
         "title": "SendTaskRequest",
         "type": "object"
-      },      
+      },
       "SendTaskResponse": {
         "properties": {
           "jsonrpc": {
@@ -1318,7 +1318,7 @@
             "anyOf": [
               {
                 "$ref": "#/$defs/Task"
-              },              
+              },
               {
                 "type": "null"
               }
@@ -1402,7 +1402,7 @@
             "title": "Id"
           },
           "result": {
-            "anyOf": [              
+            "anyOf": [
               {
                 "$ref": "#/$defs/TaskStatusUpdateEvent"
               },
@@ -1605,7 +1605,7 @@
         ],
         "title": "TaskPushNotificationConfig",
         "type": "object"
-      },      
+      },
       "TaskNotCancelableError": {
         "properties": {
           "code": {
@@ -1714,14 +1714,14 @@
             "anyOf": [
               {
                 "type": "integer"
-              },              
+              },
               {
                 "type": "null"
               }
             ],
             "default": null,
             "title": "HistoryLength"
-          },          
+          },
           "metadata": {
             "anyOf": [
               {
@@ -1754,7 +1754,7 @@
           },
           "message": {
             "$ref": "#/$defs/Message"
-          },          
+          },
           "pushNotification": {
             "anyOf": [
               {
@@ -1770,14 +1770,14 @@
             "anyOf": [
               {
                 "type": "integer"
-              },              
+              },
               {
                 "type": "null"
               }
             ],
             "default": null,
             "title": "HistoryLength"
-          },   
+          },
           "metadata": {
             "anyOf": [
               {
@@ -1945,6 +1945,437 @@
         "title": "TaskArtifactUpdateEvent",
         "type": "object"
       },
+      "ScheduledTask": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "schedule": {
+            "title": "Schedule",
+            "type": "string",
+            "description": "Cron-like expression"
+          },
+          "task": {
+            "$ref": "#/$defs/TaskSendParams"
+          }
+        },
+        "required": [
+          "id",
+          "schedule",
+          "task"
+        ],
+        "title": "ScheduledTask",
+        "type": "object"
+      },
+      "ScheduledTaskCreateParams": {
+        "properties": {
+          "schedule": {
+            "title": "Schedule",
+            "type": "string",
+            "description": "Cron-like expression"
+          },
+          "task": {
+            "$ref": "#/$defs/TaskSendParams"
+          }
+        },
+        "required": [
+          "schedule",
+          "task"
+        ],
+        "title": "ScheduledTaskCreateParams",
+        "type": "object"
+      },
+      "ScheduledTaskUpdateParams": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "schedule": {
+            "title": "Schedule",
+            "type": "string",
+            "description": "Cron-like expression"
+          },
+          "task": {
+            "$ref": "#/$defs/TaskSendParams"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "ScheduledTaskUpdateParams",
+        "type": "object"
+      },
+      "ScheduledTaskListParams": {
+        "properties": {},
+        "title": "ScheduledTaskListParams",
+        "type": "object"
+      },
+      "ScheduledTaskIdParams": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "title": "ScheduledTaskIdParams",
+        "type": "object"
+      },
+      "ScheduledTaskCreateRequest": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "method": {
+            "const": "tasks/schedule/create",
+            "default": "tasks/schedule/create",
+            "title": "Method",
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/$defs/ScheduledTaskCreateParams"
+          }
+        },
+        "required": [
+          "method",
+          "params"
+        ],
+        "title": "ScheduledTaskCreateRequest",
+        "type": "object"
+      },
+      "ScheduledTaskCreateResponse": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ScheduledTask"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/JSONRPCError"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "ScheduledTaskCreateResponse",
+        "type": "object"
+      },
+      "ScheduledTaskListRequest": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "method": {
+            "const": "tasks/schedule/list",
+            "default": "tasks/schedule/list",
+            "title": "Method",
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/$defs/ScheduledTaskListParams"
+          }
+        },
+        "required": [
+          "method",
+          "params"
+        ],
+        "title": "ScheduledTaskListRequest",
+        "type": "object"
+      },
+      "ScheduledTaskListResponse": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/ScheduledTask"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/JSONRPCError"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "ScheduledTaskListResponse",
+        "type": "object"
+      },
+      "ScheduledTaskUpdateRequest": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "method": {
+            "const": "tasks/schedule/update",
+            "default": "tasks/schedule/update",
+            "title": "Method",
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/$defs/ScheduledTaskUpdateParams"
+          }
+        },
+        "required": [
+          "method",
+          "params"
+        ],
+        "title": "ScheduledTaskUpdateRequest",
+        "type": "object"
+      },
+      "ScheduledTaskUpdateResponse": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ScheduledTask"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/JSONRPCError"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "ScheduledTaskUpdateResponse",
+        "type": "object"
+      },
+      "ScheduledTaskDeleteRequest": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "method": {
+            "const": "tasks/schedule/delete",
+            "default": "tasks/schedule/delete",
+            "title": "Method",
+            "type": "string"
+          },
+          "params": {
+            "$ref": "#/$defs/ScheduledTaskIdParams"
+          }
+        },
+        "required": [
+          "method",
+          "params"
+        ],
+        "title": "ScheduledTaskDeleteRequest",
+        "type": "object"
+      },
+      "ScheduledTaskDeleteResponse": {
+        "properties": {
+          "jsonrpc": {
+            "const": "2.0",
+            "default": "2.0",
+            "title": "Jsonrpc",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/ScheduledTask"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/JSONRPCError"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "title": "ScheduledTaskDeleteResponse",
+        "type": "object"
+      },
       "TextPart": {
         "properties": {
           "type": {
@@ -2028,7 +2459,7 @@
           },
           {
             "$ref": "#/$defs/CancelTaskRequest"
-          },          
+          },
           {
             "$ref": "#/$defs/SetTaskPushNotificationRequest"
           },
@@ -2037,9 +2468,21 @@
           },
           {
             "$ref": "#/$defs/TaskResubscriptionRequest"
+          },
+          {
+            "$ref": "#/$defs/ScheduledTaskCreateRequest"
+          },
+          {
+            "$ref": "#/$defs/ScheduledTaskListRequest"
+          },
+          {
+            "$ref": "#/$defs/ScheduledTaskUpdateRequest"
+          },
+          {
+            "$ref": "#/$defs/ScheduledTaskDeleteRequest"
           }
         ],
         "title": "A2ARequest"
       }
     }
-  }
+}
