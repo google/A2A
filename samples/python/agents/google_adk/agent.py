@@ -112,7 +112,7 @@ class ReimbursementAgent:
         memory_service=InMemoryMemoryService(),
     )
 
-  def invoke(self, query, session_id) -> str:
+  def invoke(self, query: str, session_id: str) -> str:
     session = self._runner.session_service.get_session(
         app_name=self._agent.name, user_id=self._user_id, session_id=session_id
     )
@@ -133,7 +133,7 @@ class ReimbursementAgent:
       return ""
     return "\n".join([p.text for p in events[-1].content.parts if p.text])
 
-  async def stream(self, query, session_id) -> AsyncIterable[Dict[str, Any]]:
+  async def stream(self, query: str, session_id: str) -> AsyncIterable[Dict[str, Any]]:
     session = self._runner.session_service.get_session(
         app_name=self._agent.name, user_id=self._user_id, session_id=session_id
     )

@@ -1,4 +1,5 @@
 from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_core.runnables.config import RunnableConfig
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 from langgraph.checkpoint.memory import MemorySaver
@@ -69,14 +70,14 @@ class CurrencyAgent:
             self.model, tools=self.tools, checkpointer=memory, prompt = self.SYSTEM_INSTRUCTION, response_format=ResponseFormat
         )
 
-    def invoke(self, query, sessionId) -> str:
-        config = {"configurable": {"thread_id": sessionId}}
+    def invoke(self, query: str, session_id: str) -> str:
+        config: RunnableConfig = {"configurable": {"thread_id": session_id}}
         self.graph.invoke({"messages": [("user", query)]}, config)        
         return self.get_agent_response(config)
 
-    async def stream(self, query, sessionId) -> AsyncIterable[Dict[str, Any]]:
+    async def stream(self, query: str, session_id: str) -> AsyncIterable[Dict[str, Any]]:
         inputs = {"messages": [("user", query)]}
-        config = {"configurable": {"thread_id": sessionId}}
+        config: RunnableConfig = {"configurable": {"thread_id": session_id}}
 
         for item in self.graph.stream(inputs, config, stream_mode="values"):
             message = item["messages"][-1]
@@ -100,7 +101,7 @@ class CurrencyAgent:
         yield self.get_agent_response(config)
 
         
-    def get_agent_response(self, config):
+    def get_agent_response(self, config: RunnableConfig) -> dict[str, Any]:
         current_state = self.graph.get_state(config)        
         structured_response = current_state.values.get('structured_response')
         if structured_response and isinstance(structured_response, ResponseFormat): 

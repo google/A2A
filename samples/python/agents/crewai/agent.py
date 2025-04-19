@@ -185,7 +185,7 @@ class ImageGenerationAgent:
         verbose=False,
     )
 
-  def extract_artifact_file_id(self, query):    
+  def extract_artifact_file_id(self, query: str) -> str | None:
     try:
       pattern = r'(?:id|artifact-file-id)\s+([0-9a-f]{32})'
       match = re.search(pattern, query)
@@ -197,7 +197,7 @@ class ImageGenerationAgent:
     except Exception as e:
       return None
 
-  def invoke(self, query, session_id) -> str:
+  def invoke(self, query: str, session_id: str) -> str:
     """Kickoff CrewAI and return the response."""
     artifact_file_id = self.extract_artifact_file_id(query)
 
