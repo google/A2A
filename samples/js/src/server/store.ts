@@ -2,73 +2,146 @@ import fs from "fs/promises";
 import path from "path";
 import * as schema from "../schema.js";
 import { A2AError } from "./error.js";
-import {
-  getCurrentTimestamp,
-  isArtifactUpdate,
-  isTaskStatusUpdate,
-} from "./utils.js";
+import { getCurrentTimestamp } from "./utils.js"; // Assuming utils exists
 
-// Helper type for the simplified store
+/** Interface for storing Task and its associated Message history. */
 export interface TaskAndHistory {
   task: schema.Task;
   history: schema.Message[];
 }
 
 /**
- * Simplified interface for task storage providers.
- * Stores and retrieves both the task and its full message history together.
+ * Interface for task storage providers.
+ * Includes methods for task and history management.
+ * Placeholder methods for knowledge graph operations are included.
  */
 export interface TaskStore {
-  /**
-   * Saves a task and its associated message history.
-   * Overwrites existing data if the task ID exists.
-   * @param data An object containing the task and its history.
-   * @returns A promise resolving when the save operation is complete.
-   */
+  /** Saves task and history. Overwrites if exists. */
   save(data: TaskAndHistory): Promise<void>;
 
-  /**
-   * Loads a task and its history by task ID.
-   * @param taskId The ID of the task to load.
-   * @returns A promise resolving to an object containing the Task and its history, or null if not found.
-   */
+  /** Loads task and history by ID. Returns null if not found. */
   load(taskId: string): Promise<TaskAndHistory | null>;
+
+  // --- Knowledge Graph Methods (Interface) ---
+  // These need actual implementations in a KG-enabled store.
+
+  /** Executes a knowledge query (e.g., GraphQL) against the store. */
+  knowledgeQuery(
+    params: schema.KnowledgeQueryParams
+  ): Promise<schema.KnowledgeQueryResponseResult | null>; // Returns result or null
+
+  /** Applies updates (patches) to the knowledge graph. */
+  knowledgeUpdate(
+    params: schema.KnowledgeUpdateParams
+  ): Promise<schema.KnowledgeUpdateResponseResult>; // Returns success/verification
+
+  /**
+   * Initiates a subscription to knowledge graph changes.
+   * Returns an AsyncIterable yielding change events.
+   * The store implementation needs to manage the subscription lifecycle.
+   */
+  knowledgeSubscribe(
+    params: schema.KnowledgeSubscribeParams
+  ): AsyncIterable<schema.KnowledgeGraphChangeEvent>;
 }
 
 // ========================
 // InMemoryTaskStore
 // ========================
 
-// Use TaskAndHistory directly for storage
 export class InMemoryTaskStore implements TaskStore {
-  private store: Map<string, TaskAndHistory> = new Map();
+  private taskStore: Map<string, TaskAndHistory> = new Map();
+  // In-memory placeholder for push configs (as used in server.ts fix)
+  public _pushConfigs: Record<string, schema.PushNotificationConfig> = {};
+  // Placeholder for KG data and subscriptions
+  // private knowledgeGraphData: any = {}; // Replace with actual KG structure
+  // private knowledgeSubscriptions: Map<string, { params: schema.KnowledgeSubscribeParams, queue: AsyncQueue<schema.KnowledgeGraphChangeEvent> }> = new Map();
 
   async load(taskId: string): Promise<TaskAndHistory | null> {
-    const entry = this.store.get(taskId);
-    // Return copies to prevent external mutation
+    const entry = this.taskStore.get(taskId);
     return entry
       ? { task: { ...entry.task }, history: [...entry.history] }
       : null;
   }
 
   async save(data: TaskAndHistory): Promise<void> {
-    // Store copies to prevent internal mutation if caller reuses objects
-    this.store.set(data.task.id, {
+    this.taskStore.set(data.task.id, {
       task: { ...data.task },
       history: [...data.history],
     });
+    // If save triggers KG changes relevant to subscriptions, push to queues here.
+  }
+
+  // --- KG Method Placeholders ---
+  async knowledgeQuery(
+    params: schema.KnowledgeQueryParams
+  ): Promise<schema.KnowledgeQueryResponseResult | null> {
+    console.warn(
+      `[InMemoryTaskStore] knowledgeQuery called for task ${params.taskId}, but not implemented.`
+    );
+    throw A2AError.unsupportedOperation(
+      "knowledge/query (InMemoryTaskStore)"
+    );
+    // Example structure if implemented:
+    // const results = // ... query internal KG data based on params.query ...
+    // return { data: results, queryMetadata: { source: "memory" } };
+  }
+
+  async knowledgeUpdate(
+    params: schema.KnowledgeUpdateParams
+  ): Promise<schema.KnowledgeUpdateResponseResult> {
+    console.warn(
+      `[InMemoryTaskStore] knowledgeUpdate called for task ${params.taskId}, but not implemented.`
+    );
+    // Example structure if implemented:
+    // Perform verification based on params.metadata, params.justification
+    // Apply params.mutations to internal KG data
+    // Trigger notifications for relevant subscriptions
+    // return { success: true, verificationStatus: "Verified (Placeholder)" };
+    throw A2AError.unsupportedOperation(
+      "knowledge/update (InMemoryTaskStore)"
+    );
+  }
+
+  async *knowledgeSubscribe(
+    params: schema.KnowledgeSubscribeParams
+  ): AsyncIterable<schema.KnowledgeGraphChangeEvent> {
+    console.warn(
+      `[InMemoryTaskStore] knowledgeSubscribe called for task ${params.taskId}, but not implemented.`
+    );
+    // This needs a proper pub/sub mechanism tied to knowledgeUpdate.
+    // Yielding nothing and throwing immediately.
+    if (false) { // Keep yielding type correct for TS
+        yield {} as schema.KnowledgeGraphChangeEvent;
+    }
+    throw A2AError.unsupportedOperation(
+      "knowledge/subscribe (InMemoryTaskStore)"
+    );
+     // Example structure if implemented:
+     // const subId = generateSubscriptionId();
+     // const queue = new AsyncQueue<schema.KnowledgeGraphChangeEvent>();
+     // this.knowledgeSubscriptions.set(subId, { params, queue });
+     // try {
+     //   for await (const event of queue) {
+     //     yield event;
+     //   }
+     // } finally {
+     //   this.knowledgeSubscriptions.delete(subId);
+     // }
   }
 }
 
 // ========================
 // FileStore
 // ========================
+// FileStore remains largely the same for task/history, KG methods are stubs.
 
 export class FileStore implements TaskStore {
   private baseDir: string;
+   // In-memory placeholder for push configs
+  public _pushConfigs: Record<string, schema.PushNotificationConfig> = {};
 
   constructor(options?: { dir?: string }) {
-    // Default directory relative to the current working directory
     this.baseDir = options?.dir || ".a2a-tasks";
   }
 
@@ -76,55 +149,33 @@ export class FileStore implements TaskStore {
     try {
       await fs.mkdir(this.baseDir, { recursive: true });
     } catch (error: any) {
-      throw A2AError.internalError(
-        `Failed to create directory ${this.baseDir}: ${error.message}`,
-        error
-      );
+      throw A2AError.internalError(`Failed to create dir ${this.baseDir}: ${error.message}`, error);
     }
   }
 
   private getTaskFilePath(taskId: string): string {
-    // Sanitize taskId to prevent directory traversal
     const safeTaskId = path.basename(taskId);
+     if (safeTaskId !== taskId || taskId.includes("..")) throw A2AError.invalidParams(`Invalid Task ID: ${taskId}`);
     return path.join(this.baseDir, `${safeTaskId}.json`);
   }
 
   private getHistoryFilePath(taskId: string): string {
-    // Sanitize taskId
     const safeTaskId = path.basename(taskId);
-    if (safeTaskId !== taskId || taskId.includes("..")) {
-      throw A2AError.invalidParams(`Invalid Task ID format: ${taskId}`);
-    }
+     if (safeTaskId !== taskId || taskId.includes("..")) throw A2AError.invalidParams(`Invalid Task ID: ${taskId}`);
     return path.join(this.baseDir, `${safeTaskId}.history.json`);
   }
 
-  // Type guard for history file content
-  private isHistoryFileContent(
-    content: any
-  ): content is { messageHistory: schema.Message[] } {
-    return (
-      typeof content === "object" &&
-      content !== null &&
-      Array.isArray(content.messageHistory) &&
-      // Optional: Add deeper validation of message structure if needed
-      content.messageHistory.every(
-        (msg: any) => typeof msg === "object" && msg.role && msg.parts
-      )
-    );
+  private isHistoryFileContent(content: any): content is { messageHistory: schema.Message[] } {
+    return typeof content === "object" && content !== null && Array.isArray(content.messageHistory);
   }
 
-  private async readJsonFile<T>(filePath: string): Promise<T | null> {
+   private async readJsonFile<T>(filePath: string): Promise<T | null> {
     try {
       const data = await fs.readFile(filePath, "utf8");
       return JSON.parse(data) as T;
     } catch (error: any) {
-      if (error.code === "ENOENT") {
-        return null; // File not found is not an error for loading
-      }
-      throw A2AError.internalError(
-        `Failed to read file ${filePath}: ${error.message}`,
-        error
-      );
+      if (error.code === "ENOENT") return null;
+      throw A2AError.internalError(`Failed to read ${filePath}: ${error.message}`, error);
     }
   }
 
@@ -133,10 +184,7 @@ export class FileStore implements TaskStore {
       await this.ensureDirectoryExists();
       await fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf8");
     } catch (error: any) {
-      throw A2AError.internalError(
-        `Failed to write file ${filePath}: ${error.message}`,
-        error
-      );
+      throw A2AError.internalError(`Failed to write ${filePath}: ${error.message}`, error);
     }
   }
 
@@ -144,35 +192,19 @@ export class FileStore implements TaskStore {
     const taskFilePath = this.getTaskFilePath(taskId);
     const historyFilePath = this.getHistoryFilePath(taskId);
 
-    // Read task file first - if it doesn't exist, the task doesn't exist.
     const task = await this.readJsonFile<schema.Task>(taskFilePath);
-    if (!task) {
-      return null; // Task not found
-    }
+    if (!task) return null;
 
-    // Task exists, now try to read history. It might not exist yet.
     let history: schema.Message[] = [];
     try {
       const historyContent = await this.readJsonFile<unknown>(historyFilePath);
-      // Validate the structure slightly
       if (this.isHistoryFileContent(historyContent)) {
         history = historyContent.messageHistory;
       } else if (historyContent !== null) {
-        // Log a warning if the history file exists but is malformed
-        console.warn(
-          `[FileStore] Malformed history file found for task ${taskId} at ${historyFilePath}. Ignoring content.`
-        );
-        // Attempt to delete or rename the malformed file? Or just proceed with empty history.
-        // For now, proceed with empty. A 'save' will overwrite it correctly later.
+        console.warn(`[FileStore] Malformed history file ${historyFilePath}.`);
       }
-      // If historyContent is null (file not found), history remains []
     } catch (error) {
-      // Log error reading history but proceed with empty history
-      console.error(
-        `[FileStore] Error reading history file for task ${taskId}:`,
-        error
-      );
-      // Proceed with empty history
+      console.error(`[FileStore] Error reading history ${historyFilePath}:`, error);
     }
 
     return { task, history };
@@ -182,14 +214,28 @@ export class FileStore implements TaskStore {
     const { task, history } = data;
     const taskFilePath = this.getTaskFilePath(task.id);
     const historyFilePath = this.getHistoryFilePath(task.id);
-
-    // Ensure directory exists (writeJsonFile does this, but good practice)
     await this.ensureDirectoryExists();
-
-    // Write both files - potentially in parallel
     await Promise.all([
       this.writeJsonFile(taskFilePath, task),
       this.writeJsonFile(historyFilePath, { messageHistory: history }),
     ]);
+     // If save triggers KG changes relevant to subscriptions, push to queues here.
+  }
+
+   // --- KG Method Placeholders ---
+  async knowledgeQuery(params: schema.KnowledgeQueryParams): Promise<schema.KnowledgeQueryResponseResult | null> {
+      console.warn(`[FileStore] knowledgeQuery called for task ${params.taskId}, but not implemented.`);
+      throw A2AError.unsupportedOperation("knowledge/query (FileStore)");
+  }
+
+  async knowledgeUpdate(params: schema.KnowledgeUpdateParams): Promise<schema.KnowledgeUpdateResponseResult> {
+      console.warn(`[FileStore] knowledgeUpdate called for task ${params.taskId}, but not implemented.`);
+      throw A2AError.unsupportedOperation("knowledge/update (FileStore)");
+  }
+
+  async *knowledgeSubscribe(params: schema.KnowledgeSubscribeParams): AsyncIterable<schema.KnowledgeGraphChangeEvent> {
+      console.warn(`[FileStore] knowledgeSubscribe called for task ${params.taskId}, but not implemented.`);
+      if (false) yield {} as schema.KnowledgeGraphChangeEvent; // Keep yield type correct
+      throw A2AError.unsupportedOperation("knowledge/subscribe (FileStore)");
   }
 }
