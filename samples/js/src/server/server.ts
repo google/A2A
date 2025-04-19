@@ -159,6 +159,10 @@ export class A2AServer {
     app.get("/.well-known/agent.json", (req, res) => {
       res.json(this.card);
     });
+    
+    app.get("/agent-card", (req, res) => {
+      res.json(this.card);
+    });
 
     // Mount the endpoint handler
     app.post(this.basePath, this.endpoint());

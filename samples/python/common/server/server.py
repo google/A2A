@@ -46,6 +46,9 @@ class A2AServer:
         self.app.add_route(
             "/.well-known/agent.json", self._get_agent_card, methods=["GET"]
         )
+        self.app.add_route(
+            "/agent-card", self._get_agent_card, methods=["GET"]
+        )
 
     def start(self):
         if self.agent_card is None:
