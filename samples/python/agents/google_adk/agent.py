@@ -8,10 +8,10 @@ from google.adk.memory.in_memory_memory_service import InMemoryMemoryService
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
+from google.adk.models.lite_llm import LiteLlm
 
 # Local cache of created request_ids for demo purposes.
 request_ids = set()
-
 
 def create_request_form(date: Optional[str] = None, amount: Optional[str] = None, purpose: Optional[str] = None) -> dict[str, Any]:
   """
@@ -176,7 +176,9 @@ class ReimbursementAgent:
   def _build_agent(self) -> LlmAgent:
     """Builds the LLM agent for the reimbursement agent."""
     return LlmAgent(
-        model="gemini-2.0-flash-001",
+        model=LiteLlm(
+          model="github/gpt-4.1",
+      ),
         name="reimbursement_agent",
         description=(
             "This agent handles the reimbursement process for the employees"

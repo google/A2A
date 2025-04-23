@@ -21,6 +21,13 @@ dependencies = [
     "google-adk>=0.0.3",
     "jwcrypto>=1.5.6",
     "pyjwt>=2.10.1",
+    "langchain-community>=0.3.20",
+    "dashscope>=1.23.1",
+    "langchain-google-vertexai>=2.0.20",
+    "socks>=0",
+    "pysocks>=1.7.1",
+    "langchain-openai>=0.2.14",
+    "litellm>=1.65.0",
 ]
 
 [tool.hatch.build.targets.wheel]

@@ -10,6 +10,8 @@ from google.genai import types
 import base64
 
 from google.adk import Agent
+from google.adk.agents import LlmAgent
+from google.adk.models.lite_llm import LiteLlm
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.agents.callback_context import CallbackContext
@@ -30,8 +32,6 @@ from common.types import (
     Part,
     TaskStatusUpdateEvent,
 )
-
-
 class HostAgent:
   """The host agent.
 
@@ -69,7 +69,9 @@ class HostAgent:
 
   def create_agent(self) -> Agent:
     return Agent(
-        model="gemini-2.0-flash-001",
+        model=LiteLlm(
+          model="github/gpt-4.1",
+      ),
         name="host_agent",
         instruction=self.root_instruction,
         before_model_callback=self.before_model_callback,
