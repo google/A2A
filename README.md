@@ -4,7 +4,11 @@
 这个项目的变动如下：
 - 使用github提供的openai 4.1替换gemini模型服务。
 
-[A2A介绍文档](https://zhuanlan.zhihu.com/p/1896607306839475402)
+前置要求:
+- 为了使用github的模型服务，需要先申请访问token
+- 将申请到的token配置到环境变量。例如、GITHUB_API_KEY=github_pat_xxxxxxxx
+
+[A2A入门介绍](https://zhuanlan.zhihu.com/p/1896607306839475402)
 ![image info](images/A2A_banner.png)
 
 **_An open protocol enabling communication and interoperability between opaque agentic applications._**
