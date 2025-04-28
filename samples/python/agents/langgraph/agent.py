@@ -25,7 +25,7 @@ def get_exchange_rate(
 
     Returns:
         A dictionary containing the exchange rate data, or an error message if the request fails.
-    """    
+    """
     try:
         response = httpx.get(
             f"https://api.frankfurter.app/{currency_date}",
@@ -60,7 +60,7 @@ class CurrencyAgent:
         "Set response status to error if there is an error while processing the request."
         "Set response status to completed if the request is complete."
     )
-     
+
     def __init__(self):
         self.model = ChatGoogleGenerativeAI(model="gemini-2.0-flash")
         self.tools = [get_exchange_rate]
@@ -71,7 +71,7 @@ class CurrencyAgent:
 
     def invoke(self, query, sessionId) -> str:
         config = {"configurable": {"thread_id": sessionId}}
-        self.graph.invoke({"messages": [("user", query)]}, config)        
+        self.graph.invoke({"messages": [("user", query)]}, config)
         return self.get_agent_response(config)
 
     async def stream(self, query, sessionId) -> AsyncIterable[Dict[str, Any]]:
@@ -95,32 +95,51 @@ class CurrencyAgent:
                     "is_task_complete": False,
                     "require_user_input": False,
                     "content": "Processing the exchange rates..",
-                }            
-        
+                }
+
         yield self.get_agent_response(config)
 
-        
+
     def get_agent_response(self, config):
-        current_state = self.graph.get_state(config)        
+        current_state = self.graph.get_state(config)
+
+        # Get the last message from the message history
+        # This is the response from the first LLM call with bind_tools
+        messages = current_state.values.get('messages', [])
+        last_message_content = None
+        if messages and len(messages) > 0:
+            last_message = messages[-1]
+            if isinstance(last_message, AIMessage) and last_message.content:
+                last_message_content = last_message.content
+
+        # Get the structured response from the second LLM call
         structured_response = current_state.values.get('structured_response')
-        if structured_response and isinstance(structured_response, ResponseFormat): 
+
+        # Fix for issue #84: When using create_react_agent with structured output,
+        # LangGraph runs the model twice (once with bind_tools and once with with_structured_output)
+        # which can result in inconsistent responses. We prioritize the message from the
+        # message history (first LLM call) when available, as it's more likely to be correct.
+        if structured_response and isinstance(structured_response, ResponseFormat):
+            # Use the message from the message history if available, otherwise use the structured response
+            message_content = last_message_content or structured_response.message
+
             if structured_response.status == "input_required":
                 return {
                     "is_task_complete": False,
                     "require_user_input": True,
-                    "content": structured_response.message
+                    "content": message_content
                 }
             elif structured_response.status == "error":
                 return {
                     "is_task_complete": False,
                     "require_user_input": True,
-                    "content": structured_response.message
+                    "content": message_content
                 }
             elif structured_response.status == "completed":
                 return {
                     "is_task_complete": True,
                     "require_user_input": False,
-                    "content": structured_response.message
+                    "content": message_content
                 }
 
         return {
