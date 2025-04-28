@@ -136,5 +136,5 @@ jobs:
             cspell:sql/src/tsql.txt
             cspell:terraform/dict/terraform.txt
             cspell:typescript/dict/typescript.txt
-          only_check_changed_files: false
+          only_check_changed_files: true
           longest_word: "10"
