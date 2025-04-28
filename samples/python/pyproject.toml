@@ -29,6 +29,7 @@ members = [
     "hosts/multiagent",
     "agents/llama_index_file_chat",
     "agents/semantickernel",
+    "agents/vector_store_agent",
 ]
 
 [build-system]

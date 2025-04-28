@@ -17,3 +17,6 @@ Sample agent which can generate images. Showcases multi-turn interactions and se
 
 * [**LlamaIndex**](/samples/python/agents/llama_index_file_chat/README.md)  
 Sample agent which can parse a file and then chat with the user using the parsed content as context. Showcases multi-turn interactions, file upload and parsing, and streaming updates. 
+
+* [**Vector Store Agent**](/samples/python/agents/vector_store_agent/README.md)  
+Sample agent which can query OpenAI vector stores using natural language.

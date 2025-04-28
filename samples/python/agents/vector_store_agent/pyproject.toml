@@ -1,0 +1,14 @@
+[project]
+name = "a2a-samples-vector-store"
+version = "0.1.0"
+description = "A general-purpose A2A agent that provides information from an OpenAI vector store using the Responses API"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "a2a-samples",
+    "openai>=1.3.0",
+    "click>=8.1.0",
+]
+
+[tool.uv.sources]
+a2a-samples = { workspace = true }
