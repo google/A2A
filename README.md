@@ -79,8 +79,8 @@ We highly value community contributions and appreciate your interest in A2A Prot
 - Get Started? Please see our [contributing guide](CONTRIBUTING.md) to get started.
 - Have questions? Join our community in [GitHub discussions](https://github.com/google/A2A/discussions).
 - Want to help with protocol improvement feedback? Dive into [GitHub issues](https://github.com/google/A2A/issues).
-- Private Feedback? Please use this [Google form](https://docs.google.com/forms/d/e/1FAIpQLScS23OMSKnVFmYeqS2dP7dxY3eTyT7lmtGLUa8OJZfP4RTijQ/viewform)
-- Existing Google cloud platform customer and want to join our partner program to contribute to A2A ecosystem? Please fill this [form](https://docs.google.com/forms/d/1VXYY1qBhUbRfY15Z5G_KPYoPC9d1LCrwde5ehjYKCZ8/preview)
+- Private Feedback? Please use this [Google form](https://goo.gle/a2a-feedback)
+- Existing Google cloud platform customer and want to join our partner program to contribute to A2A ecosystem? Please fill this [form](https://goo.gle/a2a-partner)
 
 ## What's next
 
