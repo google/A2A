@@ -80,5 +80,5 @@
 \.xz$
 \.zip$
 ^\.github/actions/spelling/
-^\Q.github/actions/workflows/spelling.yaml\E$
-^\Q.github/actions/workflows/linter.yaml\E$
+^\Q.github/workflows/spelling.yaml\E$
+^\Q.github/workflows/linter.yaml\E$
