@@ -3,6 +3,7 @@ description: Suggest an idea for this repository
 title: "[Feat]: "
 assignees:
   - andrewlarimer
+type: "Feature"
 body:
   - type: markdown
     attributes:
