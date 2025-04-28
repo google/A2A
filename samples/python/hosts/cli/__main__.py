@@ -1,10 +1,14 @@
-from common.client import A2AClient, A2ACardResolver
-from common.types import TaskState, Task
-from common.utils.push_notification_auth import PushNotificationReceiverAuth
 import asyncclick as click
 import asyncio
-from uuid import uuid4
+import base64
+import os
 import urllib
+from uuid import uuid4
+
+from common.client import A2AClient, A2ACardResolver
+from common.types import TaskState, Task, TextPart, FilePart, FileContent
+from common.utils.push_notification_auth import PushNotificationReceiverAuth
+
 
 @click.command()
 @click.option("--agent", default="http://localhost:10000")
@@ -60,20 +64,42 @@ async def completeTask(client: A2AClient, streaming, use_push_notifications: boo
     )
     if prompt == ":q" or prompt == "quit":
         return False
-
+    
+    message = {
+        "role": "user",
+        "parts": [
+            {
+                "type": "text",
+                "text": prompt,
+            }
+        ]
+    }
+    
+    file_path = click.prompt(
+        "Select a file path to attach? (press enter to skip)",
+        default="",
+        show_default=False,
+    )
+    if file_path and file_path.strip() != "":
+        with open(file_path, "rb") as f:
+            file_content = base64.b64encode(f.read()).decode('utf-8')
+            file_name = os.path.basename(file_path)
+        
+        message["parts"].append(
+            {
+                "type": "file",
+                "file": {
+                    "name": file_name,
+                    "bytes": file_content,
+                }
+            }
+        )
+ 
     payload = {
         "id": taskId,
         "sessionId": sessionId,
         "acceptedOutputModes": ["text"],
-        "message": {
-            "role": "user",
-            "parts": [
-                {
-                    "type": "text",
-                    "text": prompt,
-                }
-            ],
-        },
+        "message": message,
     }
 
     if use_push_notifications:

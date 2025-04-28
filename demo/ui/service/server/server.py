@@ -34,8 +34,13 @@ class ConversationServer:
   def __init__(self, router: APIRouter):
     agent_manager = os.environ.get("A2A_HOST", "ADK")
     self.manager: ApplicationManager
+    
+    # Get API key from environment
+    api_key = os.environ.get("GOOGLE_API_KEY", "")
+    uses_vertex_ai = os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").upper() == "TRUE"
+    
     if agent_manager.upper() == "ADK":
-      self.manager = ADKHostManager()
+      self.manager = ADKHostManager(api_key=api_key, uses_vertex_ai=uses_vertex_ai)
     else:
       self.manager = InMemoryFakeAgentManager()
     self._file_cache = {} # dict[str, FilePart] maps file id to message data
@@ -81,7 +86,15 @@ class ConversationServer:
         "/message/file/{file_id}",
         self._files,
         methods=["GET"])
+    router.add_api_route(
+        "/api_key/update",
+        self._update_api_key,
+        methods=["POST"])
 
+  # Update API key in manager
+  def update_api_key(self, api_key: str):
+    if isinstance(self.manager, ADKHostManager):
+      self.manager.update_api_key(api_key)
 
   def _create_conversation(self):
     c = self.manager.create_conversation()
@@ -168,3 +181,17 @@ class ConversationServer:
           content=base64.b64decode(part.file.bytes),
           media_type=part.file.mimeType)
     return Response(content=part.file.bytes, media_type=part.file.mimeType)
+  
+  async def _update_api_key(self, request: Request):
+    """Update the API key"""
+    try:
+        data = await request.json()
+        api_key = data.get("api_key", "")
+        
+        if api_key:
+            # Update in the manager
+            self.update_api_key(api_key)
+            return {"status": "success"}
+        return {"status": "error", "message": "No API key provided"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

@@ -14,7 +14,7 @@ Host applications that use the A2AClient. Includes a CLI which shows simple task
 ## Prerequisites
 
 - Python 3.13 or higher
-- UV
+- [UV](https://docs.astral.sh/uv/)
 
 ## Running the Samples
 
@@ -22,17 +22,21 @@ Run one (or more) [agent](/samples/python/agents/README.md) A2A server and one o
 
 The following example will run the langgraph agent with the python CLI host:
 
-1. Navigate to the samples/python directory:
+1. Navigate to the agent directory:
     ```bash
-    cd samples/python
+    cd samples/python/agents/langgraph
     ```
 2. Run an agent:
     ```bash
-    uv run agents/langgraph
+    uv run .
     ```
-3. Run the example client
+3. In another terminal, navigate to the CLI directory:
+    ```bash
+    cd samples/python/hosts/cli
     ```
-    uv run hosts/cli
+4. Run the example client
+    ```
+    uv run .
     ```
 ---
 **NOTE:** 

@@ -15,5 +15,5 @@ Sample agent which can convert currency using tools. Showcases multi-turn intera
 * [**CrewAI**](/samples/python/agents/crewai/README.md)  
 Sample agent which can generate images. Showcases multi-turn interactions and sending images through A2A.
 
-
-
+* [**LlamaIndex**](/samples/python/agents/llama_index_file_chat/README.md)  
+Sample agent which can parse a file and then chat with the user using the parsed content as context. Showcases multi-turn interactions, file upload and parsing, and streaming updates. 

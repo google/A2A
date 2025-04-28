@@ -534,6 +534,7 @@
           }
         },
         "required": [
+          "type",
           "data"
         ],
         "title": "DataPart",
@@ -624,6 +625,7 @@
           }
         },
         "required": [
+          "type",
           "file"
         ],
         "title": "FilePart",
@@ -827,7 +829,10 @@
           },
           "data": {
             "anyOf": [
-              {},
+              {
+                "additionalProperties": {},
+                "type": "object"
+              },
               {
                 "type": "null"
               }
@@ -867,7 +872,10 @@
           },
           "data": {
             "anyOf": [
-              {},
+              {
+                "additionalProperties": {},
+                "type": "object"
+              },
               {
                 "type": "null"
               }
@@ -907,7 +915,10 @@
           },
           "data": {
             "anyOf": [
-              {},
+              {
+                "additionalProperties": {},
+                "type": "object"
+              },
               {
                 "type": "null"
               }
@@ -947,7 +958,10 @@
           },
           "data": {
             "anyOf": [
-              {},
+              {
+                "additionalProperties": {},
+                "type": "object"
+              },
               {
                 "type": "null"
               }
@@ -975,7 +989,10 @@
           },
           "data": {
             "anyOf": [
-              {},
+              {
+                "additionalProperties": {},
+                "type": "object"
+              },
               {
                 "type": "null"
               }
@@ -1087,7 +1104,10 @@
           },
           "result": {
             "anyOf": [
-              {},
+              {
+                "additionalProperties": {},
+                "type": "object"
+              },
               {
                 "type": "null"
               }
@@ -1533,6 +1553,21 @@
             "default": null,
             "title": "Artifacts"
           },
+          "history": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/$defs/Message"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "History"
+          },
           "metadata": {
             "anyOf": [
               {
@@ -1666,7 +1701,7 @@
         "required": [
           "id"
         ],
-        "title": "TaskQueryParams",
+        "title": "TaskIdParams",
         "type": "object"
       },
       "TaskQueryParams": {
@@ -1941,6 +1976,7 @@
           }
         },
         "required": [
+          "type",
           "text"
         ],
         "title": "TextPart",

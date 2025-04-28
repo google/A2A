@@ -310,7 +310,7 @@ export type FileContent = FileContentBytes | FileContentUri;
  * Represents a part of a message containing text content.
  */
 export interface TextPart {
-  type?: "text";
+  type: "text";
 
   /**
    * The text content.
@@ -330,7 +330,7 @@ export interface FilePart {
   /**
    * Type identifier for this part.
    */
-  type?: "file";
+  type: "file";
 
   /**
    * The file content, provided either inline or via URI.
@@ -350,7 +350,7 @@ export interface DataPart {
   /**
    * Type identifier for this part.
    */
-  type?: "data";
+  type: "data";
 
   /**
    * The structured data content as a JSON object.

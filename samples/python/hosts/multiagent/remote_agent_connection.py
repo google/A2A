@@ -12,7 +12,7 @@ from common.types import (
 from common.client import A2AClient
 
 TaskCallbackArg = Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent
-TaskUpdateCallback = Callable[[TaskCallbackArg], Task]
+TaskUpdateCallback = Callable[[TaskCallbackArg, AgentCard], Task]
 
 class RemoteAgentConnections:
   """A class to hold the connections to the remote agents."""
@@ -44,7 +44,7 @@ class RemoteAgentConnections:
                 message=request.message,
             ),
             history=[request.message],
-        ))
+        ), self.card)
       async for response in self.agent_client.send_task_streaming(request.model_dump()):
         merge_metadata(response.result, request)
         # For task status updates, we need to propagate metadata and provide
@@ -60,7 +60,7 @@ class RemoteAgentConnections:
             m.metadata['last_message_id'] = m.metadata['message_id']
           m.metadata['message_id'] = str(uuid.uuid4())
         if task_callback:
-          task = task_callback(response.result)
+          task = task_callback(response.result, self.card)
         if hasattr(response.result, 'final') and response.result.final:
           break
       return task
@@ -81,7 +81,7 @@ class RemoteAgentConnections:
         m.metadata['message_id'] = str(uuid.uuid4())
 
       if task_callback:
-        task_callback(response.result)
+        task_callback(response.result, self.card)
       return response.result
 
 def merge_metadata(target, source):

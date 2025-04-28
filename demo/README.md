@@ -32,6 +32,7 @@ Click on the task list to see all the A2A task updates from the remote agents
 - Python 3.12 or higher
 - UV
 - Agent servers speaking A2A ([use these samples](/samples/python/agents/README.md))
+- Authentication credentials (API Key or Vertex AI)
 
 ## Running the Examples
 
@@ -39,11 +40,23 @@ Click on the task list to see all the A2A task updates from the remote agents
     ```bash
     cd demo/ui
     ```
-2. Create an environment file with your API key:
+2. Create an environment file with your API key or enter it directly in the UI when prompted:
 
+   **Option A: Google AI Studio API Key**
    ```bash
-   echo "GOOGLE_API_KEY=your_api_key_here" > .env
+   echo "GOOGLE_API_KEY=your_api_key_here" >> .env
    ```
+   Or enter it directly in the UI when prompted.
+
+   **Option B: Google Cloud Vertex AI**
+   ```bash
+    echo "GOOGLE_GENAI_USE_VERTEXAI=TRUE" >> .env
+    echo "GOOGLE_CLOUD_PROJECT=your_project_id" >> .env
+    echo "GOOGLE_CLOUD_LOCATION=your_location" >> .env
+   ```
+   Note: Ensure you've authenticated with gcloud using `gcloud auth login` first.
+   
+   For detailed instructions on authentication setup, see the [ADK documentation](https://google.github.io/adk-docs/get-started/quickstart/#set-up-the-model).
 
 3. Run the front end example:
     ```bash
