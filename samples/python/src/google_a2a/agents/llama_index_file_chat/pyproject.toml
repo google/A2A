@@ -1,0 +1,15 @@
+[project]
+name = "google-a2a-file-chat"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "google-a2a",
+    "llama-cloud-services>=0.6.12",
+    "llama-index-core>=0.12.30",
+    "llama-index-llms-google-genai>=0.1.7",
+]
+
+[tool.uv.sources]
+google-a2a = { workspace = true }

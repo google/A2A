@@ -6,9 +6,9 @@ This demo application showcases agents talking to other agents over A2A.
 
 * The frontend is a [mesop](https://github.com/mesop-dev/mesop) web application that renders conversations as content between the end user and the "Host Agent". This app can render text content, thought bubbles, web forms (requests for input from agents), and images. More content types coming soon 
 
-* The [Host Agent](/samples/python/hosts/multiagent/host_agent.py) is a Google ADK agent which orchestrates user requests to Remote Agents. 
+* The [Host Agent](/samples/python/src/google_a2a/hosts/multiagent/host_agent.py) is a Google ADK agent which orchestrates user requests to Remote Agents. 
 
-* Each [Remote Agent](/samples/python/hosts/multiagent/remote_agent_connection.py) is an A2AClient running inside a Google ADK agent. Each remote agent will retrieve the A2AServer's [AgentCard](https://google.github.io/A2A/#documentation?id=agent-card) and then proxy all requests using A2A. 
+* Each [Remote Agent](/samples/python/src/google_a2a/hosts/multiagent/remote_agent_connection.py) is an A2AClient running inside a Google ADK agent. Each remote agent will retrieve the A2AServer's [AgentCard](https://google.github.io/A2A/#documentation?id=agent-card) and then proxy all requests using A2A. 
 
 ## Features
 
@@ -31,7 +31,7 @@ Click on the task list to see all the A2A task updates from the remote agents
 
 - Python 3.12 or higher
 - UV
-- Agent servers speaking A2A ([use these samples](/samples/python/agents/README.md))
+- Agent servers speaking A2A ([use these samples](/samples/python/src/google_a2a/agents/README.md))
 - Authentication credentials (API Key or Vertex AI)
 
 ## Running the Examples

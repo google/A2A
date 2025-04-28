@@ -1,0 +1,14 @@
+[project]
+name = "google-a2a-image-gen"
+version = "0.1.0"
+description = "Generate or modify images using A2A and CrewAI"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "crewai[tools]>=0.95.0",
+    "google-genai>=1.9.0",
+    "google-a2a",
+]
+
+[tool.uv.sources]
+google-a2a = { workspace = true }

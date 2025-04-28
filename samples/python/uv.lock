@@ -13,20 +13,20 @@ members = [
     "a2a-sample-agent-langgraph",
     "a2a-sample-client-cli",
     "a2a-sample-client-multiagent",
-    "a2a-samples",
-    "a2a-samples-file-chat",
-    "a2a-samples-image-gen",
-    "a2a-samples-marvin",
     "a2a-semantic-kernel",
+    "google-a2a",
+    "google-a2a-file-chat",
+    "google-a2a-image-gen",
+    "google-a2a-marvin",
 ]
 
 [[package]]
 name = "a2a-sample-agent-adk"
 version = "0.1.0"
-source = { editable = "agents/google_adk" }
+source = { editable = "src/google_a2a/agents/google_adk" }
 dependencies = [
-    { name = "a2a-samples" },
     { name = "click" },
+    { name = "google-a2a" },
     { name = "google-adk" },
     { name = "google-genai" },
     { name = "python-dotenv" },
@@ -34,8 +34,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-samples", editable = "." },
     { name = "click", specifier = ">=8.1.8" },
+    { name = "google-a2a", editable = "." },
     { name = "google-adk", specifier = ">=0.0.3" },
     { name = "google-genai", specifier = ">=1.9.0" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
@@ -44,10 +44,10 @@ requires-dist = [
 [[package]]
 name = "a2a-sample-agent-langgraph"
 version = "0.1.0"
-source = { editable = "agents/langgraph" }
+source = { editable = "src/google_a2a/agents/langgraph" }
 dependencies = [
-    { name = "a2a-samples" },
     { name = "click" },
+    { name = "google-a2a" },
     { name = "httpx" },
     { name = "langchain-google-genai" },
     { name = "langgraph" },
@@ -57,8 +57,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-samples", editable = "." },
     { name = "click", specifier = ">=8.1.8" },
+    { name = "google-a2a", editable = "." },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "langchain-google-genai", specifier = ">=2.0.10" },
     { name = "langgraph", specifier = ">=0.3.18" },
@@ -69,18 +69,18 @@ requires-dist = [
 [[package]]
 name = "a2a-sample-client-cli"
 version = "0.1.0"
-source = { editable = "hosts/cli" }
+source = { editable = "src/google_a2a/hosts/cli" }
 dependencies = [
-    { name = "a2a-samples" },
     { name = "asyncclick" },
+    { name = "google-a2a" },
     { name = "sse-starlette" },
     { name = "starlette" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-samples", editable = "." },
     { name = "asyncclick", specifier = ">=8.1.8" },
+    { name = "google-a2a", editable = "." },
     { name = "sse-starlette", specifier = ">=2.2.1" },
     { name = "starlette", specifier = ">=0.46.1" },
 ]
@@ -88,126 +88,32 @@ requires-dist = [
 [[package]]
 name = "a2a-sample-client-multiagent"
 version = "0.1.0"
-source = { editable = "hosts/multiagent" }
+source = { editable = "src/google_a2a/hosts/multiagent" }
 dependencies = [
-    { name = "a2a-samples" },
+    { name = "google-a2a" },
     { name = "google-adk" },
     { name = "google-genai" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-samples", editable = "." },
+    { name = "google-a2a", editable = "." },
     { name = "google-adk", specifier = ">=0.0.3" },
     { name = "google-genai", specifier = ">=1.9.0" },
 ]
 
 [[package]]
-name = "a2a-samples"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "httpx" },
-    { name = "httpx-sse" },
-    { name = "jwcrypto" },
-    { name = "pydantic" },
-    { name = "pyjwt" },
-    { name = "sse-starlette" },
-    { name = "starlette" },
-    { name = "typing-extensions" },
-    { name = "uvicorn" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-mock" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", specifier = ">=0.28.1" },
-    { name = "httpx-sse", specifier = ">=0.4.0" },
-    { name = "jwcrypto", specifier = ">=1.5.6" },
-    { name = "pydantic", specifier = ">=2.10.6" },
-    { name = "pyjwt", specifier = ">=2.10.1" },
-    { name = "sse-starlette", specifier = ">=2.2.1" },
-    { name = "starlette", specifier = ">=0.46.1" },
-    { name = "typing-extensions", specifier = ">=4.12.2" },
-    { name = "uvicorn", specifier = ">=0.34.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=8.3.5" },
-    { name = "pytest-mock", specifier = ">=3.14.0" },
-    { name = "ruff", specifier = ">=0.11.2" },
-]
-
-[[package]]
-name = "a2a-samples-file-chat"
-version = "0.1.0"
-source = { virtual = "agents/llama_index_file_chat" }
-dependencies = [
-    { name = "a2a-samples" },
-    { name = "llama-cloud-services" },
-    { name = "llama-index-core" },
-    { name = "llama-index-llms-google-genai" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "a2a-samples", editable = "." },
-    { name = "llama-cloud-services", specifier = ">=0.6.12" },
-    { name = "llama-index-core", specifier = ">=0.12.30" },
-    { name = "llama-index-llms-google-genai", specifier = ">=0.1.7" },
-]
-
-[[package]]
-name = "a2a-samples-image-gen"
-version = "0.1.0"
-source = { virtual = "agents/crewai" }
-dependencies = [
-    { name = "a2a-samples" },
-    { name = "crewai", extra = ["tools"] },
-    { name = "google-genai" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "a2a-samples", editable = "." },
-    { name = "crewai", extras = ["tools"], specifier = ">=0.95.0" },
-    { name = "google-genai", specifier = ">=1.9.0" },
-]
-
-[[package]]
-name = "a2a-samples-marvin"
-version = "0.1.0"
-source = { virtual = "agents/marvin" }
-dependencies = [
-    { name = "a2a-samples" },
-    { name = "marvin" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "a2a-samples", editable = "." },
-    { name = "marvin", specifier = ">=3.0.0" },
-]
-
-[[package]]
 name = "a2a-semantic-kernel"
 version = "0.1.0"
-source = { editable = "agents/semantickernel" }
+source = { editable = "src/google_a2a/agents/semantickernel" }
 dependencies = [
-    { name = "a2a-samples" },
+    { name = "google-a2a" },
     { name = "semantic-kernel" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-samples", editable = "." },
+    { name = "google-a2a", editable = "." },
     { name = "semantic-kernel", specifier = ">=1.28.0" },
 ]
 
@@ -1287,6 +1193,102 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/45/d8/8425e6ba5fcec61a1d16e41b1b71d2bf9344f1fe48012c2b48b9620feae5/fsspec-2025.3.2.tar.gz", hash = "sha256:e52c77ef398680bbd6a98c0e628fbc469491282981209907bbc8aea76a04fdc6", size = 299281 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/44/4b/e0cfc1a6f17e990f3e64b7d941ddc4acdc7b19d6edd51abf495f32b1a9e4/fsspec-2025.3.2-py3-none-any.whl", hash = "sha256:2daf8dc3d1dfa65b6aa37748d112773a7a08416f6c70d96b264c96476ecaf711", size = 194435 },
+]
+
+[[package]]
+name = "google-a2a"
+version = "0.2.0"
+source = { editable = "." }
+dependencies = [
+    { name = "asyncclick" },
+    { name = "httpx" },
+    { name = "httpx-sse" },
+    { name = "jwcrypto" },
+    { name = "pydantic" },
+    { name = "pyjwt" },
+    { name = "sse-starlette" },
+    { name = "starlette" },
+    { name = "typing-extensions" },
+    { name = "uvicorn" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-mock" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "asyncclick", specifier = ">=8.1.8" },
+    { name = "httpx", specifier = ">=0.28.1" },
+    { name = "httpx-sse", specifier = ">=0.4.0" },
+    { name = "jwcrypto", specifier = ">=1.5.6" },
+    { name = "pydantic", specifier = ">=2.10.6" },
+    { name = "pyjwt", specifier = ">=2.10.1" },
+    { name = "sse-starlette", specifier = ">=2.2.1" },
+    { name = "starlette", specifier = ">=0.46.1" },
+    { name = "typing-extensions", specifier = ">=4.12.2" },
+    { name = "uvicorn", specifier = ">=0.34.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.3.5" },
+    { name = "pytest-mock", specifier = ">=3.14.0" },
+    { name = "ruff", specifier = ">=0.11.2" },
+]
+
+[[package]]
+name = "google-a2a-file-chat"
+version = "0.1.0"
+source = { virtual = "src/google_a2a/agents/llama_index_file_chat" }
+dependencies = [
+    { name = "google-a2a" },
+    { name = "llama-cloud-services" },
+    { name = "llama-index-core" },
+    { name = "llama-index-llms-google-genai" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "google-a2a", editable = "." },
+    { name = "llama-cloud-services", specifier = ">=0.6.12" },
+    { name = "llama-index-core", specifier = ">=0.12.30" },
+    { name = "llama-index-llms-google-genai", specifier = ">=0.1.7" },
+]
+
+[[package]]
+name = "google-a2a-image-gen"
+version = "0.1.0"
+source = { virtual = "src/google_a2a/agents/crewai" }
+dependencies = [
+    { name = "crewai", extra = ["tools"] },
+    { name = "google-a2a" },
+    { name = "google-genai" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "crewai", extras = ["tools"], specifier = ">=0.95.0" },
+    { name = "google-a2a", editable = "." },
+    { name = "google-genai", specifier = ">=1.9.0" },
+]
+
+[[package]]
+name = "google-a2a-marvin"
+version = "0.1.0"
+source = { virtual = "src/google_a2a/agents/marvin" }
+dependencies = [
+    { name = "google-a2a" },
+    { name = "marvin" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "google-a2a", editable = "." },
+    { name = "marvin", specifier = ">=3.0.0" },
 ]
 
 [[package]]

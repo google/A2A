@@ -1,10 +1,11 @@
 [project]
-name = "a2a-samples"
-version = "0.1.0"
-description = "Agent2Agent samples"
+name = "google-a2a"
+version = "0.2.0"
+description = "Agent2Agent modules and samples"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "asyncclick>=8.1.8",
     "httpx>=0.28.1",
     "httpx-sse>=0.4.0",
     "jwcrypto>=1.5.6",
@@ -17,19 +18,22 @@ dependencies = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["common", "hosts"]
+packages = ["src/google_a2a"]
 
 [tool.uv.workspace]
 members = [
-    "agents/crewai",
-    "agents/google_adk",
-    "agents/langgraph",
-    "agents/marvin",
-    "hosts/cli",
-    "hosts/multiagent",
-    "agents/llama_index_file_chat",
-    "agents/semantickernel",
+    "src/google_a2a/agents/crewai",
+    "src/google_a2a/agents/google_adk",
+    "src/google_a2a/agents/langgraph",
+    "src/google_a2a/agents/marvin",
+    "src/google_a2a/hosts/cli",
+    "src/google_a2a/hosts/multiagent",
+    "src/google_a2a/agents/llama_index_file_chat",
+    "src/google_a2a/agents/semantickernel",
 ]
+
+[project.scripts]
+google-a2a-cli = "google_a2a.hosts.cli.__main__:main"
 
 [build-system]
 requires = ["hatchling"]

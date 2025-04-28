@@ -1,0 +1,13 @@
+[project]
+name = "google-a2a-marvin"
+version = "0.1.0"
+description = "Currency conversion using A2A and Marvin"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["marvin>=3.0.0", "google-a2a"]
+
+[tool.uv.sources]
+google-a2a = { workspace = true }
+
+[tool.ruff.lint]
+extend-select = ["I", "UP"]
