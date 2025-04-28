@@ -1,5 +1,4 @@
 import asyncio
-import base64
 import logging
 import traceback
 from typing import AsyncIterable, Union, Dict, Any
@@ -43,7 +42,7 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
         "image/png",
         "image/jpeg",
     ]
-    SUPPORTED_OUTPUT_TYPES = ["text/plain"]
+    SUPPORTED_OUTPUT_TYPES = ["text","text/plain"]
 
     def __init__(self, agent: ParseAndChat, notification_sender_auth: PushNotificationSenderAuth):
         super().__init__()
@@ -107,10 +106,10 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             if isinstance(final_response, ChatResponseEvent):
                 content = final_response.response
                 parts = [{"type": "text", "text": content}]
-                metadata = final_response.citations
-
-                # ensure metadata is a dict of str keys
-                metadata = {str(k): v for k, v in metadata.items()}
+                metadata = final_response.citations if hasattr(final_response, 'citations') else None            
+                if metadata is not None:
+                    # ensure metadata is a dict of str keys
+                    metadata = {str(k): v for k, v in metadata.items()}                    
 
                 # save the context state to resume the current session
                 self.ctx_states[session_id] = handler.ctx.to_dict()
@@ -151,12 +150,12 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
     ) -> JSONRPCResponse | None:
         task_send_params: TaskSendParams = request.params
         if not utils.are_modalities_compatible(
-            task_send_params.acceptedOutputModes, self.SUPPORTED_CONTENT_TYPES
+            task_send_params.acceptedOutputModes, self.SUPPORTED_OUTPUT_TYPES
         ):
             logger.warning(
                 "Unsupported output mode. Received %s, Support %s",
                 task_send_params.acceptedOutputModes,
-                self.SUPPORTED_CONTENT_TYPES,
+                self.SUPPORTED_OUTPUT_TYPES,
             )
             return utils.new_incompatible_types_error(request.id)
         
@@ -181,17 +180,9 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
         # Check if this is a continuation of an existing task that needs input
         task_id = request.params.id
         session_id = request.params.sessionId
-        task_exists = await self.get_task(task_id) is not None
-        
-        if not task_exists or session_id not in self.ctx_states:
-            # New task or no saved context - mark as working
-            task = await self.update_store(
-                task_id, TaskStatus(state=TaskState.WORKING), None
-            )
-        else:
-            # Existing task with saved context - continue from INPUT_REQUIRED state
-            logger.info(f"Continuing task {task_id} with user input")
-            task = await self.get_task(task_id)
+        task = await self.update_store(
+            request.params.id, TaskStatus(state=TaskState.WORKING), None
+        )
         
         await self.send_task_notification(task)
 
@@ -224,7 +215,9 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             # Create artifact with response
             content = final_response.response
             parts = [{"type": "text", "text": content}]
-            metadata = final_response.citations if hasattr(final_response, 'citations') else None
+            metadata = final_response.citations if hasattr(final_response, 'citations') else None            
+            if metadata is not None:
+                metadata = {str(k): v for k, v in metadata.items()}                    
             
             task_status = TaskStatus(state=TaskState.COMPLETED)
             artifact = Artifact(parts=parts, index=0, append=False, metadata=metadata)

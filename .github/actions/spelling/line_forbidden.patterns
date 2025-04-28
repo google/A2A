@@ -1,0 +1,307 @@
+# Should be `HH:MM:SS`
+\bHH:SS:MM\b
+
+# Should probably be `YYYYMMDD`
+\b[Yy]{4}[Dd]{2}[Mm]{2}(?!.*[Yy]{4}[Dd]{2}[Mm]{2}).*$
+
+# Should be `anymore`
+\bany more[,.]
+
+# Should be `cannot` (or `can't`)
+# See https://www.grammarly.com/blog/cannot-or-can-not/
+# > Don't use `can not` when you mean `cannot`. The only time you're likely to see `can not` written as separate words is when the word `can` happens to precede some other phrase that happens to start with `not`.
+# > `Can't` is a contraction of `cannot`, and it's best suited for informal writing.
+# > In formal writing and where contractions are frowned upon, use `cannot`.
+# > It is possible to write `can not`, but you generally find it only as part of some other construction, such as `not only . . . but also.`
+# - if you encounter such a case, add a pattern for that case to patterns.txt.
+\b[Cc]an not\b
+
+# Should be `GitHub`
+(?<![&*.]|// |\btype |\bimport )\bGithub\b(?![{()])
+\b[Gg]it\s[Hh]ub\b
+
+# Should be `GitLab`
+(?<![&*.]|// |\btype )\bGitlab\b(?![{)])
+
+# Should be `JavaScript`
+\bJavascript\b
+
+# Should be `macOS` or `Mac OS X` or ...
+\bMacOS\b
+
+# Should be `Microsoft`
+\bMicroSoft\b
+
+# Should be `OAuth`
+(?:^|[^-/*$])[ '"]oAuth(?: [a-z]|\d+ |[^ a-zA-Z0-9:;_.()])
+
+# Should be `TypeScript`
+\bTypescript\b
+
+# Should be `another`
+\ban[- ]other\b
+
+# Should be `case-(in)sensitive`
+\bcase (?:in|)sensitive\b
+
+# Should be `coinciding`
+\bco-inciding\b
+
+# Should be `deprecation warning(s)`
+\b[Dd]epreciation [Ww]arnings?\b
+
+# Should be `greater than`
+\bgreater then\b
+
+# Should be `ID`
+#\bId\b
+
+# Should be `in front of`
+\bin from of\b
+
+# Should be `into`
+# when not phrasal and when `in order to` would be wrong:
+# https://thewritepractice.com/into-vs-in-to/
+\sin to\s(?!if\b)
+
+# Should be `use`
+\sin used by\b
+
+# Should be `is obsolete`
+\bis obsolescent\b
+
+# Should be `it's` or `its`
+\bits[']
+
+# Should be `its`
+\bit's(?= own\b)
+
+# Should be `perform its`
+\bperform it's\b
+
+# Should be `opt-in`
+(?<!\sfor)\sopt in\s
+
+# Should be `less than`
+\bless then\b
+
+# Should be `load balancer`
+\b[Ll]oud balancer
+
+# Should be `one of`
+\bon of\b
+
+# Should be `otherwise`
+\bother[- ]wise\b
+
+# Should be `or (more|less)`
+\bore (?:more|less)\b
+
+# Should be `rather than`
+\brather then\b
+
+# Should be `regardless, ...` or `regardless of (whether)`
+\b[Rr]egardless if you\b
+
+# Should be `no longer needed`
+\bno more needed\b(?! than\b)
+
+# Should be `did not exist`
+\bwere not existent\b
+
+# Should be `nonexistent`
+\bnon existing\b
+
+# Should be `nonexistent`
+\b[Nn]o[nt][- ]existent\b
+
+# Should be `@brief` / `@details` / `@param` / `@return` / `@retval`
+(?:^\s*|(?:\*|//|/*)\s+`)[\\@](?:breif|(?:detail|detials)|(?:params(?!\.)|prama?)|ret(?:uns?)|retvl)\b
+
+# Should be `preexisting`
+[Pp]re[- ]existing
+
+# Should be `preempt`
+[Pp]re[- ]empt\b
+
+# Should be `preemptively`
+[Pp]re[- ]emptively
+
+# Should be `recently changed` or `recent changes`
+[Rr]ecent changed
+
+# Should be `reentrancy`
+[Rr]e[- ]entrancy
+
+# Should be `reentrant`
+[Rr]e[- ]entrant
+
+# Should be `understand`
+\bunder stand\b
+
+# Should be `workarounds`
+\bwork[- ]arounds\b
+
+# Should be `workaround`
+(?:(?:[Aa]|[Tt]he|ugly)\swork[- ]around\b|\swork[- ]around\s+for)
+
+# Should be `(coarse|fine)-grained`
+\b(?:coarse|fine) grained\b
+
+# Should be `neither/nor` -- or reword
+\bnot\b[^.?!"/(]+\bnor\b
+
+# Should be `neither/nor` (plus rewording the beginning)
+# This is probably a double negative...
+\bnot\b[^.?!"/]*\bneither\b[^.?!"/(]*\bnor\b
+
+# In English, duplicated words are generally mistakes
+# There are a few exceptions (e.g. "that that").
+# If the highlighted doubled word pair is in:
+# * code, write a pattern to mask it.
+# * prose, have someone read the English before you dismiss this error.
+\s([A-Z]{3,}|[A-Z][a-z]{2,}|[a-z]{3,})\s\g{-1}\s
+
+# Should be `Gen AI`
+\b[gG]enAI\b
+
+# Should be LangChain
+\b(?!LangChain\b)(?!langchain\b)[Ll]ang\s?[Cc]hain?\b
+
+# Should be LangGraph
+\b(?!LangGraph\b)(?!langgraph\b)[Ll]ang\s?[Gg]raph?\b
+
+# Should be LangServe
+\b(?!LangServe\b)(?!langserve\b)[Ll]ang\s?[Ss]erve?\b
+
+# Should be LlamaIndex
+\b(?!LlamaIndex\b)[Ll][Ll]ama\s?[Ii]ndex?\s
+
+# Should be Hugging Face
+\s(?!Hugging Face\b)[Hh]ugging\s?[Ff]ace?\b
+
+# Should be DeepSeek
+\b(?!DeepSeek\b)(?!deepseek\b)[Dd]eep\s?[Ss]eek?\b
+
+# Should be Vertex AI
+\b(?!Vertex AI\b)(?!.*[\(\)\{\},])(?<!import\s)(?<!\.)(?<!,\s)Vertex\s?[Aa]?[Ii]?\b
+
+# Should be Vertex AI
+\b[Vv]ertext\b
+
+# Should be Gemini
+\sgemini\s\w
+
+# Should be `Gemini Version Size` (e.g. `Gemini 2.0 Flash`)
+\bGemini\s(Pro|Flash|Ultra)\s?\d\.\d\b
+
+# Gemini Size should be capitalized (e.g. `Gemini 2.0 Flash`)
+\bGemini\s?\d\.\d\s(pro|flash|ultra)\b
+
+# Don't say "Google Gemini" or "Google Gemini"
+\b[Gg]oogle(?: [Cc]loud| [Dd]eep[Mm]ind)?'s [Gg]emini\b
+
+# Don't say "Powered by Gemini", instead say "with Gemini"
+\b[Pp]owered\s[Bb]y\s[Gg]emini\b
+
+# Should be Gemini API in Vertex AI
+\b[Vv]ertex\s[Aa][Ii]\s[Gg]emini\s[Aa][Pp][Ii]\b
+
+# Should be Agentspace
+\b(?!Agentspace\b)[Aa]gent\s?[Ss]pace?\b
+
+# Should be Imagen
+\simagen\s\w
+
+# Should be Imagen 2 or Imagen 3
+\bImagen\d\b
+
+# Should be BigQuery
+\b(?!BigQuery\b)(?!bigquery\b)[Bb]ig\s?[Qq]uery\b
+
+# Should be DataFrame or DataFrames
+\b(?!DataFrames?\b)(?!.*[\(\)\{\}\.,=])(?<!")\b[Dd]ata\s?[Ff]rames?\b(?!")
+
+# Should be Google Cloud
+\s[Gg][Cc][Pp]\s
+
+# Should be Google Cloud
+\b(?!Google\sCloud\b)[Gg]oogle\s?[Cc]loud\b
+
+# Should be DeepMind
+\b(?!DeepMind\b)[Dd]eep\s?[Mm]ind\b
+
+# Should be TensorFlow
+\b(?!TensorFlow\b)(?!tensorflow\b)[Tt]ensor\s?[Ff]low\b
+
+# Should be AlloyDB
+\b(?!AlloyDB\b)(?!alloydb\b)[Aa]lloy\s?[Dd]\s?[Bb]\b
+
+# Should be Translation API
+\bTranslate\s?API\b
+
+# Should be Dialogflow
+\bDialogFlow\b
+
+# Should be Firebase
+\b(?!Firebase\b)Fire\s?[Bb]ase\b
+
+# Should be Firestore
+\b(?!Firestore\b)Fire\s?[Ss]tore\b
+
+# Should be Memorystore
+\b(?!Memorystore\b)Memory\s?[Ss]tore\b
+
+# Should be Document AI
+\bDoc\s?AI\b
+
+# Should be Vertex AI Search
+\bVertex\s?Search\b
+
+# Should be Vertex AI Vector Search
+\bVertex\sVector\sSearch\b
+
+# Should be Colab
+\s(?!Colab)[Cc]o[Ll][Ll]?abs?\b
+
+# Should be Kaggle
+\skaggle\b
+
+# Should be TPU or TPUs
+\btpus?\b
+
+# Should be GKE
+\sgke\s
+
+# Should be GCS
+\sgcs\s
+
+# Should be Dataflow ML
+\b[Dd]ataflowML\b
+
+# Should be API
+\s(?!API)(?!.*[\(\)\{\},=#]+)[Aa][Pp][Ii]\s
+
+# Should be arXiv
+\bAr[Xx]iv\b
+
+# Should be DeepEval
+\b(?!DeepEval\b)(?!deepeval\b)[Dd]eep\s?[Ee]val\b
+
+# Invalid Space Character
+\w \w
+
+# Don't use "smart quotes"
+(?!'")[‘’“”]
+
+# "an" should only be before vowels.
+\ban\s+(?![FHLMNRSX][A-Z0-9]+\b)(?!hour\b)(?!honest\b)([b-df-hj-np-tv-zB-DF-HJ-NP-TV-Z]{1}\w*)
+
+# Don't use Google internal links
+((corp|prod|sandbox).google.com|googleplex.com|https?://[0-9a-z][0-9a-z-]+/|(?:^|[^/.-])\b(?:go|b|cl|cr)/[a-z0-9_.-]+\b)
+
+# Use `%pip` instead of `!pip` or `!pip3`
+!\s?pip3?
+
+# Don't use embedded images, upload to Google Cloud Storage
+\(data:image/(?:jpeg|png);base64,[^{]

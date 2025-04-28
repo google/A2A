@@ -81,7 +81,8 @@ sequenceDiagram
 4. In a separate terminal, run an A2A [client](/samples/python/hosts/README.md):
 
    ```bash
-   uv run hosts/cli
+   cd samples/python/hosts/cli
+   uv run .
    ```
 
 ## Technical Implementation

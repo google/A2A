@@ -71,10 +71,11 @@ sequenceDiagram
 
    ```bash
    # Connect to the agent (specify the agent URL with correct port)
-   uv run hosts/cli --agent http://localhost:10001
+   cd samples/python/hosts/cli   
+   uv run . --agent http://localhost:10001
    
    # If you changed the port when starting the agent, use that port instead
-   # uv run hosts/cli --agent http://localhost:YOUR_PORT
+   # uv run . --agent http://localhost:YOUR_PORT
    ```
 
 ## Features & Improvements

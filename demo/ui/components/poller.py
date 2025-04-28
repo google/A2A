@@ -38,7 +38,7 @@ def polling_buttons():
 
 def on_change(e: me.ButtonToggleChangeEvent):
   state = me.state(AppState)
-  state.polling_interval = int(e.values[0])
+  state.polling_interval = int(e.value)
 
 async def force_refresh(e: me.ClickEvent):
     """Refresh app state event handler"""
