@@ -71,7 +71,7 @@
 \bis obsolescent\b
 
 # Should be `it's` or `its`
-\bits['’]
+\bits[']
 
 # Should be `its`
 \bit's(?= own\b)

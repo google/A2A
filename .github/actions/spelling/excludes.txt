@@ -1,8 +1,9 @@
 # See https://github.com/check-spelling/check-spelling/wiki/Configuration-Examples:-excludes
 (?:^|/)(?i)COPYRIGHT
 (?:^|/)(?i)LICEN[CS]E
+(?:^|/)(?i)CODE_OF_CONDUCT.md\E$
+(?:^|/)(?i).gitignore\E$
 (?:^|/)3rdparty/
-(?:^|/)chain_of_thought_react\.ipynb$
 (?:^|/)go\.sum$
 (?:^|/)package(?:-lock|)\.json$
 (?:^|/)Pipfile$
