@@ -53,7 +53,7 @@ sequenceDiagram
 
 - Python 3.12 or higher
 - [UV](https://docs.astral.sh/uv/)
-- Access to an LLM and API Key (Current code assumes using Google GenAI API)
+- Access to an LLM and API Key (Current code assumes using Google Gen AI API)
 - A LlamaParse API key ([get one for free](https://cloud.llamaindex.ai))
 
 ## Setup & Running
