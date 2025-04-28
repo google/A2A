@@ -1,5 +1,8 @@
 ADK
 Genkit
 agentic
+backticks
+coc
 genai
+gle
 googleai
