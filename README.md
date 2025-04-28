@@ -1,5 +1,6 @@
 ![image info](images/A2A_banner.png)
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Super-Linter](https://github.com/google/A2A/actions/workflows/linter/badge.svg)](https://github.com/marketplace/actions/super-linter)
 
 **_An open protocol enabling communication and interoperability between opaque agentic applications._**
 
