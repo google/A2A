@@ -111,23 +111,14 @@ jobs:
             cspell:data-science/dict/data-science-models.txt
             cspell:data-science/dict/data-science.txt
             cspell:data-science/dict/data-science-tools.txt
-            cspell:dart/src/dart.txt
-            cspell:de_DE/src/German_de_DE.dic
-            cspell:django/requirements.txt
-            cspell:django/dict/django.txt
-            cspell:docker/src/docker-words.txt
-            cspell:en_GB/src/hunspell/en_GB.dic
             cspell:en_US/src/aoo-mozilla-en-dict/en_US.dic
             cspell:en_US/src/hunspell/en_US-large.dic
             cspell:filetypes/src/filetypes.txt
-            cspell:flutter/src/flutter.txt
             cspell:fonts/dict/fonts.txt
-            cspell:fr_FR/fr-fr.trie
             cspell:fullstack/dict/fullstack.txt
             cspell:golang/dict/go.txt
             cspell:google/dict/google.txt
             cspell:html/dict/html.txt
-            cspell:it_IT/dict/it-it.trie
             cspell:java/src/java.txt
             cspell:k8s/dict/k8s.txt
             cspell:mnemonics/dict/mnemonics.txt
@@ -135,7 +126,6 @@ jobs:
             cspell:node/dict/node.txt
             cspell:npm/dict/npm.txt
             cspell:people-names/dict/people-names.txt
-            cspell:php/dict/php.txt
             cspell:python/dict/python.txt
             cspell:python/dict/python-common.txt
             cspell:shell/dict/shell-all-words.txt
@@ -144,21 +134,6 @@ jobs:
             cspell:sql/src/common-terms.txt
             cspell:sql/src/sql.txt
             cspell:sql/src/tsql.txt
-            cspell:svelte/dict/svelte.txt
-            cspell:terraform/dict/terraform.txt
             cspell:typescript/dict/typescript.txt
-          check_extra_dictionaries:
-            cspell:cryptocurrencies/dict/cryptocurrencies.txt
-            cspell:gaming-terms/dict/gaming-terms.txt
-            cspell:latex/dict/latex.txt
-            cspell:public-licenses/src/additional-licenses.txt
-            cspell:public-licenses/src/generated/public-licenses.txt
-            cspell:scientific_terms_US/custom_scientific_US.trie
-          ignore-pattern: "[^'a-záéíóúñçüA-ZÁÉÍÓÚÑÇÜ]"
-          upper-pattern: "[A-ZÁÉÍÓÚÑÇÜ]"
-          lower-pattern: "[a-záéíóúñçü]"
-          not-lower-pattern: "[^a-záéíóúñçü]"
-          not-upper-or-lower-pattern: "[^A-ZÁÉÍÓÚÑÇÜa-záéíóúñçü]"
-          punctuation-pattern: "'"
-          only_check_changed_files: true
+          only_check_changed_files: false
           longest_word: "10"
