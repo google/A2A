@@ -37,9 +37,8 @@ Open up `src/my_project/task_manager.py` and add the following code. We will sim
 ```python
 from typing import AsyncIterable
 
-import google_a2a
-from google_a2a.common.server.task_manager import InMemoryTaskManager
-from google_a2a.common.types import (
+from common.server.task_manager import InMemoryTaskManager
+from common.types import (
   Artifact,
   JSONRPCResponse,
   Message,
@@ -117,7 +116,7 @@ Open up `src/my_project/__init__.py` and add the following code.
 
 ```python
 # ...
-from google_a2a.common.server import A2AServer
+from common.server import A2AServer
 from my_project.task_manager import MyAgentTaskManager
 # ...
 def main(host, port):
