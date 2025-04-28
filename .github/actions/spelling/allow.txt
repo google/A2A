@@ -2,3 +2,4 @@ ADK
 Genkit
 agentic
 genai
+googleai
