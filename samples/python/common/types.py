@@ -15,6 +15,7 @@ class TaskState(str, Enum):
     COMPLETED = "completed"
     CANCELED = "canceled"
     FAILED = "failed"
+    REJECTED = "rejected"
     UNKNOWN = "unknown"
 
 
@@ -100,7 +101,7 @@ class TaskStatusUpdateEvent(BaseModel):
 
 class TaskArtifactUpdateEvent(BaseModel):
     id: str
-    artifact: Artifact    
+    artifact: Artifact
     metadata: dict[str, Any] | None = None
 
 
