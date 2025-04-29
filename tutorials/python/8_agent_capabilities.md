@@ -90,7 +90,6 @@ What do you want to send to the agent? (:q or quit to exit): Streaming?
 
 ```
 
-
 Sometimes the agent might need additional input. For example, maybe the agent will ask the client if they'd like to keep repeating the 3 messages. In this case, the agent will respond with `TaskState.INPUT_REQUIRED` to which the client will then resend `send_task_streaming` with the same `task_id` and `session_id` but with an updated message providing the input required by the agent. On the server side we'll update `on_send_task_subscribe` to handle this case.
 
 ```python
@@ -200,7 +199,6 @@ Congradulations! You now have an agent that is able to asynchronously perform wo
 ## Other Capabilities <!-- {docsify-ignore} -->
 
 If you're interested, check out the [documentation](/documentation.md?id=sample-methods-and-json-responses) for other capabilities for your A2A agent. For now we'll jump into adding AI into A2A using a local LLM.
-
 
 <div class="bottom-buttons" style="flex flex-row">
   <a href="#/tutorials/python/7_interact_with_server.md" class="back-button">Back</a>

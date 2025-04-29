@@ -5,13 +5,14 @@ An open protocol enabling Agent-to-Agent interoperability, bridging the gap betw
 
 <!-- TOC -->
 
-- [Agent2Agent Protocol A2A](#agent2agent-protocol-a2a)
+- [Agent2Agent Protocol (A2A)](#agent2agent-protocol-a2a)
   - [Feedback and Changes](#feedback-and-changes)
   - [Key Principles](#key-principles)
-  - [More Detailed Discussions](#more-detailed-discussions)
+    - [More Detailed Discussions](#more-detailed-discussions)
   - [Overview](#overview)
     - [Actors](#actors)
     - [Transport](#transport)
+    - [Async](#async)
     - [Authentication and Authorization](#authentication-and-authorization)
   - [Agent Card](#agent-card)
     - [Discovery](#discovery)
@@ -23,19 +24,19 @@ An open protocol enabling Agent-to-Agent interoperability, bridging the gap betw
     - [Message](#message)
     - [Part](#part)
     - [Push Notifications](#push-notifications)
-- [Sample Methods and JSON Responses](#sample-methods-and-json-responses)
-  - [Agent Card](#agent-card)
-  - [Send a Task](#send-a-task)
-  - [Get a Task](#get-a-task)
-  - [Cancel a Task](#cancel-a-task)
-  - [Set Task Push Notifications](#set-task-push-notifications)
-  - [Get Task Push Notifications](#get-task-push-notifications)
-  - [Multi-turn Conversations](#multi-turn-conversations)
-  - [Streaming Support](#streaming-support)
-    - [Resubscribe to Task](#resubscribe-to-task)
-  - [Non-textual Media](#non-textual-media)
-  - [Structured output](#structured-output)
-  - [Error Handling](#error-handling)
+  - [Sample Methods and JSON Responses](#sample-methods-and-json-responses)
+    - [Sample Agent Card](#sample-agent-card)
+    - [Send a Task](#send-a-task)
+    - [Get a Task](#get-a-task)
+    - [Cancel a Task](#cancel-a-task)
+    - [Set Task Push Notification Config](#set-task-push-notification-config)
+    - [Get Task Push Notification Config](#get-task-push-notification-config)
+    - [Multi-turn Conversations](#multi-turn-conversations)
+    - [Streaming Support](#streaming-support)
+      - [Resubscribe to Task](#resubscribe-to-task)
+    - [Non-textual Media](#non-textual-media)
+    - [Structured output](#structured-output)
+    - [Error Handling](#error-handling)
 
 <!-- /TOC -->
 
@@ -101,7 +102,7 @@ Remote Agents that support A2A are required to publish an **Agent Card** in JSON
 
 ### Discovery
 
-We recommend agents host their Agent Card at https://`base url`/.well-known/agent.json. This is compatible with a DNS approach where the client finds the server IP via DNS and sends an HTTP GET to retrieve the agent card. We also anticipate that systems will maintain private registries (e.g. an ‘Agent Catalog’ or private marketplace, etc). More discussion can be found in [this document](topics/agent_discovery.md?id=discovering-agent-cards).
+We recommend agents host their Agent Card at `https://DOMAIN/.well-known/agent.json`. This is compatible with a DNS approach where the client finds the server IP via DNS and sends an HTTP `GET` to retrieve the agent card. We also anticipate that systems will maintain private registries (e.g. an ‘Agent Catalog’ or private marketplace, etc). More discussion can be found in [this document](topics/agent_discovery.md?id=discovering-agent-cards).
 
 ### Representation
 
@@ -331,12 +332,12 @@ interface TaskPushNotificationConfig {
 }
 ```
 
-# Sample Methods and JSON Responses
+## Sample Methods and JSON Responses
 
-## Agent Card
+### Sample Agent Card
 
 ```json
-//agent card
+// AgentCard
 {
   "name": "Google Maps Agent",
   "description": "Plan routes, remember places, and generate directions",
@@ -384,12 +385,12 @@ interface TaskPushNotificationConfig {
 }
 ```
 
-## Send a Task
+### Send a Task
 
 Allows a client to send content to a remote agent to start a new Task, resume an interrupted Task or reopen a completed Task. A Task interrupt may be caused due to an agent requiring additional user input or a runtime error.
 
 ```json
-//Request
+// Request
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -406,7 +407,7 @@ Allows a client to send content to a remote agent to start a new Task, resume an
     "metadata": {}
   }
 }
-//Response
+// Response
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -428,14 +429,14 @@ Allows a client to send content to a remote agent to start a new Task, resume an
 }
 ```
 
-## Get a Task
+### Get a Task
 
 Clients may use this method to retrieve the generated Artifacts for a Task. The agent determines the retention window for Tasks previously submitted to it. An agent may return an error code for Tasks that were past the retention window for an agent or for Tasks that are short-lived and not persisted by the agent.
 
 The client may also request the last N items of history of the Task which will include all Messages, in order, sent by client and server. By default this is 0 (no history).
 
 ```json
-//Request
+// Request
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -446,7 +447,7 @@ The client may also request the last N items of history of the Task which will i
     "metadata": {}
   }
 }
-//Response
+// Response
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -478,12 +479,12 @@ The client may also request the last N items of history of the Task which will i
 }
 ```
 
-## Cancel a Task
+### Cancel a Task
 
 A client may choose to cancel previously submitted Tasks as shown below.
 
 ```json
-//Request
+// Request
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -493,7 +494,7 @@ A client may choose to cancel previously submitted Tasks as shown below.
     "metadata": {}
   }
 }
-//Response
+// Response
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -508,12 +509,12 @@ A client may choose to cancel previously submitted Tasks as shown below.
 }
 ```
 
-## Set Task Push Notification Config
+### Set Task Push Notification Config
 
 Clients may configure a push notification URL for receiving an update on Task status change.
 
 ```json
-//Request
+// Request
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -528,7 +529,7 @@ Clients may configure a push notification URL for receiving an update on Task st
     }
   }
 }
-//Response
+// Response
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -544,12 +545,12 @@ Clients may configure a push notification URL for receiving an update on Task st
 }
 ```
 
-## Get Task Push Notification Config
+### Get Task Push Notification Config
 
 Clients may retrieve the currently configured push notification configuration for a Task using this method.
 
 ```json
-//Request
+// Request
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -558,7 +559,7 @@ Clients may retrieve the currently configured push notification configuration fo
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64"
   }
 }
-//Response
+// Response
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -574,14 +575,14 @@ Clients may retrieve the currently configured push notification configuration fo
 }
 ```
 
-## Multi-turn Conversations
+### Multi-turn Conversations
 
 A Task may pause to be executed on the remote agent if it requires additional user input. When a Task is in `input-required` state, the client is required to provide additional input for the Task to resume processing on the remote agent.
 
 The Message included in the `input-required` state must include the details indicating what the client must do. For example "fill out a form" or "log into SaaS service foo". If this includes structured data, the instruction should be sent as one `Part` and the structured data as a second `Part`.
 
 ```json
-//Request - seq 1
+// Request - seq 1
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -598,7 +599,7 @@ The Message included in the `input-required` state must include the details indi
     "metadata": {}
   }
 }
-//Response - seq 2
+// Response - seq 2
 {
   "jsonrpc": "2.0",
   "id": 1,
@@ -618,7 +619,7 @@ The Message included in the `input-required` state must include the details indi
     "metadata": {}
   }
 }
-//Request - seq 3
+// Request - seq 3
 {
   "jsonrpc": "2.0",
   "id": 2,
@@ -636,7 +637,7 @@ The Message included in the `input-required` state must include the details indi
     "metadata": {}
   }
 }
-//Response - seq 4
+// Response - seq 4
 {
   "jsonrpc": "2.0",
   "id": 2,
@@ -659,15 +660,15 @@ The Message included in the `input-required` state must include the details indi
 }
 ```
 
-## Streaming Support
+### Streaming Support
 
-For clients and remote agents capable of communicating over HTTP with SSE, clients can send the RPC request with method `tasks/sendSubscribe` when creating a new Task. The remote agent can respond with a stream of TaskStatusUpdateEvents (to communicate status changes or instructions/requests) and TaskArtifactUpdateEvents (to stream generated results).
-Note that TaskArtifactUpdateEvents can append new parts to existing Artifacts. Clients
+For clients and remote agents capable of communicating over HTTP with SSE, clients can send the RPC request with method `tasks/sendSubscribe` when creating a new Task. The remote agent can respond with a stream of `TaskStatusUpdateEvents` (to communicate status changes or instructions/requests) and `TaskArtifactUpdateEvents` (to stream generated results).
+Note that `TaskArtifactUpdateEvents` can append new parts to existing Artifacts. Clients
 can use `task/get` to retrieve the entire Artifact outside of the streaming.
-Agents must set final: true attribute at the end of the stream or if the agent is interrupted and require additional user input.
+Agents must set `final: true` attribute at the end of the stream or if the agent is interrupted and require additional user input.
 
 ```json
-//Request
+// Request
 {
   "method":"tasks/sendSubscribe",
   "params": {
@@ -690,7 +691,7 @@ Agents must set final: true attribute at the end of the stream or if the agent i
   }
 }
 
-//Response
+// Response
 data: {
   "jsonrpc": "2.0",
   "id": 1,
@@ -708,13 +709,13 @@ data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",    
+    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 1...>"}
       ],
       "index": 0,
-      "append": false,      
+      "append": false,
       "lastChunk": false
     }
   }
@@ -723,13 +724,13 @@ data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",  
+    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 2...>"}
       ],
       "index": 0,
-      "append": true,      
+      "append": true,
       "lastChunk": false
     }
   }
@@ -738,7 +739,7 @@ data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": 1,    
+    "id": 1,
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 3...>"}
@@ -764,12 +765,12 @@ data: {
 }
 ```
 
-### Resubscribe to Task
+#### Resubscribe to Task
 
 A disconnected client may resubscribe to a remote agent that supports streaming to receive Task updates via SSE.
 
 ```json
-//Request
+// Request
 {
   "method":"tasks/resubscribe",
   "params": {
@@ -777,7 +778,7 @@ A disconnected client may resubscribe to a remote agent that supports streaming 
     "metadata": {}
   }
 }
-//Response
+// Response
 data: {
   "jsonrpc": "2.0",
   "id": 1,
@@ -823,12 +824,12 @@ data: {
 }
 ```
 
-## Non-textual Media
+### Non-textual Media
 
 Following is an example interaction between a client and an agent with non-textual data.
 
 ```json
-//Request - seq 1
+// Request - seq 1
 {
   "jsonrpc": "2.0",
   "id": 9,
@@ -852,7 +853,7 @@ Following is an example interaction between a client and an agent with non-textu
     "metadata": {}
   }
 }
-//Response - seq 2
+// Response - seq 2
 {
   "jsonrpc": "2.0",
   "id": 9,
@@ -873,7 +874,7 @@ Following is an example interaction between a client and an agent with non-textu
     "metadata": {}
   }
 }
-//Request - seq 3
+// Request - seq 3
 {
   "jsonrpc": "2.0",
   "id": 10,
@@ -883,7 +884,7 @@ Following is an example interaction between a client and an agent with non-textu
     "metadata": {}
   }
 }
-//Response - seq 4
+// Response - seq 4
 {
   "jsonrpc": "2.0",
   "id": 9,
@@ -905,12 +906,12 @@ Following is an example interaction between a client and an agent with non-textu
 }
 ```
 
-## Structured output
+### Structured output
 
 Both the client or the agent can request structured output from the other party.
 
 ```json
-//Request
+// Request
 {
   "jsonrpc": "2.0",
   "id": 9,
@@ -941,7 +942,7 @@ Both the client or the agent can request structured output from the other party.
     "metadata": {}
   }
 }
-//Response
+// Response
 {
   "jsonrpc": "2.0",
   "id": 9,
@@ -967,9 +968,9 @@ Both the client or the agent can request structured output from the other party.
 }
 ```
 
-## Error Handling
+### Error Handling
 
-Following is the ErrorMessage format for the server to respond to the client when it encounters an error processing the client request.
+Following is the `ErrorMessage` format for the server to respond to the client when it encounters an error processing the client request.
 
 ```typescript
 interface ErrorMessage {
@@ -981,16 +982,16 @@ interface ErrorMessage {
 
 The following are the standard JSON-RPC error codes that the server can respond with for error scenarios:
 
-| Error Code         | Message          | Description                                      |
-| :----------------- | :--------------- | :----------------------------------------------- |
-| \-32700            | JSON parse error | Invalid JSON was sent                            |
-| \-32600            | Invalid Request  | Request payload validation error                 |
-| \-32601            | Method not found | Not a valid method                               |
-| \-32602            | Invalid params   | Invalid method parameters                        |
-| \-32603            | Internal error   | Internal JSON-RPC error                          |
-| \-32000 to \-32099 | Server error     | Reserved for implementation specific error codes |
-| \-32001            | Task not found   | Task not found with the provided id              |
-| \-32002            | Task cannot be canceled  | Task cannot be canceled by the remote agent|
-| \-32003            | Push notifications not supported | Push Notification is not supported by the agent|
-| \-32004            | Unsupported operation   | Operation is not supported                        |
-| \-32005            | Incompatible content types   | Incompatible content types between client and an agent  |
+| Error Code           | Message                          | Description                                            |
+| :------------------- | :------------------------------- | :----------------------------------------------------- |
+| `-32700`             | JSON parse error                 | Invalid JSON was sent                                  |
+| `-32600`             | Invalid Request                  | Request payload validation error                       |
+| `-32601`             | Method not found                 | Not a valid method                                     |
+| `-32602`             | Invalid params                   | Invalid method parameters                              |
+| `-32603`             | Internal error                   | Internal JSON-RPC error                                |
+| `-32000` to `-32099` | Server error                     | Reserved for implementation specific error codes       |
+| `-32001`             | Task not found                   | Task not found with the provided id                    |
+| `-32002`             | Task cannot be canceled          | Task cannot be canceled by the remote agent            |
+| `-32003`             | Push notifications not supported | Push Notification is not supported by the agent        |
+| `-32004`             | Unsupported operation            | Operation is not supported                             |
+| `-32005`             | Incompatible content types       | Incompatible content types between client and an agent |
