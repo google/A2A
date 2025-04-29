@@ -29,8 +29,8 @@ An open protocol enabling Agent-to-Agent interoperability, bridging the gap betw
     - [Send a Task](#send-a-task)
     - [Get a Task](#get-a-task)
     - [Cancel a Task](#cancel-a-task)
-    - [Set Task Push Notification Config](#set-task-push-notification-config)
-    - [Get Task Push Notification Config](#get-task-push-notification-config)
+    - [Set Task Push Notifications](#set-task-push-notifications)
+    - [Get Task Push Notifications](#get-task-push-notifications)
     - [Multi-turn Conversations](#multi-turn-conversations)
     - [Streaming Support](#streaming-support)
       - [Resubscribe to Task](#resubscribe-to-task)
@@ -533,7 +533,7 @@ A client may choose to cancel previously submitted Tasks.
 }
 ```
 
-### Set Task Push Notification Config
+### Set Task Push Notifications
 
 Clients may configure a push notification URL for receiving an update on Task status change.
 
@@ -574,7 +574,7 @@ Clients may configure a push notification URL for receiving an update on Task st
 }
 ```
 
-### Get Task Push Notification Config
+### Get Task Push Notifications
 
 Clients may retrieve the currently configured push notification configuration for a Task using this method.
 
