@@ -67,6 +67,11 @@ class AppState:
   form_responses: dict[str, str] = dataclasses.field(default_factory=dict)
   polling_interval: int = 1
 
+  # Added for API key management
+  api_key: str = ""
+  uses_vertex_ai: bool = False
+  api_key_dialog_open: bool = False
+
 @me.stateclass
 class SettingsState:
   """Settings State"""

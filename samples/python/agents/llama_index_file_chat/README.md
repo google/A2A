@@ -52,8 +52,8 @@ sequenceDiagram
 ## Prerequisites
 
 - Python 3.12 or higher
-- UV
-- Access to an LLM and API Key (Current code assumes using Google GenAI API)
+- [UV](https://docs.astral.sh/uv/)
+- Access to an LLM and API Key (Current code assumes using Google Gen AI API)
 - A LlamaParse API key ([get one for free](https://cloud.llamaindex.ai))
 
 ## Setup & Running
@@ -84,8 +84,8 @@ sequenceDiagram
 4. In a separate terminal, run an A2A [client](/samples/python/hosts/README.md):
 
    ```bash
-   cd samples/python
-   uv run hosts/cli --agent http://localhost:10010
+   cd samples/python/hosts/cli
+   uv run . --agent http://localhost:10010
    ```
 
    Download a file to parse, or link to your own file. For example:
@@ -98,7 +98,7 @@ sequenceDiagram
 
    ```bash
    ======= Agent Card ========
-   {"name":"Parse and Chat","description":"Parses a file and then chats with a user using the parsed content as context.","url":"http://localhost:10000/","version":"1.0.0","capabilities":{"streaming":true,"pushNotifications":true,"stateTransitionHistory":false},"defaultInputModes":["text","text/plain"],"defaultOutputModes":["text","text/plain"],"skills":[{"id":"parse_and_chat","name":"Parse and Chat","description":"Parses a file and then chats with a user using the parsed content as context.","tags":["parse","chat","file","llama_parse"],"examples":["What does this file talk about?"]}]}
+   {"name":"Parse and Chat","description":"Parses a file and then chats with a user using the parsed content as context.","url":"http://localhost:10010/","version":"1.0.0","capabilities":{"streaming":true,"pushNotifications":true,"stateTransitionHistory":false},"defaultInputModes":["text","text/plain"],"defaultOutputModes":["text","text/plain"],"skills":[{"id":"parse_and_chat","name":"Parse and Chat","description":"Parses a file and then chats with a user using the parsed content as context.","tags":["parse","chat","file","llama_parse"],"examples":["What does this file talk about?"]}]}
    =========  starting a new task ======== 
 
    What do you want to send to the agent? (:q or quit to exit): What does this file talk about?
@@ -127,7 +127,7 @@ sequenceDiagram
 Request:
 
 ```
-POST http://localhost:10000
+POST http://localhost:10010
 Content-Type: application/json
 
 {
@@ -195,7 +195,7 @@ Response:
 Request - Seq 1:
 
 ```
-POST http://localhost:10000
+POST http://localhost:10010
 Content-Type: application/json
 
 {
@@ -261,7 +261,7 @@ Response - Seq 2:
 Request - Seq 3:
 
 ```
-POST http://localhost:10000
+POST http://localhost:10010
 Content-Type: application/json
 
 {

@@ -69,7 +69,7 @@ def form_sent(message: StateMessage, app_state: AppState) -> bool:
   return message.message_id in app_state.form_responses
 
 def render_form(message: StateMessage, app_state: AppState):
-  """Renders the form or the data entered in an submitted form"""
+  """Renders the form or the data entered in a submitted form"""
   # Check if the form was completed, if so, render the content as a card
   if message.message_id in app_state.completed_forms:
     render_form_card(message, app_state.completed_forms[message.message_id])
