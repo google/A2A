@@ -43,7 +43,8 @@ The agent can use below methods to get updates about task execution:
 1. **Persistent Connection**: Clients can establish a persistent connection with the agent using HTTP + Server-sent events. The agent can then send task updates using those connections per client.
 
 2. **Push Notifications**: Agents can send the latest full Task object payload to client specified push notification URL. This is similar to webhooks on some platforms.
-   Clients can set notifications for their tasks whether they have subscribed to a Task or not. Agents should send a notification when Agent has processed a task to a stopping state like "completed", "input-required" etc and fully generated state associated message and artifacts.
+
+Clients can set notifications for their tasks whether they have subscribed to a Task or not. Agents should send a notification when Agent has processed a task to a stopping state like "completed", "input-required" etc and fully generated state associated message and artifacts.
 
 Clients can set notification info for their tasks whether they have subscribed to a Task or not. Agents should send a notification when Agent sees it appropriate to notify the client. One paradigm could be to send a notification when agent has processed a task to a stopping state like "completed", "input-required" etc and fully generated state associated message and artifacts.
 
