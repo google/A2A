@@ -1,6 +1,5 @@
 # Setup Your Environment
 
-
 ## What You'll Need <!-- {docsify-ignore} -->
 
 - A code editor such as Visual Studio Code (VS Code)
@@ -21,6 +20,7 @@ echo 'import sys; print(sys.version)' | uv run -
 ```
 
 If you see something similar to the following, you are ready to proceed!
+
 ```bash
 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0]
 ```

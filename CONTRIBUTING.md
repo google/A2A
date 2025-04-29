@@ -35,6 +35,7 @@ information on using pull requests.
 ## Developing
 
 Preview your changes by running a local http server at the root of this directory. For example:
+
 ```bash
 python -m http.server
 ```
