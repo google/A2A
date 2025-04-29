@@ -1,94 +1,40 @@
-// === JSON-RPC Base Structures
+// === JSON-RPC Base Structures ===
 
-/**
- * Base interface for identifying JSON-RPC messages.
- */
+/** Base interface for identifying JSON-RPC messages. */
 export interface JSONRPCMessageIdentifier {
-  /**
-   * Request identifier. Can be a string, number, or null.
-   * Responses must have the same ID as the request they relate to.
-   * Notifications (requests without an expected response) should omit the ID or use null.
-   */
+  /** Request identifier. */
   id?: number | string | null;
 }
 
-/**
- * Base interface for all JSON-RPC messages (Requests and Responses).
- */
+/** Base interface for all JSON-RPC messages. */
 export interface JSONRPCMessage extends JSONRPCMessageIdentifier {
-  /**
-   * Specifies the JSON-RPC version. Must be "2.0".
-   * @default "2.0"
-   * @const "2.0"
-   */
+  /** Must be "2.0". */
   jsonrpc?: "2.0";
 }
 
-/**
- * Represents a JSON-RPC request object base structure.
- * Specific request types should extend this.
- */
+/** Represents a JSON-RPC request object base structure. */
 export interface JSONRPCRequest extends JSONRPCMessage {
-  /**
-   * The name of the method to be invoked.
-   */
   method: string;
-
-  /**
-   * Parameters for the method. Can be a structured object, an array, or null/omitted.
-   * Specific request interfaces will define the exact type.
-   * @default null
-   */
-  params?: unknown; // Base type; specific requests will override
+  params?: unknown; // Specific requests will override
 }
 
-/**
- * Represents a JSON-RPC error object.
- */
+/** Represents a JSON-RPC error object. */
 export interface JSONRPCError<Data = unknown | null, Code = number> {
-  /**
-   * A number indicating the error type that occurred.
-   */
   code: Code;
-
-  /**
-   * A string providing a short description of the error.
-   */
   message: string;
-
-  /**
-   * Optional additional data about the error.
-   * @default null
-   */
   data?: Data;
 }
 
-/**
- * Represents a JSON-RPC response object.
- */
+/** Represents a JSON-RPC response object. */
 export interface JSONRPCResponse<R = unknown | null, E = unknown | null>
   extends JSONRPCMessage {
-  /**
-   * The result of the method invocation. Required on success.
-   * Should be null or omitted if an error occurred.
-   * @default null
-   */
   result?: R;
-
-  /**
-   * An error object if an error occurred during the request. Required on failure.
-   * Should be null or omitted if the request was successful.
-   * @default null
-   */
   error?: JSONRPCError<E> | null;
 }
 
-// === Core A2A Data Structures
+// === Core A2A Data Structures ===
 
-/**
- * Represents the state of a task within the A2A protocol.
- * @description An enumeration.
- */
+/** Represents the state of a task. */
 export type TaskState =
   | "submitted"
   | "working"
@@ -98,217 +44,73 @@ export type TaskState =
   | "failed"
   | "unknown";
 
-/**
- * Defines the authentication schemes and credentials for an agent.
- */
+/** Defines the authentication schemes and credentials for an agent. */
 export interface AgentAuthentication {
-  /**
-   * List of supported authentication schemes.
-   */
   schemes: string[];
-
-  /**
-   * Credentials for authentication. Can be a string (e.g., token) or null if not required initially.
-   * @default null
-   */
   credentials?: string | null;
 }
 
-/**
- * Describes the capabilities of an agent.
- */
+/** Describes the capabilities of an agent. */
 export interface AgentCapabilities {
-  /**
-   * Indicates if the agent supports streaming responses.
-   * @default false
-   */
+  /** Supports streaming responses (tasks/sendSubscribe, knowledge/subscribe). Defaults to false. */
   streaming?: boolean;
-
-  /**
-   * Indicates if the agent supports push notification mechanisms.
-   * @default false
-   */
+  /** Supports server-sent push notifications for task updates. Defaults to false. */
   pushNotifications?: boolean;
-
-  /**
-   * Indicates if the agent supports providing state transition history.
-   * @default false
-   */
+  /** Tracks and provides task state transition history. Defaults to false. */
   stateTransitionHistory?: boolean;
+  /** Supports knowledge graph methods (knowledge/*). Defaults to false. */
+  knowledgeGraph?: boolean;
+  /** List of query languages supported for KG interactions (e.g., 'graphql'). Defaults to []. */
+  knowledgeGraphQueryLanguages?: ("graphql" | "sparql")[]; // Added sparql as potential future option
 }
 
-/**
- * Represents the provider or organization behind an agent.
- */
+/** Represents the provider or organization behind an agent. */
 export interface AgentProvider {
-  /**
-   * The name of the organization providing the agent.
-   */
   organization: string;
-
-  /**
-   * URL associated with the agent provider.
-   * @default null
-   */
   url?: string | null;
 }
 
-/**
- * Defines a specific skill or capability offered by an agent.
- */
+/** Defines a specific skill or capability offered by an agent. */
 export interface AgentSkill {
-  /**
-   * Unique identifier for the skill.
-   */
   id: string;
-
-  /**
-   * Human-readable name of the skill.
-   */
   name: string;
-
-  /**
-   * Optional description of the skill.
-   * @default null
-   */
   description?: string | null;
-
-  /**
-   * Optional list of tags associated with the skill for categorization.
-   * @default null
-   */
   tags?: string[] | null;
-
-  /**
-   * Optional list of example inputs or use cases for the skill.
-   * @default null
-   */
   examples?: string[] | null;
-
-  /**
-   * Optional list of input modes supported by this skill, overriding agent defaults.
-   * @default null
-   */
   inputModes?: string[] | null;
-
-  /**
-   * Optional list of output modes supported by this skill, overriding agent defaults.
-   * @default null
-   */
   outputModes?: string[] | null;
 }
 
-/**
- * Represents the metadata card for an agent, describing its properties and capabilities.
- */
+/** Represents the metadata card for an agent. */
 export interface AgentCard {
-  /**
-   * The name of the agent.
-   */
   name: string;
-
-  /**
-   * An optional description of the agent.
-   * @default null
-   */
   description?: string | null;
-
-  /**
-   * The base URL endpoint for interacting with the agent.
-   */
   url: string;
-
-  /**
-   * Information about the provider of the agent.
-   * @default null
-   */
   provider?: AgentProvider | null;
-
-  /**
-   * The version identifier for the agent or its API.
-   */
   version: string;
-
-  /**
-   * An optional URL pointing to the agent's documentation.
-   * @default null
-   */
   documentationUrl?: string | null;
-
-  /**
-   * The capabilities supported by the agent.
-   */
   capabilities: AgentCapabilities;
-
-  /**
-   * Authentication details required to interact with the agent.
-   * @default null
-   */
   authentication?: AgentAuthentication | null;
-
-  /**
-   * Default input modes supported by the agent (e.g., 'text', 'file', 'json').
-   * @default ["text"]
-   */
   defaultInputModes?: string[];
-
-  /**
-   * Default output modes supported by the agent (e.g., 'text', 'file', 'json').
-   * @default ["text"]
-   */
   defaultOutputModes?: string[];
-
-  /**
-   * List of specific skills offered by the agent.
-   */
   skills: AgentSkill[];
 }
 
-export interface FileContentBase {
-  /**
-   * Optional name of the file.
-   * @default null
-   */
+/** Base for FileContent, DO NOT USE DIRECTLY. */
+interface FileContentBase {
   name?: string | null;
-
-  /**
-   * Optional MIME type of the file content.
-   * @default null
-   */
   mimeType?: string | null;
-
-  /**
-   * File content encoded as a Base64 string. Use this OR `uri`.
-   */
-  bytes?: string | null;
-
-  /**
-   * URI pointing to the file content. Use this OR `bytes`.
-   */
-  uri?: string | null;
+  bytes?: string | null; // Base64 encoded
+  uri?: string | null; // URI format
 }
-
-export type FileContentBytes = FileContentBase & {
-  /* File content encoded as a Base64 string. Use this OR `uri`. */
-  bytes: string;
-  uri?: never;
-};
-
-export type FileContentUri = FileContentBase & {
-  /** URI pointing to the file content. */
-  uri: string;
-  bytes?: never;
-};
-
-/**
- * Represents the content of a file, either as base64 encoded bytes or a URI.
- * @description Ensures that either 'bytes' or 'uri' is provided, but not both. (Note: This constraint is informational in TypeScript types).
- */
+/** File content represented by inline Base64 bytes. */
+export type FileContentBytes = FileContentBase & { bytes: string; uri?: never };
+/** File content represented by a URI. */
+export type FileContentUri = FileContentBase & { uri: string; bytes?: never };
+/** Represents file content via bytes OR uri. */
 export type FileContent = FileContentBytes | FileContentUri;
 
-/**
- * Represents a part of a message containing text content.
- */
+/** Represents a part of a message containing text content. */
 export interface TextPart {
   type: "text";
 
@@ -316,16 +118,10 @@ export interface TextPart {
    * The text content.
    */
   text: string;
-
-  /**
-   * Optional metadata associated with this text part.
-   */
   metadata?: Record<string, unknown> | null;
 }
 
-/**
- * Represents a part of a message containing file content.
- */
+/** Represents a part of a message containing file content. */
 export interface FilePart {
   /**
    * Type identifier for this part.
@@ -336,16 +132,10 @@ export interface FilePart {
    * The file content, provided either inline or via URI.
    */
   file: FileContent;
-
-  /**
-   * Optional metadata associated with this file part.
-   */
   metadata?: Record<string, unknown> | null;
 }
 
-/**
- * Represents a part of a message containing structured data (JSON).
- */
+/** Represents a part of a message containing structured data (JSON). */
 export interface DataPart {
   /**
    * Type identifier for this part.
@@ -356,246 +146,373 @@ export interface DataPart {
    * The structured data content as a JSON object.
    */
   data: Record<string, unknown>;
-
-  /**
-   * Optional metadata associated with this data part.
-   */
   metadata?: Record<string, unknown> | null;
 }
 
-/**
- * Represents a single part of a multi-part message. Can be text, file, or data.
- */
+/** Union type for different message parts. */
 export type Part = TextPart | FilePart | DataPart;
 
-/**
- * Represents an artifact generated or used by a task, potentially composed of multiple parts.
- */
+/** Represents an artifact generated or used by a task. */
 export interface Artifact {
-  /**
-   * Optional name for the artifact.
-   * @default null
-   */
   name?: string | null;
-
-  /**
-   * Optional description of the artifact.
-   * @default null
-   */
   description?: string | null;
-
-  /**
-   * The constituent parts of the artifact.
-   */
   parts: Part[];
-
-  /**
-   * Optional index for ordering artifacts, especially relevant in streaming or updates.
-   * @default 0
-   */
-  index?: number;
-
-  /**
-   * Optional flag indicating if this artifact content should append to previous content (for streaming).
-   * @default null
-   */
+  index?: number; // Default 0
   append?: boolean | null;
-
-  /**
-   * Optional metadata associated with the artifact.
-   * @default null
-   */
-  metadata?: Record<string, unknown> | null;
-
-  /**
-   * Optional flag indicating if this is the last chunk of data for this artifact (for streaming).
-   * @default null
-   */
   lastChunk?: boolean | null;
+  metadata?: Record<string, unknown> | null;
 }
 
-/**
- * Represents a message exchanged between a user and an agent.
- */
+/** Represents a message exchanged between a user and an agent. */
 export interface Message {
-  /**
-   * The role of the sender (user or agent).
-   */
   role: "user" | "agent";
-
-  /**
-   * The content of the message, composed of one or more parts.
-   */
   parts: Part[];
-
-  /**
-   * Optional metadata associated with the message.
-   * @default null
-   */
   metadata?: Record<string, unknown> | null;
 }
 
-/**
- * Represents the status of a task at a specific point in time.
- */
+/** Represents the status of a task at a specific point in time. */
 export interface TaskStatus {
-  /**
-   * The current state of the task.
-   */
   state: TaskState;
-
-  /**
-   * An optional message associated with the current status (e.g., progress update, final response).
-   * @default null
-   */
   message?: Message | null;
-
-  /**
-   * The timestamp when this status was recorded (ISO 8601 format).
-   * @format date-time
-   */
-  timestamp?: string;
+  /** ISO 8601 format timestamp. */
+  timestamp: string; // Note: Server generates this, client provides Date
 }
 
-/**
- * Represents a task being processed by an agent.
- */
+/** Represents a task being processed by an agent. */
 export interface Task {
-  /**
-   * Unique identifier for the task.
-   */
   id: string;
-
-  /**
-   * Optional identifier for the session this task belongs to.
-   * @default null
-   */
   sessionId?: string | null;
-
-  /**
-   * The current status of the task.
-   */
   status: TaskStatus;
-
-  /**
-   * Optional list of artifacts associated with the task (e.g., outputs, intermediate files).
-   * @default null
-   */
   artifacts?: Artifact[] | null;
-
-  /**
-   * Optional metadata associated with the task.
-   * @default null
-   */
+  /** Sequence of messages exchanged. May be truncated by server. */
+  history?: Message[] | null;
   metadata?: Record<string, unknown> | null;
 }
 
-/**
- * Represents the history of messages exchanged within a task's session.
- */
-export interface TaskHistory {
-  /**
-   * List of messages in chronological order.
-   * @default []
-   */
-  messageHistory?: Message[];
-}
+// === Streaming Event Types ===
 
-/**
- * Represents a status update event for a task, typically used in streaming scenarios.
- */
+/** Represents a status update event for a task (streaming). */
 export interface TaskStatusUpdateEvent {
-  /**
-   * The ID of the task being updated.
-   */
-  id: string;
-
-  /**
-   * The new status of the task.
-   */
+  id: string; // Task ID
   status: TaskStatus;
-
-  /**
-   * Flag indicating if this is the final update for the task.
-   * @default false
-   */
-  final?: boolean;
-
-  /**
-   * Optional metadata associated with this update event.
-   * @default null
-   */
+  /** Indicates if this is the terminal status update. */
+  final?: boolean; // Default false
   metadata?: Record<string, unknown> | null;
 }
 
-/**
- * Represents an artifact update event for a task, typically used in streaming scenarios.
- */
+/** Represents an artifact update event for a task (streaming). */
 export interface TaskArtifactUpdateEvent {
-  /**
-   * The ID of the task being updated.
-   */
-  id: string;
-
-  /**
-   * The new or updated artifact for the task.
-   */
+  id: string; // Task ID
   artifact: Artifact;
-
-  /**
-   * Flag indicating if this is the final update for the task.
-   * @default false
-   */
-  final?: boolean;
-
-  /**
-   * Optional metadata associated with this update event.
-   * @default null
-   */
+  // Note: 'final' removed as it's less common for artifacts and wasn't in python test fix
   metadata?: Record<string, unknown> | null;
 }
 
-// Alias for backward compatibility
-export type TaskUpdateEvent = TaskStatusUpdateEvent;
+// === Authentication and Configuration ===
 
-// === Error Types (Standard and A2A)
+/** Extended AuthenticationInfo allowing extra properties. */
+export interface AuthenticationInfo extends AgentAuthentication {
+  [key: string]: any; // Allow additional properties
+}
 
-/** Error code for JSON Parse Error (-32700). Invalid JSON was received by the server. */
+/** Configuration for push notifications. */
+export interface PushNotificationConfig {
+  /** URL endpoint for receiving notifications. */
+  url: string; // format: uri
+  /** Optional opaque token for simple authorization. */
+  token?: string;
+  authentication?: AuthenticationInfo | null;
+}
+
+// === Parameter Types for Requests ===
+
+/** Parameters identifying a task. */
+export interface TaskIdParams {
+  id: string;
+  metadata?: Record<string, unknown> | null;
+}
+
+/** Parameters for querying task details. */
+export interface TaskQueryParams extends TaskIdParams {
+  /** Max history length in response (null/0 omits). */
+  historyLength?: number | null; // >= 0
+}
+
+/** Parameters for sending/initiating a task. */
+export interface TaskSendParams {
+  id: string;
+  /** Defaults to a new UUID if omitted by client. */
+  sessionId?: string;
+  message: Message;
+  /** MIME types the client accepts. */
+  acceptedOutputModes?: string[] | null;
+  pushNotification?: PushNotificationConfig | null;
+  /** Max history length in response (null/0 omits). */
+  historyLength?: number | null; // >= 0
+  metadata?: Record<string, unknown> | null;
+}
+
+/** Parameters for setting push notification config. */
+export interface TaskPushNotificationConfig {
+  id: string;
+  pushNotificationConfig: PushNotificationConfig;
+}
+
+// === Knowledge Graph Types ===
+
+/** Represents the subject of a Knowledge Graph statement. */
+export interface KGSubject {
+  /** URI or unique identifier for the subject. */
+  id: string;
+  /** Optional URI representing the type of the subject. */
+  type?: string | null; // format: uri
+}
+
+/** Represents the predicate (relationship) of a Knowledge Graph statement. */
+export interface KGPredicate {
+  /** URI representing the type of the predicate/relationship. */
+  id: string; // format: uri
+}
+
+/** Base for KGObject. Do not use directly. */
+interface KGObjectBase {
+  /** URI or unique identifier if the object is a resource/node. */
+  id?: string | null; // format: uri
+  /** The literal value if the object is an attribute. */
+  value?: string | number | boolean | null;
+  /** Optional URI for object type or literal datatype. */
+  type?: string | null; // format: uri
+}
+/** KG Object representing a resource/node. */
+export type KGObjectResource = KGObjectBase & { id: string; value?: never };
+/** KG Object representing a literal value. */
+export type KGObjectLiteral = KGObjectBase & { value: string | number | boolean; id?: never };
+/** Represents the object of a KG statement (resource or literal). */
+export type KGObject = KGObjectResource | KGObjectLiteral;
+
+/** Represents a single Knowledge Graph statement (triple). */
+export interface KGStatement {
+  subject: KGSubject;
+  predicate: KGPredicate;
+  object: KGObject;
+  /** Optional named graph URI this statement belongs to. */
+  graph?: string | null; // format: uri
+  /** Optional certainty score (0.0 to 1.0). */
+  certainty?: number | null; // Range [0.0, 1.0]
+  /** Optional metadata about the source or origin (e.g., source agent ID, timestamp). */
+  provenance?: Record<string, unknown> | null;
+}
+
+/** Defines the type of operation in a knowledge graph patch. */
+export enum PatchOperationType {
+  ADD = "add",
+  REMOVE = "remove",
+  REPLACE = "replace",
+}
+
+/** Represents a single proposed change (add, remove, replace) to a knowledge graph. */
+export interface KnowledgeGraphPatch {
+  op: PatchOperationType;
+  statement: KGStatement;
+}
+
+/** Parameters for the knowledge/query method. */
+export interface KnowledgeQueryParams {
+  /** The query string (e.g., GraphQL query). */
+  query: string;
+  /** Specifies the language of the query. */
+  queryLanguage: "graphql"; // Currently only supporting graphql
+  /** Optional dictionary of variables for the query. */
+  variables?: Record<string, unknown> | null;
+  /** Optional ID linking this query to a specific task. */
+  taskId?: string | null;
+  /** Optional ID linking this query to a specific session. */
+  sessionId?: string | null;
+  /** Optional minimum certainty score for results. */
+  requiredCertainty?: number | null; // Range [0.0, 1.0]
+  /** Optional maximum age (in seconds) for the data considered. */
+  maxAgeSeconds?: number | null; // >= 0
+  /** Optional metadata (e.g., auth tokens, alignment context). */
+  metadata?: Record<string, unknown> | null;
+}
+
+/** Parameters for the knowledge/update method. */
+export interface KnowledgeUpdateParams {
+  /** A list of patch operations to apply. */
+  mutations: KnowledgeGraphPatch[];
+  /** Optional ID linking this update to a specific task. */
+  taskId?: string | null;
+  /** Optional ID linking this update to a specific session. */
+  sessionId?: string | null;
+  /** Optional identifier of the agent proposing the update. */
+  sourceAgentId?: string | null;
+  /** Optional textual justification for the proposed update. */
+  justification?: string | null;
+  /** Optional metadata (e.g., auth tokens, alignment context). */
+  metadata?: Record<string, unknown> | null;
+}
+
+/** Parameters for the knowledge/subscribe method. */
+export interface KnowledgeSubscribeParams {
+  /** The query string for the subscription (e.g., GraphQL subscription). */
+  subscriptionQuery: string;
+  /** Specifies the language of the subscription query. */
+  queryLanguage: "graphql"; // Currently only supporting graphql
+  /** Optional dictionary of variables for the subscription query. */
+  variables?: Record<string, unknown> | null;
+  /** Optional ID linking this subscription to a specific task. */
+  taskId?: string | null;
+  /** Optional ID linking this subscription to a specific session. */
+  sessionId?: string | null;
+  /** Optional metadata (e.g., auth tokens, alignment context). */
+  metadata?: Record<string, unknown> | null;
+}
+
+// === A2A Request Interfaces ===
+
+export interface SendTaskRequest extends JSONRPCRequest {
+  method: "tasks/send";
+  params: TaskSendParams;
+}
+export interface GetTaskRequest extends JSONRPCRequest {
+  method: "tasks/get";
+  params: TaskQueryParams;
+}
+export interface CancelTaskRequest extends JSONRPCRequest {
+  method: "tasks/cancel";
+  params: TaskIdParams;
+}
+export interface SetTaskPushNotificationRequest extends JSONRPCRequest {
+  method: "tasks/pushNotification/set";
+  params: TaskPushNotificationConfig;
+}
+export interface GetTaskPushNotificationRequest extends JSONRPCRequest {
+  method: "tasks/pushNotification/get";
+  params: TaskIdParams;
+}
+export interface TaskResubscriptionRequest extends JSONRPCRequest {
+  method: "tasks/resubscribe";
+  params: TaskQueryParams; // Using QueryParams allows specifying history length on resubscribe
+}
+export interface SendTaskStreamingRequest extends JSONRPCRequest {
+  method: "tasks/sendSubscribe";
+  params: TaskSendParams;
+}
+export interface KnowledgeQueryRequest extends JSONRPCRequest {
+  method: "knowledge/query";
+  params: KnowledgeQueryParams;
+}
+export interface KnowledgeUpdateRequest extends JSONRPCRequest {
+  method: "knowledge/update";
+  params: KnowledgeUpdateParams;
+}
+export interface KnowledgeSubscribeRequest extends JSONRPCRequest {
+  method: "knowledge/subscribe";
+  params: KnowledgeSubscribeParams;
+}
+
+// === A2A Response Interfaces ===
+
+export type SendTaskResponse = JSONRPCResponse<Task | null, A2AError>;
+export type GetTaskResponse = JSONRPCResponse<Task | null, A2AError>;
+export type CancelTaskResponse = JSONRPCResponse<Task | null, A2AError>;
+export type SetTaskPushNotificationResponse = JSONRPCResponse<
+  TaskPushNotificationConfig | null,
+  A2AError
+>;
+export type GetTaskPushNotificationResponse = JSONRPCResponse<
+  TaskPushNotificationConfig | null,
+  A2AError
+>;
+export type SendTaskStreamingResponse = JSONRPCResponse<
+  TaskStatusUpdateEvent | TaskArtifactUpdateEvent | null,
+  A2AError
+>;
+
+// === Knowledge Response Interfaces ===
+
+/** Result structure for a knowledge query. */
+export interface KnowledgeQueryResponseResult {
+  /** The query result data (GraphQL structure). */
+  data?: Record<string, unknown> | unknown[] | null;
+  /** Optional metadata about the query execution. */
+  queryMetadata?: Record<string, unknown> | null;
+}
+export type KnowledgeQueryResponse = JSONRPCResponse<
+  KnowledgeQueryResponseResult | null,
+  A2AError
+>;
+
+/** Result structure for a knowledge update operation. */
+export interface KnowledgeUpdateResponseResult {
+  /** Indicates if the update was accepted/applied. */
+  success: boolean;
+  /** Optional count of statements affected. */
+  statementsAffected?: number | null; // >= 0
+  /** Optional list of URIs/IDs of created/modified entities. */
+  affectedIds?: string[] | null;
+  /** Optional verification status (e.g., "Verified", "Rejected"). */
+  verificationStatus?: string | null;
+  /** Optional details explaining verification status. */
+  verificationDetails?: string | null;
+}
+export type KnowledgeUpdateResponse = JSONRPCResponse<
+  KnowledgeUpdateResponseResult | null,
+  A2AError
+>;
+
+// === Knowledge Streaming Event Interfaces ===
+
+/** Represents a confirmed change event in the KG (for subscriptions). */
+export interface KnowledgeGraphChangeEvent {
+  op: PatchOperationType;
+  statement: KGStatement;
+  /** Unique identifier for this specific change event. */
+  changeId: string; // format: uuid recommended
+  /** Timestamp when the change was confirmed (ISO 8601 format). */
+  timestamp: string; // format: date-time
+  /** Optional metadata about the confirmed change. */
+  changeMetadata?: Record<string, unknown> | null;
+}
+
+/** A single event message streamed for knowledge/subscribe. */
+export type KnowledgeSubscriptionEvent = JSONRPCResponse<
+  KnowledgeGraphChangeEvent | null,
+  A2AError
+>;
+
+// === Error Codes and Union Type ===
+
+/** Error code for JSON Parse Error (-32700). */
 export const ErrorCodeParseError = -32700;
-export type ErrorCodeParseError = typeof ErrorCodeParseError;
-/** Error code for Invalid Request (-32600). The JSON sent is not a valid Request object. */
+/** Error code for Invalid Request (-32600). */
 export const ErrorCodeInvalidRequest = -32600;
-export type ErrorCodeInvalidRequest = typeof ErrorCodeInvalidRequest;
-/** Error code for Method Not Found (-32601). The method does not exist / is not available. */
+/** Error code for Method Not Found (-32601). */
 export const ErrorCodeMethodNotFound = -32601;
-export type ErrorCodeMethodNotFound = typeof ErrorCodeMethodNotFound;
-/** Error code for Invalid Params (-32602). Invalid method parameter(s). */
+/** Error code for Invalid Params (-32602). */
 export const ErrorCodeInvalidParams = -32602;
-export type ErrorCodeInvalidParams = typeof ErrorCodeInvalidParams;
-/** Error code for Internal Error (-32603). Internal JSON-RPC error. */
+/** Error code for Internal Error (-32603). */
 export const ErrorCodeInternalError = -32603;
-export type ErrorCodeInternalError = typeof ErrorCodeInternalError;
-
-/** Error code for Task Not Found (-32001). The specified task was not found. */
+/** Error code for Task Not Found (-32001). */
 export const ErrorCodeTaskNotFound = -32001;
-export type ErrorCodeTaskNotFound = typeof ErrorCodeTaskNotFound;
-/** Error code for Task Not Cancelable (-32002). The specified task cannot be canceled. */
+/** Error code for Task Not Cancelable (-32002). */
 export const ErrorCodeTaskNotCancelable = -32002;
-export type ErrorCodeTaskNotCancelable = typeof ErrorCodeTaskNotCancelable;
-/** Error code for Push Notification Not Supported (-32003). Push Notifications are not supported for this operation or agent. */
+/** Error code for Push Notification Not Supported (-32003). */
 export const ErrorCodePushNotificationNotSupported = -32003;
-export type ErrorCodePushNotificationNotSupported =
-  typeof ErrorCodePushNotificationNotSupported;
-/** Error code for Unsupported Operation (-32004). The requested operation is not supported by the agent. */
+/** Error code for Unsupported Operation (-32004). */
 export const ErrorCodeUnsupportedOperation = -32004;
-export type ErrorCodeUnsupportedOperation =
-  typeof ErrorCodeUnsupportedOperation;
+/** Error code for Incompatible Content Types (-32005). */
+export const ErrorCodeContentTypeNotSupported = -32005;
+/** Error code for Knowledge Query Error (-32010). */
+export const ErrorCodeKnowledgeQueryError = -32010;
+/** Error code for Knowledge Update Error (-32011). */
+export const ErrorCodeKnowledgeUpdateError = -32011;
+/** Error code for Knowledge Subscription Error (-32012). */
+export const ErrorCodeKnowledgeSubscriptionError = -32012;
+/** Error code for Alignment Violation Error (-32013). */
+export const ErrorCodeAlignmentViolationError = -32013;
 
-/**
- * Union of all well-known A2A and standard JSON-RPC error codes defined in this schema.
- * Use this type for checking against specific error codes. A server might theoretically
- * use other codes within the valid JSON-RPC ranges.
- */
+/** Union of all well-known A2A error codes defined in this schema. */
 export type KnownErrorCode =
   | typeof ErrorCodeParseError
   | typeof ErrorCodeInvalidRequest
@@ -605,308 +522,38 @@ export type KnownErrorCode =
   | typeof ErrorCodeTaskNotFound
   | typeof ErrorCodeTaskNotCancelable
   | typeof ErrorCodePushNotificationNotSupported
-  | typeof ErrorCodeUnsupportedOperation;
+  | typeof ErrorCodeUnsupportedOperation
+  | typeof ErrorCodeContentTypeNotSupported
+  | typeof ErrorCodeKnowledgeQueryError
+  | typeof ErrorCodeKnowledgeUpdateError
+  | typeof ErrorCodeKnowledgeSubscriptionError
+  | typeof ErrorCodeAlignmentViolationError;
 
+/** Generic A2A Error type using known codes or number. */
 export type A2AError = JSONRPCError<unknown | null, KnownErrorCode | number>;
 
-// === Push Notifications and Authentication Info
+// === Union Types for A2A Requests/Responses ===
 
-/**
- * Authentication information, potentially including additional properties beyond the standard ones.
- * (Note: Schema allows additional properties).
- */
-export interface AuthenticationInfo extends AgentAuthentication {
-  /** Allow any other properties */
-  [key: string]: any;
-}
-
-/**
- * Information required for setting up push notifications.
- */
-export interface PushNotificationConfig {
-  /**
-   * The URL endpoint where the agent should send notifications.
-   */
-  url: string;
-
-  /**
-   * A token to be included in push notification requests for verification/authentication.
-   */
-  token?: string;
-
-  /**
-   * Optional authentication details needed by the agent to call the notification URL.
-   * @default null
-   */
-  authentication?: AuthenticationInfo | null;
-}
-
-/**
- * Represents the push notification information associated with a specific task ID.
- * Used as parameters for `tasks/pushNotification/set` and as a result type.
- */
-export interface TaskPushNotificationConfig {
-  /**
-   * The ID of the task the notification config is associated with.
-   */
-  id: string;
-  /**
-   * The push notification configuration details.
-   */
-  pushNotificationConfig: PushNotificationConfig;
-}
-
-// ================================================================= A2A Request Parameter Types
-// =================================================================
-
-/**
- * Parameters for the `tasks/send` method.
- */
-export interface TaskSendParams {
-  /**
-   * Unique identifier for the task being initiated or continued.
-   */
-  id: string;
-
-  /**
-   * Optional identifier for the session this task belongs to. If not provided, a new session might be implicitly created depending on the agent.
-   */
-  sessionId?: string;
-
-  /**
-   * The message content to send to the agent for processing.
-   */
-  message: Message;
-
-  /**
-   * Optional pushNotification information for receiving notifications about this task. Requires agent capability.
-   * @default null
-   */
-  pushNotification?: PushNotificationConfig | null;
-
-  /**
-   * Optional parameter to specify how much message history to include in the response.
-   * @default null
-   */
-  historyLength?: number | null;
-
-  /**
-   * Optional metadata associated with sending this message.
-   * @default null
-   */
-  metadata?: Record<string, unknown> | null;
-}
-
-/**
- * Basic parameters used for task ID operations.
- * Used by: `tasks/cancel`, `tasks/pushNotification/get`.
- */
-export interface TaskIdParams {
-  /**
-   * The unique identifier of the task.
-   */
-  id: string;
-
-  /**
-   * Optional metadata to include with the operation.
-   * @default null
-   */
-  metadata?: Record<string, unknown> | null;
-}
-
-/**
- * Parameters used for querying task-related information by ID.
- * Used by: `tasks/get`, `tasks/getHistory`, `tasks/subscribe`, `tasks/resubscribe`.
- */
-export interface TaskQueryParams extends TaskIdParams {
-  /**
-   * Optional history length to retrieve for the task.
-   * @default null
-   */
-  historyLength?: number | null;
-}
-
-// === A2A Request Interfaces
-
-/**
- * Request to send a message/initiate a task.
- */
-export interface SendTaskRequest extends JSONRPCRequest {
-  /**
-   * Method name for sending a task message.
-   */
-  method: "tasks/send";
-  /**
-   * Parameters for the send task method.
-   */
-  params: TaskSendParams;
-}
-
-/**
- * Request to retrieve the current state of a task.
- */
-export interface GetTaskRequest extends JSONRPCRequest {
-  /**
-   * Method name for getting task status.
-   */
-  method: "tasks/get";
-  /**
-   * Parameters for the get task method.
-   */
-  params: TaskQueryParams;
-}
-
-/**
- * Request to cancel a currently running task.
- */
-export interface CancelTaskRequest extends JSONRPCRequest {
-  /**
-   * Method name for canceling a task.
-   */
-  method: "tasks/cancel";
-  /**
-   * Parameters for the cancel task method.
-   */
-  params: TaskIdParams;
-}
-
-/**
- * Request to set or update the push notification config for a task.
- */
-export interface SetTaskPushNotificationRequest extends JSONRPCRequest {
-  /**
-   * Method name for setting a task notifications.
-   */
-  method: "tasks/pushNotification/set";
-  /**
-   * Parameters for the set task push notification method.
-   */
-  params: TaskPushNotificationConfig; // Uses TaskPushNotificationConfig directly as params
-}
-
-/**
- * Request to retrieve the currently configured push notification configuration for a task.
- */
-export interface GetTaskPushNotificationRequest extends JSONRPCRequest {
-  /**
-   * Method name for getting task notification configuration.
-   */
-  method: "tasks/pushNotification/get";
-  /**
-   * Parameters for the get task push notification config method.
-   */
-  params: TaskIdParams;
-}
-
-/**
- * Request to resubscribe to updates for a task after a connection interruption.
- */
-export interface TaskResubscriptionRequest extends JSONRPCRequest {
-  /**
-   * Method name for resubscribing to task updates.
-   */
-  method: "tasks/resubscribe";
-  /**
-   * Parameters for the task resubscription method.
-   */
-  params: TaskQueryParams;
-}
-
-/**
- * Request to send a message/initiate a task and subscribe to streaming updates.
- */
-export interface SendTaskStreamingRequest extends JSONRPCRequest {
-  /**
-   * Method name for sending a task message and subscribing to updates.
-   */
-  method: "tasks/sendSubscribe";
-  /**
-   * Parameters for the streaming task send method.
-   */
-  params: TaskSendParams;
-}
-
-// === A2A Response Interfaces
-
-/**
- * Response to a `tasks/send` request.
- * Contains the Task object or an error.
- */
-export type SendTaskResponse = JSONRPCResponse<Task | null, A2AError>;
-
-/**
- * Response to a streaming task operation, either through `tasks/sendSubscribe` or a subscription.
- * Contains a TaskStatusUpdateEvent, TaskArtifactUpdateEvent, or an error.
- */
-export type SendTaskStreamingResponse = JSONRPCResponse<
-  TaskStatusUpdateEvent | TaskArtifactUpdateEvent | null,
-  A2AError
->;
-
-/**
- * Response to a `tasks/get` request. Contains the Task object or an error.
- */
-export type GetTaskResponse = JSONRPCResponse<Task | null, A2AError>;
-
-/**
- * Response to a `tasks/cancel` request. Contains the updated Task object (usually with 'canceled' state) or an error.
- */
-export type CancelTaskResponse = JSONRPCResponse<Task | null, A2AError>;
-
-/**
- * Response to a `tasks/getHistory` request. Contains the TaskHistory object or an error.
- */
-export type GetTaskHistoryResponse = JSONRPCResponse<
-  TaskHistory | null,
-  A2AError
->;
-
-/**
- * Response to a `tasks/pushNotification/set` request. Contains the confirmed TaskPushNotificationConfig or an error.
- */
-export type SetTaskPushNotificationResponse = JSONRPCResponse<
-  TaskPushNotificationConfig | null,
-  A2AError
->;
-
-/**
- * Response to a `tasks/pushNotification/get` request. Contains the TaskPushNotificationConfig or an error.
- */
-export type GetTaskPushNotificationResponse = JSONRPCResponse<
-  TaskPushNotificationConfig | null,
-  A2AError
->;
-
-// Note: The response to TaskSubscriptionRequest is typically handled by the underlying protocol
-// (like WebSocket messages containing TaskUpdateEvent) rather than a single JSON-RPC response object.
-// The schema doesn't define a specific JSON-RPC response type for `tasks/subscribe`.
-
-// === Union Types for A2A Requests/Responses
-
-/**
- * Represents any valid request defined in the A2A protocol.
- */
+/** Represents any valid request defined in the A2A protocol. */
 export type A2ARequest =
   | SendTaskRequest
   | GetTaskRequest
   | CancelTaskRequest
-  // | GetTaskHistoryRequest // Removed as it's not in the latest spec
   | SetTaskPushNotificationRequest
   | GetTaskPushNotificationRequest
-  // | TaskSubscriptionRequest // Removed as it's replaced by sendSubscribe or resubscribe
   | TaskResubscriptionRequest
-  | SendTaskStreamingRequest;
+  | SendTaskStreamingRequest
+  | KnowledgeQueryRequest
+  | KnowledgeUpdateRequest
+  | KnowledgeSubscribeRequest;
 
-/**
- * Represents any valid JSON-RPC response defined in the A2A protocol.
- * (This is a helper type, not explicitly defined with `oneOf` in the schema like A2ARequest, but useful).
- */
+/** Represents any valid non-streaming JSON-RPC response defined in the A2A protocol. */
 export type A2AResponse =
   | SendTaskResponse
   | GetTaskResponse
   | CancelTaskResponse
-  | GetTaskHistoryResponse
   | SetTaskPushNotificationResponse
-  | GetTaskPushNotificationResponse;
-// Subscription responses are typically event streams (TaskUpdateEvent) sent over the transport,
-// not direct JSON-RPC responses to the subscribe request itself.
+  | GetTaskPushNotificationResponse
+  | KnowledgeQueryResponse
+  | KnowledgeUpdateResponse;
+// Streaming responses use SendTaskStreamingResponse or KnowledgeSubscriptionEvent formats over SSE.
