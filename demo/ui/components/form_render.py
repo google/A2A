@@ -69,7 +69,7 @@ def form_sent(message: StateMessage, app_state: AppState) -> bool:
   return message.message_id in app_state.form_responses
 
 def render_form(message: StateMessage, app_state: AppState):
-  """Renders the form or the data entered in an submitted form"""
+  """Renders the form or the data entered in a submitted form"""
   # Check if the form was completed, if so, render the content as a card
   if message.message_id in app_state.completed_forms:
     render_form_card(message, app_state.completed_forms[message.message_id])
@@ -102,7 +102,7 @@ def render_form_card(message: StateMessage, data: dict[str, Any] | None):
     style=me.Style(
       padding=me.Padding.all(BOX_PADDING),
       max_width="75vw",
-      background="whitesmoke",
+      background=me.theme_var("surface"),
       border_radius=15,
       margin=me.Margin(top=5, bottom=20, left=5, right=5),
       justify_content=(
@@ -172,7 +172,7 @@ def render_structure(id: str, elements: list[FormElement], instructions: str):
     style=me.Style(
       padding=me.Padding.all(BOX_PADDING),
       max_width="75vw",
-      background="whitesmoke",
+      background=me.theme_var("surface"),
       border_radius=15,
       margin=me.Margin(top=5, bottom=20, left=5, right=5),
       box_shadow=("0 1px 2px 0 rgba(60, 64, 67, 0.3), "
@@ -209,7 +209,7 @@ def input_field(
     me.input(
       key=f"{id}_{key}",
       label=element.label,
-      value=element.value,
+      value=value,
       appearance="outline",
       color="warn" if key in form.errors else "primary",
       style=me.Style(width=width),

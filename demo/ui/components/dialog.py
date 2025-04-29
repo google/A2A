@@ -24,7 +24,7 @@ def dialog(is_open: bool):
         ):
             with me.box(
                 style=me.Style(
-                    background="#fff",
+                    background=me.theme_var("background"),
                     border_radius=20,
                     box_sizing="content-box",
                     box_shadow=(

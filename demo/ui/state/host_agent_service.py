@@ -1,3 +1,4 @@
+import os
 import json
 import traceback
 import sys
@@ -137,6 +138,26 @@ async def UpdateAppState(state: AppState, conversation_id: str):
   except Exception as e:
     print("Failed to update state: ", e)
     traceback.print_exc(file=sys.stdout)
+    
+async def UpdateApiKey(api_key: str):
+    """Update the API key"""
+    import httpx
+    
+    try:
+        # Set the environment variable
+        os.environ["GOOGLE_API_KEY"] = api_key
+        
+        # Call the update API endpoint
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"{server_url}/api_key/update",
+                json={"api_key": api_key}
+            )
+            response.raise_for_status()
+        return True
+    except Exception as e:
+        print("Failed to update API key: ", e)
+        return False
 
 def convert_message_to_state(message: Message) -> StateMessage:
   if not message:
@@ -176,6 +197,7 @@ def convert_event_to_state(event: Event) -> StateEvent:
       conversation_id=extract_message_conversation(event.content),
       actor=event.actor,
       role=event.content.role,
+      id=event.id,
       content=extract_content(event.content.parts),
   )
 
@@ -232,4 +254,3 @@ def extract_conversation_id(task: Task) -> str:
     if a.metadata and 'conversation_id' in a.metadata:
       return a.metadata['conversation_id']
   return ""
-

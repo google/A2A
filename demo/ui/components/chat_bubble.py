@@ -67,7 +67,7 @@ def chat_box(
                         padding=me.Padding(top=1, left=15, right=15, bottom=1),
                         margin=me.Margin(top=5, left=0, right=0, bottom=5),
                         background=(
-                            "lightgreen" if role == "user" else "lightgrey"
+                            me.theme_var("primary-container") if role == "user" else me.theme_var("secondary-container")
                         ),
                         border_radius=15),
                 )
@@ -98,7 +98,7 @@ def chat_box(
                   padding=me.Padding(top=1, left=15, right=15, bottom=1),
                   margin=me.Margin(top=5, left=0, right=0, bottom=5),
                   background=(
-                      "lightgreen" if role == "agent" else "smokewhite"
+                      me.theme_var("primary-container") if role == "agent" else me.theme_var("secondary-container")
                   ),
                   border_radius=15),
           ):

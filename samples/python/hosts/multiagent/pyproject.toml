@@ -1,0 +1,21 @@
+[project]
+name = "a2a-sample-client-multiagent"
+version = "0.1.0"
+description = "Google ADK-based host agent that can communicate with other agents over the A2A protocol."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "a2a-samples",
+    "google-genai>=1.9.0",
+    "google-adk>=0.0.3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.uv.sources]
+a2a-samples = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

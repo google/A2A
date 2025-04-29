@@ -2,12 +2,16 @@ import {
   A2AServer,
   TaskContext,
   TaskYieldUpdate,
-  schema,
-  InMemoryTaskStore, // Assuming default store
+  schema
 } from "../../server/index.js";
 import { MessageData } from "genkit";
 import { ai } from "./genkit.js";
 import { searchMovies, searchPeople } from "./tools.js";
+
+if (!process.env.GEMINI_API_KEY || !process.env.TMDB_API_KEY) {  
+  console.error("GEMINI_API_KEY and TMDB_API_KEY environment variables are required")
+  process.exit(1);
+}
 
 // Load the prompt defined in movie_agent.prompt
 const movieAgentPrompt = ai.prompt("movie_agent");
@@ -27,7 +31,7 @@ async function* movieAgentHandler(
     state: "working",
     message: {
       role: "agent",
-      parts: [{ text: "Processing your question, hang tight!" }],
+      parts: [{ type:"text", text: "Processing your question, hang tight!" }],
     },
   };
 
@@ -54,7 +58,7 @@ async function* movieAgentHandler(
       state: "failed",
       message: {
         role: "agent",
-        parts: [{ text: "No message found to process." }],
+        parts: [{ type:"text", text: "No message found to process." }],
       },
     };
     return; // Stop processing

@@ -6,19 +6,19 @@ The client will use streaming if the server supports it.
 
 ## Prerequisites
 
-- Python 3.13 or higher
+- Python 3.12 or higher
 - UV
 - A running A2A server
 
 ## Running the CLI
 
-1. Navigate to the samples directory:
+1. Navigate to the CLI sample directory:
     ```bash
-    cd samples/python
+    cd samples/python/hosts/cli
     ```
 2. Run the example client
     ```
-    uv run hosts/cli --agent [url-of-your-a2a-server]
+    uv run . --agent [url-of-your-a2a-server]
     ```
 
    for example `--agent http://localhost:10000`. More command line options are documented in the source code. 

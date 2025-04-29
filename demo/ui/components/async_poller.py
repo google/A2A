@@ -17,7 +17,7 @@ def async_poller(
     action: AsyncAction | None = None,
     key: str | None = None,
 ):
-  """Creates an invisibe component that will delay state changes asynchronously.
+  """Creates an invisible component that will delay state changes asynchronously.
 
   Right now this implementation is limited since we basically just pass the key
   around. But ideally we also pass in some kind of value to update when the time

@@ -126,9 +126,9 @@ class ReimbursementAgent:
           state={},
           session_id=session_id,
       )
-    events = self._runner.run(
+    events = list(self._runner.run(
         user_id=self._user_id, session_id=session.id, new_message=content
-    )
+    ))
     if not events or not events[-1].content or not events[-1].content.parts:
       return ""
     return "\n".join([p.text for p in events[-1].content.parts if p.text])
@@ -183,7 +183,7 @@ class ReimbursementAgent:
             " given the amount and purpose of the reimbursement."
         ),
         instruction="""
-    You are an agent who handle the reimbursement process for employees.
+    You are an agent who handles the reimbursement process for employees.
 
     When you receive an reimbursement request, you should first create a new request form using create_request_form(). Only provide default values if they are provided by the user, otherwise use an empty string as the default value.
       1. 'Date': the date of the transaction.

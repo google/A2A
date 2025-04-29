@@ -23,7 +23,7 @@ class PushNotificationListener():
 
     def start(self):
         try:
-            # Need to start server is separate thread as current thread
+            # Need to start server in separate thread as current thread
             # will be blocked when it is waiting on user prompt.
             asyncio.run_coroutine_threadsafe(
                 self.start_server(),
