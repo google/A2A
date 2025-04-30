@@ -52,7 +52,7 @@ def main(host, port, ollama_host, ollama_model):
   # ...
   task_manager = MyAgentTaskManager(
     ollama_host=ollama_host,
-    ollama_model=ollama_mode,
+    ollama_model=ollama_model,
   )
   # ..
 ```
