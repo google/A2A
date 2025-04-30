@@ -1,0 +1,35 @@
+name: 🐞 Bug Report
+description: File a bug report
+title: "[Bug]: "
+assignees:
+  - andrewlarimer
+type: "Bug"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for stopping by to let us know something could be better!
+        Private Feedback? Please use this [Google form](https://goo.gle/a2a-feedback)
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Also tell us what you expected to happen and how to reproduce the issue.
+      placeholder: Tell us what you see!
+      value: "A bug happened!"
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      render: shell
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/google/A2A?tab=coc-ov-file#readme)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
