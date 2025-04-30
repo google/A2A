@@ -39,10 +39,6 @@ def main(host, port):
     outputModes=["text"],
   )
   logger.info(skill)
-
-if __name__ == "__main__":
-  main()
-
 ```
 
 Next we'll add our Agent Card
