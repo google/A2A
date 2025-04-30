@@ -5,9 +5,7 @@ from agent import MindsDBAgent
 import click
 import os
 import logging
-from dotenv import load_dotenv
 
-load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 @click.command()
 @click.option("--host", default="localhost")
-@click.option("--port", default=10002)
+@click.option("--port", default=10006)
 def main(host, port):
     try:
         
