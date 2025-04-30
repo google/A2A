@@ -38,7 +38,7 @@ def main(host, port):
     inputModes=["text"],
     outputModes=["text"],
   )
-  logging.info(skill)
+  logger.info(skill)
 
 if __name__ == "__main__":
   main()
