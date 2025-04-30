@@ -6,7 +6,7 @@ An agent skill is a set of capabilities the agent can perform. Here's an example
 {
   id: "my-project-echo-skill"
   name: "Echo Tool",
-  description: "Echos the input given",
+  description: "Echoes the input given",
   tags: ["echo", "repeater"],
   examples: ["I will see this echoed back to me"],
   inputModes: ["text"],
@@ -49,7 +49,7 @@ def main():
   skill = AgentSkill(
     id="my-project-echo-skill",
     name="Echo Tool",
-    description="Echos the input given",
+    description="Echoes the input given",
     tags=["echo", "repeater"],
     examples=["I will see this echoed back to me"],
     inputModes=["text"],
@@ -72,7 +72,7 @@ uv run my-project
 The output should look something like this.
 
 ```bash
-id='my-project-echo-skill' name='Echo Tool' description='Echos the input given' tags=['echo', 'repeater'] examples=['I will see this echoed back to me'] inputModes=['text'] outputModes=['text']
+id='my-project-echo-skill' name='Echo Tool' description='Echoes the input given' tags=['echo', 'repeater'] examples=['I will see this echoed back to me'] inputModes=['text'] outputModes=['text']
 ```
 
 <div class="bottom-buttons" style="flex flex-row">
