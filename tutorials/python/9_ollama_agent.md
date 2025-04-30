@@ -10,17 +10,22 @@ We'll be installing `ollama`, `langchain` as well as downloading an ollama model
 
 1. Download [ollama](https://ollama.com/download)
 2. Run an ollama server
+
 ```bash
 # Note: if ollama is already running, you may get an error such as
 # Error: listen tcp 127.0.0.1:11434: bind: address already in use
 # On linux you can run systemctl stop ollama to stop ollama
 ollama serve
 ```
+
 3. Download a model from [this list](https://ollama.com/search). We'll be using `qwq` as it supports `tools` (as shown by its tags) and runs on a 24GB graphics card
+
 ```bash
 ollama pull qwq
 ```
+
 4. Install `langchain`
+
 ```bash
 uv add langchain langchain-ollama langgraph
 ```
@@ -115,7 +120,6 @@ class MyAgentTaskManager(InMemoryTaskManager):
 
   # ...
 ```
-
 
 Lets test it out!
 

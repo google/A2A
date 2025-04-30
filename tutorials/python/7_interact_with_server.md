@@ -4,9 +4,8 @@ First we'll use Google-A2A's cli tool to send requests to our A2A server. After 
 
 ## Using Google-A2A's cli tool <!-- {docsify-ignore} -->
 
-
-
 With your A2A server already running from the previous run
+
 ```bash
 # This should already be running in your terminal
 $ uv run my-project
@@ -17,6 +16,7 @@ INFO:     Uvicorn running on http://localhost:10002 (Press CTRL+C to quit)
 ```
 
 Open up a new terminal in the same directory
+
 ```bash
 source .venv/bin/activate
 uv run google-a2a-cli --agent http://localhost:10002
@@ -41,7 +41,6 @@ If everything is working correctly you'll see this in the response
 ```
 
 To exit type `:q` and press Enter
-
 
 <div class="bottom-buttons" style="flex flex-row">
   <a href="#/tutorials/python/6_start_server.md" class="back-button">Back</a>

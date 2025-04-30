@@ -6,9 +6,9 @@ The **Agent2Agent (A2A) protocol** is generating significant buzz across the tec
 
 The launch of A2A has sparked lively discussions and positive reactions on various social platforms. Here's a glimpse of the excitement:
 
-- **Rapid Interest and Adoption:** The A2A [GitHub repository](https://github.com/google/a2a) has seen an **explosive surge in popularity**. This rapid interest underscores the industry's eagerness for a standardized agent communication protocol, with many companies collaborating and contributing.  
+- **Rapid Interest and Adoption:** The A2A [GitHub repository](https://github.com/google/a2a) has seen an **explosive surge in popularity**. This rapid interest underscores the industry's eagerness for a standardized agent communication protocol, with many companies collaborating and contributing.
 
-- **Microsoft's interest via Semantic Kernel:** [Asha Sharma](https://www.linkedin.com/in/aboutasha/), Head of AI Platform Product at Microsoft, [announced on LinkedIn](https://www.linkedin.com/posts/aboutasha_a2a-ugcPost-7318649411704602624-0C_8/?utm_source=share&utm_medium=member_ios&rcm=ACoAAAGHMHcBm1C7gO_0Wg3nDGTXcaFafUrkeNQ) that "**Semantic Kernel now speaks A2A: a lightweight JSON-RPC protocol that lets agents swap context, not code or credentials, over plain HTTP. Drop it into your Foundry stack for instant, secure, async interoperability with any A2A-compliant agent, regardless of modality**". The post received numerous positive reactions, including "**A2A support in Semantic Kernel is a key unlock — context-level interoperability without sharing code or creds is how agent ecosystems scale securely across clouds**".  
+- **Microsoft's interest via Semantic Kernel:** [Asha Sharma](https://www.linkedin.com/in/aboutasha/), Head of AI Platform Product at Microsoft, [announced on LinkedIn](https://www.linkedin.com/posts/aboutasha_a2a-ugcPost-7318649411704602624-0C_8/?utm_source=share&utm_medium=member_ios&rcm=ACoAAAGHMHcBm1C7gO_0Wg3nDGTXcaFafUrkeNQ) that "**Semantic Kernel now speaks A2A: a lightweight JSON-RPC protocol that lets agents swap context, not code or credentials, over plain HTTP. Drop it into your Foundry stack for instant, secure, async interoperability with any A2A-compliant agent, regardless of modality**". The post received numerous positive reactions, including "**A2A support in Semantic Kernel is a key unlock — context-level interoperability without sharing code or creds is how agent ecosystems scale securely across clouds**".
 
 - **Matt Pocock's Diagramming Intent:** [Matt Pocock](https://x.com/mattpocockuk), a well-known developer educator, [shared on X](https://x.com/mattpocockuk/status/1910002033018421400?s=46&t=3DRCyO429yQf3fsv6d5WVw), "**I've just been reading the Agent2Agent technical docs \- Google's new protocol for agent to agent communication. You know what that means. Let's diagram them:**". This tweet, liked and reposted hundreds of times, includes some great diagrams explaining the A2A protocol.
 
@@ -34,13 +34,13 @@ The launch of A2A has sparked lively discussions and positive reactions on vario
 
 The enthusiasm surrounding A2A stems from its potential to address key challenges in building sophisticated AI applications:
 
-- **Breaking Down Silos:** A2A aims to overcome the limitations of siloed AI systems by providing a **universal framework for agents built on different platforms to communicate and collaborate securely**.  
+- **Breaking Down Silos:** A2A aims to overcome the limitations of siloed AI systems by providing a **universal framework for agents built on different platforms to communicate and collaborate securely**.
 
-- **Enabling Complex Collaboration:** For tasks that require the expertise of multiple specialized agents, A2A provides a standardized way for them to **delegate tasks, exchange information, and coordinate actions**. This mirrors how human teams work together, distributing responsibilities for greater efficiency.  
+- **Enabling Complex Collaboration:** For tasks that require the expertise of multiple specialized agents, A2A provides a standardized way for them to **delegate tasks, exchange information, and coordinate actions**. This mirrors how human teams work together, distributing responsibilities for greater efficiency.
 
-- **Dynamic Agent Discovery:** A key feature of A2A is the ability for agents to **discover the capabilities of other agents** through standardized "**Agent Cards**". This dynamic discovery allows for more flexible and adaptable multi-agent systems.  
+- **Dynamic Agent Discovery:** A key feature of A2A is the ability for agents to **discover the capabilities of other agents** through standardized "**Agent Cards**". This dynamic discovery allows for more flexible and adaptable multi-agent systems.
 
-- **Complementary to MCP:** As stated on our [A2A ❤️ MCP topic page](/topics/a2a_and_mcp) and affirmed by many community, A2A "**complements**" MCP. MCP acts as a communication standard between models and resources, providing tools for agents. A2A acts as a communication standard **between the intelligent agents themselves**. This layered approach allows for building powerful systems where agents use A2A to coordinate and MCP to access necessary tools.  
+- **Complementary to MCP:** As stated on our [A2A ❤️ MCP topic page](/topics/a2a_and_mcp) and affirmed by many community, A2A "**complements**" MCP. MCP acts as a communication standard between models and resources, providing tools for agents. A2A acts as a communication standard **between the intelligent agents themselves**. This layered approach allows for building powerful systems where agents use A2A to coordinate and MCP to access necessary tools.
 
 - **Open and Community-Driven:** Google has released A2A as **open source**, inviting contributions from the broader community to refine and expand its functionality. This commitment to open collaboration fosters innovation and broad adoption.
 
