@@ -1,0 +1,43 @@
+name: 💡 Feature Request
+description: Suggest an idea for this repository
+title: "[Feat]: "
+assignees:
+  - andrewlarimer
+type: "Feature"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for stopping by to let us know something could be better!
+        Private Feedback? Please use this [Google form](https://goo.gle/a2a-feedback)
+  - type: textarea
+    id: problem
+    attributes:
+      label: Is your feature request related to a problem? Please describe.
+      description: A clear and concise description of what the problem is.
+      placeholder: Ex. I'm always frustrated when [...]
+  - type: textarea
+    id: describe
+    attributes:
+      label: Describe the solution you'd like
+      description: A clear and concise description of what you want to happen.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Describe alternatives you've considered
+      description: A clear and concise description of any alternative solutions or features you've considered.
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context or screenshots about the feature request here.
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/google/A2A?tab=coc-ov-file#readme)
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true

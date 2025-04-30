@@ -19,7 +19,7 @@
 
 <!-- /TOC -->
 
-One of the biggest challenges in enterprise AI adoption is getting agents built on different frameworks and vendors to work together. That’s why we created an open _Agent2Agent (A2A) protocol_, a collaborative way to help agents across different ecosystems communicate with each other. Google is driving this open protocol initiative for the industry because we believe this protocol will be **critical to support multi-agent communication by giving your agents a common language – irrespective of the framework or vendor they are built on**.
+One of the biggest challenges in enterprise AI adoption is getting agents built on different frameworks and vendors to work together. That's why we created an open _Agent2Agent (A2A) protocol_, a collaborative way to help agents across different ecosystems communicate with each other. Google is driving this open protocol initiative for the industry because we believe this protocol will be **critical to support multi-agent communication by giving your agents a common language – irrespective of the framework or vendor they are built on**.
 With _A2A_, agents can show each other their capabilities and negotiate how they will interact with users (via text, forms, or bidirectional audio/video) – all while working securely together.
 
 ## See A2A in Action
@@ -79,8 +79,8 @@ We highly value community contributions and appreciate your interest in A2A Prot
 - Get Started? Please see our [contributing guide](CONTRIBUTING.md) to get started.
 - Have questions? Join our community in [GitHub discussions](https://github.com/google/A2A/discussions).
 - Want to help with protocol improvement feedback? Dive into [GitHub issues](https://github.com/google/A2A/issues).
-- Private Feedback? Please use this [Google form](https://docs.google.com/forms/d/e/1FAIpQLScS23OMSKnVFmYeqS2dP7dxY3eTyT7lmtGLUa8OJZfP4RTijQ/viewform)
-- Existing Google cloud platform customer and want to join our partner program to contribute to A2A ecosystem? Please fill this [form](https://docs.google.com/forms/d/1VXYY1qBhUbRfY15Z5G_KPYoPC9d1LCrwde5ehjYKCZ8/preview)
+- Private Feedback? Please use this [Google form](https://goo.gle/a2a-feedback)
+- Existing Google Cloud platform customer and want to join our partner program to contribute to A2A ecosystem? Please fill this [form](https://goo.gle/a2a-partner)
 
 ## What's next
 
