@@ -6,10 +6,10 @@ Remote Agents are required to publish an Agent Card in JSON format describing th
 
 ## Implementation <!-- {docsify-ignore} -->
 
-First lets add some helpers for parsing command line arguments. This will be helpful later for starting our server
+First let's add some helpers for parsing command-line arguments and loading environment variables. This will be helpful later for starting our server and handling API authentication.
 
 ```bash
-uv add click
+uv add click python-dotenv
 ```
 
 And update our code
