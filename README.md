@@ -54,12 +54,13 @@ The Agent2Agent (A2A) protocol facilitates communication between independent AI 
 * 🤖 Use our [sample agents](/samples/python/agents/README.md) to see how to bring A2A to agent frameworks
     * [Agent Development Kit (ADK)](/samples/python/agents/google_adk/README.md)
     * [CrewAI](/samples/python/agents/crewai/README.md)
+    * [Enterprise Data Agent (Gemini + Mindsdb)](/samples/python/agents/mindsdb/README.md)
     * [LangGraph](/samples/python/agents/langgraph/README.md)
     * [Genkit](/samples/js/src/agents/README.md)
     * [LlamaIndex](/samples/python/agents/llama_index_file_chat/README.md)
     * [Marvin](/samples/python/agents/marvin/README.md)
     * [Semantic Kernel](/samples/python/agents/semantickernel/README.md)
-    * [Enterprise Data Agent (Gemini + Minsdb)](/samples/python/agents/mindsdb/README.md)
+
 * 📑 Review key topics to understand protocol details 
     * [A2A and MCP](https://google.github.io/A2A/#/topics/a2a_and_mcp.md)
     * [Agent Discovery](https://google.github.io/A2A/#/topics/agent_discovery.md)
