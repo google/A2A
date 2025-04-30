@@ -8,6 +8,7 @@ The agent takes natural language queries from users and translates them into app
 - Perform analytics across federated data sources
 - Handle natural language questions about your data
 - Return structured results from multiple data sources
+<img width="597" alt="image" src="https://github.com/user-attachments/assets/3e070239-f2a1-4771-8840-6517bd0c6545" />
 
 ## Prerequisites
 
