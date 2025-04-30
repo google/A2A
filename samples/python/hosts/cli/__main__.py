@@ -21,7 +21,7 @@ async def cli(agent, session, history, use_push_notifications: bool, push_notifi
     card = card_resolver.get_agent_card()
 
     print("======= Agent Card ========")
-    print(card.model_dump_json(exclude_none=True))
+    print(card.model_dump_json(exclude_none=True, indent=2))
 
     notif_receiver_parsed = urllib.parse.urlparse(push_notification_receiver)
     notification_receiver_host = notif_receiver_parsed.hostname
