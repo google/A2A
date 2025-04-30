@@ -84,6 +84,7 @@ async def run_ollama(ollama_agent: CompiledGraph, prompt: str):
 Finally let's call our ollama agent from `src/my_project/task_manager.py`
 
 ```python
+import typing
 # ...
 from my_project.agent import create_ollama_agent, run_ollama
 
