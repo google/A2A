@@ -90,7 +90,7 @@ What do you want to send to the agent? (:q or quit to exit): Streaming?
 
 ```
 
-Sometimes the agent might need additional input. For example, maybe the agent will ask the client if they'd like to keep repeating the 3 messages. In this case, the agent will respond with `TaskState.INPUT_REQUIRED` to which the client will then resend `send_task_streaming` with the same `task_id` and `session_id` but with an updated message providing the input required by the agent. On the server side we'll update `on_send_task_subscribe` to handle this case.
+Sometimes the agent might need additional input. For example, maybe the agent will ask the client if they'd like to keep repeating the 3 messages. In this case, the agent will respond with `TaskState.INPUT_REQUIRED` to which the client will then resend `send_task_streaming` with the same `task_id` and `session_id` but with an updated message providing the input required by the agent. On the server-side we'll update `on_send_task_subscribe` to handle this case.
 
 ```python
 # ...

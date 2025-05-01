@@ -169,7 +169,7 @@ Agents should not blindly trust the push notification URL specified by the clien
    - The challenge request can be the same push notification URL but with a validationToken provided either as a URL query param or a header.
    - The notification service (or the client in simple cases) should respond to challenge request by returning the same validationToken.
    - This seems simple but it helps avoid tricking remote agent into DDoS-ing a URL by a malicious client.
-   - Agents can issue this challenge request one-time when the push notification url is registered or keep checking this URL periodically.
+   - Agents can issue this challenge request one-time when the push notification URL is registered or keep checking this URL periodically.
    <pre>
    GET https://abc.com/callback-path?validationToken=randomString
    Content-Length: 0

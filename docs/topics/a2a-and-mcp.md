@@ -34,7 +34,7 @@ Now let's model the shop employees as AI agents:
 
 - MCP is the protocol to connect these agents with their structured tools (e.g. `raise platform by 2 meters`, `turn wrench 4 mm to the right`).
 
-- A2A is the protocol that enables end-users or other agents to work with the shop employees (_"my car is making a rattling noise"_). A2A enables ongoing back-and-forth communication and an evolving plan to achieve results (_"send me a picture of the left wheel"_, _"I notice fluid leaking. How long has that been happening?"_). A2A also helps the auto shop employees work with other agents such as their part suppliers.
+- A2A is the protocol that enables end users or other agents to work with the shop employees (_"my car is making a rattling noise"_). A2A enables ongoing back-and-forth communication and an evolving plan to achieve results (_"send me a picture of the left wheel"_, _"I notice fluid leaking. How long has that been happening?"_). A2A also helps the auto shop employees work with other agents such as their part suppliers.
 
 ## Intersection
 

@@ -1,8 +1,8 @@
 # Interacting With Your A2A Server
 
-First we'll use Google-A2A's cli tool to send requests to our A2A server. After trying it out, we'll write our own basic client to see how this works under the hood
+First we'll use Google-A2A's command-line tool to send requests to our A2A server. After trying it out, we'll write our own basic client to see how this works under the hood
 
-## Using Google-A2A's cli tool <!-- {docsify-ignore} -->
+## Using Google-A2A's command-line tool <!-- {docsify-ignore} -->
 
 With your A2A server already running from the previous run
 

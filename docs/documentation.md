@@ -7,7 +7,7 @@ between opaque agentic systems.
 
 ## Key Principles
 
-Using A2A, agents accomplish tasks for end-users without sharing memory,
+Using A2A, agents accomplish tasks for end users without sharing memory,
 thoughts, or tools. Instead the agents exchange context, status, instructions,
 and data in their native modalities.
 
@@ -31,7 +31,7 @@ and data in their native modalities.
 The A2A protocol has three actors:
 
 - **User**
-  The end-user (human or service) that is using an agentic system to accomplish tasks.
+  The end user (human or service) that is using an agentic system to accomplish tasks.
 - **Client**
   The entity (service, agent, application) that is requesting an action from an opaque agent on behalf of the user.
 - **Remote Agent (Server)**
@@ -136,7 +136,7 @@ interface AgentCard {
 
 ## Agent-to-Agent Communication
 
-The communication between a Client and a Remote Agent is oriented towards **_task completion_** where agents collaboratively fulfill an end-user's request. A Task object allows a Client and a Remote Agent to collaborate for completing the submitted task.
+The communication between a Client and a Remote Agent is oriented towards **_task completion_** where agents collaboratively fulfill an end user's request. A Task object allows a Client and a Remote Agent to collaborate for completing the submitted task.
 
 A task can be completed by a remote agent immediately or it can be long-running. For long-running tasks, the client may poll the agent for fetching the latest status. Agents can also push notifications to the client via SSE (if connected) or through an external notification service.
 

@@ -41,7 +41,7 @@ A2A is a work in progress and is expected to change based on
 [community feedback](https://google.github.io/A2A/#/community). This repo
 contains the initial specification, documentation, and
 [sample code](https://github.com/google/A2A/tree/main/samples). We will continue
-to update this repo with more features, more examples, specs, and libraries as
+to update this repository with more features, more examples, specs, and libraries as
 they become available. When the spec and samples can graduate to a production
 quality SDK, we will declare version 1.0 and maintain stable releases.
 
