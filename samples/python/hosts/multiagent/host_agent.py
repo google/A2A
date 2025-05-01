@@ -164,6 +164,13 @@ Current agent: {current_agent['active_agent']}
         task: Task
         if not messageId:
             messageId = str(uuid.uuid4())
+
+        # Update the OAuth callback metadata for the agent name
+        request_metadata = state.get('message_metadata', {})
+
+        if (params := request_metadata.get('oauth_callback', {}).get('params')):
+            params['agent_name'] = agent_name
+
         request: MessageSendParams = MessageSendParams(
             id=str(uuid.uuid4()),
             message=Message(
@@ -172,6 +179,7 @@ Current agent: {current_agent['active_agent']}
                 messageId=messageId,
                 contextId=contextId,
                 taskId=taskId,
+                metadata=request_metadata,
             ),
             configuration=MessageSendConfiguration(
                 acceptedOutputModes=['text', 'text/plain', 'image/png'],
@@ -179,7 +187,11 @@ Current agent: {current_agent['active_agent']}
         )
         response = await client.send_message(request, self.task_callback)
         if isinstance(response, Message):
-            return convert_parts(task.parts, tool_context)
+            if response.metadata and 'error' in response.metadata and 'reason' in response.metadata:
+                # Force user input back
+                tool_context.actions.skip_summarization = True
+                tool_context.actions.escalate = True
+            return convert_parts(response.parts, tool_context)
         task: Task = response
         # Assume completion unless a state returns that isn't complete
         state['session_active'] = task.status.state not in [
@@ -191,7 +203,7 @@ Current agent: {current_agent['active_agent']}
         if task.contextId:
             state['context_id'] = task.contextId
         state['task_id'] = task.id
-        if task.status.state == TaskState.INPUT_REQUIRED:
+        if task.status.state in (TaskState.AUTH_REQUIRED, TaskState.INPUT_REQUIRED):
             # Force user input back
             tool_context.actions.skip_summarization = True
             tool_context.actions.escalate = True

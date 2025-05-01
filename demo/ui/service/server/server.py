@@ -1,10 +1,13 @@
 import asyncio
 import base64
+import json
 import os
 import threading
+import time
+import traceback
 import uuid
 
-from common.types import FileContent, FilePart, Message
+from common.types import FileContent, FilePart, Message, TextPart
 from fastapi import APIRouter, Request, Response
 from service.types import (
     CreateConversationResponse,
@@ -18,6 +21,8 @@ from service.types import (
     RegisterAgentResponse,
     SendMessageResponse,
 )
+from starlette.responses import RedirectResponse
+from typing import Any
 
 from .adk_host_manager import ADKHostManager, get_message_id
 from .application_manager import ApplicationManager
@@ -77,6 +82,41 @@ class ConversationServer:
         router.add_api_route(
             '/api_key/update', self._update_api_key, methods=['POST']
         )
+        router.add_api_route(
+            '/oauth/callback', self._oauth_callback, methods=['GET', 'POST']
+        )
+
+    async def _oauth_callback(self, request: Request):
+        try:
+            state_json = base64.b64decode(request.query_params.get('state')).decode('utf-8')
+            state = json.loads(state_json)
+            params = state['params']
+
+            conversation_id = params.get('conversation_id')
+            server_url = params.get('server_url')
+
+            agent_name = params.get('agent_name')
+            credentials = state.get('credentials')
+
+            if agent_name and credentials:
+                self.manager.update_credentials(agent_name=agent_name, credentials=credentials['token'])
+
+            await self._real_send_message(Message(
+                role='user',
+                parts=[
+                    TextPart(text=(
+                        'Please tell the Personal Assistant Agent that the issue with missing or invalid credentials '
+                        'has been resolved, please retry the previous request that required authentication.'
+                    )),
+                ],
+                messageId=str(uuid.uuid4()),
+                contextId=conversation_id,
+            ))
+
+            return RedirectResponse(f'{server_url}/conversation?conversation_id={conversation_id}')
+        except Exception:
+            traceback.print_exc()
+            pass
 
     # Update API key in manager
     def update_api_key(self, api_key: str):
@@ -87,9 +127,7 @@ class ConversationServer:
         c = self.manager.create_conversation()
         return CreateConversationResponse(result=c)
 
-    async def _send_message(self, request: Request):
-        message_data = await request.json()
-        message = Message(**message_data['params'])
+    async def _real_send_message(self, message: Message):
         message = self.manager.sanitize_message(message)
         t = threading.Thread(
             target=lambda: asyncio.run(self.manager.process_message(message))
@@ -101,6 +139,11 @@ class ConversationServer:
                 context_id=message.contextId if message.contextId else ''
             )
         )
+
+    async def _send_message(self, request: Request):
+        message_data = await request.json()
+        message = Message(**message_data['params'])
+        return await self._real_send_message(message)
 
     async def _list_messages(self, request: Request):
         message_data = await request.json()
