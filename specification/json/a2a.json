@@ -1295,7 +1295,7 @@
             "items": {
               "type": "string"
             },
-            "title": "Acceptedoutputmodes",
+            "title": "AcceptedOutputModes",
             "type": "array"
           },
           "pushNotification": {
