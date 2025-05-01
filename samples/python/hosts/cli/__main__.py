@@ -3,12 +3,13 @@ import asyncio
 import base64
 import os
 import urllib
+import json
 from uuid import uuid4
 
 from common.client import A2AClient, A2ACardResolver
-from common.types import TaskState, Task, TextPart, FilePart, FileContent
+from common.types import TaskState, Task, TextPart, FilePart, DataPart, Artifact
 from common.utils.push_notification_auth import PushNotificationReceiverAuth
-
+from common.utils.etl import truncate_leaves
 
 @click.command()
 @click.option("--agent", default="http://localhost:10000")
@@ -56,7 +57,54 @@ async def cli(agent, session, history, use_push_notifications: bool, push_notifi
         if history and continue_loop:
             print("========= history ======== ")
             task_response = await client.get_task({"id": taskId, "historyLength": 10})
-            print(task_response.model_dump_json(include={"result": {"history": True}}))
+            print(task_response.model_dump_json(include={"result": {"history": True}}, indent=2))
+
+def handle_artifact(artifact: Artifact) -> None:
+    """
+    Handle artifacts artifacts by part type.
+
+    Currently it handles the files by part type: FilePart is saved to a file in CWD/tmp/, TextPart is printed to the console, DataPart is passed through, other types raise an error.
+
+    Args:
+        artifact (Artifact): The artifact to handle
+
+    Returns:
+        None
+
+    Raises:
+        ValueError: If the part type is not handled
+    """
+    try:
+        for part in artifact.parts:
+            if isinstance(part, FilePart):
+                if not part.file.mimeType:
+                    raise ValueError("Missing mime type for file")
+                
+                tmp_dir = os.path.join(os.getcwd(), "tmp")
+                os.makedirs(tmp_dir, exist_ok=True)
+                file_name = part.file.name
+                file_type = part.file.mimeType
+                file_extension = file_type.split("/")[1]
+                file_path = os.path.join(tmp_dir, f"{file_name}.{file_extension}")
+                
+                try:
+                    with open(file_path, "wb") as f:
+                        # create bytes object from base64 encoded string
+                        file_bytes = base64.b64decode(part.file.bytes)
+                        f.write(file_bytes)
+                    print(f"File saved to:\n{file_path}\n\n")
+                except IOError as e:
+                    print(f"Failed to write file {file_path}: {e}")
+                    
+            elif isinstance(part, TextPart):
+                print(f"Text content pass-through.")
+            elif isinstance(part, DataPart):
+                print(f"Data content pass-through.")
+            else:
+                raise ValueError(f"Unknown part type: {type(part)}")
+    except Exception as e:
+        print(f"Error handling artifact: {e}")
+        raise
 
 async def completeTask(client: A2AClient, streaming, use_push_notifications: bool, notification_receiver_host: str, notification_receiver_port: int, taskId, sessionId):
     prompt = click.prompt(
@@ -118,7 +166,16 @@ async def completeTask(client: A2AClient, streaming, use_push_notifications: boo
         taskResult = await client.get_task({"id": taskId})
     else:
         taskResult = await client.send_task(payload)
-        print(f"\n{taskResult.model_dump_json(exclude_none=True)}")
+
+        taskResultTruncatedLeaves = truncate_leaves(taskResult.model_dump())
+
+        print(f"========= Task results ========")
+        print(json.dumps(taskResultTruncatedLeaves, indent=2))
+
+        for artifact in taskResult.result.artifacts:
+            handle_artifact(artifact)
+    
+    
 
     ## if the result is that more input is required, loop again.
     state = TaskState(taskResult.result.status.state)
