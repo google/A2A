@@ -13,15 +13,7 @@
             "type": "array"
           },
           "credentials": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Credentials"
           }
         },
@@ -59,15 +51,7 @@
             "type": "string"
           },
           "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Description"
           },
           "url": {
@@ -75,45 +59,21 @@
             "type": "string"
           },
           "provider": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/AgentProvider"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/AgentProvider"
           },
           "version": {
             "title": "Version",
             "type": "string"
           },
           "documentationUrl": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Documentationurl"
           },
           "capabilities": {
             "$ref": "#/$defs/AgentCapabilities"
           },
           "authentication": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/AgentAuthentication"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/AgentAuthentication"
           },
           "defaultInputModes": {
             "default": [
@@ -160,15 +120,7 @@
             "type": "string"
           },
           "url": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Url"
           }
         },
@@ -189,75 +141,35 @@
             "type": "string"
           },
           "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Description"
           },
           "tags": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
             "title": "Tags"
           },
           "examples": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
             "title": "Examples"
           },
           "inputModes": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
             "title": "Inputmodes"
           },
           "outputModes": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
             "title": "Outputmodes"
           }
         },
@@ -271,27 +183,11 @@
       "Artifact": {
         "properties": {
           "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Name"
           },
           "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Description"
           },
           "parts": {
@@ -307,40 +203,16 @@
             "type": "integer"
           },
           "append": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "boolean",
             "title": "Append"
           },
           "lastChunk": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "boolean",
             "title": "LastChunk"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -361,15 +233,7 @@
             "type": "array"
           },
           "credentials": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Credentials"
           }
         },
@@ -400,7 +264,6 @@
             "type": "string"
           },
           "data": {
-            "default": null,
             "title": "Data"
           }
         },
@@ -425,9 +288,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -465,34 +325,15 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
           },
           "result": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/Task"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/Task"
           },
           "error": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/JSONRPCError"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/JSONRPCError"
           }
         },
         "required": [
@@ -519,16 +360,8 @@
             "type": "object"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -543,51 +376,19 @@
         "description": "Represents the content of a file, either as base64 encoded bytes or a URI.\n\nEnsures that either 'bytes' or 'uri' is provided, but not both.",
         "properties": {
           "name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Name"
           },
           "mimeType": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Mimetype"
           },
           "bytes": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Bytes"
           },
           "uri": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Uri"
           }
         },
@@ -609,16 +410,8 @@
             "$ref": "#/$defs/FileContent"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -643,9 +436,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -682,34 +472,15 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
           },
           "result": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/TaskPushNotificationConfig"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/TaskPushNotificationConfig"
           },
           "error": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/JSONRPCError"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/JSONRPCError"
           }
         },
         "required": [
@@ -733,9 +504,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -773,34 +541,15 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
           },
           "result": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/Task"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/Task"
           },
           "error": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/JSONRPCError"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/JSONRPCError"
           }
         },
         "required": [
@@ -833,16 +582,8 @@
             "type": "string"
           },
           "data": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Data"
           }
         },
@@ -876,16 +617,8 @@
             "type": "string"
           },
           "data": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Data"
           }
         },
@@ -918,16 +651,8 @@
             "type": "string"
           },
           "data": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Data"
           }
         },
@@ -959,7 +684,8 @@
             "type": "string"
           },
           "data": {
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Data"
           }
         },
@@ -981,13 +707,8 @@
             "type": "string"
           },
           "data": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Data"
           }
         },
@@ -1012,9 +733,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -1037,9 +755,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -1049,16 +764,8 @@
             "type": "string"
           },
           "params": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Params"
           }
         },
@@ -1082,33 +789,17 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
           },
           "result": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Result"
           },
           "error": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/JSONRPCError"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/JSONRPCError"
           }
         },
         "required": [
@@ -1136,16 +827,8 @@
             "type": "array"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -1179,13 +862,6 @@
             "type": "string"
           },
           "data": {
-            "anyOf": [
-              {},
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
             "title": "Data"
           }
         },
@@ -1203,26 +879,11 @@
             "type": "string"
           },
           "token": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Token"
+            "title": "Token",
+            "type": "string"
           },
           "authentication": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/AuthenticationInfo"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/AuthenticationInfo"
           }
         },
         "required": [
@@ -1259,9 +920,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -1298,33 +956,15 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
           },
           "result": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/Task"
-              },
-              {
-                "type": "null"
-              }
-            ]
+            "$ref": "#/$defs/Task"
           },
           "error": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/JSONRPCError"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/JSONRPCError"
           }
         },
         "required": [
@@ -1348,9 +988,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -1388,9 +1025,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -1402,24 +1036,11 @@
               },
               {
                 "$ref": "#/$defs/TaskArtifactUpdateEvent"
-              },
-              {
-                "type": "null"
               }
-            ],
-            "default": null,
-            "title": "Result"
+            ]
           },
           "error": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/JSONRPCError"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/JSONRPCError"
           }
         },
         "required": [
@@ -1443,9 +1064,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -1482,34 +1100,15 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
           },
           "result": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/TaskPushNotificationConfig"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/TaskPushNotificationConfig"
           },
           "error": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/JSONRPCError"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/JSONRPCError"
           }
         },
         "required": [
@@ -1526,61 +1125,29 @@
             "type": "string"
           },
           "sessionId": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "string",
             "title": "Sessionid"
           },
           "status": {
             "$ref": "#/$defs/TaskStatus"
           },
           "artifacts": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/$defs/Artifact"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "items": {
+              "$ref": "#/$defs/Artifact"
+            },
+            "type": "array",
             "title": "Artifacts"
           },
           "history": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/$defs/Message"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "items": {
+              "$ref": "#/$defs/Message"
+            },
+            "type": "array",
             "title": "History"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -1629,7 +1196,6 @@
             "type": "string"
           },
           "data": {
-            "default": null,
             "title": "Data"
           }
         },
@@ -1662,7 +1228,6 @@
             "type": "string"
           },
           "data": {
-            "default": null,
             "title": "Data"
           }
         },
@@ -1680,16 +1245,8 @@
             "type": "string"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -1706,28 +1263,12 @@
             "type": "string"
           },
           "historyLength": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "integer",
             "title": "HistoryLength"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -1751,53 +1292,22 @@
             "$ref": "#/$defs/Message"
           },
           "acceptedOutputModes": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Acceptedoutputmodes"
+            "items": {
+              "type": "string"
+            },
+            "title": "Acceptedoutputmodes",
+            "type": "array"
           },
           "pushNotification": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/PushNotificationConfig"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/PushNotificationConfig"
           },
           "historyLength": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "type": "integer",
             "title": "HistoryLength"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -1828,15 +1338,7 @@
             "$ref": "#/$defs/TaskState"
           },
           "message": {
-            "anyOf": [
-              {
-                "$ref": "#/$defs/Message"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
+            "$ref": "#/$defs/Message"
           },
           "timestamp": {
             "format": "date-time",
@@ -1864,9 +1366,6 @@
               },
               {
                 "type": "string"
-              },
-              {
-                "type": "null"
               }
             ],
             "title": "Id"
@@ -1904,16 +1403,8 @@
             "type": "boolean"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -1934,16 +1425,8 @@
             "$ref": "#/$defs/Artifact"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -1971,16 +1454,8 @@
             "type": "string"
           },
           "metadata": {
-            "anyOf": [
-              {
-                "additionalProperties": {},
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
+            "additionalProperties": {},
+            "type": "object",
             "title": "Metadata"
           }
         },
@@ -2014,7 +1489,6 @@
             "type": "string"
           },
           "data": {
-            "default": null,
             "title": "Data"
           }
         },
@@ -2035,7 +1509,7 @@
           },
           {
             "$ref": "#/$defs/CancelTaskRequest"
-          },          
+          },
           {
             "$ref": "#/$defs/SetTaskPushNotificationRequest"
           },
@@ -2049,4 +1523,4 @@
         "title": "A2ARequest"
       }
     }
-}
+  }
