@@ -159,6 +159,7 @@ class ADKHostManager(ApplicationManager):
             'task_id': task_id,
             'context_id': context_id,
             'message_id': message.messageId,
+            'message_metadata': message.metadata or {},
         }
         # Need to upsert session state now, only way is to append an event.
         self._session_service.append_event(
@@ -578,4 +579,5 @@ def task_still_open(task: Task | None) -> bool:
         TaskState.SUBMITTED,
         TaskState.WORKING,
         TaskState.INPUT_REQUIRED,
+        TaskState.AUTH_REQUIRED,
     ]
