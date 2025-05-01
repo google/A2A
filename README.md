@@ -50,29 +50,30 @@ The Agent2Agent (A2A) protocol facilitates communication between independent AI 
 4.  **Interaction (Optional):** If the task enters `input-required`, the client sends subsequent messages using the same Task ID via `tasks/send` or `tasks/sendSubscribe`.
 5.  **Completion:** The task eventually reaches a terminal state (`completed`, `failed`, `canceled`).
 
-## Getting Started
+### **Getting Started**
 
-- 📚 Read the [technical documentation](https://google.github.io/A2A/#/documentation) to understand the capabilities
-- 📝 Review the [JSON specification](/specification) of the protocol structures
-- 🎬 Use our [samples](/samples) to see A2A in action
-  - Sample A2A Client/Server ([Python](/samples/python/common), [JS](/samples/js/src))
-  - [Multi-Agent Web App](/demo/README.md)
-  - CLI ([Python](/samples/python/hosts/cli/README.md), [JS](/samples/js/README.md))
-- 🤖 Use our [sample agents](/samples/python/agents/README.md) to see how to bring A2A to agent frameworks
-  - [Agent Development Kit (ADK)](/samples/python/agents/google_adk/README.md)
-  - [CrewAI](/samples/python/agents/crewai/README.md)
-  - [LangGraph](/samples/python/agents/langgraph/README.md)
-  - [Genkit](/samples/js/src/agents/README.md)
-  - [LlamaIndex](/samples/python/agents/llama_index_file_chat/README.md)
-  - [Marvin](/samples/python/agents/marvin/README.md)
-  - [Semantic Kernel](/samples/python/agents/semantickernel/README.md)
-- 📑 Review key topics to understand protocol details
-  - [A2A and MCP](https://google.github.io/A2A/#/topics/a2a_and_mcp.md)
-  - [Agent Discovery](https://google.github.io/A2A/#/topics/agent_discovery.md)
-  - [Enterprise Ready](https://google.github.io/A2A/#/topics/enterprise_ready.md)
-  - [Push Notifications](https://google.github.io/A2A/#/topics/push_notifications.md)
+* 📚 Read the [technical documentation](https://google.github.io/A2A/#/documentation) to understand the capabilities
+* 📝 Review the [json specification](/specification) of the protocol structures
+* 🎬 Use our [samples](/samples) to see A2A in action
+    * Sample A2A Client/Server ([Python](/samples/python/common), [JS](/samples/js/src))
+    * [Multi-Agent Web App](/demo/README.md)
+    * CLI ([Python](/samples/python/hosts/cli/README.md), [JS](/samples/js/README.md))
+* 🤖 Use our [sample agents](/samples/python/agents/README.md) to see how to bring A2A to agent frameworks
+    * [Agent Development Kit (ADK)](/samples/python/agents/google_adk/README.md)
+    * [CrewAI](/samples/python/agents/crewai/README.md)
+    * [LangGraph](/samples/python/agents/langgraph/README.md)
+    * [Genkit](/samples/js/src/agents/README.md)
+    * [LlamaIndex](/samples/python/agents/llama_index_file_chat/README.md)
+    * [Marvin](/samples/python/agents/marvin/README.md)
+    * [Semantic Kernel](/samples/python/agents/semantickernel/README.md)
+    * [AG2 + MCP](/samples/python/agents/ag2/README.md)
+* 📑 Review key topics to understand protocol details 
+    * [A2A and MCP](https://google.github.io/A2A/#/topics/a2a_and_mcp.md)
+    * [Agent Discovery](https://google.github.io/A2A/#/topics/agent_discovery.md)
+    * [Enterprise Ready](https://google.github.io/A2A/#/topics/enterprise_ready.md)
+    * [Push Notifications](https://google.github.io/A2A/#/topics/push_notifications.md) 
 
-## Contributing
+### **Contributing**
 
 We highly value community contributions and appreciate your interest in A2A Protocol! Here's how you can get involved:
 
