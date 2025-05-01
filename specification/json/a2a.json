@@ -72,9 +72,6 @@
           "capabilities": {
             "$ref": "#/$defs/AgentCapabilities"
           },
-          "authentication": {
-            "$ref": "#/$defs/AgentAuthentication"
-          },
           "defaultInputModes": {
             "default": [
               "text"
@@ -94,6 +91,18 @@
             },
             "title": "Defaultoutputmodes",
             "type": "array"
+          },
+          "securitySchemes": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/$defs/SecurityScheme"
+            }
+          },
+          "security": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/SecurityRequirement"
+            }
           },
           "skills": {
             "items": {
@@ -220,27 +229,6 @@
           "parts"
         ],
         "title": "Artifact",
-        "type": "object"
-      },
-      "AuthenticationInfo": {
-        "additionalProperties": {},
-        "properties": {
-          "schemes": {
-            "items": {
-              "type": "string"
-            },
-            "title": "Schemes",
-            "type": "array"
-          },
-          "credentials": {
-            "type": "string",
-            "title": "Credentials"
-          }
-        },
-        "required": [
-          "schemes"
-        ],
-        "title": "AuthenticationInfo",
         "type": "object"
       },
       "PushNotificationNotSupportedError": {
@@ -877,8 +865,12 @@
             "title": "Token",
             "type": "string"
           },
-          "authentication": {
-            "$ref": "#/$defs/AuthenticationInfo"
+          "scheme": {
+            "$ref": "#/$defs/SecurityScheme"
+          },
+          "credentials": {
+            "title": "Credentials",
+            "type": "string"
           }
         },
         "required": [
@@ -1502,6 +1494,257 @@
           }
         ],
         "title": "A2ARequest"
+      },
+      "SecurityRequirement": {
+        "$comment": "Mirrors the OpenAPI Security Requirement Object (https://swagger.io/specification/#security-requirement-object)",
+        "type": "object",
+        "additionalProperties": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "SecurityScheme": {
+        "$comment": "Mirrors the OpenAPI Security Scheme Object (https://swagger.io/specification/#security-scheme-object)",
+        "oneOf": [
+          {
+            "$comment": "Mirrors the OpenAPI API Key Security Scheme Object (allows providing the API Key in an HTTP cookie, header or query parameter).",
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "in": {
+                "enum": [
+                  "query",
+                  "header",
+                  "cookie"
+                ],
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "apiKey"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "in",
+              "name",
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "$comment": "Mirrors the OpenAPI HTTP Authentication Security Scheme Object.",
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "http"
+                ],
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "scheme"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "$comment": "Mirrors the OpenAPI HTTP Authentication (Bearer Token) Security Scheme Object.",
+            "type": "object",
+            "properties": {
+              "bearerFormat": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "http"
+                ],
+                "type": "string"
+              },
+              "scheme": {
+                "type": "string",
+                "pattern": "^[Bb][Ee][Aa][Rr][Ee][Rr]$"
+              }
+            },
+            "required": [
+              "type",
+              "scheme"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "$comment": "Mirrors the OpenAPI OAuth2 Security Scheme Object.",
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "flows": {
+                "type": "object",
+                "properties": {
+                  "authorizationCode": {
+                    "$comment": "Mirrors the OpenAPI 'implicit' OAuth Flow Object.",
+                    "type": "object",
+                    "properties": {
+                      "authorizationUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "refreshUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "scopes": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "authorizationUrl",
+                      "scopes"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "password": {
+                    "$comment": "Mirrors the OpenAPI 'password' OAuth Flow Object.",
+                    "type": "object",
+                    "properties": {
+                      "refreshUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "scopes": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "tokenUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "tokenUrl",
+                      "scopes"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "clientCredentials": {
+                    "$comment": "Mirrors the OpenAPI 'clientCredentials' OAuth Flow Object.",
+                    "type": "object",
+                    "properties": {
+                      "refreshUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "scopes": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "tokenUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "tokenUrl",
+                      "scopes"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "authorizationCode": {
+                    "$comment": "Mirrors the OpenAPI 'authorizationCode' OAuth Flow Object.",
+                    "type": "object",
+                    "properties": {
+                      "authorizationUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "refreshUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      "scopes": {
+                        "type": "object",
+                        "additionalProperties": {
+                          "type": "string"
+                        }
+                      },
+                      "tokenUrl": {
+                        "type": "string",
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "authorizationUrl",
+                      "scopes",
+                      "tokenUrl"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "type": {
+                "enum": [
+                  "oauth2"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "flows"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "$comment": "Mirrors the OpenAPI OpenID Connect Security Scheme Object.",
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string"
+              },
+              "openIdConnectUrl": {
+                "type": "string",
+                "format": "uri"
+              },
+              "type": {
+                "enum": [
+                  "openIdConnect"
+                ],
+                "type": "string"
+              }
+            },
+            "required": [
+              "openIdConnectUrl",
+              "type"
+            ],
+            "additionalProperties": false
+          }
+        ]
       }
     }
   }

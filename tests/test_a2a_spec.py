@@ -8,7 +8,7 @@ from pathlib import Path
 # import types from a2a package
 from common.types import (
     TaskState, TextPart, FileContent, FilePart, DataPart, Message, TaskStatus,
-    Artifact, Task, TaskStatusUpdateEvent, TaskArtifactUpdateEvent, AuthenticationInfo,
+    Artifact, Task, TaskStatusUpdateEvent, TaskArtifactUpdateEvent,
     PushNotificationConfig, TaskIdParams, TaskQueryParams, TaskSendParams, TaskPushNotificationConfig,
     JSONRPCError, SendTaskRequest, SendTaskStreamingResponse,SendTaskResponse,
     GetTaskRequest, GetTaskResponse, CancelTaskRequest, CancelTaskResponse,
@@ -18,7 +18,9 @@ from common.types import (
     JSONParseError, InvalidRequestError, MethodNotFoundError, InvalidParamsError,
     InternalError, TaskNotFoundError, TaskNotCancelableError,
     PushNotificationNotSupportedError, UnsupportedOperationError,
-    AgentProvider, AgentCapabilities, AgentAuthentication, AgentSkill, AgentCard
+    AgentProvider, AgentCapabilities, AgentSkill, AgentCard, APIKeySecurityScheme, HTTPAuthSecurityScheme,
+    BearerFormatSecurityScheme, OAuth2SecurityScheme, OpenIdConnectSecurityScheme, OAuthFlows, ImplicitOAuthFlow,
+    PasswordOAuthFlow, ClientCredentialsOAuthFlow, AuthorizationCodeOAuthFlow
 )
 
 from jsonschema import validate, Draft7Validator, RefResolver, ValidationError
@@ -174,16 +176,9 @@ def test_task_artifact_update_event(schema, resolver):
     validate_instance(instance_final.model_dump(mode='json', exclude_none=True), "TaskArtifactUpdateEvent", schema, resolver)
 
 # --- Configuration/Params ---
-def test_authentication_info(schema, resolver):
-    instance = AuthenticationInfo(schemes=["bearer"], credentials="token123")
-    validate_instance(instance.model_dump(mode='json', exclude_none=True), "AuthenticationInfo", schema, resolver)
-    # Test extra fields allowed by schema (additionalProperties: {})
-    instance_extra = AuthenticationInfo(schemes=["basic"], extra_field="some_value")
-    validate_instance(instance_extra.model_dump(mode='json', exclude_none=True), "AuthenticationInfo", schema, resolver)
-
 def test_push_notification_config(schema, resolver):
-    auth = AuthenticationInfo(schemes=["bearer"], credentials="abc")
-    instance = PushNotificationConfig(url="https://example.com/callback", token="secret", authentication=auth)
+    sec_recs = [{"apiKey": []}]
+    instance = PushNotificationConfig(url="https://example.com/callback", token="secret", security=sec_recs)
     validate_instance(instance.model_dump(mode='json', exclude_none=True), "PushNotificationConfig", schema, resolver)
     instance_no_auth = PushNotificationConfig(url="http://localhost/notify", token="simple")
     validate_instance(instance_no_auth.model_dump(mode='json', exclude_none=True), "PushNotificationConfig", schema, resolver)
@@ -278,7 +273,6 @@ def test_send_task_response(schema, resolver):
     task_artifact_update_event = TaskArtifactUpdateEvent(id="t1", artifact=artifact)
     response_event = SendTaskStreamingResponse(id=1, result=task_artifact_update_event)
     validate_instance(response_event.model_dump(mode='json', exclude_none=True), "SendTaskStreamingResponse", schema, resolver)
-    
 
 def test_get_task_request(schema, resolver):
     params = TaskQueryParams(id="t1")
@@ -391,10 +385,6 @@ def test_agent_capabilities(schema, resolver):
     instance_default = AgentCapabilities()
     validate_instance(instance_default.model_dump(mode='json', exclude_none=True), "AgentCapabilities", schema, resolver)
 
-def test_agent_authentication(schema, resolver):
-    instance = AgentAuthentication(schemes=["api_key"], credentials=None)
-    validate_instance(instance.model_dump(mode='json', exclude_none=True), "AgentAuthentication", schema, resolver)
-
 def test_agent_skill(schema, resolver):
     instance = AgentSkill(
         id="summarize",
@@ -412,7 +402,6 @@ def test_agent_skill(schema, resolver):
 def test_agent_card(schema, resolver):
     provider = AgentProvider(organization="AI Inc.")
     caps = AgentCapabilities(streaming=True)
-    auth = AgentAuthentication(schemes=["bearer"])
     skill = AgentSkill(id="translate", name="Translation")
     instance = AgentCard(
         name="Multilingual Agent",
@@ -422,9 +411,47 @@ def test_agent_card(schema, resolver):
         version="1.2.0",
         documentationUrl="https://agent.example.com/docs",
         capabilities=caps,
-        authentication=auth,
         defaultInputModes=["text"],
         defaultOutputModes=["text"],
+        securitySchemes={
+            "apiKey": APIKeySecurityScheme(
+                location="query",
+                name="key",
+            ),
+            "bearerFormat": BearerFormatSecurityScheme(
+                bearerFormat="JWT",
+                scheme="bearer",
+            ),
+            "httpAuth": HTTPAuthSecurityScheme(
+                scheme="basic",
+            ),
+            "oauth2": OAuth2SecurityScheme(
+                flows=OAuthFlows(
+                    implicit=ImplicitOAuthFlow(
+                        authorizationUrl="https://example.com/oauth/authorize",
+                        refreshUrl="https://example.com/oauth/token",
+                        scopes={},
+                    ),
+                    password=PasswordOAuthFlow(
+                        tokenUrl="https://example.com/oauth/token",
+                        scopes={},
+                    ),
+                    clientCredentials=ClientCredentialsOAuthFlow(
+                        tokenUrl="https://example.com/oauth/token",
+                        scopes={},
+                    ),
+                    authorizationCode=AuthorizationCodeOAuthFlow(
+                        authorizationUrl="https://example.com/oauth/authorize",
+                        tokenUrl="https://example.com/oauth/token",
+                        scopes={},
+                    ),
+                ),
+            ),
+            "openIdConnect": OpenIdConnectSecurityScheme(
+                openIdConnectUrl="https://example.com/oauth/authorize",
+            ),
+        },
+        security=[{"apiKey": []}],
         skills=[skill]
     )
     validate_instance(instance.model_dump(mode='json', exclude_none=True), "AgentCard", schema, resolver)

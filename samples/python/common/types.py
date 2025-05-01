@@ -1,11 +1,75 @@
 from typing import Union, Any
-from pydantic import BaseModel, Field, TypeAdapter
-from typing import Literal, List, Annotated, Optional
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_serializer, model_validator
+from typing import Literal, List, Annotated, Optional, Union
 from datetime import datetime
-from pydantic import model_validator, ConfigDict, field_serializer
 from uuid import uuid4
 from enum import Enum
 from typing_extensions import Self
+
+
+class ImplicitOAuthFlow(BaseModel):
+    authorizationUrl: str
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+
+
+class PasswordOAuthFlow(BaseModel):
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+    tokenUrl: str
+
+
+class ClientCredentialsOAuthFlow(BaseModel):
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+    tokenUrl: str
+
+class AuthorizationCodeOAuthFlow(BaseModel):
+    authorizationUrl: str
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+    tokenUrl: str
+
+
+class OAuthFlows(BaseModel):
+    authorizationCode: AuthorizationCodeOAuthFlow | None = None
+    clientCredentials: ClientCredentialsOAuthFlow | None = None
+    implicit: ImplicitOAuthFlow | None = None
+    password: PasswordOAuthFlow | None = None
+
+
+class APIKeySecurityScheme(BaseModel):
+    description: str | None = None
+    location: str = Field(serialization_alias="in")
+    name: str
+    type: Literal["apiKey"] = "apiKey"
+
+    model_config = ConfigDict(serialize_by_alias=True)
+
+
+class HTTPAuthSecurityScheme(BaseModel):
+    description: str | None = None
+    scheme: str
+    type: Literal["http"] = "http"
+
+
+class BearerFormatSecurityScheme(BaseModel):
+    description: str | None = None
+    bearerFormat: str | None = None
+    scheme: str
+    type: Literal["http"] = "http"
+
+
+class OAuth2SecurityScheme(BaseModel):
+    description: str | None = None
+    flows: OAuthFlows
+    type: Literal["oauth2"] = "oauth2"
+
+
+class OpenIdConnectSecurityScheme(BaseModel):
+    description: str | None = None
+    openIdConnectUrl: str
+    type: Literal["openIdConnect"] = "openIdConnect"
 
 
 class TaskState(str, Enum):
@@ -100,21 +164,15 @@ class TaskStatusUpdateEvent(BaseModel):
 
 class TaskArtifactUpdateEvent(BaseModel):
     id: str
-    artifact: Artifact    
+    artifact: Artifact
     metadata: dict[str, Any] | None = None
-
-
-class AuthenticationInfo(BaseModel):
-    model_config = ConfigDict(extra="allow")
-
-    schemes: List[str]
-    credentials: str | None = None
 
 
 class PushNotificationConfig(BaseModel):
     url: str
     token: str | None = None
-    authentication: AuthenticationInfo | None = None
+    scheme: APIKeySecurityScheme | HTTPAuthSecurityScheme | BearerFormatSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme | None = None
+    credential: str | None = None
 
 
 class TaskIdParams(BaseModel):
@@ -301,7 +359,6 @@ class ContentTypeNotSupportedError(JSONRPCError):
     message: str = "Incompatible content types"
     data: None = None
 
-
 class AgentProvider(BaseModel):
     organization: str
     url: str | None = None
@@ -311,11 +368,6 @@ class AgentCapabilities(BaseModel):
     streaming: bool = False
     pushNotifications: bool = False
     stateTransitionHistory: bool = False
-
-
-class AgentAuthentication(BaseModel):
-    schemes: List[str]
-    credentials: str | None = None
 
 
 class AgentSkill(BaseModel):
@@ -336,9 +388,10 @@ class AgentCard(BaseModel):
     version: str
     documentationUrl: str | None = None
     capabilities: AgentCapabilities
-    authentication: AgentAuthentication | None = None
     defaultInputModes: List[str] = ["text"]
     defaultOutputModes: List[str] = ["text"]
+    securitySchemes: dict[str, APIKeySecurityScheme | HTTPAuthSecurityScheme | BearerFormatSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme] | None = None
+    security: List[dict[str, List[str]]] | None = None
     skills: List[AgentSkill]
 
 
