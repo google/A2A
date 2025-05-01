@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from common.types import AgentCard, Message, Task
 from service.types import Conversation, Event
+from typing import Any
 
 
 class ApplicationManager(ABC):
@@ -23,6 +24,10 @@ class ApplicationManager(ABC):
 
     @abstractmethod
     def get_pending_messages(self) -> list[str]:
+        pass
+
+    @abstractmethod
+    def update_credentials(self, agent_name: str, credentials: Any):
         pass
 
     @property

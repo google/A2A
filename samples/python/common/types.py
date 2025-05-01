@@ -3,6 +3,8 @@ from enum import Enum
 from typing import Annotated, Any, List, Literal, Optional, Self, Union
 from uuid import uuid4
 
+import httpx
+import httpx_sse
 from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_serializer, model_validator
 
 
@@ -79,6 +81,7 @@ class TaskState(str, Enum):
     COMPLETED = 'completed'
     CANCELED = 'canceled'
     FAILED = 'failed'
+    AUTH_REQUIRED = 'auth-required'
     UNKNOWN = 'unknown'
 
 
@@ -433,24 +436,57 @@ class AgentCard(BaseModel):
     supportsAuthenticatedExtendedCard: bool = False
 
 
+class OAuthCallback(BaseModel):
+    redirect_uri: str
+    params: dict[str, str]
+
+
 class A2AClientError(Exception):
-    pass
-
-
-class A2AClientHTTPError(A2AClientError):
-    def __init__(self, status_code: int, message: str):
+    def __init__(self, message: str, status_code: int | None = None, data: Any | None = None):
+        # Only available for errors resulting from an httpx.HTTPStatusError
+        self.data = data
         self.status_code = status_code
         self.message = message
-        super().__init__(f'HTTP Error {status_code}: {message}')
-
-
-class A2AClientJSONError(A2AClientError):
-    def __init__(self, message: str):
-        self.message = message
-        super().__init__(f'JSON Error: {message}')
+        super().__init__(f'A2AClient error: {message}')
 
 
 class MissingAPIKeyError(Exception):
     """Exception for missing API key."""
 
     pass
+
+
+def httpx_error_to_a2a_error(err: httpx.HTTPError, event_source: httpx_sse.EventSource | None = None) -> A2AClientError:
+    """Helper to convert an httpx.HTTPError to an A2AClientError"""
+    is_sse_error = isinstance(err, httpx_sse.SSEError)
+
+    # httpx.RequestError is a transport error, only the error message is useful (Unless SSE is used)
+    if isinstance(err, httpx.RequestError) and not is_sse_error:
+        return A2AClientError(message=str(err))
+
+    data = None
+    message = str(err)
+    status_code = 500
+
+    # For SSE, to convert to a proper A2AClientError (if possible), we need to consult the event source
+    if is_sse_error:
+        response = getattr(event_source, 'response', None)
+    else:
+        # Only HTTPStatusError and some others have a response
+        response = getattr(err, 'response', None)
+
+    if response is not None:
+        status_code = response.status_code
+
+        try:
+            if is_sse_error:
+                response.read()
+
+            data = response.json()
+
+            if is_sse_error:
+                message = data['reason'] if 'reason' in data else message
+        except (httpx.DecodingError, ValueError):
+            data = response.text.strip()
+
+    return A2AClientError(data=data, message=message, status_code=status_code)

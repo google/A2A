@@ -1,4 +1,5 @@
 import mesop as me
+import re
 
 from state.state import AppState, StateMessage
 
@@ -25,6 +26,22 @@ def chat_bubble(message: StateMessage, key: str):
             progress_bar=show_progress_bar,
             progress_text=progress_text,
         )
+
+
+def replace_sign_in_with_google(content: str) -> str:
+    pattern = r'https://accounts\.google\.com/o/oauth2/auth\?[^\s"]+'
+
+    match = re.search(pattern, content)
+
+    if match:
+        content = content.replace(match.group(), f'''<a href="{match.group()}"
+   style="display: inline-flex; align-items: center; background: #fff; color: #3c4043; border: 1px solid #dadce0; border-radius: 4px; font-size: 14px; font-weight: 500; padding: 10px 16px; text-decoration: none; font-family: Roboto, sans-serif; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: box-shadow 0.2s ease;">
+  <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo"
+       style="height: 18px; margin-right: 12px;">
+  Sign in with Google
+</a>''')
+
+    return content
 
 
 def chat_box(
@@ -57,24 +74,52 @@ def chat_box(
                     ),
                 )
             else:
-                me.markdown(
-                    content,
-                    style=me.Style(
-                        font_family='Google Sans',
-                        box_shadow=(
-                            '0 1px 2px 0 rgba(60, 64, 67, 0.3), '
-                            '0 1px 3px 1px rgba(60, 64, 67, 0.15)'
+                if 'requires authentication: https://accounts.google.com/o/oauth2/auth' in content:
+                    pattern = r'https://accounts\.google\.com/o/oauth2/auth\?[^\s"]+'
+                    match = re.search(pattern, content)
+
+                    if match:
+                        auth_url = match.group()
+                        prefix = content.replace(auth_url, '')
+                        content = f'''<p>{prefix}</p><a href="{auth_url}"><img src="https://developers.google.com/static/identity/images/branding_guideline_sample_lt_rd_lg.svg" alt="Google logo" style="height: 18px;"></a>'''
+
+                    me.html(
+                        content,
+                        style=me.Style(
+                            font_family='Google Sans',
+                            box_shadow=(
+                                '0 1px 2px 0 rgba(60, 64, 67, 0.3), '
+                                '0 1px 3px 1px rgba(60, 64, 67, 0.15)'
+                            ),
+                            padding=me.Padding(top=1, left=15, right=15, bottom=1),
+                            margin=me.Margin(top=5, left=0, right=0, bottom=5),
+                            background=(
+                                me.theme_var('primary-container')
+                                if role == 'user'
+                                else me.theme_var('secondary-container')
+                            ),
+                            border_radius=15,
                         ),
-                        padding=me.Padding(top=1, left=15, right=15, bottom=1),
-                        margin=me.Margin(top=5, left=0, right=0, bottom=5),
-                        background=(
-                            me.theme_var('primary-container')
-                            if role == 'user'
-                            else me.theme_var('secondary-container')
+                    )
+                else:
+                    me.markdown(
+                        content,
+                        style=me.Style(
+                            font_family='Google Sans',
+                            box_shadow=(
+                                '0 1px 2px 0 rgba(60, 64, 67, 0.3), '
+                                '0 1px 3px 1px rgba(60, 64, 67, 0.15)'
+                            ),
+                            padding=me.Padding(top=1, left=15, right=15, bottom=1),
+                            margin=me.Margin(top=5, left=0, right=0, bottom=5),
+                            background=(
+                                me.theme_var('primary-container')
+                                if role == 'user'
+                                else me.theme_var('secondary-container')
+                            ),
+                            border_radius=15,
                         ),
-                        border_radius=15,
-                    ),
-                )
+                    )
     if progress_bar:
         with me.box(
             style=me.Style(

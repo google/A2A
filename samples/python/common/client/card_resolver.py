@@ -2,10 +2,7 @@ import json
 
 import httpx
 
-from common.types import (
-    A2AClientJSONError,
-    AgentCard,
-)
+from common.types import A2AClientError, AgentCard, httpx_error_to_a2a_error
 
 
 class A2ACardResolver:
@@ -20,4 +17,6 @@ class A2ACardResolver:
             try:
                 return AgentCard(**response.json())
             except json.JSONDecodeError as e:
-                raise A2AClientJSONError(str(e)) from e
+                raise A2AClientError(str(e)) from e
+            except httpx.HTTPError as e:
+                raise httpx_error_to_a2a_error(e)

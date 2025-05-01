@@ -5,7 +5,7 @@ import traceback
 
 from typing import Any
 
-from common.types import Message, Part, Task
+from common.types import Message, OAuthCallback, Part, Task
 from service.client.client import ConversationClient
 from service.types import (
     Conversation,
@@ -47,6 +47,16 @@ async def ListConversations() -> list[Conversation]:
 async def SendMessage(message: Message) -> str | None:
     client = ConversationClient(server_url)
     try:
+        # Pass the Demo UI OAuth Callback URI details in the metadata
+        if not message.metadata:
+            message.metadata = {}
+        message.metadata['oauth_callback'] = OAuthCallback(
+            redirect_uri=f'{server_url}/oauth/callback',
+            params={
+                'conversation_id': message.contextId,
+                'server_url': server_url,
+            }
+        )
         response = await client.send_message(SendMessageRequest(params=message))
         return response.result
     except Exception as e:
