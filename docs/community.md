@@ -11,7 +11,7 @@ to enable **seamless collaboration between AI agents across diverse frameworks
 and vendors**. By standardizing communication, A2A aims to unlock complex
 workflows, enhance productivity, and foster a new era of **"Agent
 Interoperability"**. Don't just take our word for it – see what the community is
-saying! [Test commit for docs CI - Ignore this text!]
+saying! [Another test commit for docs CI - Ignore this text!]
 
 ## The Word on the Street: Social Highlights
 
