@@ -16,6 +16,7 @@ from styles.styles import (
     SIDENAV_MIN_WIDTH,
 )
 
+
 async def refresh_app_state(e: mel.WebEvent):  # pylint: disable=unused-argument
     """Refresh app state event handler"""
     yield
@@ -31,32 +32,32 @@ def page_scaffold():
     app_state = me.state(AppState)
     action = (
         AsyncAction(
-            value=app_state,
-            duration_seconds=app_state.polling_interval)
+            value=app_state, duration_seconds=app_state.polling_interval
+        )
         if app_state
         else None
     )
-    async_poller(
-        action=action, trigger_event=refresh_app_state
-    )
+    async_poller(action=action, trigger_event=refresh_app_state)
 
-    sidenav("")
+    sidenav('')
 
     with me.box(
         style=me.Style(
-            display="flex",
-            flex_direction="column",
-            height="100%",
+            display='flex',
+            flex_direction='column',
+            height='100%',
             margin=me.Margin(
-                left=SIDENAV_MAX_WIDTH if app_state.sidenav_open else SIDENAV_MIN_WIDTH,
+                left=SIDENAV_MAX_WIDTH
+                if app_state.sidenav_open
+                else SIDENAV_MIN_WIDTH,
             ),
         ),
     ):
         with me.box(
             style=me.Style(
-                background=me.theme_var("background"),
-                height="100%",
-                overflow_y="scroll",
+                background=me.theme_var('background'),
+                height='100%',
+                overflow_y='scroll',
                 margin=me.Margin(bottom=20),
             )
         ):

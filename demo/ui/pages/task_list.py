@@ -9,6 +9,6 @@ def task_list_page(app_state: AppState):
     """Task List Page"""
     with page_scaffold():  # pylint: disable=not-context-manager
         with page_frame():
-            with header("Task List", "task"):
+            with header('Task List', 'task'):
                 pass
             task_card(app_state.task_list)

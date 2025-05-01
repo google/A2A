@@ -12,5 +12,6 @@ def conversation_page(app_state: AppState):
     state = me.state(AppState)
     with page_scaffold():  # pylint: disable=not-context-manager
         with page_frame():
-          with header("Conversation", "chat"): pass
-          conversation()
+            with header('Conversation', 'chat'):
+                pass
+            conversation()
