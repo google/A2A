@@ -23,13 +23,14 @@ packages = ["common", "hosts"]
 members = [
     "agents/crewai",
     "agents/google_adk",
+    "agents/google_adk_with_agent_auth",
     "agents/langgraph",
     "agents/marvin",
     "hosts/cli",
     "hosts/multiagent",
     "agents/llama_index_file_chat",
     "agents/semantickernel",
-    "agents/ag2"
+    "agents/ag2",
 ]
 
 [build-system]
