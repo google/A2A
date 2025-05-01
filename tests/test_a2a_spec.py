@@ -1,25 +1,26 @@
 # test_schema.py
 import json
-
 from datetime import datetime
 from pathlib import Path
 from uuid import uuid4
 
 import pytest
 
-
 # import types from a2a package
+from common.types import TaskResubscriptionRequest  # A2ARequest is a TypeAdapter
 from common.types import (
     A2ARequest,
-    AgentAuthentication,
     AgentCapabilities,
     AgentCard,
     AgentProvider,
     AgentSkill,
+    APIKeySecurityScheme,
     Artifact,
-    AuthenticationInfo,
+    AuthorizationCodeOAuthFlow,
+    BearerFormatSecurityScheme,
     CancelTaskRequest,
     CancelTaskResponse,
+    ClientCredentialsOAuthFlow,
     DataPart,
     FileContent,
     FilePart,
@@ -27,6 +28,8 @@ from common.types import (
     GetTaskPushNotificationResponse,
     GetTaskRequest,
     GetTaskResponse,
+    HTTPAuthSecurityScheme,
+    ImplicitOAuthFlow,
     InternalError,
     InvalidParamsError,
     InvalidRequestError,
@@ -34,6 +37,10 @@ from common.types import (
     JSONRPCError,
     Message,
     MethodNotFoundError,
+    OAuth2SecurityScheme,
+    OAuthFlows,
+    OpenIdConnectSecurityScheme,
+    PasswordOAuthFlow,
     PushNotificationConfig,
     PushNotificationNotSupportedError,
     SendTaskRequest,
@@ -48,7 +55,6 @@ from common.types import (
     TaskNotFoundError,
     TaskPushNotificationConfig,
     TaskQueryParams,
-    TaskResubscriptionRequest,  # A2ARequest is a TypeAdapter
     TaskSendParams,
     TaskState,
     TaskStatus,
@@ -57,7 +63,6 @@ from common.types import (
     UnsupportedOperationError,
 )
 from jsonschema import Draft7Validator, RefResolver, ValidationError, validate
-
 
 # Path to the specification
 SCHEMA_FILE = Path(__file__).parent.parent / 'specification/json/a2a.json'
@@ -89,9 +94,7 @@ def resolver(schema):
 def validate_instance(instance_data, definition_name, schema, resolver):
     """Helper function to validate instance data against a specific definition."""
     definition_schema = schema['$defs'].get(definition_name)
-    assert definition_schema is not None, (
-        f'Definition {definition_name} not found in schema'
-    )
+    assert definition_schema is not None, f'Definition {definition_name} not found in schema'
 
     try:
         # Validate the instance against its specific definition, providing the resolver
@@ -131,9 +134,7 @@ def test_text_part(schema, resolver):
 
 
 def test_file_content(schema, resolver):
-    instance_bytes = FileContent(
-        name='test.bin', mimeType='application/octet-stream', bytes='YWFh'
-    )  # "aaa" in base64
+    instance_bytes = FileContent(name='test.bin', mimeType='application/octet-stream', bytes='YWFh')  # "aaa" in base64
     validate_instance(
         instance_bytes.model_dump(mode='json', exclude_none=True),
         'FileContent',
@@ -150,9 +151,7 @@ def test_file_content(schema, resolver):
 
 
 def test_file_part(schema, resolver):
-    file_content = FileContent(
-        uri='data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=='
-    )
+    file_content = FileContent(uri='data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==')
     instance = FilePart(file=file_content, metadata={'encoding': 'base64'})
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
@@ -212,9 +211,7 @@ def test_task_status(schema, resolver):
     validate_instance(dumped_data, 'TaskStatus', schema, resolver)
 
     instance_completed = TaskStatus(state=TaskState.COMPLETED, timestamp=ts)
-    dumped_completed = instance_completed.model_dump(
-        mode='json', exclude_none=True
-    )
+    dumped_completed = instance_completed.model_dump(mode='json', exclude_none=True)
     assert dumped_completed['timestamp'] == ts.isoformat()  # Check serializer
     validate_instance(dumped_completed, 'TaskStatus', schema, resolver)
 
@@ -269,9 +266,7 @@ def test_task(schema, resolver):
         schema,
         resolver,
     )
-    instance_minimal = Task(
-        id=uuid4().hex, status=TaskStatus(state=TaskState.SUBMITTED)
-    )
+    instance_minimal = Task(id=uuid4().hex, status=TaskStatus(state=TaskState.SUBMITTED))
     validate_instance(
         instance_minimal.model_dump(mode='json', exclude_none=True),
         'Task',
@@ -282,18 +277,14 @@ def test_task(schema, resolver):
 
 def test_task_status_update_event(schema, resolver):
     status = TaskStatus(state=TaskState.WORKING)
-    instance = TaskStatusUpdateEvent(
-        id=uuid4().hex, status=status, final=False, metadata={'update_seq': 1}
-    )
+    instance = TaskStatusUpdateEvent(id=uuid4().hex, status=status, final=False, metadata={'update_seq': 1})
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
         'TaskStatusUpdateEvent',
         schema,
         resolver,
     )
-    instance_final = TaskStatusUpdateEvent(
-        id=uuid4().hex, status=TaskStatus(state=TaskState.FAILED), final=True
-    )
+    instance_final = TaskStatusUpdateEvent(id=uuid4().hex, status=TaskStatus(state=TaskState.FAILED), final=True)
     validate_instance(
         instance_final.model_dump(mode='json', exclude_none=True),
         'TaskStatusUpdateEvent',
@@ -321,9 +312,7 @@ def test_task_artifact_update_event(schema, resolver):
         schema,
         resolver,
     )
-    instance_final = TaskArtifactUpdateEvent(
-        id=uuid4().hex, artifact=artifact, final=True
-    )
+    instance_final = TaskArtifactUpdateEvent(id=uuid4().hex, artifact=artifact, final=True)
     validate_instance(
         instance_final.model_dump(mode='json', exclude_none=True),
         'TaskArtifactUpdateEvent',
@@ -333,45 +322,13 @@ def test_task_artifact_update_event(schema, resolver):
 
 
 # --- Configuration/Params ---
-def test_authentication_info(schema, resolver):
-    instance = AuthenticationInfo(schemes=['bearer'], credentials='token123')
-    validate_instance(
-        instance.model_dump(mode='json', exclude_none=True),
-        'AuthenticationInfo',
-        schema,
-        resolver,
-    )
-    # Test extra fields allowed by schema (additionalProperties: {})
-    instance_extra = AuthenticationInfo(
-        schemes=['basic'], extra_field='some_value'
-    )
-    validate_instance(
-        instance_extra.model_dump(mode='json', exclude_none=True),
-        'AuthenticationInfo',
-        schema,
-        resolver,
-    )
-
-
 def test_push_notification_config(schema, resolver):
-    auth = AuthenticationInfo(schemes=['bearer'], credentials='abc')
-    instance = PushNotificationConfig(
-        url='https://example.com/callback', token='secret', authentication=auth
-    )
+    sec_recs = [{'apiKey': []}]
+    instance = PushNotificationConfig(url='https://example.com/callback', token='secret', security=sec_recs)
+    validate_instance(instance.model_dump(mode='json', exclude_none=True), 'PushNotificationConfig', schema, resolver)
+    instance_no_auth = PushNotificationConfig(url='http://localhost/notify', token='simple')
     validate_instance(
-        instance.model_dump(mode='json', exclude_none=True),
-        'PushNotificationConfig',
-        schema,
-        resolver,
-    )
-    instance_no_auth = PushNotificationConfig(
-        url='http://localhost/notify', token='simple'
-    )
-    validate_instance(
-        instance_no_auth.model_dump(mode='json', exclude_none=True),
-        'PushNotificationConfig',
-        schema,
-        resolver,
+        instance_no_auth.model_dump(mode='json', exclude_none=True), 'PushNotificationConfig', schema, resolver
     )
 
 
@@ -383,9 +340,7 @@ def test_task_query_params(schema, resolver):
         schema,
         resolver,
     )
-    instance = TaskQueryParams(
-        id=uuid4().hex, historyLength=2, metadata={'filter': 'active'}
-    )
+    instance = TaskQueryParams(id=uuid4().hex, historyLength=2, metadata={'filter': 'active'})
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
         'TaskQueryParams',
@@ -420,9 +375,7 @@ def test_task_id_params(schema, resolver):
 
 def test_task_send_params(schema, resolver):
     msg = Message(role='user', parts=[TextPart(text='Start processing')])
-    pushNotificationConfig = PushNotificationConfig(
-        url='http://...', token='tok'
-    )
+    pushNotificationConfig = PushNotificationConfig(url='http://...', token='tok')
     instance = TaskSendParams(
         id=uuid4().hex,
         sessionId=uuid4().hex,  # Explicit session ID
@@ -440,20 +393,14 @@ def test_task_send_params(schema, resolver):
 
     # Test with default session ID
     instance_default_session = TaskSendParams(id=uuid4().hex, message=msg)
-    dumped_data = instance_default_session.model_dump(
-        mode='json', exclude_none=True
-    )
+    dumped_data = instance_default_session.model_dump(mode='json', exclude_none=True)
     assert isinstance(dumped_data.get('sessionId'), str)  # Check factory worked
     validate_instance(dumped_data, 'TaskSendParams', schema, resolver)
 
 
 def test_task_push_notification_config(schema, resolver):
-    pushNotificationConfig = PushNotificationConfig(
-        url='http://...', token='tok'
-    )
-    instance = TaskPushNotificationConfig(
-        id=uuid4().hex, pushNotificationConfig=pushNotificationConfig
-    )
+    pushNotificationConfig = PushNotificationConfig(url='http://...', token='tok')
+    instance = TaskPushNotificationConfig(id=uuid4().hex, pushNotificationConfig=pushNotificationConfig)
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
         'TaskPushNotificationConfig',
@@ -466,9 +413,7 @@ def test_task_push_notification_config(schema, resolver):
 
 
 def test_jsonrpc_error(schema, resolver):
-    instance = JSONRPCError(
-        code=-32000, message='Server error', data={'details': 'trace...'}
-    )
+    instance = JSONRPCError(code=-32000, message='Server error', data={'details': 'trace...'})
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
         'JSONRPCError',
@@ -509,9 +454,7 @@ def test_specific_errors(error_cls, schema, resolver):
     )
 
     # Add data if allowed (not const null) and test again
-    if 'data' in error_cls.model_fields and error_cls.model_fields[
-        'data'
-    ].annotation is not type(None):
+    if 'data' in error_cls.model_fields and error_cls.model_fields['data'].annotation is not type(None):
         instance_with_data = error_cls(data={'info': 'more'})
         validate_instance(
             instance_with_data.model_dump(mode='json', exclude_none=True),
@@ -522,12 +465,8 @@ def test_specific_errors(error_cls, schema, resolver):
 
 
 def test_send_task_request(schema, resolver):
-    params = TaskSendParams(
-        id='t1', message=Message(role='user', parts=[TextPart(text='go')])
-    )
-    instance = SendTaskRequest(
-        params=params, id=1
-    )  # Use default method and jsonrpc
+    params = TaskSendParams(id='t1', message=Message(role='user', parts=[TextPart(text='go')]))
+    instance = SendTaskRequest(params=params, id=1)  # Use default method and jsonrpc
     dumped_data = instance.model_dump(mode='json', exclude_none=True)
     assert dumped_data['method'] == 'tasks/send'
     validate_instance(dumped_data, 'SendTaskRequest', schema, resolver)
@@ -545,9 +484,7 @@ def test_send_task_response(schema, resolver):
     )
 
     # Result case 2: TaskStatusUpdateEvent
-    update_result = TaskStatusUpdateEvent(
-        id='t1', status=TaskStatus(state=TaskState.WORKING)
-    )
+    update_result = TaskStatusUpdateEvent(id='t1', status=TaskStatus(state=TaskState.WORKING))
     instance_update = SendTaskStreamingResponse(id=1, result=update_result)
     validate_instance(
         instance_update.model_dump(mode='json', exclude_none=True),
@@ -567,12 +504,8 @@ def test_send_task_response(schema, resolver):
     )
 
     artifact = Artifact(name='result.txt', parts=[TextPart(text='Done')])
-    task_artifact_update_event = TaskArtifactUpdateEvent(
-        id='t1', artifact=artifact
-    )
-    response_event = SendTaskStreamingResponse(
-        id=1, result=task_artifact_update_event
-    )
+    task_artifact_update_event = TaskArtifactUpdateEvent(id='t1', artifact=artifact)
+    response_event = SendTaskStreamingResponse(id=1, result=task_artifact_update_event)
     validate_instance(
         response_event.model_dump(mode='json', exclude_none=True),
         'SendTaskStreamingResponse',
@@ -640,24 +573,18 @@ def test_cancel_task_response(schema, resolver):
 def test_set_task_push_notification_request(schema, resolver):
     params = TaskPushNotificationConfig(
         id='t1',
-        pushNotificationConfig=PushNotificationConfig(
-            url='http://...', token='t'
-        ),
+        pushNotificationConfig=PushNotificationConfig(url='http://...', token='t'),
     )
     instance = SetTaskPushNotificationRequest(params=params, id=5)
     dumped_data = instance.model_dump(mode='json', exclude_none=True)
     assert dumped_data['method'] == 'tasks/pushNotification/set'
-    validate_instance(
-        dumped_data, 'SetTaskPushNotificationRequest', schema, resolver
-    )
+    validate_instance(dumped_data, 'SetTaskPushNotificationRequest', schema, resolver)
 
 
 def test_set_task_push_notification_response(schema, resolver):
     cb_info = TaskPushNotificationConfig(
         id='t1',
-        pushNotificationConfig=PushNotificationConfig(
-            url='http://...', token='t'
-        ),
+        pushNotificationConfig=PushNotificationConfig(url='http://...', token='t'),
     )
     instance = SetTaskPushNotificationResponse(id=5, result=cb_info)
     validate_instance(
@@ -682,17 +609,13 @@ def test_get_task_push_notification_request(schema, resolver):
     instance = GetTaskPushNotificationRequest(params=params, id=6)
     dumped_data = instance.model_dump(mode='json', exclude_none=True)
     assert dumped_data['method'] == 'tasks/pushNotification/get'
-    validate_instance(
-        dumped_data, 'GetTaskPushNotificationRequest', schema, resolver
-    )
+    validate_instance(dumped_data, 'GetTaskPushNotificationRequest', schema, resolver)
 
 
 def test_get_task_push_notification_response(schema, resolver):
     cb_info = TaskPushNotificationConfig(
         id='t1',
-        pushNotificationConfig=PushNotificationConfig(
-            url='http://...', token='t'
-        ),
+        pushNotificationConfig=PushNotificationConfig(url='http://...', token='t'),
     )
     instance = GetTaskPushNotificationResponse(id=6, result=cb_info)
     validate_instance(
@@ -726,9 +649,7 @@ def test_task_subscription_request(schema, resolver):
     instance = TaskResubscriptionRequest(params=params, id=7)
     dumped_data = instance.model_dump(mode='json', exclude_none=True)
     assert dumped_data['method'] == 'tasks/resubscribe'
-    validate_instance(
-        dumped_data, 'TaskResubscriptionRequest', schema, resolver
-    )
+    validate_instance(dumped_data, 'TaskResubscriptionRequest', schema, resolver)
 
 
 # --- A2ARequest Union ---
@@ -747,9 +668,7 @@ def test_task_subscription_request(schema, resolver):
         SetTaskPushNotificationRequest(
             params=TaskPushNotificationConfig(
                 id='t5',
-                pushNotificationConfig=PushNotificationConfig(
-                    url='http://..', token='.'
-                ),
+                pushNotificationConfig=PushNotificationConfig(url='http://..', token='.'),
             )
         ),
         GetTaskPushNotificationRequest(params=TaskIdParams(id='t6')),
@@ -759,9 +678,7 @@ def test_task_subscription_request(schema, resolver):
 def test_a2a_request_union(request_instance, schema, resolver):
     # The A2ARequest definition itself uses oneOf and discriminator
     a2a_schema_ref = {'$ref': '#/$defs/A2ARequest'}
-    instance_data = A2ARequest.dump_python(
-        request_instance, mode='json', exclude_none=True
-    )
+    instance_data = A2ARequest.dump_python(request_instance, mode='json', exclude_none=True)
 
     try:
         # Validate directly against the A2ARequest definition reference
@@ -800,9 +717,7 @@ def test_agent_provider(schema, resolver):
 
 
 def test_agent_capabilities(schema, resolver):
-    instance = AgentCapabilities(
-        streaming=True, pushNotifications=False, stateTransitionHistory=True
-    )
+    instance = AgentCapabilities(streaming=True, pushNotifications=False, stateTransitionHistory=True)
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
         'AgentCapabilities',
@@ -813,16 +728,6 @@ def test_agent_capabilities(schema, resolver):
     validate_instance(
         instance_default.model_dump(mode='json', exclude_none=True),
         'AgentCapabilities',
-        schema,
-        resolver,
-    )
-
-
-def test_agent_authentication(schema, resolver):
-    instance = AgentAuthentication(schemes=['api_key'], credentials=None)
-    validate_instance(
-        instance.model_dump(mode='json', exclude_none=True),
-        'AgentAuthentication',
         schema,
         resolver,
     )
@@ -856,7 +761,6 @@ def test_agent_skill(schema, resolver):
 def test_agent_card(schema, resolver):
     provider = AgentProvider(organization='AI Inc.')
     caps = AgentCapabilities(streaming=True)
-    auth = AgentAuthentication(schemes=['bearer'])
     skill = AgentSkill(id='translate', name='Translation')
     instance = AgentCard(
         name='Multilingual Agent',
@@ -866,9 +770,47 @@ def test_agent_card(schema, resolver):
         version='1.2.0',
         documentationUrl='https://agent.example.com/docs',
         capabilities=caps,
-        authentication=auth,
         defaultInputModes=['text'],
         defaultOutputModes=['text'],
+        securitySchemes={
+            'apiKey': APIKeySecurityScheme(
+                location='query',
+                name='key',
+            ),
+            'bearerFormat': BearerFormatSecurityScheme(
+                bearerFormat='JWT',
+                scheme='bearer',
+            ),
+            'httpAuth': HTTPAuthSecurityScheme(
+                scheme='basic',
+            ),
+            'oauth2': OAuth2SecurityScheme(
+                flows=OAuthFlows(
+                    implicit=ImplicitOAuthFlow(
+                        authorizationUrl='https://example.com/oauth/authorize',
+                        refreshUrl='https://example.com/oauth/token',
+                        scopes={},
+                    ),
+                    password=PasswordOAuthFlow(
+                        tokenUrl='https://example.com/oauth/token',
+                        scopes={},
+                    ),
+                    clientCredentials=ClientCredentialsOAuthFlow(
+                        tokenUrl='https://example.com/oauth/token',
+                        scopes={},
+                    ),
+                    authorizationCode=AuthorizationCodeOAuthFlow(
+                        authorizationUrl='https://example.com/oauth/authorize',
+                        tokenUrl='https://example.com/oauth/token',
+                        scopes={},
+                    ),
+                ),
+            ),
+            'openIdConnect': OpenIdConnectSecurityScheme(
+                openIdConnectUrl='https://example.com/oauth/authorize',
+            ),
+        },
+        security=[{'apiKey': []}],
         skills=[skill],
     )
     validate_instance(

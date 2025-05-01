@@ -1,16 +1,75 @@
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, Any, Literal, Self, Union, List, Optional
+from typing import Annotated, Any, List, Literal, Optional, Self, Union
 from uuid import uuid4
 
-from pydantic import (
-    BaseModel,
-    ConfigDict,
-    Field,
-    TypeAdapter,
-    field_serializer,
-    model_validator,
-)
+from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_serializer, model_validator
+
+
+class ImplicitOAuthFlow(BaseModel):
+    authorizationUrl: str
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+
+
+class PasswordOAuthFlow(BaseModel):
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+    tokenUrl: str
+
+
+class ClientCredentialsOAuthFlow(BaseModel):
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+    tokenUrl: str
+
+
+class AuthorizationCodeOAuthFlow(BaseModel):
+    authorizationUrl: str
+    refreshUrl: str | None = None
+    scopes: dict[str, str]
+    tokenUrl: str
+
+
+class OAuthFlows(BaseModel):
+    authorizationCode: AuthorizationCodeOAuthFlow | None = None
+    clientCredentials: ClientCredentialsOAuthFlow | None = None
+    implicit: ImplicitOAuthFlow | None = None
+    password: PasswordOAuthFlow | None = None
+
+
+class APIKeySecurityScheme(BaseModel):
+    description: str | None = None
+    location: str = Field(serialization_alias='in')
+    name: str
+    type: Literal['apiKey'] = 'apiKey'
+
+    model_config = ConfigDict(serialize_by_alias=True)
+
+
+class HTTPAuthSecurityScheme(BaseModel):
+    description: str | None = None
+    scheme: str
+    type: Literal['http'] = 'http'
+
+
+class BearerFormatSecurityScheme(BaseModel):
+    description: str | None = None
+    bearerFormat: str | None = None
+    scheme: str
+    type: Literal['http'] = 'http'
+
+
+class OAuth2SecurityScheme(BaseModel):
+    description: str | None = None
+    flows: OAuthFlows
+    type: Literal['oauth2'] = 'oauth2'
+
+
+class OpenIdConnectSecurityScheme(BaseModel):
+    description: str | None = None
+    openIdConnectUrl: str
+    type: Literal['openIdConnect'] = 'openIdConnect'
 
 
 class TaskState(str, Enum):
@@ -38,13 +97,9 @@ class FileContent(BaseModel):
     @model_validator(mode='after')
     def check_content(self) -> Self:
         if not (self.bytes or self.uri):
-            raise ValueError(
-                "Either 'bytes' or 'uri' must be present in the file data"
-            )
+            raise ValueError("Either 'bytes' or 'uri' must be present in the file data")
         if self.bytes and self.uri:
-            raise ValueError(
-                "Only one of 'bytes' or 'uri' can be present in the file data"
-            )
+            raise ValueError("Only one of 'bytes' or 'uri' can be present in the file data")
         return self
 
 
@@ -60,9 +115,7 @@ class DataPart(BaseModel):
     metadata: dict[str, Any] | None = None
 
 
-Part = Annotated[
-    TextPart | FilePart | DataPart, Field(discriminator='type')
-]
+Part = Annotated[TextPart | FilePart | DataPart, Field(discriminator='type')]
 
 
 class Message(BaseModel):
@@ -118,17 +171,18 @@ class TaskArtifactUpdateEvent(BaseModel):
     metadata: dict[str, Any] | None = None
 
 
-class AuthenticationInfo(BaseModel):
-    model_config = ConfigDict(extra='allow')
-
-    schemes: list[str]
-    credentials: str | None = None
-
-
 class PushNotificationConfig(BaseModel):
     url: str
     token: str | None = None
-    authentication: AuthenticationInfo | None = None
+    scheme: (
+        APIKeySecurityScheme
+        | HTTPAuthSecurityScheme
+        | BearerFormatSecurityScheme
+        | OAuth2SecurityScheme
+        | OpenIdConnectSecurityScheme
+        | None
+    ) = None
+    credential: str | None = None
 
 
 class TaskIdParams(BaseModel):
@@ -256,9 +310,7 @@ class CancelTaskResponse(JSONRPCResponse):
 
 
 class SetTaskPushNotificationRequest(JSONRPCRequest):
-    method: Literal['tasks/pushNotification/set',] = (
-        'tasks/pushNotification/set'
-    )
+    method: Literal['tasks/pushNotification/set',] = 'tasks/pushNotification/set'
     params: TaskPushNotificationConfig
 
 
@@ -267,9 +319,7 @@ class SetTaskPushNotificationResponse(JSONRPCResponse):
 
 
 class GetTaskPushNotificationRequest(JSONRPCRequest):
-    method: Literal['tasks/pushNotification/get',] = (
-        'tasks/pushNotification/get'
-    )
+    method: Literal['tasks/pushNotification/get',] = 'tasks/pushNotification/get'
     params: TaskIdParams
 
 
@@ -285,15 +335,15 @@ class TaskResubscriptionRequest(JSONRPCRequest):
 A2ARequest = TypeAdapter(
     Annotated[
         (
-            SendTaskRequest |
-            GetTaskRequest |
-            CancelTaskRequest |
-            SetTaskPushNotificationRequest |
-            GetTaskPushNotificationRequest |
-            TaskResubscriptionRequest |  # deprecated
-            SendTaskStreamingRequest |  # deprecated
-            SendMessageRequest |
-            SendMessageStreamRequest
+            SendTaskRequest
+            | GetTaskRequest
+            | CancelTaskRequest
+            | SetTaskPushNotificationRequest
+            | GetTaskPushNotificationRequest
+            | TaskResubscriptionRequest  # deprecated
+            | SendTaskStreamingRequest  # deprecated
+            | SendMessageRequest
+            | SendMessageStreamRequest
         ),
         Field(discriminator='method'),
     ]
@@ -373,11 +423,6 @@ class AgentCapabilities(BaseModel):
     stateTransitionHistory: bool = False
 
 
-class AgentAuthentication(BaseModel):
-    schemes: list[str]
-    credentials: str | None = None
-
-
 class AgentSkill(BaseModel):
     id: str
     name: str
@@ -396,10 +441,21 @@ class AgentCard(BaseModel):
     version: str
     documentationUrl: str | None = None
     capabilities: AgentCapabilities
-    authentication: AgentAuthentication | None = None
     defaultInputModes: list[str] = ['text']
     defaultOutputModes: list[str] = ['text']
-    skills: list[AgentSkill]
+    securitySchemes: (
+        dict[
+            str,
+            APIKeySecurityScheme
+            | HTTPAuthSecurityScheme
+            | BearerFormatSecurityScheme
+            | OAuth2SecurityScheme
+            | OpenIdConnectSecurityScheme,
+        ]
+        | None
+    ) = None
+    security: List[dict[str, List[str]]] | None = None
+    skills: List[AgentSkill]
 
 
 class A2AClientError(Exception):
