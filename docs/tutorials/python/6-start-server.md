@@ -22,7 +22,7 @@ async def on_send_task(
 async def on_send_task_subscribe(
   self,
   request: SendTaskStreamingRequest
-) -> AsyncInterable[SendTaskStreamingResponse] | JSONRPCResponse:
+) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
   """
   This method subscribes the caller to future updates regarding a task.
   The caller will receive a response and additionally receive subscription

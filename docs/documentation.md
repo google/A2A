@@ -35,7 +35,7 @@ The A2A protocol has three actors:
 - **Client**
   The entity (service, agent, application) that is requesting an action from an opaque agent on behalf of the user.
 - **Remote Agent (Server)**
-  The opaque ("blackbox") agent which is the A2A server.
+  The opaque ("black box") agent which is the A2A server.
 
 ### Transport
 
@@ -51,7 +51,7 @@ A2A clients and servers can use standard request/response patterns and poll for 
 
 A2A models agents as enterprise applications (and can do so because A2A agents are opaque and do not share tools and resources). This quickly brings enterprise-readiness to agentic interop.
 
-A2A follows [OpenAPI’s Authentication specification](https://swagger.io/docs/specification/v3_0/authentication/) for authentication. Importantly, A2A agents do not exchange identity information within the A2A protocol. Instead, they obtain materials (such as tokens) out of band and transmit materials in HTTP headers and not in A2A payloads.
+A2A follows [OpenAPI's Authentication specification](https://swagger.io/docs/specification/v3_0/authentication/) for authentication. Importantly, A2A agents do not exchange identity information within the A2A protocol. Instead, they obtain materials (such as tokens) out of band and transmit materials in HTTP headers and not in A2A payloads.
 
 While A2A does not transmit identity in-band, servers do send authentication requirements in A2A payloads. At minimum, servers are expected to publish their requirements in their [Agent Card](#agent-card). Thoughts about discovering agent cards are in [this topic](topics/agent_discovery.md?id=discovering-agent-cards).
 
@@ -61,11 +61,11 @@ Clients should use one of the servers published authentication protocols to auth
 
 ## Agent Card
 
-Remote Agents that support A2A are required to publish an **Agent Card** in JSON format describing the agent’s capabilities/skills and authentication mechanism. Clients use the Agent Card information to identify the best agent that can perform a task and leverage A2A to communicate with that remote agent.
+Remote Agents that support A2A are required to publish an **Agent Card** in JSON format describing the agent's capabilities/skills and authentication mechanism. Clients use the Agent Card information to identify the best agent that can perform a task and leverage A2A to communicate with that remote agent.
 
 ### Discovery
 
-We recommend agents host their Agent Card at `https://DOMAIN/.well-known/agent.json`. This is compatible with a DNS approach where the client finds the server IP via DNS and sends an HTTP `GET` to retrieve the agent card. We also anticipate that systems will maintain private registries (e.g. an ‘Agent Catalog’ or private marketplace, etc). More discussion can be found in [this document](topics/agent_discovery.md?id=discovering-agent-cards).
+We recommend agents host their Agent Card at `https://DOMAIN/.well-known/agent.json`. This is compatible with a DNS approach where the client finds the server IP via DNS and sends an HTTP `GET` to retrieve the agent card. We also anticipate that systems will maintain private registries (e.g. an 'Agent Catalog' or private marketplace, etc). More discussion can be found in [this document](topics/agent_discovery.md?id=discovering-agent-cards).
 
 ### Representation
 
@@ -119,7 +119,7 @@ interface AgentCard {
     // description of the skill - will be used by the client or a human
     // as a hint to understand what the skill does.
     description: string;
-    // Set of tagwords describing classes of capabilities for this specific
+    // Set of tag words describing classes of capabilities for this specific
     // skill (e.g. "cooking", "customer support", "billing")
     tags: string[];
     // The set of example scenarios that the skill can perform.
@@ -136,7 +136,7 @@ interface AgentCard {
 
 ## Agent-to-Agent Communication
 
-The communication between a Client and a Remote Agent is oriented towards **_task completion_** where agents collaboratively fulfill an end-user’s request. A Task object allows a Client and a Remote Agent to collaborate for completing the submitted task.
+The communication between a Client and a Remote Agent is oriented towards **_task completion_** where agents collaboratively fulfill an end-user's request. A Task object allows a Client and a Remote Agent to collaborate for completing the submitted task.
 
 A task can be completed by a remote agent immediately or it can be long-running. For long-running tasks, the client may poll the agent for fetching the latest status. Agents can also push notifications to the client via SSE (if connected) or through an external notification service.
 

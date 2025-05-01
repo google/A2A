@@ -23,7 +23,7 @@ This conforms to the skills section of the [Agent Card](documentation?id=represe
   // description of the skill - will be used by the client or a human
   // as a hint to understand what the skill does.
   description: string;
-  // Set of tagwords describing classes of capabilities for this specific
+  // Set of tag words describing classes of capabilities for this specific
   // skill (e.g. "cooking", "customer support", "billing")
   tags: string[];
   // The set of example scenarios that the skill can perform.

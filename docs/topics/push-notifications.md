@@ -4,15 +4,15 @@
 
 - [Remote Agent to Client Updates](#remote-agent-to-client-updates)
   - [Connected](#connected)
-    - [Disconnected](#disconnected)
-    - [Setting Task Notifications](#setting-task-notifications)
-    - [Agent Security](#agent-security)
-    - [Notification Receiver Security](#notification-receiver-security)
+  - [Disconnected](#disconnected)
+  - [Setting Task Notifications](#setting-task-notifications)
+  - [Agent Security](#agent-security)
+  - [Notification Receiver Security](#notification-receiver-security)
       - [Asymmetric keys](#asymmetric-keys)
       - [Symmetric keys](#symmetric-keys)
       - [OAuth](#oauth)
       - [Bearer Token](#bearer-token)
-    - [Other Considerations](#other-considerations)
+  - [Other Considerations](#other-considerations)
       - [Replay Prevention](#replay-prevention)
       - [Key Rotation](#key-rotation)
 
@@ -66,7 +66,7 @@ For contrived scenarios with isolated client-agent pairs (e.g. local service mes
 
 ## Setting Task Notifications
 
-Clients need to set task push notification config to asynchronously receive task updates. They should generate a taskId and set the push notification configuration for the same using “tasks/pushNotification/set” RPC or directly in the `pushNotification` param of "tasks/send", "tasks/sendSubscribe".
+Clients need to set task push notification config to asynchronously receive task updates. They should generate a taskId and set the push notification configuration for the same using "tasks/pushNotification/set" RPC or directly in the `pushNotification` param of "tasks/send", "tasks/sendSubscribe".
 
 <pre>
 interface PushNotificationConfig {
@@ -168,7 +168,7 @@ Agents should not blindly trust the push notification URL specified by the clien
 
    - The challenge request can be the same push notification URL but with a validationToken provided either as a URL query param or a header.
    - The notification service (or the client in simple cases) should respond to challenge request by returning the same validationToken.
-   - This seems simple but it helps avoid tricking remote agent into DDOS-ing a URL by a malicious client.
+   - This seems simple but it helps avoid tricking remote agent into DDoS-ing a URL by a malicious client.
    - Agents can issue this challenge request one-time when the push notification url is registered or keep checking this URL periodically.
    <pre>
    GET https://abc.com/callback-path?validationToken=randomString
@@ -190,7 +190,7 @@ Agents should not blindly trust the push notification URL specified by the clien
 
 Notification Receivers should check the authenticity of the notifications they are receiving. A few ways they can do that are described as follows. Also, a collection of ideas for notification security can be found at https://webhooks.fyi
 
-An example of push notifications using JWT + JWKS using assymetric keys has been added in [LangGraph](https://github.com/google/A2A/blob/main/samples/python/agents/langgraph/__main__.py) and [CLI Host](https://github.com/google/A2A/blob/main/samples/python/hosts/cli/__main__.py)
+An example of push notifications using JWT + JWKS using asymmetric keys has been added in [LangGraph](https://github.com/google/A2A/blob/main/samples/python/agents/langgraph/__main__.py) and [CLI Host](https://github.com/google/A2A/blob/main/samples/python/hosts/cli/__main__.py)
 
 #### Asymmetric keys
 
@@ -223,7 +223,7 @@ Since this is part of a request in plain-text, this has a chance of being leaked
 
 #### Replay Prevention
 
-Use iat in JWT or other header to describe the event timestamp. Ideally any event older than 5 mins should be rejected. This provides some protection from replay attacks.
+Use [`iat` in JWT](https://mojoauth.com/glossary/jwt-issued-at/) or other header to describe the event timestamp. Ideally any event older than 5 mins should be rejected. This provides some protection from replay attacks.
 The timestamp should also be part of the overall request data which is fed into calculation of request signature. This validates the authenticity of timestamps as well.
 
 #### Key Rotation

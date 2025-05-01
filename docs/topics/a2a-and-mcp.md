@@ -1,6 +1,6 @@
 # A2A ❤️ MCP
 
-**TLDR;** Agentic applications need both A2A and MCP. We recommend MCP for tools and A2A for agents.
+**TL;DR;** Agentic applications need both A2A and MCP. We recommend MCP for tools and A2A for agents.
 
 <!-- TOC -->
 
@@ -20,13 +20,13 @@ Standard protocols are essential for enabling agentic interoperability, particul
 
 ## Complementary
 
-[Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is the emerging standard for connecting LLMs with data, resources, and tools. We already observe MCP standardizing ‘function calling’ across different models and frameworks. This is creating an ecosystem of tool service providers and dramatically lowering the complexity to connect agents with tools and data. We expect this trend to continue as more frameworks, service providers, and platforms adopt MCP.
+[Model Context Protocol](https://modelcontextprotocol.io/) (MCP) is the emerging standard for connecting LLMs with data, resources, and tools. We already observe MCP standardizing 'function calling' across different models and frameworks. This is creating an ecosystem of tool service providers and dramatically lowering the complexity to connect agents with tools and data. We expect this trend to continue as more frameworks, service providers, and platforms adopt MCP.
 
 A2A is focused on a different problem. A2A is an application level protocol that enables agents to collaborate in their natural modalities. It allows agents to communicate as _agents_ (or as users) instead of as tools. We hope that A2A gains adoption as a complement to MCP that enables ecosystems of agents and will be working in the open with the community to make this happen.
 
 ## Example
 
-Let’s look at an example:
+Let's look at an example:
 
 > Consider an auto repair shop that fixes cars. The shop employs autonomous workers who use special-purpose tools (such as vehicle jacks, multimeters, and socket wrenches) to diagnose and repair problems. The workers often have to diagnose and repair problems they have not seen before. The repair process can involve extensive conversations with a customer, research, and working with part suppliers.
 
