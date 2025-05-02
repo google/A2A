@@ -1,0 +1,12 @@
+{
+    "rules": {
+      "terminology": {
+        "defaultTerms": true, 
+        "exclude": [
+          "README",
+          "VS Code",
+          "website"
+        ]
+      }
+    }
+}
