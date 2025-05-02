@@ -29,6 +29,7 @@ members = [
     "hosts/multiagent",
     "agents/llama_index_file_chat",
     "agents/semantickernel",
+    "agents/mindsdb",
     "agents/ag2"
 ]
 
