@@ -144,11 +144,11 @@ async def completeTask(
     notification_receiver_port: int,
     taskId,
     sessionId,
+    prompt: str = '\nWhat do you want to send to the agent? (:q or quit to exit)',
 ):
-    prompt = click.prompt(
-        '\nWhat do you want to send to the agent? (:q or quit to exit)'
-    )
-    if prompt == ':q' or prompt == 'quit':
+    prompt_response = click.prompt(prompt)
+    
+    if prompt_response == ':q' or prompt_response == 'quit':
         return False
 
     message = {
@@ -156,7 +156,7 @@ async def completeTask(
         'parts': [
             {
                 'type': 'text',
-                'text': prompt,
+                'text': prompt_response,
             }
         ],
     }
@@ -201,8 +201,25 @@ async def completeTask(
         response_stream = client.send_task_streaming(payload)
         async for result in response_stream:
             print(
-                f'stream event => {result.model_dump_json(exclude_none=True)}'
+                f'stream event =>\n{result.model_dump_json(exclude_none=True, indent=2)}\n'
             )
+            if result.result.status.state == TaskState.INPUT_REQUIRED:
+                try:
+                    # Assuming the input request prompt is the first part of the message
+                    input_request_prompt = result.result.status.message.parts[0].text
+                except:
+                    input_request_prompt = None
+
+                return await completeTask(
+                    client,
+                    streaming,
+                    use_push_notifications,
+                    notification_receiver_host,
+                    notification_receiver_port,
+                    taskId,
+                    sessionId,
+                    input_request_prompt,
+                )
         taskResult = await client.get_task({'id': taskId})
     else:
         taskResult = await client.send_task(payload)
