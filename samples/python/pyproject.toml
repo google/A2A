@@ -14,6 +14,7 @@ dependencies = [
     "starlette>=0.46.1",
     "typing-extensions>=4.12.2",
     "uvicorn>=0.34.0",
+    "httpx_auth>=0.23.1",
 ]
 
 [tool.hatch.build.targets.wheel]
