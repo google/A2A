@@ -2,7 +2,7 @@ import asyncio
 import logging
 from typing import AsyncIterable
 
-from common.server.task_manager import InMemoryTaskManager
+from common.server.base_task_manager import BaseAgentTaskManager
 from common.types import (
     Artifact,
     InternalError,
@@ -25,14 +25,12 @@ from agents.semantickernel.agent import SemanticKernelTravelAgent
 logger = logging.getLogger(__name__)
 
 
-class TaskManager(InMemoryTaskManager):
+class TaskManager(BaseAgentTaskManager):
     """A TaskManager used for the Semantic Kernel Agent sample."""
 
     def __init__(self, notification_sender_auth: PushNotificationSenderAuth):
         """Initialize the TaskManager with a notification sender."""
-        super().__init__()
-        self.agent = SemanticKernelTravelAgent()
-        self.notification_sender_auth = notification_sender_auth
+        super().__init__(SemanticKernelTravelAgent(), notification_sender_auth)
 
     async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
         """A method to handle a task request.
