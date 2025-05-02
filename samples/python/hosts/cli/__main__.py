@@ -147,7 +147,7 @@ async def completeTask(
     prompt: str = '\nWhat do you want to send to the agent? (:q or quit to exit)',
 ):
     prompt_response = click.prompt(prompt)
-    
+
     if prompt_response == ':q' or prompt_response == 'quit':
         return False
 
@@ -206,7 +206,9 @@ async def completeTask(
             if result.result.status.state == TaskState.INPUT_REQUIRED:
                 try:
                     # Assuming the input request prompt is the first part of the message
-                    input_request_prompt = result.result.status.message.parts[0].text
+                    input_request_prompt = result.result.status.message.parts[
+                        0
+                    ].text
                 except:
                     input_request_prompt = None
 
