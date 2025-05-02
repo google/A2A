@@ -18,8 +18,12 @@ logger = logging.getLogger(__name__)
 @click.option("--port", default=10002)
 def main(host, port):
     try:
-        if not os.getenv("GOOGLE_API_KEY"):
-                raise MissingAPIKeyError("GOOGLE_API_KEY environment variable not set.")
+        # Check for API key only if Vertex AI is not configured
+        if not os.getenv("GOOGLE_GENAI_USE_VERTEXAI") == "TRUE":
+            if not os.getenv("GOOGLE_API_KEY"):
+                raise MissingAPIKeyError(
+                    "GOOGLE_API_KEY environment variable not set and GOOGLE_GENAI_USE_VERTEXAI is not TRUE."
+                )
         
         capabilities = AgentCapabilities(streaming=True)
         skill = AgentSkill(
@@ -55,4 +59,3 @@ def main(host, port):
     
 if __name__ == "__main__":
     main()
-

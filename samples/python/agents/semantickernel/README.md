@@ -4,9 +4,9 @@ This sample demonstrates how to implement a travel agent built on [Semantic Kern
 
 - **Multi-turn interactions**: The agent may request clarifications
 - **Streaming responses**: Returns incremental statuses
-- **Conversational memory**: Maintains context (by leveraging Semantic Kernel’s ChatHistory)
+- **Conversational memory**: Maintains context (by leveraging Semantic Kernel's ChatHistory)
 - **Push notifications**: Uses webhook-based notifications for asynchronous updates
-- **External plugins (SK Agents & Frankfurter API)**: Illustrates how an Semantic Kernel Agents are used as plugins, along with APIs, that can be called to generate travel plans and fetch exchange rates
+- **External plugins (SK Agents & Frankfurter API)**: Illustrates how Semantic Kernel Agents are used as plugins, along with APIs, that can be called to generate travel plans and fetch exchange rates
 
 ```mermaid
 sequenceDiagram

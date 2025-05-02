@@ -252,6 +252,6 @@ Key features of the A2A protocol highlighted by the specification and samples in
 ## 6. Contribution
 
 *   See `CONTRIBUTING.md`.
-*   Github discussion available as the primary means of communication.
-*   Github issues for bugs and feature requests.
+*   GitHub discussion available as the primary means of communication.
+*   GitHub issues for bugs and feature requests.
 *   Google Form for private feedback.
