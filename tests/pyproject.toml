@@ -1,0 +1,15 @@
+[project]
+name = "a2a-protocol-tests"
+version = "0.1.0"
+description = "Protocol tests for A2A."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "a2a-samples",
+    "jsonschema>=4.23.0",
+    "pytest>=8.3.5",
+]
+
+
+[tool.uv.sources]
+a2a-samples = { path = "../samples/python" }

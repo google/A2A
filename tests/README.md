@@ -1,12 +1,11 @@
 ## Running the tests
 
-1. Activate the virtual environment
+1. Run the tests
     ```bash
-    source samples/python/.venv/bin/activate
+    uv run pytest -v -s test_a2a_spec.py
     ```
-2. Run the tests
-    ```bash
-    uv run pytest -v -s tests/test_a2a_spec.py
-    ```
-**Note** The above assumes that the project root is at samples. When the project root changes,
-step 1 might no longer be required.
+
+Any time you change `../samples/python/common`, you will need to cleanup the cache like this:
+
+1. `uv clean`
+2. `rm -fR .pytest_cache .venv __pycache__`
