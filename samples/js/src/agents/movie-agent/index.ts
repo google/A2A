@@ -2,8 +2,7 @@ import {
   A2AServer,
   TaskContext,
   TaskYieldUpdate,
-  schema,
-  InMemoryTaskStore, // Assuming default store
+  schema
 } from "../../server/index.js";
 import { MessageData } from "genkit";
 import { ai } from "./genkit.js";
@@ -32,7 +31,7 @@ async function* movieAgentHandler(
     state: "working",
     message: {
       role: "agent",
-      parts: [{ text: "Processing your question, hang tight!" }],
+      parts: [{ type:"text", text: "Processing your question, hang tight!" }],
     },
   };
 
@@ -59,7 +58,7 @@ async function* movieAgentHandler(
       state: "failed",
       message: {
         role: "agent",
-        parts: [{ text: "No message found to process." }],
+        parts: [{ type:"text", text: "No message found to process." }],
       },
     };
     return; // Stop processing
