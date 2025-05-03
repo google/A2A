@@ -71,7 +71,7 @@ class InMemoryFakeAgentManager(ApplicationManager):
         id=str(uuid.uuid4()),
         actor="host",
         content=message,
-        timestamp=datetime.datetime.utcnow().timestamp(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
     ))
     # Now actually process the message. If the response is async, return None
     # for the message response and the updated message information for the
@@ -98,7 +98,7 @@ class InMemoryFakeAgentManager(ApplicationManager):
         id=str(uuid.uuid4()),
         actor="host",
         content=response,
-        timestamp=datetime.datetime.utcnow().timestamp(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
     ))
     self._pending_message_ids.remove(message.metadata['message_id'])
     # Now clean up the task

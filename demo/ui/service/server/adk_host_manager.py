@@ -147,7 +147,7 @@ class ADKHostManager(ApplicationManager):
         id=str(uuid.uuid4()),
         actor='user',
         content=message,
-        timestamp=datetime.datetime.utcnow().timestamp(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
     ))
     final_event: GenAIEvent | None = None
     # Determine if a task is to be resumed.
@@ -286,7 +286,7 @@ class ADKHostManager(ApplicationManager):
           id=str(uuid.uuid4()),
           actor=agent_card.name,
           content=content,
-          timestamp=datetime.datetime.utcnow().timestamp(),
+          timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
     ))
 
   def attach_message_to_task(self, message: Message | None, task_id: str):
