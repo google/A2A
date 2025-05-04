@@ -63,3 +63,23 @@ Click on the task list to see all the A2A task updates from the remote agents
     uv run main.py
     ```
 Note: The application runs on port 12000 by default
+
+## How to Communicate with Agents on the A2A Server
+
+### Prerequisites
+
+- Complete the steps in [Running the Examples](#running-the-examples) to start the local demo.
+    - Verify you can access `http://localhost:12000/`.
+
+- Start one of the sample agents from [Sample Agents](/samples/python/agents).
+    - Note the address (host and port) where your agent is running.
+
+### Steps
+
+1. Open `http://localhost:12000/agents` in your browser.
+
+1. Click the upload icon.
+
+1. Enter the address of your running agent (e.g., localhost:10002, without the protocol).
+
+Once added, you can start interacting with the agent through the web UI!
