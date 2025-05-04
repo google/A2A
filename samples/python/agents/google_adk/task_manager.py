@@ -1,5 +1,6 @@
 import json
-from typing import AsyncIterable
+from abc import ABC, abstractmethod
+from typing import Any, AsyncIterable, Dict
 from common.types import (
     SendTaskRequest,
     TaskSendParams,
@@ -18,15 +19,83 @@ from common.types import (
     SendTaskStreamingResponse,
 )
 from common.server.task_manager import InMemoryTaskManager
-from agent import ReimbursementAgent
+from google.genai import types
 import common.server.utils as utils
 from typing import Union
 import logging
 logger = logging.getLogger(__name__)
 
+# TODO: Move this class (or these classes) to a common directory
+class AgentWithTaskManager(ABC):
+
+    @abstractmethod
+    def get_processing_message(self) -> str:
+        pass
+
+    def invoke(self, query, session_id) -> str:
+        session = self._runner.session_service.get_session(
+            app_name=self._agent.name, user_id=self._user_id, session_id=session_id
+        )
+        content = types.Content(
+            role="user", parts=[types.Part.from_text(text=query)]
+        )
+        if session is None:
+            session = self._runner.session_service.create_session(
+                app_name=self._agent.name,
+                user_id=self._user_id,
+                state={},
+                session_id=session_id,
+            )
+        events = list(self._runner.run(
+            user_id=self._user_id, session_id=session.id, new_message=content
+        ))
+        if not events or not events[-1].content or not events[-1].content.parts:
+            return ""
+        return "\n".join([p.text for p in events[-1].content.parts if p.text])
+
+    async def stream(self, query, session_id) -> AsyncIterable[Dict[str, Any]]:
+        session = self._runner.session_service.get_session(
+            app_name=self._agent.name, user_id=self._user_id, session_id=session_id
+        )
+        content = types.Content(
+            role="user", parts=[types.Part.from_text(text=query)]
+        )
+        if session is None:
+            session = self._runner.session_service.create_session(
+                app_name=self._agent.name,
+                user_id=self._user_id,
+                state={},
+                session_id=session_id,
+            )
+        async for event in self._runner.run_async(
+            user_id=self._user_id, session_id=session.id, new_message=content
+        ):
+            if event.is_final_response():
+                response = ""
+                if (
+                    event.content
+                    and event.content.parts
+                    and event.content.parts[0].text
+                ):
+                    response = "\n".join([p.text for p in event.content.parts if p.text])
+                elif (
+                    event.content
+                    and event.content.parts
+                    and any([True for p in event.content.parts if p.function_response])):
+                    response = next((p.function_response.model_dump() for p in event.content.parts))
+                yield {
+                    "is_task_complete": True,
+                    "content": response,
+                }
+            else:
+                yield {
+                    "is_task_complete": False,
+                    "updates": self.get_processing_message(),
+                }
+
 class AgentTaskManager(InMemoryTaskManager):
 
-    def __init__(self, agent: ReimbursementAgent):
+    def __init__(self, agent: AgentWithTaskManager):
         super().__init__()
         self.agent = agent
 
@@ -99,12 +168,12 @@ class AgentTaskManager(InMemoryTaskManager):
     ) -> None:
         task_send_params: TaskSendParams = request.params
         if not utils.are_modalities_compatible(
-            task_send_params.acceptedOutputModes, ReimbursementAgent.SUPPORTED_CONTENT_TYPES
+            task_send_params.acceptedOutputModes, self.agent.SUPPORTED_CONTENT_TYPES
         ):
             logger.warning(
                 "Unsupported output mode. Received %s, Support %s",
                 task_send_params.acceptedOutputModes,
-                ReimbursementAgent.SUPPORTED_CONTENT_TYPES,
+                self.agent.SUPPORTED_CONTENT_TYPES,
             )
             return utils.new_incompatible_types_error(request.id)
     async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
