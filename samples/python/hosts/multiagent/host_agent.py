@@ -218,6 +218,7 @@ def convert_parts(parts: list[Part], tool_context: ToolContext):
         rval.append(convert_part(p, tool_context))
     return rval
 
+
 def convert_part(part: Part, tool_context: ToolContext):
     if part.type == 'text':
         return part.text
