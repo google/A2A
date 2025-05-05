@@ -195,7 +195,7 @@ class AgentTaskManager(InMemoryTaskManager):
         transforms it into the appropriate task status and artifacts, and
         returns a complete SendTaskResponse.
         """
-        task_id, context_id = self_extract_task_and_context(request.params)
+        task_id, context_id = self.extract_task_and_context(request.params)
         history_length = -1
         if isinstance(request, SendTaskRequest):
             history_length = request.params.historyLength
@@ -238,7 +238,7 @@ class AgentTaskManager(InMemoryTaskManager):
         and generates both status update and artifact events.
         """
         task_id, context_id = self._extract_task_and_context(request.params)
-        query = self._extract_user_query(task_send_params)
+        query = self._extract_user_query(request.params)
 
         try:
             async for item in self.agent.stream(query, context_id):
@@ -263,7 +263,7 @@ class AgentTaskManager(InMemoryTaskManager):
                         contextId=context_id,
                         messageId=str(uuid.uuid4()),
                     )
-                    logger.info(f"Sending WORKING status update")
+                    logger.info("Sending WORKING status update")
                 elif require_user_input:
                     # Requires user input - input required state
                     task_state = TaskState.INPUT_REQUIRED
@@ -275,13 +275,13 @@ class AgentTaskManager(InMemoryTaskManager):
                         messageId=str(uuid.uuid4()),
                     )
                     end_stream = True
-                    logger.info(f"Sending INPUT_REQUIRED status update (final)")
+                    logger.info("Sending INPUT_REQUIRED status update (final)")
                 else:
                     # Task completed - completed state with artifact
                     task_state = TaskState.COMPLETED
                     artifact = Artifact(parts=parts, index=0, append=False)
                     end_stream = True
-                    logger.info(f"Sending COMPLETED status with artifact (final)")
+                    logger.info("Sending COMPLETED status with artifact (final)")
 
                 # Update task store (return value not used)
                 task_status = TaskStatus(state=task_state, message=message)
@@ -293,7 +293,7 @@ class AgentTaskManager(InMemoryTaskManager):
 
                 # First send artifact if we have one
                 if artifact:
-                    logger.info(f"Sending artifact event for task {task_send_params.id}")
+                    logger.info(f"Sending artifact event for task {task_id}")
                     task_artifact_update_event = TaskArtifactUpdateEvent(
                         id=task_id, artifact=artifact
                     )
@@ -302,7 +302,7 @@ class AgentTaskManager(InMemoryTaskManager):
                     )
 
                 # Then send status update
-                logger.info(f"Sending status update for task {task_send_params.id}, state={task_state}, final={end_stream}")
+                logger.info(f"Sending status update for task {task_id}, state={task_state}, final={end_stream}")
                 task_update_event = TaskStatusUpdateEvent(
                     id=task_id,
                     status=task_status,

@@ -1,12 +1,8 @@
-from typing import Union, Any
+from typing import Union
 from pydantic import BaseModel, Field, TypeAdapter
-from typing import Literal, List, Annotated, Tuple
-from pydantic import model_validator, ConfigDict, field_serializer
-from uuid import uuid4
-from enum import Enum
-from typing_extensions import Self
+from typing import Literal, Annotated, Tuple
 
-from common.types import Message, Task, TaskStatus, Artifact, JSONRPCMessage, JSONRPCRequest, JSONRPCError, JSONRPCResponse, AgentCard
+from common.types import Message, Task, JSONRPCRequest, JSONRPCResponse, AgentCard
 
 
 class Conversation(BaseModel):

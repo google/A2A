@@ -1,5 +1,4 @@
 from typing import Callable
-import uuid
 from common.types import (
     AgentCard,
     Task,
@@ -7,8 +6,6 @@ from common.types import (
     MessageSendParams,
     TaskStatusUpdateEvent,
     TaskArtifactUpdateEvent,
-    TaskStatus,
-    TaskState,
 )
 from common.client import A2AClient
 

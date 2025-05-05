@@ -1,9 +1,7 @@
 import mesop as me
-from typing import Literal, Optional, Tuple, Any
+from typing import Literal, Tuple, Any
 from pydantic.dataclasses import dataclass
 import dataclasses
-from common.types import Task, Message
-from service.types import Conversation, Event
 
 ContentPart = str | dict[str,Any]
 

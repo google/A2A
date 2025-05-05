@@ -9,7 +9,6 @@ from common.types import (
     Artifact,
     TaskStatusUpdateEvent,
     TaskArtifactUpdateEvent,
-    TextPart,
     TaskState,
     Task,
     SendTaskResponse, # deprecated
@@ -25,7 +24,6 @@ from common.types import (
 )
 from common.server.task_manager import InMemoryTaskManager
 from google.genai import types
-import common.server.utils as utils
 from typing import Union
 import logging
 import uuid
@@ -177,27 +175,19 @@ class AgentTaskManager(InMemoryTaskManager):
         invalidModes = self._validate_output_modes(
             request, self.agent.SUPPORTED_CONTENT_TYPES)
         if invalidModes:
-            logger.warning(
-                "Unsupported output mode. Received %s, Support %s",
-                task_send_params.acceptedOutputModes,
-                self.agent.SUPPORTED_CONTENT_TYPES,
-            )
+            logger.warning(invalidModes.error)
 
     async def _stream_message_generator(
         self, request: SendMessageStreamRequest
     ) -> AsyncIterable[SendMessageStreamResponse] | JSONRPCResponse:
         send_params: MessageSendParams = request.params
         query = self._get_user_query(send_params)
-        taskId = send_params.message.taskId if send_params.message.taskId else str(uuid.uuid4())
-        contextId = send_params.message.contextId if send_params.message.contextId else str(uuid.uuid4())
-        print("Processing stream request for ", request)
-        print("taskId: ", taskId, " contextId: ", contextId)
+        taskId, contextId = self._extract_task_and_context(send_params)
         try:
           # If this is a new task, emit it first
           if send_params.message.taskId is None:
               send_params.message.taskId = taskId
               send_params.message.contextId = contextId
-              print("Starting task")
               task = Task(
                       id=taskId,
                       contextId=contextId,
@@ -207,9 +197,7 @@ class AgentTaskManager(InMemoryTaskManager):
                       ),
                       history=[send_params.message],
               )
-              print("Task is ", task)
               self.tasks[taskId] = task
-              print("Sending stream")
               yield SendMessageStreamRequest(
                   id=request.id,
                   result=task
@@ -323,7 +311,7 @@ class AgentTaskManager(InMemoryTaskManager):
         taskId, contextId = self._extract_task_and_context(request.params)
         request.params.message.taskId = taskId
         request.params.message.contextId = contextId
-        task = await self.upsert_task(request.params)
+        await self.upsert_task(request.params)
         return self._stream_message_generator(request)
 
     # deprecated
@@ -347,7 +335,7 @@ class AgentTaskManager(InMemoryTaskManager):
         return SendTaskResponse(id=request.id, result=task)
 
     async def _send(self, request: SendMessageRequest) -> SendMessageResponse:
-        message: SentMessageParams = request.params
+        message: MessageSendParams = request.params
         query = self._get_user_query(message)
         contextId = message.message.contextId if message.message.contextId else str(uuid.uuid4())
         taskId = message.message.taskId if message.message.taskId else str(uuid.uuid4())
@@ -367,7 +355,7 @@ class AgentTaskManager(InMemoryTaskManager):
                     role="agent",
                     parts=parts,
                     contextId=contextId,
-                    messageId=str(uuuid.uuid4()),
+                    messageId=str(uuid.uuid4()),
                     taskId=taskId,
                 ) if task_state == TaskState.INPUT_REQUIRED else None,
             ),

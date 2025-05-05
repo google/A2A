@@ -3,13 +3,11 @@
 Handles the agents and also presents the tools required.
 """
 
-import asyncio
 import base64
-import collections
 from io import BytesIO
 import os
 import re
-from typing import Any, AsyncIterable, Dict, List
+from typing import Any, AsyncIterable, Dict
 from uuid import uuid4
 from common.utils.in_memory_cache import InMemoryCache
 from crewai import Agent, Crew, LLM, Task
@@ -78,8 +76,8 @@ def generate_image_tool(prompt: str, session_id: str, artifact_file_id: str = No
     if artifact_file_id:
       try:
         ref_image_data = session_image_data[artifact_file_id]
-        logger.info(f"Found reference image in prompt input")
-      except Exception as e:
+        logger.info("Found reference image in prompt input")
+      except Exception:
         ref_image_data = None
     if not ref_image_data:
       # Insertion order is maintained from python 3.7
@@ -88,7 +86,7 @@ def generate_image_tool(prompt: str, session_id: str, artifact_file_id: str = No
 
     ref_bytes = base64.b64decode(ref_image_data.bytes)
     ref_image = Image.open(BytesIO(ref_bytes))
-  except Exception as e:
+  except Exception:
     ref_image = None
 
   if ref_image:
@@ -221,5 +219,5 @@ class ImageGenerationAgent:
       else:
         return Imagedata(error="Error generating image, please try again.")
     except KeyError:
-      logger.error(f"Error generating image")
+      logger.error("Error generating image")
       return Imagedata(error="Error generating image, please try again.")

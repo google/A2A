@@ -1,14 +1,11 @@
-import json
 from typing import AsyncIterable
 from common.types import (
     SendTaskRequest, # deprecated
-    TaskSendParams, # deprecated
     Message,
     TaskStatus,
     Artifact,
     TaskStatusUpdateEvent,
     TaskArtifactUpdateEvent,
-    TextPart,
     TaskState,
     Task,
     SendTaskResponse, # deprecated
@@ -23,7 +20,6 @@ from common.types import (
 )
 from common.server.task_manager import InMemoryTaskManager
 from agent import MindsDBAgent
-import common.server.utils as utils
 from typing import Union
 import logging
 import uuid
@@ -211,4 +207,3 @@ class AgentTaskManager(InMemoryTaskManager):
             [Artifact(parts=parts)],
         )
         return task
-

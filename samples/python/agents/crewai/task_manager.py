@@ -1,10 +1,9 @@
 """Agent Task Manager."""
 
 import logging
-from typing import AsyncIterable, Tuple
+from typing import AsyncIterable
 from agent import ImageGenerationAgent
 from common.server.task_manager import InMemoryTaskManager
-from common.server import utils
 from common.types import (
     Artifact,
     FileContent,
@@ -18,14 +17,11 @@ from common.types import (
     TaskSendParams, # deprecated
     TaskState,
     TaskStatus,
-    TextPart,
     SendMessageRequest,
     SendMessageResponse,
     SendMessageStreamRequest,
     SendMessageStreamResponse,
-    MessageSendParams,
 )
-import uuid
 
 logger = logging.getLogger(__name__)
 

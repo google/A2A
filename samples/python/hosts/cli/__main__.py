@@ -9,9 +9,6 @@ from common.client import A2AClient, A2ACardResolver
 from common.types import (
     TaskState,
     Task,
-    TextPart,
-    FilePart,
-    FileContent,
     Message,
     TaskStatusUpdateEvent,
     TaskArtifactUpdateEvent,
@@ -68,7 +65,7 @@ async def completeTask(client: A2AClient, streaming, use_push_notifications: boo
         "\nWhat do you want to send to the agent? (:q or quit to exit)"
     )
     if prompt == ":q" or prompt == "quit":
-        return False
+        return False, None, None
 
     message = {
         "role": "user",

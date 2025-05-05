@@ -292,7 +292,7 @@ async def send_response(
       role="user",
       parts=[DataPart(data=form.data)],
   )
-  response = await SendMessage(request)
+  await SendMessage(request)
 
 async def submit_form(e: me.ClickEvent):
   try:

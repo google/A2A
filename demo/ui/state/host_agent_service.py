@@ -26,9 +26,7 @@ from .state import (
     StateTask,
     StateEvent
 )
-import asyncio
-import threading
-from common.types import Artifact, Message, Task, Part
+from common.types import Message, Task, Part
 
 server_url = "http://localhost:12000"
 
@@ -241,15 +239,9 @@ def extract_conversation_id(task: Task) -> str:
       task.status.message and
       task.status.message.contextId):
     return task.status.message.contextId
-  # Now check if maybe the task has conversation id in metadata.
-  #if (task.metadata and 'conversation_id' in task.metadata):
-  #  return task.metadata['conversation_id']
-  # Now check if any artifacts contain a conversation id.
   if not task.artifacts:
     return ""
   for a in task.artifacts:
     if a.contextId:
       return a.contextId
-    #if a.metadata and 'conversation_id' in a.metadata:
-    #  return a.metadata['conversation_id']
   return ""

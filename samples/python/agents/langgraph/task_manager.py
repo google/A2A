@@ -5,7 +5,6 @@ from common.types import (
     Message,
     TaskStatus,
     Artifact,
-    TextPart,
     TaskState,
     SendTaskResponse,  # deprecated
     InternalError,
@@ -17,10 +16,6 @@ from common.types import (
     Task,
     TaskIdParams,
     PushNotificationConfig,
-    SetTaskPushNotificationRequest,
-    SetTaskPushNotificationResponse,
-    TaskPushNotificationConfig,
-    TaskNotFoundError,
     InvalidParamsError,
     SendMessageRequest,
     SendMessageResponse,
@@ -31,7 +26,6 @@ from common.types import (
 from common.server.task_manager import InMemoryTaskManager
 from agents.langgraph.agent import CurrencyAgent
 from common.utils.push_notification_auth import PushNotificationSenderAuth
-import common.server.utils as utils
 from typing import Union
 import asyncio
 import logging
@@ -323,10 +317,10 @@ class AgentTaskManager(InMemoryTaskManager):
             error = self._validate_request(request)
             if error:
                 return error
-
+            task_id, context_id = self._extract_task_and_context(request.params)
+            request.params.message.taskId = task_id
+            request.params.message.contextId = context_id
             task = await self.upsert_task(request.params)
-            request.params.message.contextId = task.contextId
-            request.params.message.taskId = task.id
             if request.params.configuration.pushNotification:
                 if not await self.set_push_notification_info(
                     task.id, request.params.configuration.pushNotification
@@ -336,9 +330,8 @@ class AgentTaskManager(InMemoryTaskManager):
                         error=InvalidParamsError(message="Push notification URL is invalid"),
                     )
 
-            params: MessageSendParams = request.params
             sse_event_queue = await self.setup_sse_consumer(
-                task.id, False,
+                task_id, False,
             )
 
             asyncio.create_task(self._run_message_stream_agent(request))

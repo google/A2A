@@ -5,7 +5,6 @@ import uuid
 from collections.abc import AsyncIterable
 from typing import Any
 
-import common.server.utils as utils
 from agents.marvin.agent import ExtractorAgent
 from common.server.task_manager import InMemoryTaskManager
 from common.types import (
@@ -28,7 +27,6 @@ from common.types import (
     TaskArtifactUpdateEvent,
     TaskIdParams,
     TaskSendParams, # deprecated
-    MessageSendParams,
     TaskState,
     TaskStatus,
     TaskStatusUpdateEvent,
@@ -89,7 +87,7 @@ class AgentTaskManager(InMemoryTaskManager):
     async def _run_streaming_agent(
         self, request: SendTaskStreamingRequest | SendMessageStreamRequest):
         task_id, context_id = self._extract_task_and_context(request.params)
-        query = self._get_user_query(task_send_params)
+        query = self._get_user_query(request.params)
 
         try:
             initial_status = TaskStatus(
@@ -175,7 +173,7 @@ class AgentTaskManager(InMemoryTaskManager):
                 await self.send_task_notification(failed_task)
 
             await self.enqueue_events_for_sse(
-                taskid,
+                task_id,
                 InternalError(message=f"An error occurred during agent execution: {e}"),
             )
             await self.enqueue_events_for_sse(
@@ -255,13 +253,13 @@ class AgentTaskManager(InMemoryTaskManager):
         await self.upsert_task(request.params)
 
         task = await self.update_store(
-            taskId, TaskStatus(state=TaskState.WORKING), [])
+            task_id, TaskStatus(state=TaskState.WORKING), [])
 
         await self.send_task_notification(task)
 
         query = self._get_user_query(request.params)
         try:
-            agent_response = await self.agent.invoke(query, contextId)
+            agent_response = await self.agent.invoke(query, context_id)
         except Exception as e:
             logger.error(f"Error invoking agent: {e}")
             raise ValueError(f"Error invoking agent: {e}")

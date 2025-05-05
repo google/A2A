@@ -3,16 +3,13 @@ import base64
 import threading
 import os
 import uuid
-from typing import Any
 from fastapi import APIRouter
 from fastapi import Request, Response
-from common.types import Message, Task, FilePart, FileContent
+from common.types import Message, FilePart, FileContent
 from .in_memory_manager import InMemoryFakeAgentManager
 from .application_manager import ApplicationManager
 from .adk_host_manager import ADKHostManager #, get_message_id
 from service.types import (
-    Conversation,
-    Event,
     CreateConversationResponse,
     ListConversationResponse,
     SendMessageResponse,

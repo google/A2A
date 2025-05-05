@@ -17,7 +17,6 @@ from common.types import (
     SendTaskResponse, # deprecated
     SetTaskPushNotificationResponse,
     GetTaskPushNotificationResponse,
-    PushNotificationNotSupportedError,
     TaskSendParams, # deprecated
     TaskStatus,
     TaskState,
@@ -37,6 +36,7 @@ from common.types import (
     InternalError,
     Message,
     TextPart,
+    InvalidParamsError,
 )
 import common.server.utils as utils
 import asyncio

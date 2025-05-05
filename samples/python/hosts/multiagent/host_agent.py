@@ -1,16 +1,11 @@
-import sys
-import asyncio
-import functools
 import json
 import uuid
-import threading
-from typing import List, Optional, Callable
+from typing import List
 
 from google.genai import types
 import base64
 
 from google.adk import Agent
-from google.adk.agents.invocation_context import InvocationContext
 from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools.tool_context import ToolContext
@@ -25,11 +20,9 @@ from common.types import (
     MessageSendConfiguration,
     TaskState,
     Task,
-    TaskSendParams,
     TextPart,
     DataPart,
     Part,
-    TaskStatusUpdateEvent,
     MessageSendParams,
 )
 
@@ -157,24 +150,15 @@ Current agent: {current_agent['active_agent']}
       raise ValueError(f"Agent {agent_name} not found")
     state = tool_context.state
     state['agent'] = agent_name
-    card = self.cards[agent_name]
     client = self.remote_agent_connections[agent_name]
     if not client:
       raise ValueError(f"Client not available for {agent_name}")
     taskId = state.get('task_id', None)
-    #sessionId = state.get('session_id', None)
     contextId = state.get('context_id', None)
     messageId = state.get('message_id', None)
     task: Task
-    #messageId = None
-    #metadata = {}
-    #if 'input_message_metadata' in state:
-      #metadata.update(**state['input_message_metadata'])
-      #if 'message_id' in state['input_message_metadata']:
-        #messageId = state['input_message_metadata']['message_id']
     if not messageId:
       messageId = str(uuid.uuid4())
-    #metadata.update(**{'conversation_id': sessionId}) #, 'message_id': messageId})
     request: MessageSendParams = MessageSendParams(
         id=str(uuid.uuid4()),
         message=Message(
@@ -187,7 +171,6 @@ Current agent: {current_agent['active_agent']}
         configuration=MessageSendConfiguration(
             acceptedOutputModes=["text", "text/plain", "image/png"],
         ),
-        #metadata={'conversation_id': sessionId},
     )
     task = await client.send_message(request, self.task_callback)
     if isinstance(task, Message):
@@ -201,6 +184,7 @@ Current agent: {current_agent['active_agent']}
     ]
     if task.contextId:
       state['context_id'] = task.contextId
+    state['task_id'] = task.id
     if task.status.state == TaskState.INPUT_REQUIRED:
       # Force user input back
       tool_context.actions.skip_summarization = True
@@ -244,5 +228,4 @@ def convert_part(part: Part, tool_context: ToolContext):
     tool_context.actions.skip_summarization = True
     tool_context.actions.escalate = True
     return DataPart(data = {"artifact-file-id": file_id})
-  return f"Unknown type: {p.type}"
-
+  return f"Unknown type: {part.type}"

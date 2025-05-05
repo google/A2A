@@ -21,7 +21,6 @@ from common.types import (
     SendTaskStreamingRequest, # deprecated
     SendTaskStreamingResponse, # deprecated
     SendMessageRequest,
-    MessageSendParams,
     SendMessageResponse,
     SendMessageStreamRequest,
     SendMessageStreamResponse,
@@ -134,13 +133,16 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
 
                 # Send artifact update
                 task_artifact_update_event = TaskArtifactUpdateEvent(
-                    id=task_id, artifact=artifact
+                    id=task_id, artifact=artifact, contextId=context_id
                 )
                 await self.enqueue_events_for_sse(task_id, task_artifact_update_event)
 
                 # Send final status update
                 task_update_event = TaskStatusUpdateEvent(
-                    id=task_id, status=task_status, final=True
+                    id=task_id,
+                    status=task_status,
+                    final=True,
+                    contextId=context_id,
                 )
                 await self.enqueue_events_for_sse(task_id, task_update_event)
 
@@ -213,7 +215,7 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
 
             if saved_ctx_state:
                 # Resume existing conversation
-                logger.info(f"Resuming existing conversation for session {session_id}")
+                logger.info(f"Resuming existing conversation for session {context_id}")
                 ctx = Context.from_dict(self.agent, saved_ctx_state)
                 handler = self.agent.run(
                     start_event=input_event,
@@ -221,7 +223,7 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 )
             else:
                 # New conversation
-                logger.info(f"Starting new conversation for session {session_id}")
+                logger.info(f"Starting new conversation for session {context_id}")
                 handler = self.agent.run(
                     start_event=input_event,
                 )
@@ -247,8 +249,8 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             logger.error(traceback.format_exc())
 
             # Clean up context in case of error
-            if session_id in self.ctx_states:
-                del self.ctx_states[session_id]
+            if context_id in self.ctx_states:
+                del self.ctx_states[context_id]
 
             # Return error response
             parts = [{"type": "text", "text": f"Error: {str(e)}"}]
@@ -271,12 +273,11 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             return SendTaskResponse(id=request.id, error=error)
 
         task_id, context_id = self._extract_task_and_context(request.params)
-        # Continuation
-        is_continuation = task_id == request.params.message.taskId
         request.params.message.taskId = task_id
         request.params.message.contextId = context_id
         await self.upsert_task(request.params)
 
+        history_length = requeast.params.configuration.historyLength
         task = await self.update_store(
             task_id, TaskStatus(state=TaskState.WORKING), None
         )
@@ -321,7 +322,7 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             )
             task = await self.update_store(task_id, task_status, [artifact])
             task_result = self.append_task_history(
-                task, task_send_params.historyLength
+                task, history_length
             )
             await self.send_task_notification(task)
             return SendMessageResponse(id=request.id, result=task_result)
@@ -330,7 +331,7 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             logger.error(traceback.format_exc())
 
             # Clean up context in case of error
-            if session_id in self.ctx_states:
+            if context_id in self.ctx_states:
                 del self.ctx_states[context_id]
 
             # Return error response
@@ -341,7 +342,7 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             )
             task = await self.update_store(task_id, task_status, None)
             task_result = self.append_task_history(
-                task, task_send_params.historyLength
+                task, history_length
             )
             await self.send_task_notification(task)
             return SendMessageResponse(id=request.id, result=task_result)
