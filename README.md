@@ -50,6 +50,7 @@ The Agent2Agent (A2A) protocol facilitates communication between independent AI 
 4.  **Interaction (Optional):** If the task enters `input-required`, the client sends subsequent messages using the same Task ID via `tasks/send` or `tasks/sendSubscribe`.
 5.  **Completion:** The task eventually reaches a terminal state (`completed`, `failed`, `canceled`).
 
+
 ### **Getting Started**
 
 * 📚 Read the [technical documentation](https://google.github.io/A2A/#/documentation) to understand the capabilities
@@ -61,6 +62,7 @@ The Agent2Agent (A2A) protocol facilitates communication between independent AI 
 * 🤖 Use our [sample agents](/samples/python/agents/README.md) to see how to bring A2A to agent frameworks
     * [Agent Development Kit (ADK)](/samples/python/agents/google_adk/README.md)
     * [CrewAI](/samples/python/agents/crewai/README.md)
+    * [Enterprise Data Agent (Gemini + Mindsdb)](/samples/python/agents/mindsdb/README.md)
     * [LangGraph](/samples/python/agents/langgraph/README.md)
     * [Genkit](/samples/js/src/agents/README.md)
     * [LlamaIndex](/samples/python/agents/llama_index_file_chat/README.md)

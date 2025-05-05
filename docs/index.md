@@ -1,15 +1,18 @@
 ---
 hide:
+  - navigation
   - toc
 ---
 
 #
 
-<img src="assets/a2a-banner.png" alt="A2A Banner" width="80%">
+<div style="margin-bottom: -100px;"></div>
 
-### A2A: Unlock collaborative agent-to-agent scenarios with a new open protocol
+<img src="assets/a2a-banner.png" alt="A2A Banner" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
 
 <img src="assets/a2a-main.png" alt="A2A Main Graphic" width="55%" style="display: block; margin-left: auto; margin-right: auto;">
+
+## A2A: Unlock collaborative agent-to-agent scenarios with a new open protocol
 
 - Seamless Agent Collaboration: Introduces a standard protocol for autonomous,
   opaque agents built on different frameworks and by various vendors to

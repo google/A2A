@@ -1,4 +1,4 @@
-# Setup Your Environment
+# Set up Your Environment
 
 ## What You'll Need <!-- {docsify-ignore} -->
 

@@ -1,6 +1,17 @@
-# Welcome to the A2A Community: See What Everyone's Talking About\!
+---
+hide:
+  - navigation
+---
 
-The **Agent2Agent (A2A) protocol** is generating significant buzz across the tech world, and for good reason\! This open interoperability protocol is designed to enable **seamless collaboration between AI agents across diverse frameworks and vendors**. By standardizing communication, A2A aims to unlock complex workflows, enhance productivity, and foster a new era of **"Agent Interoperability"**. Don't just take our word for it – see what the community is saying\!
+# Welcome to the A2A Community
+
+The **Agent2Agent (A2A) protocol** is generating significant buzz across the
+tech world, and for good reason! This open interoperability protocol is designed
+to enable **seamless collaboration between AI agents across diverse frameworks
+and vendors**. By standardizing communication, A2A aims to unlock complex
+workflows, enhance productivity, and foster a new era of **"Agent
+Interoperability"**. Don't just take our word for it – see what the community is
+saying!
 
 ## The Word on the Street: Social Highlights
 
