@@ -3,7 +3,7 @@ name = "a2a-samples"
 version = "0.1.0"
 description = "Agent2Agent samples"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.28.1",
     "httpx-sse>=0.4.0",
