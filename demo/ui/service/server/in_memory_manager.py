@@ -1,21 +1,21 @@
 import asyncio
 import datetime
-from typing import Tuple, Optional
 import uuid
-from service.types import Conversation, Event
+
 from common.types import (
+    AgentCard,
+    Artifact,
+    DataPart,
     Message,
     Task,
-    TextPart,
     TaskState,
     TaskStatus,
-    Artifact,
-    AgentCard,
-    DataPart,
+    TextPart,
 )
-from utils.agent_card import get_agent_card
-from service.server.application_manager import ApplicationManager
 from service.server import test_image
+from service.server.application_manager import ApplicationManager
+from service.types import Conversation, Event
+from utils.agent_card import get_agent_card
 
 
 class InMemoryFakeAgentManager(ApplicationManager):
@@ -53,16 +53,16 @@ class InMemoryFakeAgentManager(ApplicationManager):
     def sanitize_message(self, message: Message) -> Message:
         if not message.metadata:
             message.metadata = {}
-        message.metadata.update({"message_id": str(uuid.uuid4())})
+        message.metadata.update({'message_id': str(uuid.uuid4())})
         return message
 
     async def process_message(self, message: Message):
         self._messages.append(message)
-        message_id = message.metadata["message_id"]
+        message_id = message.metadata['message_id']
         self._pending_message_ids.append(message_id)
         conversation_id = (
-            message.metadata["conversation_id"]
-            if "conversation_id" in message.metadata
+            message.metadata['conversation_id']
+            if 'conversation_id' in message.metadata
             else None
         )
         # Now check the conversation and attach the message id.
@@ -72,9 +72,9 @@ class InMemoryFakeAgentManager(ApplicationManager):
         self._events.append(
             Event(
                 id=str(uuid.uuid4()),
-                actor="host",
+                actor='host',
                 content=message,
-                timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
+                timestamp=datetime.datetime.now(datetime.UTC).timestamp(),
             )
         )
         # Now actually process the message. If the response is async, return None
@@ -95,22 +95,25 @@ class InMemoryFakeAgentManager(ApplicationManager):
             self.add_task(task)
         await asyncio.sleep(self._next_message_idx)
         response = self.next_message()
-        response.metadata = {**message.metadata, **{"message_id": str(uuid.uuid4())}}
+        response.metadata = {
+            **message.metadata,
+            'message_id': str(uuid.uuid4()),
+        }
         if conversation:
             conversation.messages.append(response)
         self._events.append(
             Event(
                 id=str(uuid.uuid4()),
-                actor="host",
+                actor='host',
                 content=response,
-                timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
+                timestamp=datetime.datetime.now(datetime.UTC).timestamp(),
             )
         )
-        self._pending_message_ids.remove(message.metadata["message_id"])
+        self._pending_message_ids.remove(message.metadata['message_id'])
         # Now clean up the task
         if task:
             task.status.state = TaskState.COMPLETED
-            task.artifacts = [Artifact(name="response", parts=response.parts)]
+            task.artifacts = [Artifact(name='response', parts=response.parts)]
             task.history.append(response)
             self.update_task(task)
 
@@ -128,40 +131,49 @@ class InMemoryFakeAgentManager(ApplicationManager):
 
     def next_message(self) -> Message:
         message = _message_queue[self._next_message_idx]
-        self._next_message_idx = (self._next_message_idx + 1) % len(_message_queue)
+        self._next_message_idx = (self._next_message_idx + 1) % len(
+            _message_queue
+        )
         return message
 
     def get_conversation(
-        self, conversation_id: Optional[str]
-    ) -> Optional[Conversation]:
+        self, conversation_id: str | None
+    ) -> Conversation | None:
         if not conversation_id:
             return None
         return next(
-            filter(lambda c: c.conversation_id == conversation_id, self._conversations),
+            filter(
+                lambda c: c.conversation_id == conversation_id,
+                self._conversations,
+            ),
             None,
         )
 
-    def get_pending_messages(self) -> list[Tuple[str, str]]:
+    def get_pending_messages(self) -> list[tuple[str, str]]:
         rval = []
         for message_id in self._pending_message_ids:
             if message_id in self._task_map:
                 task_id = self._task_map[message_id]
-                task = next(filter(lambda x: x.id == task_id, self._tasks), None)
+                task = next(
+                    filter(lambda x: x.id == task_id, self._tasks), None
+                )
                 if not task:
-                    rval.append((message_id, ""))
+                    rval.append((message_id, ''))
                 elif task.history and task.history[-1].parts:
                     if len(task.history) == 1:
-                        rval.append((message_id, "Working..."))
+                        rval.append((message_id, 'Working...'))
                     else:
                         part = task.history[-1].parts[0]
                         rval.append(
                             (
                                 message_id,
-                                part.text if part.type == "text" else "Working...",
+                                part.text
+                                if part.type == 'text'
+                                else 'Working...',
                             )
                         )
             else:
-                rval.append((message_id, ""))
+                rval.append((message_id, ''))
             return rval
         return self._pending_message_ids
 
@@ -191,39 +203,39 @@ class InMemoryFakeAgentManager(ApplicationManager):
 # This represents the pre-canned responses that will be returned in order.
 # Extend this list to test more functionality of the UI
 _message_queue: list[Message] = [
-    Message(role="agent", parts=[TextPart(text="Hello")]),
+    Message(role='agent', parts=[TextPart(text='Hello')]),
     Message(
-        role="agent",
+        role='agent',
         parts=[
             DataPart(
                 data={
-                    "type": "form",
-                    "form": {
-                        "type": "object",
-                        "properties": {
-                            "name": {
-                                "type": "string",
-                                "description": "Enter your name",
-                                "title": "Name",
+                    'type': 'form',
+                    'form': {
+                        'type': 'object',
+                        'properties': {
+                            'name': {
+                                'type': 'string',
+                                'description': 'Enter your name',
+                                'title': 'Name',
                             },
-                            "date": {
-                                "type": "string",
-                                "format": "date",
-                                "description": "Birthday",
-                                "title": "Birthday",
+                            'date': {
+                                'type': 'string',
+                                'format': 'date',
+                                'description': 'Birthday',
+                                'title': 'Birthday',
                             },
                         },
-                        "required": ["date"],
+                        'required': ['date'],
                     },
-                    "form_data": {
-                        "name": "John Smith",
+                    'form_data': {
+                        'name': 'John Smith',
                     },
-                    "instructions": "Please provide your birthday and name",
+                    'instructions': 'Please provide your birthday and name',
                 }
             ),
         ],
     ),
-    Message(role="agent", parts=[TextPart(text="I like cats")]),
+    Message(role='agent', parts=[TextPart(text='I like cats')]),
     test_image.test_image,
-    Message(role="agent", parts=[TextPart(text="And I like dogs")]),
+    Message(role='agent', parts=[TextPart(text='And I like dogs')]),
 ]

@@ -37,9 +37,7 @@ nox.options.error_on_missing_interpreters = True
 
 @nox.session(python=DEFAULT_PYTHON_VERSION)
 def format(session):
-    """Run isort to sort imports. Then run black
-    to format code to uniform standard.
-    """
+    """Format Python code using autoflake, pyupgrade, and ruff."""
     # Sort Spelling Allowlist
     spelling_allow_file = '.github/actions/spelling/allow.txt'
 
