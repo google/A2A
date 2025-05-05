@@ -102,21 +102,22 @@ class MyAgentTaskManager(InMemoryTaskManager):
     else:
       self.ollama_agent = None
 
-  async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
+  async def on_send_message(self, request: SendMessageRequest) -> SendMessageResponse:
     # ...
-    received_text = request.params.message.parts[0].text
+    received_text = self.get_user_unput(request.params)
     response_text = f"on_send_task received: {received_text}"
     if self.ollama_agent is not None:
       response_text = await run_ollama(ollama_agent=self.ollama_agent, prompt=received_text)
 
     task = await self._update_task(
       task_id=task_id,
+      context_id=context_id,
       task_state=TaskState.COMPLETED,
       response_text=response_text
     )
 
     # Send the response
-    return SendTaskResponse(id=request.id, result=task)
+    return SendMessageResponse(id=request.id, result=task)
 
   # ...
 ```

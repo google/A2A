@@ -28,7 +28,7 @@ Tasks are used to transmit [Artifacts](#artifact) (results) and [Messages](#mess
 ```typescript
 interface Task {
   id: string; // unique identifier for the task
-  sessionId: string; // client-generated id for the session holding the task.
+  contextId: string; // server-generated id for contextual alignment across interactions
   status: TaskStatus; // current status of the task
   history?: Message[];
   artifacts?: Artifact[]; // collection of artifacts created by the agent.
@@ -53,15 +53,19 @@ interface TaskArtifactUpdateEvent {
   artifact: Artifact;
   metadata?: Record<string, any>;
 }
-// Sent by the client to the agent to create, continue, or restart a task.
-interface TaskSendParams {
-  id: string;
-  sessionId?: string; //server creates a new sessionId for new tasks if not set
-  message: Message;
-  historyLength?: number; //number of recent messages to be retrieved
-  // where the server should send notifications when disconnected.
+// Configuration of the send message request.
+interface MessageSendConfiguration {
+  acceptedOutputModes: string[];
+  historyLength?: number;
   pushNotification?: PushNotificationConfig;
-  metadata?: Record<string, any>; // extension metadata
+  blocking?: boolean;
+}
+// Send by the client to the agent as a request. May create, continue or restart a task.
+interface MessageSendParams {
+  id: string;  // identifier of request. Client generated.
+  message: Message;
+  configuration?: MessageSendConfiguration;
+  metadata?: Record<string, any>;  // extension metadata
 }
 type TaskState =
   | "submitted"
@@ -104,6 +108,9 @@ interface Message {
   role: "user" | "agent";
   parts: Part[];
   metadata?: Record<string, any>;
+  messageId: string; // identifier created by the message creator.
+  taskId?: string; // identifier of task the message is related to, optional.
+  contextId?: string; // the context the message is associated with, optional.
 }
 ```
 

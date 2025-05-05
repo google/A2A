@@ -9,20 +9,20 @@ Before we create our server, we need a task manager to handle incoming requests.
 We'll be implementing the InMemoryTaskManager interface which requires us to implement two methods
 
 ```python
-async def on_send_task(
+async def on_send_message(
   self,
-  request: SendTaskRequest
-) -> SendTaskResponse:
+  request: SendMessageRequest
+) -> SendMessageResponse:
   """
   This method queries or creates a task for the agent.
   The caller will receive exactly one response.
   """
   pass
 
-async def on_send_task_subscribe(
+async def on_send_message_stream(
   self,
-  request: SendTaskStreamingRequest
-) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
+  request: SendMessageStreamRequest
+) -> AsyncIterable[SendMessageStreamResponse] | JSONRPCResponse:
   """
   This method subscribes the caller to future updates regarding a task.
   The caller will receive a response and additionally receive subscription
@@ -36,6 +36,7 @@ Open up `src/my_project/task_manager.py` and add the following code. We will sim
 
 ```python
 from typing import AsyncIterable
+import uuid
 
 import google_a2a
 from google_a2a.common.server.task_manager import InMemoryTaskManager
@@ -43,10 +44,10 @@ from google_a2a.common.types import (
   Artifact,
   JSONRPCResponse,
   Message,
-  SendTaskRequest,
-  SendTaskResponse,
-  SendTaskStreamingRequest,
-  SendTaskStreamingResponse,
+  SendMessageRequest,
+  SendMessageResponse,
+  SendMessageStreamRequest,
+  SendMessageStreamResponse,
   Task,
   TaskState,
   TaskStatus,
@@ -57,32 +58,36 @@ class MyAgentTaskManager(InMemoryTaskManager):
   def __init__(self):
     super().__init__()
 
-  async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
+  async def on_send_message(self, request: SendMessageRequest) -> SendMessageResponse:
     # Upsert a task stored by InMemoryTaskManager
     await self.upsert_task(request.params)
-
-    task_id = request.params.id
+    
+    # Use the provided values or create ones if not set
+    task_id, context_id = self._extract_task_and_context(request.params)
+    
     # Our custom logic that simply marks the task as complete
     # and returns the echo text
-    received_text = request.params.message.parts[0].text
+    received_text = self.get_user_input(request.params)
     task = await self._update_task(
       task_id=task_id,
+      context_id=context_id,
       task_state=TaskState.COMPLETED,
       response_text=f"on_send_task received: {received_text}"
     )
 
     # Send the response
-    return SendTaskResponse(id=request.id, result=task)
+    return SendMessageResponse(id=request.id, result=task)
 
-  async def on_send_task_subscribe(
+  async def on_send_message_stream(
     self,
-    request: SendTaskStreamingRequest
-  ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
+    request: SendMessageStreamRequest
+  ) -> AsyncIterable[SendMessageStreamResponse] | JSONRPCResponse:
     pass
 
   async def _update_task(
     self,
     task_id: str,
+    context_id: str,
     task_state: TaskState,
     response_text: str,
   ) -> Task:
@@ -98,6 +103,9 @@ class MyAgentTaskManager(InMemoryTaskManager):
       message=Message(
         role="agent",
         parts=agent_response_parts,
+        messageId=str(uuid.uuid4()),
+        taskId=task_id,
+        contextId=context_id
       )
     )
     task.artifacts = [

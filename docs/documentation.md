@@ -146,7 +146,7 @@ A task can be completed by a remote agent immediately or it can be long-running.
 
 A Task is a stateful entity that allows Clients and Remote Agents to achieve a specific outcome and generate results. Clients and Remote Agents exchange Messages within a Task. Remote Agents generate results as Artifacts.
 
-A Task is always created by a Client and the status is always determined by the Remote Agent. Multiple Tasks may be part of a common session (denoted by optional sessionId) if required by the client. To do so, the Client sets an optional sessionId when creating the Task.
+A Task is always created by the Remote Agent and the status is always determined by the Remote Agent. Multiple Tasks may be part of a common session (denoted by optional contextId) if required by the client. The Client sends a request to the Remote Agent and provides an optional contextId. The Remote Agent then correlates the request with the other contextual information for that id and decides if it is creating a Task or simply responds with a Message.
 
 The agent may:
 
@@ -164,7 +164,7 @@ Tasks are used to transmit [Artifacts](#artifact) (results) and [Messages](#mess
 ```typescript
 interface Task {
   id: string; // unique identifier for the task
-  sessionId: string; // client-generated id for the session holding the task.
+  contextId: string; // server-generated id for the session holding the task.
   status: TaskStatus; // current status of the task
   history?: Message[];
   artifacts?: Artifact[]; // collection of artifacts created by the agent.
@@ -189,15 +189,19 @@ interface TaskArtifactUpdateEvent {
   artifact: Artifact;
   metadata?: Record<string, any>;
 }
-// Sent by the client to the agent to create, continue, or restart a task.
-interface TaskSendParams {
-  id: string;
-  sessionId?: string; //server creates a new sessionId for new tasks if not set
-  message: Message;
-  historyLength?: number; //number of recent messages to be retrieved
-  // where the server should send notifications when disconnected.
+// Configuration of the send message request.
+interface MessageSendConfiguration {
+  acceptedOutputModes: string[];
+  historyLength?: number;
   pushNotification?: PushNotificationConfig;
-  metadata?: Record<string, any>; // extension metadata
+  blocking?: boolean;
+}
+// Send by the client to the agent as a request. May create, continue or restart a task.
+interface MessageSendParams {
+  id: string;  // identifier of request. Client generated.
+  message: Message;
+  configuration?: MessageSendConfiguration;
+  metadata?: Record<string, any>;  // extension metadata
 }
 type TaskState =
   | "submitted"
@@ -240,6 +244,9 @@ interface Message {
   role: "user" | "agent";
   parts: Part[];
   metadata?: Record<string, any>;
+  messageId: string; // identifier created by the message creator.
+  taskId?: string; // identifier of task the message is related to, optional.
+  contextId?: string; // the context the message is associated with, optional.
 }
 ```
 
@@ -347,9 +354,9 @@ interface TaskPushNotificationConfig {
 }
 ```
 
-### Send a Task
+### Send a Message
 
-Allows a client to send content to a remote agent to start a new Task, resume an interrupted Task, or reopen a completed Task. A Task interrupt may be caused by an agent requiring additional user input or a runtime error.
+Allows a client to send content to a remote agent. The remote agent can start a new Task, resume an interrupted Task, or reopen a completed Task or respond with a message. A Task interrupt may be caused by an agent requiring additional user input or a runtime error.
 
 **Request:**
 
@@ -357,7 +364,7 @@ Allows a client to send content to a remote agent to start a new Task, resume an
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "tasks/send",
+  "method": "message/send",
   "params": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "message": {
@@ -367,7 +374,12 @@ Allows a client to send content to a remote agent to start a new Task, resume an
           "type": "text",
           "text": "tell me a joke"
         }
-      ]
+      ],
+      "messageId": "5945cb77-b9c6-4900-9da1-78473dafa1e4"
+    },
+    "configuration": {
+      "acceptedOutputModes": ["text"],
+      "blocking": True
     },
     "metadata": {}
   }
@@ -382,7 +394,7 @@ Allows a client to send content to a remote agent to start a new Task, resume an
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed"
     },
@@ -431,7 +443,7 @@ The client may also request the last N items of history for the Task, which will
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed"
     },
@@ -453,7 +465,10 @@ The client may also request the last N items of history for the Task, which will
             "type": "text",
             "text": "tell me a joke"
           }
-        ]
+        ],
+        "messageId": "5945cb77-b9c6-4900-9da1-78473dafa1e4",
+        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+        "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64"
       }
     ],
     "metadata": {}
@@ -487,7 +502,7 @@ A client may choose to cancel previously submitted Tasks.
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "canceled"
     },
@@ -584,9 +599,9 @@ The Message included in the `input-required` state must include details indicati
 {
   "jsonrpc": "2.0",
   "id": 1,
-  "method": "tasks/send",
+  "method": "message/send",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+    "id": "bcc04208-7667-4555-93a4-541c68f0202d",
     "message": {
       "role": "user",
       "parts": [
@@ -594,7 +609,11 @@ The Message included in the `input-required` state must include details indicati
           "type": "text",
           "text": "request a new phone for me"
         }
-      ]
+      ],
+      "messageId": "48b62bd8-c416-43df-8cc3-7a48b1b82bc9",
+    },
+    "configuration": {
+      "blocking": True,
     },
     "metadata": {}
   }
@@ -609,7 +628,7 @@ The Message included in the `input-required` state must include details indicati
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "input-required",
       "message": {
@@ -619,7 +638,10 @@ The Message included in the `input-required` state must include details indicati
             "type": "text",
             "text": "Select a phone type (iPhone/Android)"
           }
-        ]
+        ],
+        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+        "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+        "messageId": "9fc91293-a094-474d-a58f-2e309d8e5a15"
       }
     },
     "metadata": {}
@@ -633,10 +655,9 @@ The Message included in the `input-required` state must include details indicati
 {
   "jsonrpc": "2.0",
   "id": 2,
-  "method": "tasks/send",
+  "method": "message/send",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "id": "39fc9568-c098-4d2b-a42f-dfcee319d620",
     "message": {
       "role": "user",
       "parts": [
@@ -644,7 +665,13 @@ The Message included in the `input-required` state must include details indicati
           "type": "text",
           "text": "Android"
         }
-      ]
+      ],
+      "messageId": "9719e960-d455-4c35-81a1-cdc22d74c980",
+      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+      "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64"
+    },
+    "configuration": {
+      "blocking": True,
     },
     "metadata": {}
   }
@@ -659,7 +686,7 @@ The Message included in the `input-required` state must include details indicati
   "id": 2,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed"
     },
@@ -682,7 +709,7 @@ The Message included in the `input-required` state must include details indicati
 
 ### Streaming Support
 
-For clients and remote agents capable of communicating over HTTP with Server-Sent Events (SSE), clients can send the RPC request with method `tasks/sendSubscribe` when creating a new Task. The remote agent can respond with a stream of `TaskStatusUpdateEvents` (to communicate status changes or instructions/requests) and `TaskArtifactUpdateEvents` (to stream generated results).
+For clients and remote agents capable of communicating over HTTP with Server-Sent Events (SSE), clients can send the RPC request with method `message/stream` when sending a message that allows for streaming responses. The remote agent can respond with either a single Message or a Task object followed by a stream of `TaskStatusUpdateEvents` (to communicate status changes or instructions/requests) and `TaskArtifactUpdateEvents` (to stream generated results).
 
 Note that `TaskArtifactUpdateEvents` can append new parts to existing Artifacts. Clients can use `tasks/get` to retrieve the entire Artifact outside of the streaming context. Agents must set the `final: true` attribute at the end of the stream or if the agent is interrupted and requires additional user input.
 
@@ -690,10 +717,9 @@ Note that `TaskArtifactUpdateEvents` can append new parts to existing Artifacts.
 
 ```json
 {
-  "method": "tasks/sendSubscribe",
+  "method": "message/stream",
   "params": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "message": {
       "role": "user",
       "parts": [
@@ -708,7 +734,11 @@ Note that `TaskArtifactUpdateEvents` can append new parts to existing Artifacts.
             "data": "<base64-encoded-content>"
           }
         }
-      ]
+      ],
+      "messageId": "2076cabe-8a7d-4154-9800-b1fa1b73c08a",
+    },
+    "configuration": {
+      "streaming": True,
     },
     "metadata": {}
   }
@@ -716,6 +746,7 @@ Note that `TaskArtifactUpdateEvents` can append new parts to existing Artifacts.
 ```
 
 **Response (SSE Stream):**
+It first returns a Task object, followed by update events.
 
 ```json
 data: {
@@ -723,11 +754,11 @@ data: {
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
-      "state": "working",
+      "state": "submitted",
       "timestamp":"2025-04-02T16:59:25.331844"
     },
-    "final": false
   }
 }
 
@@ -736,6 +767,7 @@ data: {
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 1...>"}
@@ -752,6 +784,7 @@ data: {
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 2...>"}
@@ -768,6 +801,7 @@ data: {
   "id": 1,
   "result": {
     "id": 1,
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 3...>"}
@@ -784,6 +818,7 @@ data: {
   "id": 1,
   "result": {
     "id": 1,
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed",
       "timestamp":"2025-04-02T16:59:35.331844"
@@ -817,6 +852,7 @@ data: {
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 2...>"}
@@ -833,6 +869,7 @@ data: {
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "artifact": {
       "parts": [
         {"type":"text", "text": "<section 3...>"}
@@ -849,6 +886,7 @@ data: {
   "id": 1,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed",
       "timestamp":"2025-04-02T16:59:35.331844"
@@ -860,7 +898,7 @@ data: {
 
 ### Non-textual Media
 
-The following example demonstrates an interaction between a client and an agent involving non-textual data (a PDF file).
+The following example demonstrates an interaction between a client and an agent involving non-textual data (a PDF file). Here the request isn't blocking on completion, the client will explicitly poll for updates.
 
 **Request (Sequence 1 - Send File):**
 
@@ -868,10 +906,9 @@ The following example demonstrates an interaction between a client and an agent 
 {
   "jsonrpc": "2.0",
   "id": 9,
-  "method": "tasks/send",
+  "method": "message/send",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "id": "eee19701-33ab-45fd-b3db-242e34ce8d33",
     "message": {
       "role": "user",
       "parts": [
@@ -886,7 +923,11 @@ The following example demonstrates an interaction between a client and an agent 
             "data": "<base64-encoded-content>"
           }
         }
-      ]
+      ],
+      "messageId": "1662e04a-5395-448c-9bd1-d39b5d88f514",
+    },
+    "configuration": {
+      "blocking": False
     },
     "metadata": {}
   }
@@ -901,7 +942,7 @@ The following example demonstrates an interaction between a client and an agent 
   "id": 9,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "working",
       "message": {
@@ -912,6 +953,9 @@ The following example demonstrates an interaction between a client and an agent 
             "text": "analysis in progress, please wait"
           }
         ],
+        "messageId": "da03309f-7e75-48ab-9143-e30bcdc8871e",
+        "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
         "metadata": {}
       }
     },
@@ -942,7 +986,7 @@ The following example demonstrates an interaction between a client and an agent 
   "id": 9,
   "result": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed"
     },
@@ -956,6 +1000,27 @@ The following example demonstrates an interaction between a client and an agent 
         ],
         "metadata": {}
       }
+    ],
+    "history": [
+    {
+      "role": "user",
+      "parts": [
+        {
+          "type": "text",
+          "text": "Analyze the attached report and generate high level overview"
+        },
+        {
+          "type": "file",
+          "file": {
+            "mimeType": "application/pdf",
+            "data": "<base64-encoded-content>"
+          }
+        }
+      ],
+      "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+      "messageId": "1662e04a-5395-448c-9bd1-d39b5d88f514",
+    }
     ],
     "metadata": {}
   }
@@ -972,10 +1037,9 @@ Both the client and the agent can request structured output from the other party
 {
   "jsonrpc": "2.0",
   "id": 9,
-  "method": "tasks/send",
+  "method": "message/send",
   "params": {
     "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "message": {
       "role": "user",
       "parts": [
@@ -996,7 +1060,8 @@ Both the client and the agent can request structured output from the other party
             }
           }
         }
-      ]
+      ],
+      "messageId": "2211cef4-218b-46ce-9ef7-b1c5144dd73e"
     },
     "metadata": {}
   }
@@ -1010,8 +1075,8 @@ Both the client and the agent can request structured output from the other party
   "jsonrpc": "2.0",
   "id": 9,
   "result": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+    "id": "7b7bd941-aaae-4811-814e-185329f8eeef",
+    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
     "status": {
       "state": "completed",
       "timestamp": "2025-04-17T17:47:09.680794"

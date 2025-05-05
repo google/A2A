@@ -25,9 +25,9 @@ import asyncio
 # ...
 class MyAgentTaskManager(InMemoryTaskManager):
   # ...
-  async def _stream_3_messages(self, request: SendTaskStreamingRequest):
-    task_id = request.params.id
-    received_text = request.params.message.parts[0].text
+  async def _stream_3_messages(self, request: SendMessageStreamRequest):
+    task_id, context_id = self._extract_task_and_context(request.params)
+    received_text = self.get_user_input(request.params)
 
     text_messages = ["one", "two", "three"]
     for text in text_messages:
@@ -37,7 +37,13 @@ class MyAgentTaskManager(InMemoryTaskManager):
           "text": f"{received_text}: {text}",
         }
       ]
-      message = Message(role="agent", parts=parts)
+      message = Message(
+        role="agent",
+        parts=parts,
+        messageId=str(uuid.uuid4()),
+        contextId=context_id,
+        taskId=task_id
+      )
       is_last = text == text_messages[-1]
       task_state = TaskState.COMPLETED if is_last else TaskState.WORKING
       task_status = TaskStatus(
@@ -45,23 +51,24 @@ class MyAgentTaskManager(InMemoryTaskManager):
         message=message
       )
       task_update_event = TaskStatusUpdateEvent(
-        id=request.params.id,
+        id=task_id,
         status=task_status,
         final=is_last,
       )
       await self.enqueue_events_for_sse(
-        request.params.id,
+        task_id,
         task_update_event
       )
 
-  async def on_send_task_subscribe(
+  async def on_send_message_stream(
     self,
-    request: SendTaskStreamingRequest
-  ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
+    request: SendMessageStreamRequest
+  ) -> AsyncIterable[SendMessageStreamResponse] | JSONRPCResponse:
+    # Get or create the task and context ids.
+    task_id, context_id = self._extract_task_and_context(request.params)
     # Upsert a task stored by InMemoryTaskManager
     await self.upsert_task(request.params)
 
-    task_id = request.params.id
     # Create a queue of work to be done for this task
     sse_event_queue = await self.setup_sse_consumer(task_id=task_id)
 
@@ -69,7 +76,7 @@ class MyAgentTaskManager(InMemoryTaskManager):
     asyncio.create_task(self._stream_3_messages(request))
 
     # Tell the client to expect future streaming responses
-    return self.dequeue_events_for_sse(
+    return self.dequeue_message_events_for_sse(
       request_id=request.id,
       task_id=task_id,
       sse_event_queue=sse_event_queue,
@@ -105,7 +112,7 @@ class MyAgentTaskManager(InMemoryTaskManager):
       task_state = TaskState.WORKING
       # ...
       task_update_event = TaskStatusUpdateEvent(
-        id=request.params.id,
+        id=task_id,
         status=task_status,
         final=False,
       )
@@ -118,10 +125,13 @@ class MyAgentTaskManager(InMemoryTaskManager):
           "type": "text",
           "text": "Would you like more messages? (Y/N)"
         }
-      ]
+      ],
+      messageId=str(uuid.uuid4()),
+      taskId=task_id,
+      contextId=context_id
     )
     task_update_event = TaskStatusUpdateEvent(
-      id=request.params.id,
+      id=task_id,
       status=TaskStatus(
         state=TaskState.INPUT_REQUIRED,
         message=ask_message
@@ -129,24 +139,24 @@ class MyAgentTaskManager(InMemoryTaskManager):
       final=True,
     )
     await self.enqueue_events_for_sse(
-      request.params.id,
+      task_id,
       task_update_event
     )
   # ...
-  async def on_send_task_subscribe(
+  async def on_send_message_stream(
     self,
-    request: SendTaskStreamingRequest
-  ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
-    task_id = request.params.id
+    request: SendMessageStreamRequest
+  ) -> AsyncIterable[SendMessageStreamResponse] | JSONRPCResponse:
+    task_id, context_id = self._extract_task_and_context(request.params)
     is_new_task = task_id in self.tasks
     # Upsert a task stored by InMemoryTaskManager
     await self.upsert_task(request.params)
 
-    received_text = request.params.message.parts[0].text
+    received_text = self.get_user_input(request.params)
     sse_event_queue = await self.setup_sse_consumer(task_id=task_id)
     if not is_new_task and received_text == "N":
       task_update_event = TaskStatusUpdateEvent(
-        id=request.params.id,
+        id=task_id,
         status=TaskStatus(
           state=TaskState.COMPLETED,
           message=Message(
@@ -156,13 +166,16 @@ class MyAgentTaskManager(InMemoryTaskManager):
                 "type": "text",
                 "text": "All done!"
               }
-            ]
+            ],
+            messageId=str(uuid.uuid4()),
+            contextId=context_id,
+            taskId=task_id
           )
         ),
         final=True,
       )
       await self.enqueue_events_for_sse(
-        request.params.id,
+        task_id,
         task_update_event,
       )
     else:
@@ -194,7 +207,7 @@ What do you want to send to the agent? (:q or quit to exit): N
 
 ```
 
-Congradulations! You now have an agent that is able to asynchronously perform work and ask users for input when needed.
+Congratulations! You now have an agent that is able to asynchronously perform work and ask users for input when needed.
 
 ## Other Capabilities <!-- {docsify-ignore} -->
 
