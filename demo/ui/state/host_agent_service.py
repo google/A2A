@@ -213,6 +213,8 @@ def convert_task_to_state(task: Task) -> StateTask:
         message=convert_message_to_state(message),
         artifacts=output,
     )
+
+
 def convert_event_to_state(event: Event) -> StateEvent:
     return StateEvent(
         conversation_id=extract_message_conversation(event.content),

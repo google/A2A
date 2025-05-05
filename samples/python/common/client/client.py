@@ -5,9 +5,8 @@ from typing import Any
 
 import httpx
 
-from httpx_sse import connect_sse
 from httpx._types import TimeoutTypes
-from typing import Any, AsyncIterable
+from httpx_sse import connect_sse
 
 from common.types import (
     A2AClientHTTPError,
@@ -30,7 +29,12 @@ from common.types import (
 
 
 class A2AClient:
-    def __init__(self, agent_card: AgentCard = None, url: str = None, timeout: TimeoutTypes = 60.0):
+    def __init__(
+        self,
+        agent_card: AgentCard = None,
+        url: str = None,
+        timeout: TimeoutTypes = 60.0,
+    ):
         if agent_card:
             self.url = agent_card.url
         elif url:
