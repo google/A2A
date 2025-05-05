@@ -147,7 +147,7 @@ class ADKHostManager(ApplicationManager):
         id=str(uuid.uuid4()),
         actor='user',
         content=message,
-        timestamp=datetime.datetime.utcnow().timestamp(),
+        timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
     ))
     final_event: GenAIEvent | None = None
     # Determine if a task is to be resumed.
@@ -286,7 +286,7 @@ class ADKHostManager(ApplicationManager):
           id=str(uuid.uuid4()),
           actor=agent_card.name,
           content=content,
-          timestamp=datetime.datetime.utcnow().timestamp(),
+          timestamp=datetime.datetime.now(datetime.timezone.utc).timestamp(),
     ))
 
   def attach_message_to_task(self, message: Message | None, task_id: str):
@@ -345,7 +345,7 @@ class ADKHostManager(ApplicationManager):
           current_task.artifacts = []
         current_task.artifacts.append(artifact)
       else:
-        #this is a chunk of an artifact, stash it in temp store for assemling
+        #this is a chunk of an artifact, stash it in temp store for assembling
         if not task_update_event.id in self._artifact_chunks:
               self._artifact_chunks[task_update_event.id] = {}
         self._artifact_chunks[task_update_event.id][artifact.index] = artifact
@@ -550,4 +550,3 @@ def task_still_open(task: Task | None) -> bool:
   return task.status.state in [
       TaskState.SUBMITTED, TaskState.WORKING, TaskState.INPUT_REQUIRED
   ]
-

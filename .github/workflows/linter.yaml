@@ -29,6 +29,9 @@ jobs:
     name: Lint Code Base
     # Set the agent to run on
     runs-on: ubuntu-latest
+    # if on repo to avoid failing runs on forks
+    if: |
+      github.repository == 'google/A2A'
 
     ##################
     # Load all steps #
