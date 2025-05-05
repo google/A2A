@@ -9,7 +9,7 @@ export interface JSONRPCMessageIdentifier {
    * Responses must have the same ID as the request they relate to.
    * Notifications (requests without an expected response) should omit the ID or use null.
    */
-  id?: number | string | null;
+  id?: number | string;
 }
 
 /**
@@ -37,7 +37,7 @@ export interface JSONRPCRequest extends JSONRPCMessage {
   /**
    * Parameters for the method. Can be a structured object, an array, or null/omitted.
    * Specific request interfaces will define the exact type.
-   * @default null
+   * @default undefined
    */
   params?: unknown; // Base type; specific requests will override
 }
@@ -45,7 +45,7 @@ export interface JSONRPCRequest extends JSONRPCMessage {
 /**
  * Represents a JSON-RPC error object.
  */
-export interface JSONRPCError<Data = unknown | null, Code = number> {
+export interface JSONRPCError<Data = unknown | undefined, Code = number> {
   /**
    * A number indicating the error type that occurred.
    */
@@ -58,7 +58,7 @@ export interface JSONRPCError<Data = unknown | null, Code = number> {
 
   /**
    * Optional additional data about the error.
-   * @default null
+   * @default undefined
    */
   data?: Data;
 }
@@ -66,8 +66,10 @@ export interface JSONRPCError<Data = unknown | null, Code = number> {
 /**
  * Represents a JSON-RPC response object.
  */
-export interface JSONRPCResponse<R = unknown | null, E = unknown | null>
-  extends JSONRPCMessage {
+export interface JSONRPCResponse<
+  R = unknown | undefined,
+  E = unknown | undefined,
+> extends JSONRPCMessage {
   /**
    * The result of the method invocation. Required on success.
    * Should be null or omitted if an error occurred.
@@ -78,9 +80,9 @@ export interface JSONRPCResponse<R = unknown | null, E = unknown | null>
   /**
    * An error object if an error occurred during the request. Required on failure.
    * Should be null or omitted if the request was successful.
-   * @default null
+   * @default undefined
    */
-  error?: JSONRPCError<E> | null;
+  error?: JSONRPCError<E>;
 }
 
 // === Core A2A Data Structures
@@ -109,9 +111,9 @@ export interface AgentAuthentication {
 
   /**
    * Credentials for authentication. Can be a string (e.g., token) or null if not required initially.
-   * @default null
+   * @default undefined
    */
-  credentials?: string | null;
+  credentials?: string;
 }
 
 /**
@@ -148,9 +150,9 @@ export interface AgentProvider {
 
   /**
    * URL associated with the agent provider.
-   * @default null
+   * @default undefined
    */
-  url?: string | null;
+  url?: string;
 }
 
 /**
@@ -169,33 +171,33 @@ export interface AgentSkill {
 
   /**
    * Optional description of the skill.
-   * @default null
+   * @default undefined
    */
-  description?: string | null;
+  description?: string;
 
   /**
    * Optional list of tags associated with the skill for categorization.
-   * @default null
+   * @default undefined
    */
-  tags?: string[] | null;
+  tags?: string[];
 
   /**
    * Optional list of example inputs or use cases for the skill.
-   * @default null
+   * @default undefined
    */
-  examples?: string[] | null;
+  examples?: string[];
 
   /**
    * Optional list of input modes supported by this skill, overriding agent defaults.
-   * @default null
+   * @default undefined
    */
-  inputModes?: string[] | null;
+  inputModes?: string[];
 
   /**
    * Optional list of output modes supported by this skill, overriding agent defaults.
-   * @default null
+   * @default undefined
    */
-  outputModes?: string[] | null;
+  outputModes?: string[];
 }
 
 /**
@@ -209,9 +211,9 @@ export interface AgentCard {
 
   /**
    * An optional description of the agent.
-   * @default null
+   * @default undefined
    */
-  description?: string | null;
+  description?: string;
 
   /**
    * The base URL endpoint for interacting with the agent.
@@ -220,9 +222,9 @@ export interface AgentCard {
 
   /**
    * Information about the provider of the agent.
-   * @default null
+   * @default undefined
    */
-  provider?: AgentProvider | null;
+  provider?: AgentProvider;
 
   /**
    * The version identifier for the agent or its API.
@@ -231,9 +233,9 @@ export interface AgentCard {
 
   /**
    * An optional URL pointing to the agent's documentation.
-   * @default null
+   * @default undefined
    */
-  documentationUrl?: string | null;
+  documentationUrl?: string;
 
   /**
    * The capabilities supported by the agent.
@@ -242,9 +244,9 @@ export interface AgentCard {
 
   /**
    * Authentication details required to interact with the agent.
-   * @default null
+   * @default undefined
    */
-  authentication?: AgentAuthentication | null;
+  authentication?: AgentAuthentication;
 
   /**
    * Default input modes supported by the agent (e.g., 'text', 'file', 'json').
@@ -267,25 +269,25 @@ export interface AgentCard {
 export interface FileContentBase {
   /**
    * Optional name of the file.
-   * @default null
+   * @default undefined
    */
-  name?: string | null;
+  name?: string;
 
   /**
    * Optional MIME type of the file content.
-   * @default null
+   * @default undefined
    */
-  mimeType?: string | null;
+  mimeType?: string;
 
   /**
    * File content encoded as a Base64 string. Use this OR `uri`.
    */
-  bytes?: string | null;
+  bytes?: string;
 
   /**
    * URI pointing to the file content. Use this OR `bytes`.
    */
-  uri?: string | null;
+  uri?: string;
 }
 
 export type FileContentBytes = FileContentBase & {
@@ -310,7 +312,7 @@ export type FileContent = FileContentBytes | FileContentUri;
  * Represents a part of a message containing text content.
  */
 export interface TextPart {
-  type: "text";
+  type?: "text";
 
   /**
    * The text content.
@@ -330,7 +332,7 @@ export interface FilePart {
   /**
    * Type identifier for this part.
    */
-  type: "file";
+  type?: "file";
 
   /**
    * The file content, provided either inline or via URI.
@@ -340,7 +342,7 @@ export interface FilePart {
   /**
    * Optional metadata associated with this file part.
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -350,7 +352,7 @@ export interface DataPart {
   /**
    * Type identifier for this part.
    */
-  type: "data";
+  type?: "data";
 
   /**
    * The structured data content as a JSON object.
@@ -360,7 +362,7 @@ export interface DataPart {
   /**
    * Optional metadata associated with this data part.
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -374,15 +376,15 @@ export type Part = TextPart | FilePart | DataPart;
 export interface Artifact {
   /**
    * Optional name for the artifact.
-   * @default null
+   * @default undefined
    */
-  name?: string | null;
+  name?: string;
 
   /**
    * Optional description of the artifact.
    * @default null
    */
-  description?: string | null;
+  description?: string;
 
   /**
    * The constituent parts of the artifact.
@@ -397,21 +399,21 @@ export interface Artifact {
 
   /**
    * Optional flag indicating if this artifact content should append to previous content (for streaming).
-   * @default null
+   * @default undefined
    */
-  append?: boolean | null;
+  append?: boolean;
 
   /**
    * Optional metadata associated with the artifact.
-   * @default null
+   * @default undefined
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 
   /**
    * Optional flag indicating if this is the last chunk of data for this artifact (for streaming).
-   * @default null
+   * @default undefined
    */
-  lastChunk?: boolean | null;
+  lastChunk?: boolean;
 }
 
 /**
@@ -430,9 +432,9 @@ export interface Message {
 
   /**
    * Optional metadata associated with the message.
-   * @default null
+   * @default undefined
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -446,9 +448,9 @@ export interface TaskStatus {
 
   /**
    * An optional message associated with the current status (e.g., progress update, final response).
-   * @default null
+   * @default undefined
    */
-  message?: Message | null;
+  message?: Message;
 
   /**
    * The timestamp when this status was recorded (ISO 8601 format).
@@ -468,9 +470,9 @@ export interface Task {
 
   /**
    * Optional identifier for the session this task belongs to.
-   * @default null
+   * @default undefined
    */
-  sessionId?: string | null;
+  sessionId?: string;
 
   /**
    * The current status of the task.
@@ -479,15 +481,15 @@ export interface Task {
 
   /**
    * Optional list of artifacts associated with the task (e.g., outputs, intermediate files).
-   * @default null
+   * @default undefined
    */
-  artifacts?: Artifact[] | null;
+  artifacts?: Artifact[];
 
   /**
    * Optional metadata associated with the task.
-   * @default null
+   * @default undefined
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -496,7 +498,7 @@ export interface Task {
 export interface TaskHistory {
   /**
    * List of messages in chronological order.
-   * @default []
+   * @default undefined
    */
   messageHistory?: Message[];
 }
@@ -523,9 +525,9 @@ export interface TaskStatusUpdateEvent {
 
   /**
    * Optional metadata associated with this update event.
-   * @default null
+   * @default undefined
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -550,9 +552,9 @@ export interface TaskArtifactUpdateEvent {
 
   /**
    * Optional metadata associated with this update event.
-   * @default null
+   * @default undefined
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 // Alias for backward compatibility
@@ -607,7 +609,10 @@ export type KnownErrorCode =
   | typeof ErrorCodePushNotificationNotSupported
   | typeof ErrorCodeUnsupportedOperation;
 
-export type A2AError = JSONRPCError<unknown | null, KnownErrorCode | number>;
+export type A2AError = JSONRPCError<
+  unknown | undefined,
+  KnownErrorCode | number
+>;
 
 // === Push Notifications and Authentication Info
 
@@ -636,9 +641,9 @@ export interface PushNotificationConfig {
 
   /**
    * Optional authentication details needed by the agent to call the notification URL.
-   * @default null
+   * @default undefined
    */
-  authentication?: AuthenticationInfo | null;
+  authentication?: AuthenticationInfo;
 }
 
 /**
@@ -680,21 +685,21 @@ export interface TaskSendParams {
 
   /**
    * Optional pushNotification information for receiving notifications about this task. Requires agent capability.
-   * @default null
+   * @default undefined
    */
-  pushNotification?: PushNotificationConfig | null;
+  pushNotification?: PushNotificationConfig;
 
   /**
    * Optional parameter to specify how much message history to include in the response.
-   * @default null
+   * @default undefined
    */
-  historyLength?: number | null;
+  historyLength?: number;
 
   /**
    * Optional metadata associated with sending this message.
-   * @default null
+   * @default undefined
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -709,9 +714,9 @@ export interface TaskIdParams {
 
   /**
    * Optional metadata to include with the operation.
-   * @default null
+   * @default undefined
    */
-  metadata?: Record<string, unknown> | null;
+  metadata?: Record<string, unknown>;
 }
 
 /**
@@ -721,9 +726,9 @@ export interface TaskIdParams {
 export interface TaskQueryParams extends TaskIdParams {
   /**
    * Optional history length to retrieve for the task.
-   * @default null
+   * @default undefined
    */
-  historyLength?: number | null;
+  historyLength?: number;
 }
 
 // === A2A Request Interfaces
@@ -832,21 +837,21 @@ export interface SendTaskStreamingRequest extends JSONRPCRequest {
  * Response to a `tasks/send` request.
  * Contains the Task object or an error.
  */
-export type SendTaskResponse = JSONRPCResponse<Task | null, A2AError>;
+export type SendTaskResponse = JSONRPCResponse<Task | undefined, A2AError>;
 
 /**
  * Response to a streaming task operation, either through `tasks/sendSubscribe` or a subscription.
  * Contains a TaskStatusUpdateEvent, TaskArtifactUpdateEvent, or an error.
  */
 export type SendTaskStreamingResponse = JSONRPCResponse<
-  TaskStatusUpdateEvent | TaskArtifactUpdateEvent | null,
+  TaskStatusUpdateEvent | TaskArtifactUpdateEvent | undefined,
   A2AError
 >;
 
 /**
  * Response to a `tasks/get` request. Contains the Task object or an error.
  */
-export type GetTaskResponse = JSONRPCResponse<Task | null, A2AError>;
+export type GetTaskResponse = JSONRPCResponse<Task | undefined, A2AError>;
 
 /**
  * Response to a `tasks/cancel` request. Contains the updated Task object (usually with 'canceled' state) or an error.
@@ -857,7 +862,7 @@ export type CancelTaskResponse = JSONRPCResponse<Task | null, A2AError>;
  * Response to a `tasks/getHistory` request. Contains the TaskHistory object or an error.
  */
 export type GetTaskHistoryResponse = JSONRPCResponse<
-  TaskHistory | null,
+  TaskHistory | undefined,
   A2AError
 >;
 
@@ -865,7 +870,7 @@ export type GetTaskHistoryResponse = JSONRPCResponse<
  * Response to a `tasks/pushNotification/set` request. Contains the confirmed TaskPushNotificationConfig or an error.
  */
 export type SetTaskPushNotificationResponse = JSONRPCResponse<
-  TaskPushNotificationConfig | null,
+  TaskPushNotificationConfig | undefined,
   A2AError
 >;
 
@@ -873,7 +878,7 @@ export type SetTaskPushNotificationResponse = JSONRPCResponse<
  * Response to a `tasks/pushNotification/get` request. Contains the TaskPushNotificationConfig or an error.
  */
 export type GetTaskPushNotificationResponse = JSONRPCResponse<
-  TaskPushNotificationConfig | null,
+  TaskPushNotificationConfig | undefined,
   A2AError
 >;
 
