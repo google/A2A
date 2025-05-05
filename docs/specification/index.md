@@ -17,9 +17,11 @@ and data in their native modalities.
 - **Modality Agnostic**: text, audio/video, forms, iframe, etc.
 - **Opaque Execution**: Agents do not have to share thoughts, plans, or tools.
 
+Continue reading the [Overview](./overview.md).
+
 ### More Detailed Discussions
 
-- [A2A and MCP](topics/a2a_and_mcp.md?id=a2a-❤%ef%b8%8f-mcp)
-- [Enterprise Ready](topics/enterprise_ready.md?id=enterprise-readiness)
-- [Push Notifications](topics/push_notifications.md?id=remote-agent-to-client-updates)
-- [Agent Discovery](topics/agent_discovery.md?id=discovering-agent-cards)
+- [A2A and MCP](../topics/a2a-and-mcp.md)
+- [Enterprise Ready](../topics/enterprise-ready.md)
+- [Push Notifications](../topics/push-notifications.md)
+- [Agent Discovery](../topics/agent-discovery.md)

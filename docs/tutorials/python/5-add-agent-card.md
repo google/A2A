@@ -2,7 +2,7 @@
 
 Now that we have defined our skills, we can create an Agent Card.
 
-Remote Agents are required to publish an Agent Card in JSON format describing the agent's capabilities and skills in addition to authentication mechanisms. In other words, this lets the world know about your agent and how to interact with it. You can find more details in the [documentation](documentation?id=agent-card).
+Remote Agents are required to publish an Agent Card in JSON format describing the agent's capabilities and skills in addition to authentication mechanisms. In other words, this lets the world know about your agent and how to interact with it. You can find more details in the [documentation](../../documentation.md?id=agent-card).
 
 ## Implementation <!-- {docsify-ignore} -->
 
@@ -82,7 +82,5 @@ The output should look something like this.
 INFO:root:name='Echo Agent' description='This agent echos the input given' url='http://localhost:10002/' provider=None version='0.1.0' documentationUrl=None capabilities=AgentCapabilities(streaming=False, pushNotifications=False, stateTransitionHistory=False) authentication=None defaultInputModes=['text'] defaultOutputModes=['text'] skills=[AgentSkill(id='my-project-echo-skill', name='Echo Tool', description='Echos the input given', tags=['echo', 'repeater'], examples=['I will see this echoed back to me'], inputModes=['text'], outputModes=['text'])]
 ```
 
-<div class="bottom-buttons" style="flex flex-row">
-  <a href="#/tutorials/python/4_agent_skills.md" class="back-button">Back</a>
-  <a href="#/tutorials/python/6_start_server.md?id=a2a-server" class="next-button">Next</a>
-</div>
+[Prev](./4-agent-skills.md)
+[Next](./6-start-server.md)

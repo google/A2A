@@ -14,7 +14,7 @@ An agent skill is a set of capabilities the agent can perform. Here's an example
 }
 ```
 
-This conforms to the skills section of the [Agent Card](documentation?id=representation)
+This conforms to the skills section of the [Agent Card](../../specification/agent-card.md)
 
 ```ts
 {
@@ -75,7 +75,5 @@ The output should look something like this.
 id='my-project-echo-skill' name='Echo Tool' description='Echos the input given' tags=['echo', 'repeater'] examples=['I will see this echoed back to me'] inputModes=['text'] outputModes=['text']
 ```
 
-<div class="bottom-buttons" style="flex flex-row">
-  <a href="#/tutorials/python/3_create_a_project.md" class="back-button">Back</a>
-  <a href="#/tutorials/python/5_add_agent_card.md?id=agent-card" class="next-button">Next</a>
-</div>
+[Prev](./3-create-project.md)
+[Next](./5-add-agent-card.md)

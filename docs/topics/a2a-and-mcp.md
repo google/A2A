@@ -30,6 +30,6 @@ Now let's model the shop employees as AI agents:
 
 ## Intersection
 
-We recommend that applications model A2A agents as MCP resources (represented by their [AgentCard](/documentation.md#agent-card)). The frameworks can then use A2A to communicate with their user, the remote agents, and other agents.
+We recommend that applications model A2A agents as MCP resources (represented by their [AgentCard](../specification/agent-card.md)). The frameworks can then use A2A to communicate with their user, the remote agents, and other agents.
 
 ![Agentic Application showing A2A and MCP together](../assets/a2a-mcp.png)
