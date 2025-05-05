@@ -10,10 +10,10 @@ from common.types import (
     InvalidParamsError,
     JSONRPCResponse,
     Message,
-    SendTaskRequest, # deprecated
-    SendTaskResponse, # deprecated
-    SendTaskStreamingRequest, # deprecated
-    SendTaskStreamingResponse, # deprecated
+    SendTaskRequest,  # deprecated
+    SendTaskResponse,  # deprecated
+    SendTaskStreamingRequest,  # deprecated
+    SendTaskStreamingResponse,  # deprecated
     SendMessageRequest,
     SendMessageResponse,
     SendMessageStreamRequest,
@@ -54,19 +54,25 @@ class TaskManager(InMemoryTaskManager):
             return SendTaskResponse(id=request.id, error=validation_error.error)
 
         await self.upsert_task(request.params)
-        task = await self.update_store(request.params.id, TaskStatus(state=TaskState.WORKING), None)
+        task = await self.update_store(
+            request.params.id, TaskStatus(state=TaskState.WORKING), None
+        )
         await self.send_task_notification(task)
 
         query = request.params.message.parts[0].text
         try:
-            agent_response = await self.agent.invoke(query, request.params.sessionId)
+            agent_response = await self.agent.invoke(
+                query, request.params.sessionId
+            )
         except Exception as e:
-            logger.error(f"Semantic Kernel Task Manager error: {e}")
-            raise ValueError(f"Agent error: {e}")
+            logger.error(f'Semantic Kernel Task Manager error: {e}')
+            raise ValueError(f'Agent error: {e}')
 
         return await self._process_agent_response(request, agent_response)
 
-    async def on_send_message(self, request: SendMessageRequest) -> SendMessageResponse:
+    async def on_send_message(
+        self, request: SendMessageRequest
+    ) -> SendMessageResponse:
         """A method to handle a task request.
 
         Args:
@@ -85,19 +91,20 @@ class TaskManager(InMemoryTaskManager):
         await self.upsert_task(request.params)
 
         task = await self.update_store(
-            task_id,
-            TaskStatus(state=TaskState.WORKING), None)
+            task_id, TaskStatus(state=TaskState.WORKING), None
+        )
         await self.send_task_notification(task)
 
         query = self._get_user_query(request.params)
         try:
             agent_response = await self.agent.invoke(query, context_id)
         except Exception as e:
-            logger.error(f"Semantic Kernel Task Manager error: {e}")
-            raise ValueError(f"Agent error: {e}")
+            logger.error(f'Semantic Kernel Task Manager error: {e}')
+            raise ValueError(f'Agent error: {e}')
 
         return await self._process_agent_message_response(
-            request, agent_response)
+            request, agent_response
+        )
 
     # deprecated
     async def on_send_task_subscribe(
@@ -119,12 +126,14 @@ class TaskManager(InMemoryTaskManager):
             await self.upsert_task(request.params)
             sse_queue = await self.setup_sse_consumer(request.params.id, False)
             asyncio.create_task(self._run_streaming_agent(request))
-            return self.dequeue_events_for_sse(request.id, request.params.id, sse_queue)
+            return self.dequeue_events_for_sse(
+                request.id, request.params.id, sse_queue
+            )
         except Exception as e:
-            logger.error(f"Error in SSE stream: {e}")
+            logger.error(f'Error in SSE stream: {e}')
             return JSONRPCResponse(
                 id=request.id,
-                error=InternalError(message="Error in streaming response"),
+                error=InternalError(message='Error in streaming response'),
             )
 
     async def on_send_message_stream(
@@ -150,15 +159,18 @@ class TaskManager(InMemoryTaskManager):
             sse_queue = await self.setup_sse_consumer(task_id, False)
             asyncio.create_task(self._run_streaming_message_agent(request))
             return self.dequeue_message_events_for_sse(
-                request.id, task_id, sse_queue)
+                request.id, task_id, sse_queue
+            )
         except Exception as e:
-            logger.error(f"Error in SSE stream: {e}")
+            logger.error(f'Error in SSE stream: {e}')
             return JSONRPCResponse(
                 id=request.id,
-                error=InternalError(message="Error in streaming response"),
+                error=InternalError(message='Error in streaming response'),
             )
 
-    async def _run_streaming_agent(self, request: SendTaskStreamingRequest) -> AsyncIterable[SendTaskStreamingResponse]:
+    async def _run_streaming_agent(
+        self, request: SendTaskStreamingRequest
+    ) -> AsyncIterable[SendTaskStreamingResponse]:
         """A method to run the streaming agent.
 
         Args:
@@ -169,10 +181,12 @@ class TaskManager(InMemoryTaskManager):
         """
         try:
             query = request.params.message.parts[0].text
-            async for partial in self.agent.stream(query, request.params.sessionId):
-                require_input = partial["require_user_input"]
-                is_done = partial["is_task_complete"]
-                text_content = partial["content"]
+            async for partial in self.agent.stream(
+                query, request.params.sessionId
+            ):
+                require_input = partial['require_user_input']
+                is_done = partial['is_task_complete']
+                text_content = partial['content']
                 artifact = None
 
                 new_status = TaskStatus(state=TaskState.WORKING)
@@ -182,21 +196,25 @@ class TaskManager(InMemoryTaskManager):
                 if require_input:
                     new_status.state = TaskState.INPUT_REQUIRED
                     new_status.message = Message(
-                        role="agent",
-                        parts=[{"type": "text", "text": text_content}],
+                        role='agent',
+                        parts=[{'type': 'text', 'text': text_content}],
                     )
                     # End the stream if we need user input
                     final = True
                 elif is_done:
                     new_status.state = TaskState.COMPLETED
-                    artifact = Artifact(parts=[{"type": "text", "text": text_content}], index=0, append=False)
+                    artifact = Artifact(
+                        parts=[{'type': 'text', 'text': text_content}],
+                        index=0,
+                        append=False,
+                    )
                     # End the stream if the agent is fully done
                     final = True
                 else:
                     # Still "WORKING"
                     new_status.message = Message(
-                        role="agent",
-                        parts=[{"type": "text", "text": text_content}],
+                        role='agent',
+                        parts=[{'type': 'text', 'text': text_content}],
                     )
 
                 if artifact:
@@ -208,21 +226,28 @@ class TaskManager(InMemoryTaskManager):
                     )
 
                 # Persist + notify
-                updated_task = await self.update_store(request.params.id, new_status, [artifact] if artifact else None)
+                updated_task = await self.update_store(
+                    request.params.id,
+                    new_status,
+                    [artifact] if artifact else None,
+                )
                 await self.send_task_notification(updated_task)
 
                 await self.enqueue_events_for_sse(
                     request.params.id,
-                    TaskStatusUpdateEvent(id=request.params.id, status=new_status, final=final),
+                    TaskStatusUpdateEvent(
+                        id=request.params.id, status=new_status, final=final
+                    ),
                 )
 
                 if final:
                     break
 
         except Exception as e:
-            logger.error(f"Streaming agent encountered error: {e}")
+            logger.error(f'Streaming agent encountered error: {e}')
             await self.enqueue_events_for_sse(
-                request.params.id, InternalError(message=f"Error while streaming: {e}")
+                request.params.id,
+                InternalError(message=f'Error while streaming: {e}'),
             )
 
     async def _run_streaming_message_agent(
@@ -240,9 +265,9 @@ class TaskManager(InMemoryTaskManager):
             query = self._get_input_query(request.params)
             task_id, context_id = self._extract_task_and_context(request.params)
             async for partial in self.agent.stream(query, context_id):
-                require_input = partial["require_user_input"]
-                is_done = partial["is_task_complete"]
-                text_content = partial["content"]
+                require_input = partial['require_user_input']
+                is_done = partial['is_task_complete']
+                text_content = partial['content']
                 artifact = None
 
                 new_status = TaskStatus(state=TaskState.WORKING)
@@ -252,8 +277,8 @@ class TaskManager(InMemoryTaskManager):
                 if require_input:
                     new_status.state = TaskState.INPUT_REQUIRED
                     new_status.message = Message(
-                        role="agent",
-                        parts=[{"type": "text", "text": text_content}],
+                        role='agent',
+                        parts=[{'type': 'text', 'text': text_content}],
                         taskId=task_id,
                         contextId=context_id,
                         messageId=str(uuid.uuid4()),
@@ -263,16 +288,17 @@ class TaskManager(InMemoryTaskManager):
                 elif is_done:
                     new_status.state = TaskState.COMPLETED
                     artifact = Artifact(
-                        parts=[{"type": "text", "text": text_content}],
+                        parts=[{'type': 'text', 'text': text_content}],
                         index=0,
-                        append=False)
+                        append=False,
+                    )
                     # End the stream if the agent is fully done
                     final = True
                 else:
                     # Still "WORKING"
                     new_status.message = Message(
-                        role="agent",
-                        parts=[{"type": "text", "text": text_content}],
+                        role='agent',
+                        parts=[{'type': 'text', 'text': text_content}],
                         taskId=task_id,
                         contextId=context_id,
                         mesageId=str(uuid.uuid4()),
@@ -290,7 +316,8 @@ class TaskManager(InMemoryTaskManager):
 
                 # Persist + notify
                 updated_task = await self.update_store(
-                    task_id, new_status, [artifact] if artifact else None)
+                    task_id, new_status, [artifact] if artifact else None
+                )
                 await self.send_task_notification(updated_task)
 
                 await self.enqueue_events_for_sse(
@@ -307,12 +334,14 @@ class TaskManager(InMemoryTaskManager):
                     break
 
         except Exception as e:
-            logger.error(f"Streaming agent encountered error: {e}")
+            logger.error(f'Streaming agent encountered error: {e}')
             await self.enqueue_events_for_sse(
-                task_id, InternalError(message=f"Error while streaming: {e}")
+                task_id, InternalError(message=f'Error while streaming: {e}')
             )
 
-    async def _process_agent_response(self, request: SendTaskRequest, agent_response: dict) -> SendTaskResponse:
+    async def _process_agent_response(
+        self, request: SendTaskRequest, agent_response: dict
+    ) -> SendTaskResponse:
         """Process the agent's response and update the task status.
 
         Args:
@@ -322,17 +351,25 @@ class TaskManager(InMemoryTaskManager):
         Returns:
             SendTaskResponse: The response containing the task ID and status.
         """
-        parts = [{"type": "text", "text": agent_response["content"]}]
-        if agent_response["require_user_input"]:
-            task_status = TaskStatus(state=TaskState.INPUT_REQUIRED, message=Message(role="agent", parts=parts))
+        parts = [{'type': 'text', 'text': agent_response['content']}]
+        if agent_response['require_user_input']:
+            task_status = TaskStatus(
+                state=TaskState.INPUT_REQUIRED,
+                message=Message(role='agent', parts=parts),
+            )
         else:
             task_status = TaskStatus(state=TaskState.COMPLETED)
-        artifact = Artifact(parts=parts) if not agent_response["require_user_input"] else None
+        artifact = (
+            Artifact(parts=parts)
+            if not agent_response['require_user_input']
+            else None
+        )
 
-        updated_task = await self.update_store(request.params.id, task_status, [artifact] if artifact else None)
+        updated_task = await self.update_store(
+            request.params.id, task_status, [artifact] if artifact else None
+        )
         await self.send_task_notification(updated_task)
         return SendTaskResponse(id=request.id, result=updated_task)
-
 
     async def _process_agent_message_response(
         self, request: SendMessageRequest, agent_response: dict
@@ -346,29 +383,36 @@ class TaskManager(InMemoryTaskManager):
         Returns:
             SendMessageResponse: The response containing the task ID and status.
         """
-        parts = [{"type": "text", "text": agent_response["content"]}]
+        parts = [{'type': 'text', 'text': agent_response['content']}]
         task_id, context_id = self._extract_task_and_context(request.params)
-        if agent_response["require_user_input"]:
+        if agent_response['require_user_input']:
             task_status = TaskStatus(
                 state=TaskState.INPUT_REQUIRED,
                 message=Message(
-                    role="agent",
+                    role='agent',
                     parts=parts,
                     messageId=str(uuid.uuid4()),
                     taskId=task_id,
                     contextId=context_id,
-                )
+                ),
             )
         else:
             task_status = TaskStatus(state=TaskState.COMPLETED)
-        artifact = Artifact(parts=parts) if not agent_response["require_user_input"] else None
+        artifact = (
+            Artifact(parts=parts)
+            if not agent_response['require_user_input']
+            else None
+        )
 
         updated_task = await self.update_store(
-            task_id, task_status, [artifact] if artifact else None)
+            task_id, task_status, [artifact] if artifact else None
+        )
         await self.send_task_notification(updated_task)
         return SendMessageResponse(id=request.id, result=updated_task)
 
-    def _validate_request(self, request: SendTaskStreamingRequest) -> JSONRPCResponse | None:
+    def _validate_request(
+        self, request: SendTaskStreamingRequest
+    ) -> JSONRPCResponse | None:
         """Validate the request parameters.
 
         Args:
@@ -380,15 +424,19 @@ class TaskManager(InMemoryTaskManager):
         if not request.params.acceptedOutputModes:
             return None
         if not any(
-            mode in SemanticKernelTravelAgent.SUPPORTED_CONTENT_TYPES for mode in request.params.acceptedOutputModes
+            mode in SemanticKernelTravelAgent.SUPPORTED_CONTENT_TYPES
+            for mode in request.params.acceptedOutputModes
         ):
-            logger.warning("Incompatible content type for SK Agent.")
-            return JSONRPCResponse(id=request.id, error=InvalidParamsError(message="Bad content type."))
+            logger.warning('Incompatible content type for SK Agent.')
+            return JSONRPCResponse(
+                id=request.id,
+                error=InvalidParamsError(message='Bad content type.'),
+            )
         return None
 
     async def send_task_notification(self, task: SendTaskRequest) -> None:
         """Send a push notification for the task.
-        
+
         Args:
             task: The task object containing the parameters.
         """

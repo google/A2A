@@ -5,21 +5,26 @@ from typing import AsyncIterable, Union, Dict, Any, List
 import common.server.utils as utils
 import uuid
 
-from agents.llama_index_file_chat.agent import ParseAndChat, InputEvent, LogEvent, ChatResponseEvent
+from agents.llama_index_file_chat.agent import (
+    ParseAndChat,
+    InputEvent,
+    LogEvent,
+    ChatResponseEvent,
+)
 from common.types import (
-    SendTaskRequest, # deprecated
-    TaskSendParams, # deprecated
+    SendTaskRequest,  # deprecated
+    TaskSendParams,  # deprecated
     Message,
     TaskStatus,
     TaskState,
     Artifact,
     TextPart,
     FilePart,
-    SendTaskResponse, # deprecated
+    SendTaskResponse,  # deprecated
     InternalError,
     JSONRPCResponse,
-    SendTaskStreamingRequest, # deprecated
-    SendTaskStreamingResponse, # deprecated
+    SendTaskStreamingRequest,  # deprecated
+    SendTaskStreamingResponse,  # deprecated
     SendMessageRequest,
     SendMessageResponse,
     SendMessageStreamRequest,
@@ -38,18 +43,23 @@ from llama_index.core.workflow import Context
 
 logger = logging.getLogger(__name__)
 
+
 class LlamaIndexTaskManager(InMemoryTaskManager):
     # Technically supports basically anything, but we'll limit to some common types
     SUPPORTED_INPUT_TYPES = [
-        "text/plain",
-        "application/pdf",
-        "application/msword",
-        "image/png",
-        "image/jpeg",
+        'text/plain',
+        'application/pdf',
+        'application/msword',
+        'image/png',
+        'image/jpeg',
     ]
-    SUPPORTED_OUTPUT_TYPES = ["text","text/plain"]
+    SUPPORTED_OUTPUT_TYPES = ['text', 'text/plain']
 
-    def __init__(self, agent: ParseAndChat, notification_sender_auth: PushNotificationSenderAuth):
+    def __init__(
+        self,
+        agent: ParseAndChat,
+        notification_sender_auth: PushNotificationSenderAuth,
+    ):
         super().__init__()
         self.agent = agent
         self.notification_sender_auth = notification_sender_auth
@@ -57,7 +67,9 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
         # Ideally, you would use a database or other kv store the context state
         self.ctx_states: Dict[str, Dict[str, Any]] = {}
 
-    async def _run_streaming_agent(self, request: SendTaskStreamingRequest | SendMessageStreamRequest):
+    async def _run_streaming_agent(
+        self, request: SendTaskStreamingRequest | SendMessageStreamRequest
+    ):
         task_id, context_id = self._extract_task_and_context(request.params)
         input_event = self._get_input_event(request.params.message.parts)
 
@@ -66,13 +78,13 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             handler = None
 
             # Check if we have a saved context state for this session
-            print(f"Len of tasks: {len(self.tasks)}", flush=True)
-            print(f"Len of ctx_states: {len(self.ctx_states)}", flush=True)
+            print(f'Len of tasks: {len(self.tasks)}', flush=True)
+            print(f'Len of ctx_states: {len(self.ctx_states)}', flush=True)
             saved_ctx_state = self.ctx_states.get(context_id, None)
 
             if saved_ctx_state is not None:
                 # Resume with existing context
-                logger.info(f"Resuming session {context_id} with saved context")
+                logger.info(f'Resuming session {context_id} with saved context')
                 ctx = Context.from_dict(self.agent, saved_ctx_state)
                 handler = self.agent.run(
                     start_event=input_event,
@@ -80,7 +92,7 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 )
             else:
                 # New session!
-                logger.info(f"Starting new session {context_id}")
+                logger.info(f'Starting new session {context_id}')
                 handler = self.agent.run(
                     start_event=input_event,
                 )
@@ -90,18 +102,20 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 if isinstance(event, LogEvent):
                     # Send log event as intermediate message
                     content = event.msg
-                    parts = [{"type": "text", "text": content}]
+                    parts = [{'type': 'text', 'text': content}]
                     task_status = TaskStatus(
                         state=TaskState.WORKING,
                         message=Message(
-                            role="agent",
+                            role='agent',
                             parts=parts,
                             contextId=context_id,
                             taskId=task_id,
                             messageId=str(uuid.uuid4()),
-                        )
+                        ),
                     )
-                    latest_task = await self.update_store(task_id, task_status, None)
+                    latest_task = await self.update_store(
+                        task_id, task_status, None
+                    )
                     await self.send_task_notification(latest_task)
 
                     # Send status update event
@@ -111,14 +125,20 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                         final=False,
                         contextId=context_id,
                     )
-                    await self.enqueue_events_for_sse(task_id, task_update_event)
+                    await self.enqueue_events_for_sse(
+                        task_id, task_update_event
+                    )
 
             # If we got here without hitting a return, wait for final response
             final_response = await handler
             if isinstance(final_response, ChatResponseEvent):
                 content = final_response.response
-                parts = [{"type": "text", "text": content}]
-                metadata = final_response.citations if hasattr(final_response, 'citations') else None
+                parts = [{'type': 'text', 'text': content}]
+                metadata = (
+                    final_response.citations
+                    if hasattr(final_response, 'citations')
+                    else None
+                )
                 if metadata is not None:
                     # ensure metadata is a dict of str keys
                     metadata = {str(k): v for k, v in metadata.items()}
@@ -126,16 +146,22 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 # save the context state to resume the current session
                 self.ctx_states[context_id] = handler.ctx.to_dict()
 
-                artifact = Artifact(parts=parts, index=0, append=False, metadata=metadata)
+                artifact = Artifact(
+                    parts=parts, index=0, append=False, metadata=metadata
+                )
                 task_status = TaskStatus(state=TaskState.COMPLETED)
-                latest_task = await self.update_store(task_id, task_status, [artifact])
+                latest_task = await self.update_store(
+                    task_id, task_status, [artifact]
+                )
                 await self.send_task_notification(latest_task)
 
                 # Send artifact update
                 task_artifact_update_event = TaskArtifactUpdateEvent(
                     id=task_id, artifact=artifact, contextId=context_id
                 )
-                await self.enqueue_events_for_sse(task_id, task_artifact_update_event)
+                await self.enqueue_events_for_sse(
+                    task_id, task_artifact_update_event
+                )
 
                 # Send final status update
                 task_update_event = TaskStatusUpdateEvent(
@@ -147,13 +173,15 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 await self.enqueue_events_for_sse(task_id, task_update_event)
 
         except Exception as e:
-            logger.error(f"An error occurred while streaming the response: {e}")
+            logger.error(f'An error occurred while streaming the response: {e}')
             logger.error(traceback.format_exc())
 
             # Report error to client
             await self.enqueue_events_for_sse(
                 task_id,
-                InternalError(message=f"An error occurred while streaming the response: {e}")
+                InternalError(
+                    message=f'An error occurred while streaming the response: {e}'
+                ),
             )
 
             # Clean up context in case of error
@@ -161,15 +189,17 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 del self.ctx_states[context_id]
 
     def _validate_request(
-        self, request: Union[
+        self,
+        request: Union[
             SendTaskRequest,
             SendTaskStreamingRequest,
             SendMessageRequest,
             SendMessageStreamRequest,
-        ]
+        ],
     ) -> JSONRPCResponse | None:
         invalidOutput = self._validate_output_modes(
-            request, self.SUPPORTED_OUTPUT_TYPES)
+            request, self.SUPPORTED_OUTPUT_TYPES
+        )
         if invalidOutput:
             return invalidOutput
         return self._validate_push_config(request)
@@ -181,7 +211,8 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             return None
         if not await self.set_push_notification_info(task_id, config):
             return InvalidParamsError(
-                message="Push notification URL is invalid")
+                message='Push notification URL is invalid'
+            )
 
     # deprecated
     async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
@@ -190,7 +221,8 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
         if validation_error:
             return SendTaskResponse(id=request.id, error=validation_error.error)
         error = await self.apply_push_notification(
-            request.params.id, request.params.pushNotification)
+            request.params.id, request.params.pushNotification
+        )
         if error:
             return SendTaskResponse(id=request.id, error=error)
 
@@ -215,7 +247,9 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
 
             if saved_ctx_state:
                 # Resume existing conversation
-                logger.info(f"Resuming existing conversation for session {context_id}")
+                logger.info(
+                    f'Resuming existing conversation for session {context_id}'
+                )
                 ctx = Context.from_dict(self.agent, saved_ctx_state)
                 handler = self.agent.run(
                     start_event=input_event,
@@ -223,29 +257,38 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 )
             else:
                 # New conversation
-                logger.info(f"Starting new conversation for session {context_id}")
+                logger.info(
+                    f'Starting new conversation for session {context_id}'
+                )
                 handler = self.agent.run(
                     start_event=input_event,
                 )
-
 
             final_response: ChatResponseEvent = await handler
 
             # Create artifact with response
             content = final_response.response
-            parts = [{"type": "text", "text": content}]
-            metadata = final_response.citations if hasattr(final_response, 'citations') else None
+            parts = [{'type': 'text', 'text': content}]
+            metadata = (
+                final_response.citations
+                if hasattr(final_response, 'citations')
+                else None
+            )
             if metadata is not None:
                 metadata = {str(k): v for k, v in metadata.items()}
 
             task_status = TaskStatus(state=TaskState.COMPLETED)
-            artifact = Artifact(parts=parts, index=0, append=False, metadata=metadata)
+            artifact = Artifact(
+                parts=parts, index=0, append=False, metadata=metadata
+            )
             task = await self.update_store(task_id, task_status, [artifact])
-            task_result = self.append_task_history(task, task_send_params.historyLength)
+            task_result = self.append_task_history(
+                task, task_send_params.historyLength
+            )
             await self.send_task_notification(task)
             return SendTaskResponse(id=request.id, result=task_result)
         except Exception as e:
-            logger.error(f"Error invoking agent: {e}")
+            logger.error(f'Error invoking agent: {e}')
             logger.error(traceback.format_exc())
 
             # Clean up context in case of error
@@ -253,10 +296,15 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 del self.ctx_states[context_id]
 
             # Return error response
-            parts = [{"type": "text", "text": f"Error: {str(e)}"}]
-            task_status = TaskStatus(state=TaskState.FAILED, message=Message(role="agent", parts=parts))
+            parts = [{'type': 'text', 'text': f'Error: {str(e)}'}]
+            task_status = TaskStatus(
+                state=TaskState.FAILED,
+                message=Message(role='agent', parts=parts),
+            )
             task = await self.update_store(task_id, task_status, None)
-            task_result = self.append_task_history(task, task_send_params.historyLength)
+            task_result = self.append_task_history(
+                task, task_send_params.historyLength
+            )
             await self.send_task_notification(task)
             return SendTaskResponse(id=request.id, result=task_result)
 
@@ -268,7 +316,8 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
         if validation_error:
             return SendTaskResponse(id=request.id, error=validation_error.error)
         error = await self.apply_push_notification(
-            request.params.id, request.params.pushNotification)
+            request.params.id, request.params.pushNotification
+        )
         if error:
             return SendTaskResponse(id=request.id, error=error)
 
@@ -293,7 +342,9 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
 
             if saved_ctx_state:
                 # Resume existing conversation
-                logger.info(f"Resuming existing conversation for session {context_id}")
+                logger.info(
+                    f'Resuming existing conversation for session {context_id}'
+                )
                 ctx = Context.from_dict(self.agent, saved_ctx_state)
                 handler = self.agent.run(
                     start_event=input_event,
@@ -301,18 +352,23 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 )
             else:
                 # New conversation
-                logger.info(f"Starting new conversation for session {context_id}")
+                logger.info(
+                    f'Starting new conversation for session {context_id}'
+                )
                 handler = self.agent.run(
                     start_event=input_event,
                 )
-
 
             final_response: ChatResponseEvent = await handler
 
             # Create artifact with response
             content = final_response.response
-            parts = [{"type": "text", "text": content}]
-            metadata = final_response.citations if hasattr(final_response, 'citations') else None
+            parts = [{'type': 'text', 'text': content}]
+            metadata = (
+                final_response.citations
+                if hasattr(final_response, 'citations')
+                else None
+            )
             if metadata is not None:
                 metadata = {str(k): v for k, v in metadata.items()}
 
@@ -321,13 +377,11 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 parts=parts, index=0, append=False, metadata=metadata
             )
             task = await self.update_store(task_id, task_status, [artifact])
-            task_result = self.append_task_history(
-                task, history_length
-            )
+            task_result = self.append_task_history(task, history_length)
             await self.send_task_notification(task)
             return SendMessageResponse(id=request.id, result=task_result)
         except Exception as e:
-            logger.error(f"Error invoking agent: {e}")
+            logger.error(f'Error invoking agent: {e}')
             logger.error(traceback.format_exc())
 
             # Clean up context in case of error
@@ -335,15 +389,13 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 del self.ctx_states[context_id]
 
             # Return error response
-            parts = [{"type": "text", "text": f"Error: {str(e)}"}]
+            parts = [{'type': 'text', 'text': f'Error: {str(e)}'}]
             task_status = TaskStatus(
                 state=TaskState.FAILED,
-                message=Message(role="agent", parts=parts)
+                message=Message(role='agent', parts=parts),
             )
             task = await self.update_store(task_id, task_status, None)
-            task_result = self.append_task_history(
-                task, history_length
-            )
+            task_result = self.append_task_history(task, history_length)
             await self.send_task_notification(task)
             return SendMessageResponse(id=request.id, result=task_result)
 
@@ -359,13 +411,15 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             await self.upsert_task(request.params)
 
             error = await self.apply_push_notification(
-                request.params.id, request.params.pushNotification)
+                request.params.id, request.params.pushNotification
+            )
             if error:
                 return JSONRPCResponse(id=request.id, error=error.error)
 
             task_send_params: TaskSendParams = request.params
             sse_event_queue = await self.setup_sse_consumer(
-                task_send_params.id, False)
+                task_send_params.id, False
+            )
 
             asyncio.create_task(self._run_streaming_agent(request))
 
@@ -373,12 +427,12 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 request.id, task_send_params.id, sse_event_queue
             )
         except Exception as e:
-            logger.error(f"Error in SSE stream: {e}")
+            logger.error(f'Error in SSE stream: {e}')
             logger.error(traceback.format_exc())
             return JSONRPCResponse(
                 id=request.id,
                 error=InternalError(
-                    message="An error occurred while streaming the response"
+                    message='An error occurred while streaming the response'
                 ),
             )
 
@@ -396,7 +450,8 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
             await self.upsert_task(request.params)
 
             error = await self.apply_push_notification(
-                task_id, request.params.configuration.pushNotification)
+                task_id, request.params.configuration.pushNotification
+            )
             if error:
                 return JSONRPCResponse(id=request.id, error=error)
 
@@ -408,12 +463,12 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 request.id, task_id, sse_event_queue
             )
         except Exception as e:
-            logger.error(f"Error in SSE stream: {e}")
+            logger.error(f'Error in SSE stream: {e}')
             logger.error(traceback.format_exc())
             return JSONRPCResponse(
                 id=request.id,
                 error=InternalError(
-                    message="An error occurred while streaming the response"
+                    message='An error occurred while streaming the response'
                 ),
             )
 
@@ -427,28 +482,27 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
                 file_data = part.file.bytes
                 file_name = part.file.name
                 if file_data is None:
-                    raise ValueError("File data is missing!")
+                    raise ValueError('File data is missing!')
             elif isinstance(part, TextPart):
                 text_parts.append(part.text)
             else:
-                raise ValueError(f"Unsupported part type: {type(part)}")
+                raise ValueError(f'Unsupported part type: {type(part)}')
 
         return InputEvent(
-            msg="\n".join(text_parts),
+            msg='\n'.join(text_parts),
             attachment=file_data,
             file_name=file_name,
         )
 
     async def send_task_notification(self, task: Task):
         if not await self.has_push_notification_info(task.id):
-            logger.info(f"No push notification info found for task {task.id}")
+            logger.info(f'No push notification info found for task {task.id}')
             return
         push_info = await self.get_push_notification_info(task.id)
 
-        logger.info(f"Notifying for task {task.id} => {task.status.state}")
+        logger.info(f'Notifying for task {task.id} => {task.status.state}')
         await self.notification_sender_auth.send_push_notification(
-            push_info.url,
-            data=task.model_dump(exclude_none=True)
+            push_info.url, data=task.model_dump(exclude_none=True)
         )
 
     async def on_resubscribe_to_task(
@@ -456,22 +510,34 @@ class LlamaIndexTaskManager(InMemoryTaskManager):
     ) -> AsyncIterable[SendMessageStreamResponse] | JSONRPCResponse:
         task_id_params: TaskIdParams = request.params
         try:
-            sse_event_queue = await self.setup_sse_consumer(task_id_params.id, True)
-            return self.dequeue_message_events_for_sse(request.id, task_id_params.id, sse_event_queue)
+            sse_event_queue = await self.setup_sse_consumer(
+                task_id_params.id, True
+            )
+            return self.dequeue_message_events_for_sse(
+                request.id, task_id_params.id, sse_event_queue
+            )
         except Exception as e:
-            logger.error(f"Error while reconnecting to SSE stream: {e}")
+            logger.error(f'Error while reconnecting to SSE stream: {e}')
             return JSONRPCResponse(
                 id=request.id,
                 error=InternalError(
-                    message=f"An error occurred while reconnecting to stream: {e}"
+                    message=f'An error occurred while reconnecting to stream: {e}'
                 ),
             )
 
-    async def set_push_notification_info(self, task_id: str, push_notification_config: PushNotificationConfig):
+    async def set_push_notification_info(
+        self, task_id: str, push_notification_config: PushNotificationConfig
+    ):
         # Verify the ownership of notification URL by issuing a challenge request.
-        is_verified = await self.notification_sender_auth.verify_push_notification_url(push_notification_config.url)
+        is_verified = (
+            await self.notification_sender_auth.verify_push_notification_url(
+                push_notification_config.url
+            )
+        )
         if not is_verified:
             return False
 
-        await super().set_push_notification_info(task_id, push_notification_config)
+        await super().set_push_notification_info(
+            task_id, push_notification_config
+        )
         return True

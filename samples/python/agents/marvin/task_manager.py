@@ -15,10 +15,10 @@ from common.types import (
     JSONRPCResponse,
     Message,
     PushNotificationConfig,
-    SendTaskRequest, # deprecated
-    SendTaskResponse, # deprecated
-    SendTaskStreamingRequest, # deprecated
-    SendTaskStreamingResponse, # deprecated
+    SendTaskRequest,  # deprecated
+    SendTaskResponse,  # deprecated
+    SendTaskStreamingRequest,  # deprecated
+    SendTaskStreamingResponse,  # deprecated
     SendMessageRequest,
     SendMessageResponse,
     SendMessageStreamRequest,
@@ -26,7 +26,7 @@ from common.types import (
     Task,
     TaskArtifactUpdateEvent,
     TaskIdParams,
-    TaskSendParams, # deprecated
+    TaskSendParams,  # deprecated
     TaskState,
     TaskStatus,
     TaskStatusUpdateEvent,
@@ -85,7 +85,8 @@ class AgentTaskManager(InMemoryTaskManager):
         return task_status, artifacts
 
     async def _run_streaming_agent(
-        self, request: SendTaskStreamingRequest | SendMessageStreamRequest):
+        self, request: SendTaskStreamingRequest | SendMessageStreamRequest
+    ):
         task_id, context_id = self._extract_task_and_context(request.params)
         query = self._get_user_query(request.params)
 
@@ -186,12 +187,16 @@ class AgentTaskManager(InMemoryTaskManager):
                 ),
             )
 
-
     def _validate_request(
-        self, request: SendTaskRequest | SendTaskStreamingRequest | SendMessageRequest | SendMessageStreamRequest
+        self,
+        request: SendTaskRequest
+        | SendTaskStreamingRequest
+        | SendMessageRequest
+        | SendMessageStreamRequest,
     ) -> JSONRPCResponse | None:
         outputValid = self._validate_output_modes(
-            request, ExtractorAgent.SUPPORTED_CONTENT_TYPES)
+            request, ExtractorAgent.SUPPORTED_CONTENT_TYPES
+        )
         if outputValid:
             return outputValid
         return self._validate_push_config(request)
@@ -252,8 +257,7 @@ class AgentTaskManager(InMemoryTaskManager):
         request.params.message.contextId = context_id
         await self.upsert_task(request.params)
 
-        task = await self.update_store(
-            task_id, TaskStatus(state=TaskState.WORKING), [])
+        task = await self.update_store(task_id, TaskStatus(state=TaskState.WORKING), [])
 
         await self.send_task_notification(task)
 
@@ -264,8 +268,7 @@ class AgentTaskManager(InMemoryTaskManager):
             logger.error(f"Error invoking agent: {e}")
             raise ValueError(f"Error invoking agent: {e}")
 
-        return await self._process_agent_message_response(
-            request, agent_response)
+        return await self._process_agent_message_response(request, agent_response)
 
     async def on_send_message_stream(
         self, request: SendMessageStreamRequest
@@ -282,7 +285,7 @@ class AgentTaskManager(InMemoryTaskManager):
             if request.params.configuration.pushNotificationConfig:
                 if not await self.set_push_notification_info(
                     request.params.id,
-                    request.params.configuration.pushNotificationConfig
+                    request.params.configuration.pushNotificationConfig,
                 ):
                     return JSONRPCResponse(
                         id=request.id,
@@ -291,9 +294,7 @@ class AgentTaskManager(InMemoryTaskManager):
                         ),
                     )
 
-            sse_event_queue = await self.setup_sse_consumer(
-                request.params.id, False
-            )
+            sse_event_queue = await self.setup_sse_consumer(request.params.id, False)
 
             asyncio.create_task(self._run_stream_agent(request))
 

@@ -4,8 +4,8 @@ from typing import Any, AsyncIterable
 from common.types import (
     AgentCard,
     GetTaskRequest,
-    SendTaskRequest, # deprecated
-    SendTaskResponse, # deprecated
+    SendTaskRequest,  # deprecated
+    SendTaskResponse,  # deprecated
     JSONRPCRequest,
     GetTaskResponse,
     CancelTaskResponse,
@@ -16,8 +16,8 @@ from common.types import (
     GetTaskPushNotificationResponse,
     A2AClientHTTPError,
     A2AClientJSONError,
-    SendTaskStreamingRequest, # deprecated
-    SendTaskStreamingResponse, # deprecated
+    SendTaskStreamingRequest,  # deprecated
+    SendTaskStreamingResponse,  # deprecated
     SendMessageRequest,
     SendMessageResponse,
     SendMessageStreamRequest,
@@ -33,14 +33,16 @@ class A2AClient:
         elif url:
             self.url = url
         else:
-            raise ValueError("Must provide either agent_card or url")
+            raise ValueError('Must provide either agent_card or url')
 
     # deprecated
     async def send_task(self, payload: dict[str, Any]) -> SendTaskResponse:
         request = SendTaskRequest(params=payload)
         return SendTaskResponse(**await self._send_request(request))
 
-    async def send_message(self, payload: dict[str, Any]) -> SendMessageResponse:
+    async def send_message(
+        self, payload: dict[str, Any]
+    ) -> SendMessageResponse:
         request = SendMessageRequest(params=payload)
         return SendMessageResponse(**await self._send_request(request))
 
@@ -51,7 +53,7 @@ class A2AClient:
         request = SendTaskStreamingRequest(params=payload)
         with httpx.Client(timeout=None) as client:
             with connect_sse(
-                client, "POST", self.url, json=request.model_dump()
+                client, 'POST', self.url, json=request.model_dump()
             ) as event_source:
                 try:
                     for sse in event_source.iter_sse():
@@ -67,7 +69,7 @@ class A2AClient:
         request = SendMessageStreamRequest(params=payload)
         with httpx.Client(timeout=None) as client:
             with connect_sse(
-                client, "POST", self.url, json=request.model_dump()
+                client, 'POST', self.url, json=request.model_dump()
             ) as event_source:
                 try:
                     for sse in event_source.iter_sse():
@@ -103,10 +105,14 @@ class A2AClient:
         self, payload: dict[str, Any]
     ) -> SetTaskPushNotificationResponse:
         request = SetTaskPushNotificationRequest(params=payload)
-        return SetTaskPushNotificationResponse(**await self._send_request(request))
+        return SetTaskPushNotificationResponse(
+            **await self._send_request(request)
+        )
 
     async def get_task_callback(
         self, payload: dict[str, Any]
     ) -> GetTaskPushNotificationResponse:
         request = GetTaskPushNotificationRequest(params=payload)
-        return GetTaskPushNotificationResponse(**await self._send_request(request))
+        return GetTaskPushNotificationResponse(
+            **await self._send_request(request)
+        )

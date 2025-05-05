@@ -1,17 +1,17 @@
 from typing import AsyncIterable
 from common.types import (
-    SendTaskRequest, # deprecated
-    TaskSendParams, # deprecated
+    SendTaskRequest,  # deprecated
+    TaskSendParams,  # deprecated
     Message,
     TaskStatus,
     Artifact,
     TextPart,
     TaskState,
-    SendTaskResponse, # deprecated
+    SendTaskResponse,  # deprecated
     InternalError,
     JSONRPCResponse,
-    SendTaskStreamingRequest, # deprecated
-    SendTaskStreamingResponse, # deprecated
+    SendTaskStreamingRequest,  # deprecated
+    SendTaskStreamingResponse,  # deprecated
     TaskArtifactUpdateEvent,
     TaskStatusUpdateEvent,
     SendMessageRequest,
@@ -64,17 +64,23 @@ class AgentTaskManager(InMemoryTaskManager):
         query = self._extract_user_query(task_send_params)
 
         try:
-            agent_response = self.agent.invoke(query, task_send_params.sessionId)
+            agent_response = self.agent.invoke(
+                query, task_send_params.sessionId
+            )
             task = await self._handle_send_task(request, agent_response)
             return SendTaskResponse(id=request.id, result=task)
         except Exception as e:
-            logger.error(f"Error invoking agent: {e}")
+            logger.error(f'Error invoking agent: {e}')
             return SendTaskResponse(
                 id=request.id,
-                error=InternalError(message=f"Error during on_send_task: {str(e)}")
+                error=InternalError(
+                    message=f'Error during on_send_task: {str(e)}'
+                ),
             )
 
-    async def on_send_message(self, request: SendMessageRequest) -> SendMessageResponse:
+    async def on_send_message(
+        self, request: SendMessageRequest
+    ) -> SendMessageResponse:
         """
         Handle synchronous task requests.
 
@@ -84,7 +90,8 @@ class AgentTaskManager(InMemoryTaskManager):
         validation_error = self._validate_request(request)
         if validation_error:
             return SendMessageResponse(
-                id=request.id, error=validation_error.error)
+                id=request.id, error=validation_error.error
+            )
 
         task_id, context_id = self._extract_task_and_context(request.params)
         request.params.message.taskId = task_id
@@ -102,10 +109,12 @@ class AgentTaskManager(InMemoryTaskManager):
             task = await self._handle_send_task(request, agent_response)
             return SendMessageResponse(id=request.id, result=task)
         except Exception as e:
-            logger.error(f"Error invoking agent: {e}")
+            logger.error(f'Error invoking agent: {e}')
             return SendTaskResponse(
                 id=request.id,
-                error=InternalError(message=f"Error during on_send_task: {str(e)}")
+                error=InternalError(
+                    message=f'Error during on_send_task: {str(e)}'
+                ),
             )
 
     # deprecated
@@ -127,7 +136,9 @@ class AgentTaskManager(InMemoryTaskManager):
             await self.upsert_task(request.params)
 
             task_send_params: TaskSendParams = request.params
-            sse_event_queue = await self.setup_sse_consumer(task_send_params.id, False)
+            sse_event_queue = await self.setup_sse_consumer(
+                task_send_params.id, False
+            )
 
             asyncio.create_task(self._handle_send_task_streaming(request))
 
@@ -135,12 +146,12 @@ class AgentTaskManager(InMemoryTaskManager):
                 request.id, task_send_params.id, sse_event_queue
             )
         except Exception as e:
-            logger.error(f"Error in SSE stream: {e}")
+            logger.error(f'Error in SSE stream: {e}')
             print(traceback.format_exc())
             return JSONRPCResponse(
                 id=request.id,
                 error=InternalError(
-                    message="An error occurred while streaming the response"
+                    message='An error occurred while streaming the response'
                 ),
             )
 
@@ -172,12 +183,12 @@ class AgentTaskManager(InMemoryTaskManager):
                 request.id, task_id, sse_event_queue
             )
         except Exception as e:
-            logger.error(f"Error in SSE stream: {e}")
+            logger.error(f'Error in SSE stream: {e}')
             print(traceback.format_exc())
             return JSONRPCResponse(
                 id=request.id,
                 error=InternalError(
-                    message="An error occurred while streaming the response"
+                    message='An error occurred while streaming the response'
                 ),
             )
 
@@ -186,7 +197,9 @@ class AgentTaskManager(InMemoryTaskManager):
     # -------------------------------------------------------------
 
     async def _handle_send_task(
-        self, request: SendTaskRequest | SendMessageRequest, agent_response: dict
+        self,
+        request: SendTaskRequest | SendMessageRequest,
+        agent_response: dict,
     ) -> Task:
         """
         Handle the 'tasks/send' JSON-RPC method by processing agent response.
@@ -203,13 +216,13 @@ class AgentTaskManager(InMemoryTaskManager):
             history_length = request.params.configuration.historyLength
         task_status = None
 
-        parts = [TextPart(type="text", text=agent_response["content"])]
+        parts = [TextPart(type='text', text=agent_response['content'])]
         artifact = None
-        if agent_response["require_user_input"]:
+        if agent_response['require_user_input']:
             task_status = TaskStatus(
                 state=TaskState.INPUT_REQUIRED,
                 message=Message(
-                    role="agent",
+                    role='agent',
                     parts=parts,
                     contextId=context_id,
                     taskId=task_id,
@@ -228,7 +241,8 @@ class AgentTaskManager(InMemoryTaskManager):
         return task_result
 
     async def _handle_send_task_streaming(
-        self, request: SendTaskStreamingRequest | SendMessageStreamRequest):
+        self, request: SendTaskStreamingRequest | SendMessageStreamRequest
+    ):
         """
         Handle the 'tasks/sendSubscribe' JSON-RPC method for streaming responses.
 
@@ -242,46 +256,50 @@ class AgentTaskManager(InMemoryTaskManager):
 
         try:
             async for item in self.agent.stream(query, context_id):
-                is_task_complete = item["is_task_complete"]
-                require_user_input = item["require_user_input"]
-                content = item["content"]
+                is_task_complete = item['is_task_complete']
+                require_user_input = item['require_user_input']
+                content = item['content']
 
-                logger.info(f"Stream item received: complete={is_task_complete}, require_input={require_user_input}, content_len={len(content)}")
+                logger.info(
+                    f'Stream item received: complete={is_task_complete}, require_input={require_user_input}, content_len={len(content)}'
+                )
 
                 artifact = None
                 message = None
-                parts = [TextPart(type="text", text=content)]
+                parts = [TextPart(type='text', text=content)]
                 end_stream = False
 
                 if not is_task_complete and not require_user_input:
                     # Processing message - working state
                     task_state = TaskState.WORKING
                     message = Message(
-                        role="agent",
+                        role='agent',
                         parts=parts,
                         taskId=task_id,
                         contextId=context_id,
                         messageId=str(uuid.uuid4()),
                     )
-                    logger.info("Sending WORKING status update")
+                    logger.info('Sending WORKING status update')
                 elif require_user_input:
                     # Requires user input - input required state
                     task_state = TaskState.INPUT_REQUIRED
                     message = Message(
-                        role="agent",
+                        role='agent',
                         parts=parts,
                         taskId=task_id,
                         contextId=context_id,
                         messageId=str(uuid.uuid4()),
                     )
                     end_stream = True
-                    logger.info("Sending INPUT_REQUIRED status update (final)")
+                    logger.info('Sending INPUT_REQUIRED status update (final)')
                 else:
                     # Task completed - completed state with artifact
                     task_state = TaskState.COMPLETED
                     artifact = Artifact(parts=parts, index=0, append=False)
                     end_stream = True
-                    logger.info("Sending COMPLETED status with artifact (final)")
+                    logger.info(
+                        'Sending COMPLETED status with artifact (final)'
+                    )
 
                 # Update task store (return value not used)
                 task_status = TaskStatus(state=task_state, message=message)
@@ -293,7 +311,7 @@ class AgentTaskManager(InMemoryTaskManager):
 
                 # First send artifact if we have one
                 if artifact:
-                    logger.info(f"Sending artifact event for task {task_id}")
+                    logger.info(f'Sending artifact event for task {task_id}')
                     task_artifact_update_event = TaskArtifactUpdateEvent(
                         id=task_id, artifact=artifact
                     )
@@ -302,7 +320,9 @@ class AgentTaskManager(InMemoryTaskManager):
                     )
 
                 # Then send status update
-                logger.info(f"Sending status update for task {task_id}, state={task_state}, final={end_stream}")
+                logger.info(
+                    f'Sending status update for task {task_id}, state={task_state}, final={end_stream}'
+                )
                 task_update_event = TaskStatusUpdateEvent(
                     id=task_id,
                     status=task_status,
@@ -312,11 +332,13 @@ class AgentTaskManager(InMemoryTaskManager):
                 await self.enqueue_events_for_sse(task_id, task_update_event)
 
         except Exception as e:
-            logger.error(f"An error occurred while streaming the response: {e}")
+            logger.error(f'An error occurred while streaming the response: {e}')
             logger.error(traceback.format_exc())
             await self.enqueue_events_for_sse(
                 task_id,
-                InternalError(message=f"An error occurred while streaming the response: {e}")
+                InternalError(
+                    message=f'An error occurred while streaming the response: {e}'
+                ),
             )
 
     # -------------------------------------------------------------
@@ -324,7 +346,11 @@ class AgentTaskManager(InMemoryTaskManager):
     # -------------------------------------------------------------
 
     def _validate_request(
-        self, request: SendTaskRequest | SendTaskStreamingRequest | SendMessageRequest | SendMessageStreamRequest
+        self,
+        request: SendTaskRequest
+        | SendTaskStreamingRequest
+        | SendMessageRequest
+        | SendMessageStreamRequest,
     ) -> JSONRPCResponse | None:
         """
         Validate task request parameters for compatibility with agent capabilities.
@@ -336,7 +362,8 @@ class AgentTaskManager(InMemoryTaskManager):
             JSONRPCResponse with an error if validation fails, None otherwise.
         """
         invalidOutput = self._validate_output_modes(
-            request, YoutubeMCPAgent.SUPPORTED_CONTENT_TYPES)
+            request, YoutubeMCPAgent.SUPPORTED_CONTENT_TYPES
+        )
         if invalidOutput:
             logger.warning(invalidOutput.error)
             return invalidOutput
