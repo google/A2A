@@ -1,12 +1,16 @@
 # test_schema.py
 import pytest
 import json
+import sys
 from uuid import uuid4
 from datetime import datetime
 from pathlib import Path
 
+# Add parent directory to sys.path
+sys.path.append(str(Path(__file__).parent.parent))
+
 # import types from a2a package
-from common.types import (
+from samples.python.common.types import (
     TaskState, TextPart, FileContent, FilePart, DataPart, Message, TaskStatus,
     Artifact, Task, TaskStatusUpdateEvent, TaskArtifactUpdateEvent, AuthenticationInfo,
     PushNotificationConfig, TaskIdParams, TaskQueryParams, TaskSendParams, TaskPushNotificationConfig,
