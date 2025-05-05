@@ -3,7 +3,7 @@
 An open protocol enabling Agent-to-Agent interoperability, bridging the gap
 between opaque agentic systems.
 
-<img src="../assets/a2a-actors.png" width="70%" style="margin:20px auto;display:block;">
+<img src="assets/a2a-actors.png" width="70%" style="margin:20px auto;display:block;">
 
 ## Key Principles
 

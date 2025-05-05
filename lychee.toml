@@ -1,0 +1,16 @@
+exclude = [ 
+    'https://fonts.gstatic.com/',
+    'https://fonts.googleapis.com/',
+    'http://go/github',
+    'http://go/github-googlecloudplatform',
+    'https://medium.com/',
+    'https://x.com/',
+    'http://localhost:12000/',
+    'http://localhost:10020/',
+    'https://www.askmarvin.ai/',
+]
+exclude_path = [
+    ".github/actions/spelling",
+]
+
+max_retries = 0
