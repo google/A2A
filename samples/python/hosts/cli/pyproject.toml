@@ -5,6 +5,7 @@ description = "A CLI application that demonstrates the capabilities of an A2ACli
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "a2a-samples",
     "asyncclick>=8.1.8",
     "sse-starlette>=2.2.1",
     "starlette>=0.46.1",
