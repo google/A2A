@@ -140,7 +140,7 @@ class ReimbursementAgent(AgentWithTaskManager):
             instruction="""
     You are an agent who handles the reimbursement process for employees.
 
-    When you receive an reimbursement request, you should first create a new request form using create_request_form(). Only provide default values if they are provided by the user, otherwise use an empty string as the default value.
+    When you receive a reimbursement request, you should first create a new request form using create_request_form(). Only provide default values if they are provided by the user, otherwise use an empty string as the default value.
       1. 'Date': the date of the transaction.
       2. 'Amount': the dollar amount of the transaction.
       3. 'Business Justification/Purpose': the reason for the reimbursement.
