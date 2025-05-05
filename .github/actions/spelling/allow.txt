@@ -47,6 +47,7 @@ agentskill
 ainvoke
 aparse
 arxiv
+askmarvin
 asyncclick
 autogen
 autouse
@@ -62,11 +63,14 @@ datapart
 direnv
 fsv
 fyi
+gcp
 genai
 gle
 googleai
 googleblog
 gpt
+gstatic
+gweb
 iat
 ietf
 inbox
