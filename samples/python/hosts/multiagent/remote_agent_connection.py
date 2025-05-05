@@ -59,6 +59,13 @@ class RemoteAgentConnections:
           if 'message_id' in m.metadata:
             m.metadata['last_message_id'] = m.metadata['message_id']
           m.metadata['message_id'] = str(uuid.uuid4())
+        
+        if response.result and response.result.status and response.result.status.message:
+            if isinstance(response.result.status.message, dict):
+                role = response.result.status.message.get("role")
+                if role == "model":
+                    response.result.status.message["role"] = "agent" 
+        
         if task_callback:
           task = task_callback(response.result, self.card)
         if hasattr(response.result, 'final') and response.result.final:
@@ -79,6 +86,13 @@ class RemoteAgentConnections:
         if 'message_id' in m.metadata:
           m.metadata['last_message_id'] = m.metadata['message_id']
         m.metadata['message_id'] = str(uuid.uuid4())
+
+      # --- PATCH: Fix invalid role 'model' to 'agent' ---
+      if response.result and response.result.status and response.result.status.message:
+          if isinstance(response.result.status.message, dict):
+              role = response.result.status.message.get("role")
+              if role == "model":
+                response.result.status.message["role"] = "agent"
 
       if task_callback:
         task_callback(response.result, self.card)

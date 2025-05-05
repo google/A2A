@@ -25,11 +25,23 @@ import json
 class A2AClient:
     def __init__(self, agent_card: AgentCard = None, url: str = None):
         if agent_card:
-            self.url = agent_card.url
+            raw_url  = agent_card.url
         elif url:
-            self.url = url
+            raw_url  = url
         else:
             raise ValueError("Must provide either agent_card or url")
+
+        # 🧹 Normalize the URL safely
+        self.url = self._normalize_url(raw_url)
+
+    def _normalize_url(self, url: str) -> str:
+        """Ensure URL is clean: remove invisibles, strip spaces, ensure trailing /."""
+        import re
+        url = url.strip()
+        url = re.sub(r"[\u200B-\u200F\u2060-\u206F]", "", url)  # remove weird unicode invisibles
+        if not url.endswith("/"):
+            url += "/"
+        return url
 
     async def send_task(self, payload: dict[str, Any]) -> SendTaskResponse:
         request = SendTaskRequest(params=payload)
@@ -56,7 +68,7 @@ class A2AClient:
             try:
                 # Image generation could take time, adding timeout
                 response = await client.post(
-                    self.url, json=request.model_dump(), timeout=30
+                    self.url, json=request.model_dump(), timeout=6000
                 )
                 response.raise_for_status()
                 return response.json()

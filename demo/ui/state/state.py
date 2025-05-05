@@ -14,7 +14,8 @@ class StateConversation:
   conversation_name: str = ""
   is_active: bool = True
   message_ids: list[str] = dataclasses.field(default_factory=list)
-
+  remote_agent_url: Optional[str] = None
+  
 @dataclass
 class StateMessage:
   """StateMessage provides mesop state compliant view of a message"""
@@ -22,7 +23,8 @@ class StateMessage:
   role: str = ""
   # Each content entry is a content, media type pair.
   content: list[Tuple[ContentPart, str]] = dataclasses.field(default_factory=list)
-
+  metadata: dict[str, Any] = dataclasses.field(default_factory=dict)
+  
 @dataclass
 class StateTask:
   """StateTask provides mesop state compliant view of task"""
@@ -71,6 +73,8 @@ class AppState:
   api_key: str = ""
   uses_vertex_ai: bool = False
   api_key_dialog_open: bool = False
+
+  events: list[StateEvent] = dataclasses.field(default_factory=list)
 
 @me.stateclass
 class SettingsState:

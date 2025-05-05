@@ -96,14 +96,20 @@ class ConversationServer:
     if isinstance(self.manager, ADKHostManager):
       self.manager.update_api_key(api_key)
 
-  def _create_conversation(self):
+  async def _create_conversation(self):
     c = self.manager.create_conversation()
-    return CreateConversationResponse(result=c)
+    return CreateConversationResponse(result=c).model_dump()
 
   async def _send_message(self, request: Request):
     message_data = await request.json()
     message = Message(**message_data['params'])
     message = self.manager.sanitize_message(message)
+    conversation_id = message.metadata.get("conversation_id")
+    if conversation_id:
+        conv = self.manager.get_conversation(conversation_id)
+        if conv:
+            conv.messages.append(message)  # Save user message
+    
     t = threading.Thread(target=lambda: asyncio.run(self.manager.process_message(message)))
     t.start()
     return SendMessageResponse(result=MessageInfo(

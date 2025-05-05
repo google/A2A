@@ -44,19 +44,32 @@ class HostAgent:
       remote_agent_addresses: List[str],
       task_callback: TaskUpdateCallback | None = None
   ):
-    self.task_callback = task_callback
-    self.remote_agent_connections: dict[str, RemoteAgentConnections] = {}
-    self.cards: dict[str, AgentCard] = {}
-    for address in remote_agent_addresses:
-      card_resolver = A2ACardResolver(address)
-      card = card_resolver.get_agent_card()
-      remote_connection = RemoteAgentConnections(card)
-      self.remote_agent_connections[card.name] = remote_connection
-      self.cards[card.name] = card
-    agent_info = []
-    for ra in self.list_remote_agents():
-      agent_info.append(json.dumps(ra))
-    self.agents = '\n'.join(agent_info)
+      self.task_callback = task_callback
+      self.remote_agent_connections: dict[str, RemoteAgentConnections] = {}
+      self.cards: dict[str, AgentCard] = {}
+  
+      for address in remote_agent_addresses:
+          if isinstance(address, AgentCard):
+              print(f"[DEBUG] Received AgentCard directly: {address.url}")
+              card = address  # Use it directly (don't resolve again)
+          else:
+              print(f"[DEBUG] Trying to connect to agent URL: {address}")
+              try:
+                  card_resolver = A2ACardResolver(address)
+                  card = card_resolver.get_agent_card()
+              except Exception as e:
+                  print(f"[WARN] Skipping agent {address} because of error: {e}")
+                  continue  # SKIP this broken agent, don't crash
+                
+          remote_connection = RemoteAgentConnections(card)
+          self.remote_agent_connections[card.name] = remote_connection
+          self.cards[card.name] = card
+  
+      agent_info = []
+      for ra in self.list_remote_agents():
+          agent_info.append(json.dumps(ra))
+      self.agents = '\n'.join(agent_info)
+
 
   def register_agent_card(self, card: AgentCard):
     remote_connection = RemoteAgentConnections(card)

@@ -2,6 +2,7 @@ import os
 import json
 import traceback
 import sys
+import httpx
 
 from typing import Tuple, Any
 from service.client.client import ConversationClient
@@ -49,12 +50,15 @@ async def SendMessage(message: Message) -> str | None:
     print("Failed to send message: ", e)
 
 async def CreateConversation() -> Conversation:
-  client = ConversationClient(server_url)
-  try:
-   response = await client.create_conversation(CreateConversationRequest())
-   return response.result
-  except Exception as e:
-    print("Failed to create conversation", e)
+    client = ConversationClient(server_url)
+    try:
+        print("[DEBUG] Calling create_conversation()...")
+        response = await client.create_conversation(CreateConversationRequest())
+        print("CreateConversation response:", response)
+        return response.result
+    except Exception as e:
+        print("Failed to create conversation", e)
+        return None
 
 async def ListRemoteAgents():
   client = ConversationClient(server_url)
@@ -254,3 +258,63 @@ def extract_conversation_id(task: Task) -> str:
     if a.metadata and 'conversation_id' in a.metadata:
       return a.metadata['conversation_id']
   return ""
+
+async def pick_agent_using_chatgpt(user_message: str) -> str | None:
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        print("[DEBUG] No OPENAI_API_KEY found.")
+        return None
+
+    remote_agents = await ListRemoteAgents()
+    if not remote_agents:
+        print("[DEBUG] No remote agents available.")
+        return None
+
+    agent_descriptions = "\n".join(
+        f"- {agent.name}: {agent.description} ({agent.url})"
+        for agent in remote_agents
+    )
+
+    prompt = f"""You are an intelligent router between users and specialized agents.
+
+Here are the available agents:
+{agent_descriptions}
+
+The user's request is:
+\"\"\"{user_message}\"\"\"
+
+Pick the best agent that can handle this request.
+ONLY reply with the agent's base_url. Nothing else.
+"""
+
+    headers = {
+        "Authorization": f"Bearer {api_key}",
+        "Content-Type": "application/json",
+    }
+
+    body = {
+        "model": "gpt-4o",  # <-- Use "gpt-4o" here for the latest
+        "messages": [
+            {"role": "system", "content": "You are an agent router."},
+            {"role": "user", "content": prompt}
+        ],
+        "temperature": 0.0
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=20.0) as client:
+            response = await client.post(
+                "https://api.openai.com/v1/chat/completions",  # <== ✅ Correct URL
+                headers=headers,
+                json=body
+            )
+            response.raise_for_status()
+            data = response.json()
+            text_response = data["choices"][0]["message"]["content"]
+            text_response = text_response.strip()
+
+            print(f"[DEBUG] ChatGPT suggested agent: {text_response}")
+            return text_response
+    except Exception as e:
+        print("[DEBUG] Failed to call ChatGPT:", e)
+        return None

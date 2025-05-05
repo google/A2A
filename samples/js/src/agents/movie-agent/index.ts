@@ -39,7 +39,7 @@ async function* movieAgentHandler(
   const messages: MessageData[] = (context.history ?? []) // Use history if available, default to empty array
     .map((m) => ({
       // Map roles explicitly and assert the type for Genkit
-      role: (m.role === "agent" ? "model" : "user") as "user" | "model",
+      role: (m.role === "user" || m.role === "agent") ? m.role : "agent",
       content: m.parts
         .filter((p): p is schema.TextPart => !!(p as schema.TextPart).text) // Filter for text parts
         .map((p) => ({

@@ -21,7 +21,7 @@ async function* coderAgent({
   // Map A2A history to Genkit messages
   const messages: MessageData[] = (history ?? [])
     .map((m) => ({
-      role: (m.role === "agent" ? "model" : "user") as "user" | "model",
+      role: (m.role === "user" || m.role === "agent") ? m.role : "agent",
       content: m.parts
         .filter((p): p is schema.TextPart => !!(p as schema.TextPart).text)
         .map((p) => ({ text: p.text })),
