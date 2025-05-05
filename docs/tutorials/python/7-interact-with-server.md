@@ -42,7 +42,5 @@ If everything is working correctly you'll see this in the response
 
 To exit type `:q` and press Enter
 
-<div class="bottom-buttons" style="flex flex-row">
-  <a href="#/tutorials/python/6_start_server.md" class="back-button">Back</a>
-  <a href="#/tutorials/python/8_agent_capabilities.md?id=adding-agent-capabilities" class="next-button">Next</a>
-</div>
+[Prev](./6-start-server.md)
+[Next](./8-agent-capabilities.md)

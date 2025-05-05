@@ -66,7 +66,6 @@ The output should look something like this.
 Hello from my-project!
 ```
 
-<div class="bottom-buttons" style="flex flex-row">
-  <a href="#/tutorials/python/2_setup.md" class="back-button">Back</a>
-  <a href="#/tutorials/python/4_agent_skills.md?id=agent-skills" class="next-button">Next</a>
-</div>
+
+[Prev](./2-setup.md)
+[Next](./4-agent-skills.md)

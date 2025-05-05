@@ -38,7 +38,7 @@ It is currently recommended that if Agent A requires the user/client to provide 
 
 ## Authenticating Clients
 
-A2A servers are expected to publish supported and required authentication protocol(s) in its [Agent Card](/documentation.md#agent-card). These protocols should be one of the standard [OpenAPI Authentication formats](https://swagger.io/docs/specification/v3_0/authentication/) (such as API Keys, OAuth, OIDC, etc) but can be extended to another protocol supported by both client and server.
+A2A servers are expected to publish supported and required authentication protocol(s) in its [Agent Card](../specification/agent-card.md). These protocols should be one of the standard [OpenAPI Authentication formats](https://swagger.io/docs/specification/v3_0/authentication/) (such as API Keys, OAuth, OIDC, etc) but can be extended to another protocol supported by both client and server.
 
 Individual authentication protocols have their own mechanisms for acquiring, refreshing, and challenging credential material (such as bearer or session tokens). The credential acquisition and maintenance process is considered external to A2A.
 
@@ -49,7 +49,7 @@ A2A servers are expected to authenticate **every** request and reject or challen
 A2A servers are expected to authorize requests based on both the user and application identity. We recommend that individual agents manage access on at least two axes:
 
 - **Skills**  
-  Agents are expected to advertise (via an [Agent Card](/documentation.md#agent-card)) their capabilities in the form of skills. It is recommended that agents authorize on a per-skill basis (for example, OAuthScope 'foo-read-only' could limit access only to 'generateRecipe' skills).
+  Agents are expected to advertise (via an [Agent Card](../specification/agent-card.md)) their capabilities in the form of skills. It is recommended that agents authorize on a per-skill basis (for example, OAuthScope 'foo-read-only' could limit access only to 'generateRecipe' skills).
 
 - **Tools (Actions and Data)**  
   It is recommended that Agents restrict access to sensitive data or actions by placing them behind Tools. When an agentic flow or model needs to access this data, the agent should authorize access to a tool based on the application+user priviledge. We highly recommend utilizing API Management with Tool access.
