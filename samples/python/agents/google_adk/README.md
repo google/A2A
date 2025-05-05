@@ -31,8 +31,9 @@ This agent takes text requests from the client and, if any details are missing, 
 5. In a separate terminal, run the A2A client:
     ```
     # Connect to the agent (specify the agent URL with correct port)
-    uv run hosts/cli --agent http://localhost:10002
+    cd samples/python/hosts/cli
+    uv run . --agent http://localhost:10002
 
     # If you changed the port when starting the agent, use that port instead
-    # uv run hosts/cli --agent http://localhost:YOUR_PORT
+    # uv run . --agent http://localhost:YOUR_PORT
     ```
