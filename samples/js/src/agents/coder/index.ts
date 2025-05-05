@@ -1,15 +1,12 @@
 import { MessageData } from "genkit";
 import { TaskYieldUpdate } from "../../server/handler.js";
-import {
-  TaskContext,
-  A2AServer
-} from "../../server/index.js"; // Import server components
+import { TaskContext, A2AServer } from "../../server/index.js"; // Import server components
 import * as schema from "../../schema.js"; // Import schema for types
 import { ai } from "./genkit.js";
 import { CodeMessage } from "./code-format.js"; // CodeMessageSchema might not be needed here
 
-if (!process.env.GEMINI_API_KEY) {  
-  console.error("GEMINI_API_KEY environment variable not set.")
+if (!process.env.GEMINI_API_KEY) {
+  console.error("GEMINI_API_KEY environment variable not set.");
   process.exit(1);
 }
 
@@ -140,7 +137,7 @@ const coderAgentCard: schema.AgentCard = {
   name: "Coder Agent",
   description:
     "An agent that generates code based on natural language instructions and streams file outputs.",
-  url: "http://localhost:41241", // Default port used in the script
+  url: "http://0.0.0.0:41241", // Default port used in the script
   provider: {
     organization: "A2A Samples",
   },
@@ -180,5 +177,5 @@ const server = new A2AServer(coderAgent, {
 
 server.start(); // Default port 41241
 
-console.log("[CoderAgent] Server started on http://localhost:41241");
+console.log("[CoderAgent] Server started on http://0.0.0.0:41241");
 console.log("[CoderAgent] Press Ctrl+C to stop the server");

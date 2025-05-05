@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 @click.command()
-@click.option("--host", "host", default="localhost")
+@click.option("--host", "host", default="0.0.0.0")
 @click.option("--port", "port", default=10003)
 def main(host, port):
     """Starts the AG2 MCP Agent server."""
