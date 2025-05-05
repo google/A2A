@@ -490,7 +490,10 @@ These use codes within the `-32000` to `-32099` range.
         "message": {
           "role": "user",
           "parts": [
-            { "type": "text", "text": "Write a short story about a robot exploring Mars." }
+            {
+              "type": "text",
+              "text": "Write a short story about a robot exploring Mars."
+            }
           ]
         }
       }
