@@ -2,7 +2,7 @@
 
 Now that we have defined our skills, we can create an Agent Card.
 
-Remote Agents are required to publish an Agent Card in JSON format describing the agent's capabilities and skills in addition to authentication mechanisms. In other words, this lets the world know about your agent and how to interact with it. You can find more details in the [documentation](documentation?id=agent-card).
+Remote Agents are required to publish an Agent Card in JSON format describing the agent's capabilities and skills in addition to authentication mechanisms. In other words, this lets the world know about your agent and how to interact with it. You can find more details in the [documentation](../../specification/agent-card.md).
 
 ## Implementation <!-- {docsify-ignore} -->
 
