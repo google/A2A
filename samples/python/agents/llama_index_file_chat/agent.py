@@ -1,7 +1,5 @@
 import base64
 import os
-from pydantic import BaseModel, Field
-from typing import Any, Optional
 
 from llama_index.core.llms import ChatMessage
 from llama_index.core.workflow import (
@@ -14,6 +12,18 @@ from llama_index.core.workflow import (
 )
 from llama_index.llms.google_genai import GoogleGenAI
 from llama_cloud_services.parse import LlamaParse
+from llama_index.core.llms import ChatMessage
+from llama_index.core.workflow import (
+    Context,
+    Event,
+    StartEvent,
+    StopEvent,
+    Workflow,
+    step,
+)
+from llama_index.llms.google_genai import GoogleGenAI
+from pydantic import BaseModel, Field
+
 
 ## Workflow Events
 
@@ -24,8 +34,9 @@ class LogEvent(Event):
 
 class InputEvent(StartEvent):
     msg: str
-    attachment: Optional[str] = None
-    file_name: Optional[str] = None
+    attachment: str | None = None
+    file_name: str | None = None
+
 
 
 class ParseEvent(Event):
@@ -92,7 +103,7 @@ Here is the document with line numbers:
 When citing content from the document:
 1. Your in-line citations should start at [1] in every response, and increase by 1 for each additional in-line citation
 2. Each citation number should correspond to specific lines in the document
-3. If an in-line citation covers multiple sequential lines, do your best to priotize a single in-line citation that covers the line numbers needed.
+3. If an in-line citation covers multiple sequential lines, do your best to prioritize a single in-line citation that covers the line numbers needed.
 4. If a citation needs to cover multiple lines that are not sequential, a citation format like [2, 3, 4] is acceptable.
 5. For example, if the response contains "The transformer architecture... [1]." and "Attention mechanisms... [2].", and these come from lines 10-12 and 45-46 respectively, then: citations = [[10, 11, 12], [45, 46]]
 6. Always start your citations at [1] and increase by 1 for each additional in-line citation. DO NOT use the line numbers as the in-line citation numbers or I will lose my job.

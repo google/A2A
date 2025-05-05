@@ -1,13 +1,16 @@
 import json
+
 import mesop as me
 import pandas as pd
 
-from state.state import SessionTask, StateTask, ContentPart
+from state.state import ContentPart, SessionTask, StateTask
+
 
 def message_string(content: ContentPart) -> str:
-  if isinstance(content, str):
-    return content
-  return json.dumps(content)
+    if isinstance(content, str):
+        return content
+    return json.dumps(content)
+
 
 @me.component
 def task_card(tasks: list[SessionTask]):

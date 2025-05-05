@@ -34,7 +34,7 @@ ignore = [
     "ANN201",
     "ANN204",
     "D100", # Ignore Missing docstring in public module (often desired at top level __init__.py)
-    "D102", # Ignore return type annotiation in public method
+    "D102", # Ignore return type annotation in public method
     "D104", # Ignore Missing docstring in public package (often desired at top level __init__.py)
     "D107", # Ignore Missing docstring in __init__ (use class docstring)
     "TD002", # Ignore Missing author in TODOs (often not required)

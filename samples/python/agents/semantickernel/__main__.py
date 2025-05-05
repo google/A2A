@@ -1,12 +1,13 @@
 import logging
 
 import click
+
+from agents.semantickernel.task_manager import TaskManager
 from common.server import A2AServer
 from common.types import AgentCapabilities, AgentCard, AgentSkill
 from common.utils.push_notification_auth import PushNotificationSenderAuth
 from dotenv import load_dotenv
 
-from agents.semantickernel.task_manager import TaskManager
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

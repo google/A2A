@@ -1,12 +1,13 @@
-import os
-import httpx
 import logging
-from typing import Any, AsyncIterable, Annotated, Literal, TYPE_CHECKING
+import os
+
+from collections.abc import AsyncIterable
+from typing import TYPE_CHECKING, Annotated, Any, Literal
+
+import httpx
 
 from dotenv import load_dotenv
-
 from pydantic import BaseModel
-
 from semantic_kernel.agents import ChatCompletionAgent, ChatHistoryAgentThread
 from semantic_kernel.connectors.ai.open_ai import (
     OpenAIChatCompletion,
@@ -18,8 +19,9 @@ from semantic_kernel.contents import (
     StreamingChatMessageContent,
     StreamingTextContent,
 )
-from semantic_kernel.functions.kernel_arguments import KernelArguments
 from semantic_kernel.functions import kernel_function
+from semantic_kernel.functions.kernel_arguments import KernelArguments
+
 
 if TYPE_CHECKING:
     from semantic_kernel.contents import ChatMessageContent

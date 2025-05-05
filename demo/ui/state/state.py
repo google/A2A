@@ -3,15 +3,25 @@ from typing import Literal, Tuple, Any
 from pydantic.dataclasses import dataclass
 import dataclasses
 
-ContentPart = str | dict[str,Any]
+from typing import Any, Literal
+
+import mesop as me
+
+from pydantic.dataclasses import dataclass
+
+
+ContentPart = str | dict[str, Any]
+
 
 @dataclass
 class StateConversation:
-  """StateConversation provides mesop state compliant view of a conversation"""
-  conversation_id: str = ""
-  conversation_name: str = ""
-  is_active: bool = True
-  message_ids: list[str] = dataclasses.field(default_factory=list)
+    """StateConversation provides mesop state compliant view of a conversation"""
+
+    conversation_id: str = ''
+    conversation_name: str = ''
+    is_active: bool = True
+    message_ids: list[str] = dataclasses.field(default_factory=list)
+
 
 @dataclass
 class StateMessage:
@@ -50,27 +60,30 @@ class StateEvent:
 
 @me.stateclass
 class AppState:
-  """Mesop Application State"""
+    """Mesop Application State"""
 
-  sidenav_open: bool = False
-  theme_mode: Literal["system", "light", "dark"] = "system"
+    sidenav_open: bool = False
+    theme_mode: Literal['system', 'light', 'dark'] = 'system'
 
-  current_conversation_id: str = ""
-  conversations: list[StateConversation]
-  messages: list[StateMessage]
-  task_list: list[SessionTask] = dataclasses.field(default_factory=list)
-  background_tasks: dict[str,str] = dataclasses.field(default_factory=dict)
-  message_aliases: dict[str, str] = dataclasses.field(default_factory=dict)
-  # This is used to track the data entered in a form
-  completed_forms: dict[str, dict[str, Any] | None] = dataclasses.field(default_factory=dict)
-  # This is used to track the message sent to agent with form data
-  form_responses: dict[str, str] = dataclasses.field(default_factory=dict)
-  polling_interval: int = 1
+    current_conversation_id: str = ''
+    conversations: list[StateConversation]
+    messages: list[StateMessage]
+    task_list: list[SessionTask] = dataclasses.field(default_factory=list)
+    background_tasks: dict[str, str] = dataclasses.field(default_factory=dict)
+    message_aliases: dict[str, str] = dataclasses.field(default_factory=dict)
+    # This is used to track the data entered in a form
+    completed_forms: dict[str, dict[str, Any] | None] = dataclasses.field(
+        default_factory=dict
+    )
+    # This is used to track the message sent to agent with form data
+    form_responses: dict[str, str] = dataclasses.field(default_factory=dict)
+    polling_interval: int = 1
 
-  # Added for API key management
-  api_key: str = ""
-  uses_vertex_ai: bool = False
-  api_key_dialog_open: bool = False
+    # Added for API key management
+    api_key: str = ''
+    uses_vertex_ai: bool = False
+    api_key_dialog_open: bool = False
+
 
 @me.stateclass
 class SettingsState:

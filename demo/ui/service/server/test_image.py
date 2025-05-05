@@ -1,7 +1,7 @@
 from common.types import (
-    Message,
-    FilePart,
     FileContent,
+    FilePart,
+    Message,
 )
 import uuid
 

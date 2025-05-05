@@ -43,6 +43,42 @@ import asyncio
 import logging
 import uuid
 
+from abc import ABC, abstractmethod
+from collections.abc import AsyncIterable
+
+from common.server.utils import new_not_implemented_error
+from common.types import (
+    Artifact,
+    CancelTaskRequest,
+    CancelTaskResponse,
+    GetTaskPushNotificationRequest,
+    GetTaskPushNotificationResponse,
+    GetTaskRequest,
+    GetTaskResponse,
+    InternalError,
+    JSONRPCError,
+    JSONRPCResponse,
+    PushNotificationConfig,
+    SendTaskRequest,
+    SendTaskResponse,
+    SendTaskStreamingRequest,
+    SendTaskStreamingResponse,
+    SetTaskPushNotificationRequest,
+    SetTaskPushNotificationResponse,
+    Task,
+    TaskIdParams,
+    TaskNotCancelableError,
+    TaskNotFoundError,
+    TaskPushNotificationConfig,
+    TaskQueryParams,
+    TaskResubscriptionRequest,
+    TaskSendParams,
+    TaskState,
+    TaskStatus,
+    TaskStatusUpdateEvent,
+)
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -66,7 +102,7 @@ class TaskManager(ABC):
     @abstractmethod
     async def on_send_task_subscribe(
         self, request: SendTaskStreamingRequest
-    ) -> Union[AsyncIterable[SendTaskStreamingResponse], JSONRPCResponse]:
+    ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
         pass
 
     @abstractmethod
@@ -96,7 +132,7 @@ class TaskManager(ABC):
     @abstractmethod
     async def on_resubscribe_to_task(
         self, request: TaskResubscriptionRequest
-    ) -> Union[AsyncIterable[SendTaskResponse], JSONRPCResponse]:
+    ) -> AsyncIterable[SendTaskResponse] | JSONRPCResponse:
         pass
 
 
@@ -105,7 +141,7 @@ class InMemoryTaskManager(TaskManager):
         self.tasks: dict[str, Task] = {}
         self.push_notification_infos: dict[str, PushNotificationConfig] = {}
         self.lock = asyncio.Lock()
-        self.task_sse_subscribers: dict[str, List[asyncio.Queue]] = {}
+        self.task_sse_subscribers: dict[str, list[asyncio.Queue]] = {}
         self.subscriber_lock = asyncio.Lock()
 
     async def on_get_task(self, request: GetTaskRequest) -> GetTaskResponse:
@@ -147,7 +183,7 @@ class InMemoryTaskManager(TaskManager):
     @abstractmethod
     async def on_send_task_subscribe(
         self, request: SendTaskStreamingRequest
-    ) -> Union[AsyncIterable[SendTaskStreamingResponse], JSONRPCResponse]:
+    ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
         pass
 
     @abstractmethod

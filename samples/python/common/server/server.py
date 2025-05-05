@@ -1,10 +1,23 @@
-from starlette.applications import Starlette
-from starlette.responses import JSONResponse
+import json
+import logging
+
+from collections.abc import AsyncIterable
+from typing import Any
+
+from pydantic import ValidationError
 from sse_starlette.sse import EventSourceResponse
+from starlette.applications import Starlette
 from starlette.requests import Request
+from starlette.responses import JSONResponse
+
+from common.server.task_manager import TaskManager
 from common.types import (
     A2ARequest,
-    JSONRPCResponse,
+    AgentCard,
+    CancelTaskRequest,
+    GetTaskPushNotificationRequest,
+    GetTaskRequest,
+    InternalError,
     InvalidRequestError,
     JSONParseError,
     GetTaskRequest,
@@ -19,10 +32,6 @@ from common.types import (
     SendMessageRequest,
     SendMessageStreamRequest,
 )
-from pydantic import ValidationError
-import json
-from typing import AsyncIterable, Any
-from common.server.task_manager import TaskManager
 
 import logging
 import traceback
@@ -142,7 +151,7 @@ class A2AServer:
                     yield {'data': item.model_dump_json(exclude_none=True)}
 
             return EventSourceResponse(event_generator(result))
-        elif isinstance(result, JSONRPCResponse):
+        if isinstance(result, JSONRPCResponse):
             return JSONResponse(result.model_dump(exclude_none=True))
         else:
             logger.error(f'Unexpected result type: {type(result)}')

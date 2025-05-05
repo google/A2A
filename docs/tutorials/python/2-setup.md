@@ -25,7 +25,5 @@ If you see something similar to the following, you are ready to proceed!
 3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0]
 ```
 
-<div class="bottom-buttons" style="flex flex-row">
-  <a href="#/tutorials/python/1_introduction.md" class="back-button">Back</a>
-  <a href="#/tutorials/python/3_create_a_project.md?id=creating-a-project" class="next-button">Next</a>
-</div>
+[Prev](./1-introduction.md)
+[Next](./3-create-project.md)

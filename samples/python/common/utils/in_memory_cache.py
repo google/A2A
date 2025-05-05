@@ -2,7 +2,8 @@
 
 import threading
 import time
-from typing import Any, Dict, Optional
+
+from typing import Any, Optional
 
 
 class InMemoryCache:
@@ -39,12 +40,12 @@ class InMemoryCache:
             with self._lock:
                 if not self._initialized:
                     # print("Initializing SessionCache storage")
-                    self._cache_data: Dict[str, Dict[str, Any]] = {}
-                    self._ttl: Dict[str, float] = {}
+                    self._cache_data: dict[str, dict[str, Any]] = {}
+                    self._ttl: dict[str, float] = {}
                     self._data_lock: threading.Lock = threading.Lock()
                     self._initialized = True
 
-    def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
+    def set(self, key: str, value: Any, ttl: int | None = None) -> None:
         """Set a key-value pair.
 
         Args:
@@ -57,9 +58,8 @@ class InMemoryCache:
 
             if ttl is not None:
                 self._ttl[key] = time.time() + ttl
-            else:
-                if key in self._ttl:
-                    del self._ttl[key]
+            elif key in self._ttl:
+                del self._ttl[key]
 
     def get(self, key: str, default: Any = None) -> Any:
         """Get the value associated with a key.
@@ -87,7 +87,6 @@ class InMemoryCache:
         Returns:
             True if the key was found and deleted, False otherwise.
         """
-
         with self._data_lock:
             if key in self._cache_data:
                 del self._cache_data[key]

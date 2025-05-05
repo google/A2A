@@ -1,6 +1,12 @@
 import json
+import logging
+
 from abc import ABC, abstractmethod
-from typing import Any, AsyncIterable, Dict
+from collections.abc import AsyncIterable
+from typing import Any
+
+from common.server import utils
+from common.server.task_manager import InMemoryTaskManager
 from common.types import (
     SendTaskRequest,  # deprecated
     TaskSendParams,  # deprecated
@@ -22,7 +28,6 @@ from common.types import (
     SendMessageStreamResponse,
     MessageSendParams,
 )
-from common.server.task_manager import InMemoryTaskManager
 from google.genai import types
 from typing import Union
 import logging
@@ -64,7 +69,7 @@ class AgentWithTaskManager(ABC):
             return ''
         return '\n'.join([p.text for p in events[-1].content.parts if p.text])
 
-    async def stream(self, query, session_id) -> AsyncIterable[Dict[str, Any]]:
+    async def stream(self, query, session_id) -> AsyncIterable[dict[str, Any]]:
         session = self._runner.session_service.get_session(
             app_name=self._agent.name,
             user_id=self._user_id,

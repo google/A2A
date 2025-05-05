@@ -1,13 +1,12 @@
 import asyncio
 import threading
+import traceback
 
 from common.utils.push_notification_auth import PushNotificationReceiverAuth
-
 from starlette.applications import Starlette
 from starlette.requests import Request
 from starlette.responses import Response
 
-import traceback
 
 
 class PushNotificationListener:

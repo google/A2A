@@ -2,59 +2,77 @@
 
 ### Sample Agent Card
 
-```json
-{
-  "name": "Google Maps Agent",
-  "description": "Plan routes, remember places, and generate directions",
-  "url": "https://maps-agent.google.com",
-  "provider": {
-    "organization": "Google",
-    "url": "https://google.com"
-  },
-  "version": "1.0.0",
-  "authentication": {
-    "schemes": "OAuth2"
-  },
-  "defaultInputModes": ["text/plain"],
-  "defaultOutputModes": ["text/plain", "application/html"],
-  "capabilities": {
-    "streaming": true,
-    "pushNotifications": false
-  },
-  "skills": [
+=== "Agent Card"
+
+    ```json
     {
-      "id": "route-planner",
-      "name": "Route planning",
-      "description": "Helps plan routing between two locations",
-      "tags": ["maps", "routing", "navigation"],
-      "examples": [
-        "plan my route from Sunnyvale to Mountain View",
-        "what's the commute time from Sunnyvale to San Francisco at 9AM",
-        "create turn by turn directions from Sunnyvale to Mountain View"
+      "name": "Google Maps Agent",
+      "description": "Plan routes, remember places, and generate directions",
+      "url": "https://maps-agent.google.com",
+      "provider": {
+        "organization": "Google",
+        "url": "https://google.com"
+      },
+      "version": "1.0.0",
+      "authentication": {
+        "schemes": "OAuth2"
+      },
+      "defaultInputModes": [
+        "text/plain"
       ],
-      // can return a video of the route
-      "outputModes": ["application/html", "video/mp4"]
-    },
-    {
-      "id": "custom-map",
-      "name": "My Map",
-      "description": "Manage a custom map with your own saved places",
-      "tags": ["custom-map", "saved-places"],
-      "examples": [
-        "show me my favorite restaurants on the map",
-        "create a visual of all places I've visited in the past year"
+      "defaultOutputModes": [
+        "text/plain",
+        "application/html"
       ],
-      "outputModes": ["application/html"]
+      "capabilities": {
+        "streaming": true,
+        "pushNotifications": false
+      },
+      "skills": [
+        {
+          "id": "route-planner",
+          "name": "Route planning",
+          "description": "Helps plan routing between two locations",
+          "tags": [
+            "maps",
+            "routing",
+            "navigation"
+          ],
+          "examples": [
+            "plan my route from Sunnyvale to Mountain View",
+            "what's the commute time from Sunnyvale to San Francisco at 9AM",
+            "create turn by turn directions from Sunnyvale to Mountain View"
+          ],
+          "outputModes": [
+            "application/html",
+            "video/mp4"
+          ]
+        },
+        {
+          "id": "custom-map",
+          "name": "My Map",
+          "description": "Manage a custom map with your own saved places",
+          "tags": [
+            "custom-map",
+            "saved-places"
+          ],
+          "examples": [
+            "show me my favorite restaurants on the map",
+            "create a visual of all places I've visited in the past year"
+          ],
+          "outputModes": [
+            "application/html"
+          ]
+        }
+      ]
     }
-  ]
-}
-```
+    ```
 
 ### Send a Message
 
 Allows a client to send content to a remote agent to interact, start a new Task, resume an interrupted Task, or reopen a completed Task. A Task interrupt may be caused by an agent requiring additional user input or a runtime error.
 
-**Request:**
+=== "Request"
 
 ```json
 {
@@ -146,7 +164,7 @@ Clients may use this method to retrieve the generated Artifacts for a Task. The 
 
 The client may also request the last N items of history for the Task, which will include all Messages, in order, sent by the client and server. By default, this is 0 (no history).
 
-**Request:**
+=== "Request"
 
 ```json
 {
@@ -161,7 +179,7 @@ The client may also request the last N items of history for the Task, which will
 }
 ```
 
-**Response:**
+=== "Response"
 
 ```json
 {
@@ -206,21 +224,21 @@ The client may also request the last N items of history for the Task, which will
 
 A client may choose to cancel previously submitted Tasks.
 
-**Request:**
+=== "Request"
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "tasks/cancel",
-  "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "metadata": {}
-  }
-}
-```
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "method": "tasks/cancel",
+     "params": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "metadata": {}
+     }
+    }
+    ```
 
-**Response:**
+=== "Response"
 
 ```json
 {
@@ -241,77 +259,77 @@ A client may choose to cancel previously submitted Tasks.
 
 Clients may configure a push notification URL for receiving an update on Task status change.
 
-**Request:**
+=== "Request"
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "tasks/pushNotification/set",
-  "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "pushNotificationConfig": {
-      "url": "https://example.com/callback",
-      "authentication": {
-        "schemes": ["jwt"]
-      }
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "method": "tasks/pushNotification/set",
+     "params": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "pushNotificationConfig": {
+       "url": "https://example.com/callback",
+       "authentication": {
+        "schemes": ["jwt"]
+       }
+      }
+     }
     }
-  }
-}
-```
+    ```
 
-**Response:**
+=== "Response"
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "pushNotificationConfig": {
-      "url": "https://example.com/callback",
-      "authentication": {
-        "schemes": ["jwt"]
-      }
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "pushNotificationConfig": {
+       "url": "https://example.com/callback",
+       "authentication": {
+        "schemes": ["jwt"]
+       }
+      }
+     }
     }
-  }
-}
-```
+    ```
 
 ### Get Task Push Notifications
 
 Clients may retrieve the currently configured push notification configuration for a Task using this method.
 
-**Request:**
+=== "Request"
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "tasks/pushNotification/get",
-  "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64"
-  }
-}
-```
-
-**Response:**
-
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-    "pushNotificationConfig": {
-      "url": "https://example.com/callback",
-      "authentication": {
-        "schemes": ["jwt"]
-      }
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "method": "tasks/pushNotification/get",
+     "params": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64"
+     }
     }
-  }
-}
-```
+    ```
+
+=== "Response"
+
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "pushNotificationConfig": {
+       "url": "https://example.com/callback",
+       "authentication": {
+        "schemes": ["jwt"]
+       }
+      }
+     }
+    }
+    ```
 
 ### Multi-turn Conversations
 
@@ -319,7 +337,7 @@ A Task may pause execution on the remote agent if it requires additional user in
 
 The Message included in the `input-required` state must include details indicating what the client must do (e.g., "fill out a form", "log into SaaS service foo"). If this includes structured data, the instruction should be sent as one `Part` and the structured data as a second `Part`.
 
-**Request (Sequence 1):**
+**Interaction 1: Initial Request and Agent Prompt**
 
 ```json
 {
@@ -389,7 +407,29 @@ The Message included in the `input-required` state must include details indicati
 }
 ```
 
-**Request (Sequence 3 - Providing Input):**
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+      "status": {
+       "state": "input-required",
+       "message": {
+        "role": "agent",
+        "parts": [
+         {
+          "type": "text",
+          "text": "Select a phone type (iPhone/Android)"
+         }
+        ]
+       }
+      },
+      "metadata": {}
+     }
+    }
+    ```
 
 ```json
 {
@@ -492,7 +532,7 @@ For clients and remote agents capable of communicating over HTTP with Server-Sen
 
 Note that `TaskArtifactUpdateEvents` can append new parts to existing Artifacts. Clients can use `tasks/get` to retrieve the entire Artifact outside of the streaming context. Agents must set the `final: true` attribute at the end of the stream or if the agent is interrupted and requires additional user input.
 
-**Request:**
+=== "Request"
 
 ```json
 {
@@ -572,8 +612,7 @@ data: {
       "append": false,
       "lastChunk": false
     }
-  }
-}
+    ```
 
 data: {
   "jsonrpc": "2.0",
@@ -589,8 +628,6 @@ data: {
       "append": true,
       "lastChunk": false
     }
-  }
-}
 
 data: {
   "jsonrpc": "2.0",
@@ -606,8 +643,6 @@ data: {
       "append": true,
       "lastChunk": true
     }
-  }
-}
 
 data: {
   "jsonrpc": "2.0",
@@ -628,7 +663,7 @@ data: {
 
 A disconnected client may resubscribe to a remote agent that supports streaming to receive Task updates via SSE.
 
-**Request:**
+=== "Request"
 
 ```json
 {
@@ -657,8 +692,7 @@ data: {
       "append": true,
       "lastChunk":false
     }
-  }
-}
+    ```
 
 data: {
   "jsonrpc": "2.0",
@@ -674,8 +708,6 @@ data: {
       "append": true,
       "lastChunk": true
     }
-  }
-}
 
 data: {
   "jsonrpc": "2.0",
@@ -696,7 +728,7 @@ data: {
 
 The following example demonstrates an interaction between a client and an agent involving non-textual data (a PDF file). This example uses polling by the client to get updates.
 
-**Request (Sequence 1 - Send File):**
+**Interaction 1: Send File and Acknowledgment**
 
 ```json
 {
@@ -730,7 +762,34 @@ The following example demonstrates an interaction between a client and an agent 
 }
 ```
 
-**Response (Sequence 2 - Acknowledgment/Working):**
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 9,
+     "method": "tasks/send",
+     "params": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+      "message": {
+       "role": "user",
+       "parts": [
+        {
+         "type": "text",
+         "text": "Analyze the attached report and generate high level overview"
+        },
+        {
+         "type": "file",
+         "file": {
+          "mimeType": "application/pdf",
+          "data": "<base64-encoded-content>"
+         }
+        }
+       ]
+      },
+      "metadata": {}
+     }
+    }
+    ```
 
 ```json
 {
@@ -781,7 +840,30 @@ The following example demonstrates an interaction between a client and an agent 
 }
 ```
 
-**Request (Sequence 3 - Get Result):**
+    ```json
+    {
+     "jsonrpc": "2.0",
+     "id": 9,
+     "result": {
+      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+      "status": {
+       "state": "working",
+       "message": {
+        "role": "agent",
+        "parts": [
+         {
+          "type": "text",
+          "text": "analysis in progress, please wait"
+         }
+        ],
+        "metadata": {}
+       }
+      },
+      "metadata": {}
+     }
+    }
+    ```
 
 ```json
 {
@@ -795,7 +877,7 @@ The following example demonstrates an interaction between a client and an agent 
 }
 ```
 
-**Response (Sequence 4 - Completed with Analysis):**
+=== "Request (Sequence 3 - Get Result)"
 
 ```json
 {
@@ -860,7 +942,7 @@ The following example demonstrates an interaction between a client and an agent 
 
 Both the client and the agent can request structured output from the other party by specifying a `mimeType` and `schema` in the `metadata` of a `Part`.
 
-**Request (Requesting JSON Output):**
+=== "Request (Requesting JSON Output)"
 
 ```json
 {
@@ -897,7 +979,7 @@ Both the client and the agent can request structured output from the other party
 }
 ```
 
-**Response (Providing JSON Output):**
+=== "Response (Providing JSON Output)"
 
 ```json
 {

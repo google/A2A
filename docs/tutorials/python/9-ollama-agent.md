@@ -52,7 +52,7 @@ def main(host, port, ollama_host, ollama_model):
   # ...
   task_manager = MyAgentTaskManager(
     ollama_host=ollama_host,
-    ollama_model=ollama_mode,
+    ollama_model=ollama_model,
   )
   # ..
 ```
@@ -150,7 +150,5 @@ What do you want to send to the agent? (:q or quit to exit): hey
 
 Congratulations! You now have an A2A server generating responses using an AI model!
 
-<div class="bottom-buttons" style="flex flex-row">
-  <a href="#/tutorials/python/8_agent_capabilities.md" class="back-button">Back</a>
-  <a href="#/tutorials/python/10_next_steps.md?id=next-steps" class="next-button">Next</a>
-</div>
+[Prev](./8-agent-capabilities.md)
+[Next](./10-next-steps.md)

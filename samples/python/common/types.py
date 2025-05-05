@@ -1,11 +1,16 @@
-from typing import Union, Any
-from pydantic import BaseModel, Field, TypeAdapter
-from typing import Literal, List, Annotated, Optional
 from datetime import datetime
-from pydantic import model_validator, ConfigDict, field_serializer
-from uuid import uuid4
 from enum import Enum
-from typing_extensions import Self
+from typing import Annotated, Any, Literal, Self
+from uuid import uuid4
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    TypeAdapter,
+    field_serializer,
+    model_validator,
+)
 
 
 class TaskState(str, Enum):
@@ -82,7 +87,7 @@ class TaskStatus(BaseModel):
 class Artifact(BaseModel):
     name: str | None = None
     description: str | None = None
-    parts: List[Part]
+    parts: list[Part]
     metadata: dict[str, Any] | None = None
     index: int = 0
     append: bool | None = None
@@ -93,8 +98,8 @@ class Task(BaseModel):
     id: str
     contextId: str
     status: TaskStatus
-    artifacts: List[Artifact] | None = None
-    history: List[Message] | None = None
+    artifacts: list[Artifact] | None = None
+    history: list[Message] | None = None
     metadata: dict[str, Any] | None = None
 
 
@@ -116,7 +121,7 @@ class TaskArtifactUpdateEvent(BaseModel):
 class AuthenticationInfo(BaseModel):
     model_config = ConfigDict(extra='allow')
 
-    schemes: List[str]
+    schemes: list[str]
     credentials: str | None = None
 
 
@@ -140,7 +145,7 @@ class TaskSendParams(BaseModel):
     id: str
     contextId: str = Field(default_factory=lambda: uuid4().hex)
     message: Message
-    acceptedOutputModes: Optional[List[str]] = None
+    acceptedOutputModes: list[str] | None = None
     pushNotification: PushNotificationConfig | None = None
     historyLength: int | None = None
     metadata: dict[str, Any] | None = None
@@ -369,7 +374,7 @@ class AgentCapabilities(BaseModel):
 
 
 class AgentAuthentication(BaseModel):
-    schemes: List[str]
+    schemes: list[str]
     credentials: str | None = None
 
 
@@ -377,10 +382,10 @@ class AgentSkill(BaseModel):
     id: str
     name: str
     description: str | None = None
-    tags: List[str] | None = None
-    examples: List[str] | None = None
-    inputModes: List[str] | None = None
-    outputModes: List[str] | None = None
+    tags: list[str] | None = None
+    examples: list[str] | None = None
+    inputModes: list[str] | None = None
+    outputModes: list[str] | None = None
 
 
 class AgentCard(BaseModel):

@@ -1,17 +1,19 @@
-from jwcrypto import jwk
+import hashlib
+import json
+import logging
+import time
 import uuid
-from starlette.responses import JSONResponse
-from starlette.requests import Request
+
 from typing import Any
 
-import jwt
-import time
-import json
-import hashlib
 import httpx
-import logging
+import jwt
 
+from jwcrypto import jwk
 from jwt import PyJWK, PyJWKClient
+from starlette.requests import Request
+from starlette.responses import JSONResponse
+
 
 logger = logging.getLogger(__name__)
 AUTH_HEADER_PREFIX = 'Bearer '

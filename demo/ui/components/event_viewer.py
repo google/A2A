@@ -8,15 +8,15 @@ from state.host_agent_service import GetEvents
 from state.host_agent_service import convert_event_to_state
 
 
-def flatten_content(content: list[Tuple[str,str]]) -> str:
-  parts = []
-  for p in content:
-    if p[1] == 'text/plain' or p[1] == 'application/json':
-      parts.append(p[0])
-    else:
-      parts.append(p[1])
+def flatten_content(content: list[tuple[str, str]]) -> str:
+    parts = []
+    for p in content:
+        if p[1] == 'text/plain' or p[1] == 'application/json':
+            parts.append(p[0])
+        else:
+            parts.append(p[1])
 
-  return '\n'.join(parts)
+    return '\n'.join(parts)
 
 
 @me.component
@@ -62,3 +62,21 @@ def event_list():
             "Content": me.TableColumn(sticky=True),
         },
     )
+    with me.box(
+        style=me.Style(
+            display='flex',
+            justify_content='space-between',
+            flex_direction='column',
+        )
+    ):
+        me.table(
+            df,
+            header=me.TableHeader(sticky=True),
+            columns={
+                'Conversation ID': me.TableColumn(sticky=True),
+                'Actor': me.TableColumn(sticky=True),
+                'Role': me.TableColumn(sticky=True),
+                'Id': me.TableColumn(sticky=True),
+                'Content': me.TableColumn(sticky=True),
+            },
+        )

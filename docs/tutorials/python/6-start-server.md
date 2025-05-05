@@ -161,7 +161,5 @@ INFO:     Uvicorn running on http://localhost:10002 (Press CTRL+C to quit)
 
 Congratulations! Your A2A server is now running!
 
-<div class="bottom-buttons" style="flex flex-row">
-  <a href="#/tutorials/python/5_add_agent_card.md" class="back-button">Back</a>
-  <a href="#/tutorials/python/7_interact_with_server.md?id=interacting-with-your-a2a-server" class="next-button">Next</a>
-</div>
+[Prev](./5-add-agent-card.md)
+[Next](./7-interact-with-server.md)

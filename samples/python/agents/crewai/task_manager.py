@@ -1,7 +1,9 @@
 """Agent Task Manager."""
 
 import logging
-from typing import AsyncIterable
+
+from collections.abc import AsyncIterable
+
 from agent import ImageGenerationAgent
 from common.server.task_manager import InMemoryTaskManager
 from common.types import (
@@ -22,6 +24,7 @@ from common.types import (
     SendMessageStreamRequest,
     SendMessageStreamResponse,
 )
+
 
 logger = logging.getLogger(__name__)
 

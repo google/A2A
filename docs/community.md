@@ -51,7 +51,7 @@ The enthusiasm surrounding A2A stems from its potential to address key challenge
 
 - **Dynamic Agent Discovery:** A key feature of A2A is the ability for agents to **discover the capabilities of other agents** through standardized "**Agent Cards**". This dynamic discovery allows for more flexible and adaptable multi-agent systems.
 
-- **Complementary to MCP:** As stated on our [A2A ❤️ MCP topic page](/topics/a2a_and_mcp) and affirmed by many community, A2A "**complements**" MCP. MCP acts as a communication standard between models and resources, providing tools for agents. A2A acts as a communication standard **between the intelligent agents themselves**. This layered approach allows for building powerful systems where agents use A2A to coordinate and MCP to access necessary tools.
+- **Complementary to MCP:** As stated on our [A2A ❤️ MCP topic page](topics/a2a-and-mcp.md) and affirmed by many community, A2A "**complements**" MCP. MCP acts as a communication standard between models and resources, providing tools for agents. A2A acts as a communication standard **between the intelligent agents themselves**. This layered approach allows for building powerful systems where agents use A2A to coordinate and MCP to access necessary tools.
 
 - **Open and Community-Driven:** Google has released A2A as **open source**, inviting contributions from the broader community to refine and expand its functionality. This commitment to open collaboration fosters innovation and broad adoption.
 

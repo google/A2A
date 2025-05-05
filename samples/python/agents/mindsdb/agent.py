@@ -1,7 +1,11 @@
 import json
-import aiohttp
 import os
-from typing import Any, AsyncIterable, Dict, Optional
+
+from collections.abc import AsyncIterable
+from typing import Any
+
+import aiohttp
+
 from dotenv import load_dotenv
 
 # from flat_ai import FlatAI

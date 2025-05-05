@@ -3,6 +3,9 @@ import logging
 from typing import AsyncIterable
 import uuid
 
+from collections.abc import AsyncIterable
+
+from agents.semantickernel.agent import SemanticKernelTravelAgent
 from common.server.task_manager import InMemoryTaskManager
 from common.types import (
     Artifact,
@@ -25,7 +28,6 @@ from common.types import (
 )
 from common.utils.push_notification_auth import PushNotificationSenderAuth
 
-from agents.semantickernel.agent import SemanticKernelTravelAgent
 
 logger = logging.getLogger(__name__)
 
