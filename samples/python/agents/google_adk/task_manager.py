@@ -18,14 +18,13 @@ from common.types import (
     SendTaskStreamingRequest,
     SendTaskStreamingResponse,
 )
-from common.server.task_manager import InMemoryTaskManager
+from common.server.base_task_manager import BaseAgentTaskManager
 from google.genai import types
 import common.server.utils as utils
 from typing import Union
 import logging
 logger = logging.getLogger(__name__)
 
-# TODO: Move this class (or these classes) to a common directory
 class AgentWithTaskManager(ABC):
 
     @abstractmethod
@@ -93,11 +92,26 @@ class AgentWithTaskManager(ABC):
                     "updates": self.get_processing_message(),
                 }
 
-class AgentTaskManager(InMemoryTaskManager):
+class AgentTaskManager(BaseAgentTaskManager):
 
     def __init__(self, agent: AgentWithTaskManager):
-        super().__init__()
-        self.agent = agent
+        super().__init__(agent)
+
+    async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
+        error = self._validate_request(request)
+        if error:
+            return error
+        await self.upsert_task(request.params)
+        return await self._invoke(request)
+
+    async def on_send_task_subscribe(
+        self, request: SendTaskStreamingRequest
+    ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
+        error = self._validate_request(request)
+        if error:
+            return error
+        await self.upsert_task(request.params)
+        return self._stream_generator(request)
 
     async def _stream_generator(
         self, request: SendTaskStreamingRequest
@@ -105,7 +119,7 @@ class AgentTaskManager(InMemoryTaskManager):
         task_send_params: TaskSendParams = request.params
         query = self._get_user_query(task_send_params)
         try:
-          async for item in self.agent.stream(query, task_send_params.sessionId):
+          async for item in self.stream(query, task_send_params.sessionId):
             is_task_complete = item["is_task_complete"]
             artifacts = None
             if not is_task_complete:
@@ -163,6 +177,7 @@ class AgentTaskManager(InMemoryTaskManager):
                     message="An error occurred while streaming the response"
                 ),
             )
+
     def _validate_request(
         self, request: Union[SendTaskRequest, SendTaskStreamingRequest]
     ) -> None:
@@ -176,20 +191,7 @@ class AgentTaskManager(InMemoryTaskManager):
                 self.agent.SUPPORTED_CONTENT_TYPES,
             )
             return utils.new_incompatible_types_error(request.id)
-    async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
-        error = self._validate_request(request)
-        if error:
-            return error
-        await self.upsert_task(request.params)
-        return await self._invoke(request)
-    async def on_send_task_subscribe(
-        self, request: SendTaskStreamingRequest
-    ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
-        error = self._validate_request(request)
-        if error:
-            return error
-        await self.upsert_task(request.params)
-        return self._stream_generator(request)
+
     async def _update_store(
         self, task_id: str, status: TaskStatus, artifacts: list[Artifact]
     ) -> Task:
@@ -207,11 +209,12 @@ class AgentTaskManager(InMemoryTaskManager):
                     task.artifacts = []
                 task.artifacts.extend(artifacts)
             return task
+
     async def _invoke(self, request: SendTaskRequest) -> SendTaskResponse:
         task_send_params: TaskSendParams = request.params
         query = self._get_user_query(task_send_params)
         try:
-            result = self.agent.invoke(query, task_send_params.sessionId)
+            result = self.invoke(query, task_send_params.sessionId)
         except Exception as e:
             logger.error(f"Error invoking agent: {e}")
             raise ValueError(f"Error invoking agent: {e}")
@@ -225,6 +228,7 @@ class AgentTaskManager(InMemoryTaskManager):
             [Artifact(parts=parts)],
         )
         return SendTaskResponse(id=request.id, result=task)
+
     def _get_user_query(self, task_send_params: TaskSendParams) -> str:
         part = task_send_params.message.parts[0]
         if not isinstance(part, TextPart):

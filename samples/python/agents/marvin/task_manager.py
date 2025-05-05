@@ -6,7 +6,7 @@ from typing import Any
 
 import common.server.utils as utils
 from agents.marvin.agent import ExtractorAgent
-from common.server.task_manager import InMemoryTaskManager
+from common.server.base_task_manager import BaseAgentTaskManager
 from common.types import (
     Artifact,
     DataPart,
@@ -33,15 +33,13 @@ from common.utils.push_notification_auth import PushNotificationSenderAuth
 logger = logging.getLogger(__name__)
 
 
-class AgentTaskManager(InMemoryTaskManager):
+class AgentTaskManager(BaseAgentTaskManager):
     def __init__(
         self,
         agent: ExtractorAgent,
         notification_sender_auth: PushNotificationSenderAuth,
     ):
-        super().__init__()
-        self.agent = agent
-        self.notification_sender_auth = notification_sender_auth
+        super().__init__(agent, notification_sender_auth)
 
     def _parse_agent_outcome(
         self, agent_outcome: dict[str, Any]

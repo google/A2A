@@ -3,7 +3,7 @@
 import logging
 from typing import AsyncIterable
 from agent import ImageGenerationAgent
-from common.server.task_manager import InMemoryTaskManager
+from common.server.base_task_manager import BaseAgentTaskManager
 from common.server import utils
 from common.types import (
     Artifact,
@@ -24,22 +24,15 @@ from common.types import (
 logger = logging.getLogger(__name__)
 
 
-class AgentTaskManager(InMemoryTaskManager):
+class AgentTaskManager(BaseAgentTaskManager):
   """Agent Task Manager, handles task routing and response packing."""
 
   def __init__(self, agent: ImageGenerationAgent):
-    super().__init__()
-    self.agent = agent
-
-  async def _stream_generator(
-      self, request: SendTaskRequest
-  ) -> AsyncIterable[SendTaskResponse]:
-    raise NotImplementedError("Not implemented")
+    super().__init__(agent)
 
   async def on_send_task(
       self, request: SendTaskRequest
-  ) -> SendTaskResponse | AsyncIterable[SendTaskResponse]:
-    ## only support text output at the moment
+  ) -> SendTaskResponse:
     if not utils.are_modalities_compatible(
         request.params.acceptedOutputModes,
         ImageGenerationAgent.SUPPORTED_CONTENT_TYPES,
@@ -53,7 +46,6 @@ class AgentTaskManager(InMemoryTaskManager):
 
     task_send_params: TaskSendParams = request.params
     await self.upsert_task(task_send_params)
-
     return await self._invoke(request)
 
   async def on_send_task_subscribe(
@@ -64,6 +56,8 @@ class AgentTaskManager(InMemoryTaskManager):
       return error
 
     await self.upsert_task(request.params)
+    # crewai는 streaming 미구현
+    raise NotImplementedError("Not implemented")
 
   async def _update_store(
       self, task_id: str, status: TaskStatus, artifacts: list[Artifact]
