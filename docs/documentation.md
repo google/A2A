@@ -146,7 +146,7 @@ A task can be completed by a remote agent immediately or it can be long-running.
 
 A Task is a stateful entity that allows Clients and Remote Agents to achieve a specific outcome and generate results. Clients and Remote Agents exchange Messages within a Task. Remote Agents generate results as Artifacts.
 
-A Task is always created by the Remote Agent and the status is always determined by the Remote Agent. Multiple Tasks may be part of a common session (denoted by optional contextId) if required by the client. The Client sends a request to the Remote Agent and provides an optional contextId. The Remote Agent then correlates the request with the other contextual information for that id and decides if it is creating a Task or simply responds with a Message.
+A Task is always created by the Remote Agent and the status is always determined by the Remote Agent. Multiple Tasks may be part of a common coherent set of interactions (denoted by optional contextId) if required by the client. The Client sends a request to the Remote Agent and provides an optional contextId. The Remote Agent then correlates the request with the other contextual information for that id and decides if it is creating a Task or simply responds with a Message.
 
 The agent may:
 
@@ -164,7 +164,7 @@ Tasks are used to transmit [Artifacts](#artifact) (results) and [Messages](#mess
 ```typescript
 interface Task {
   id: string; // unique identifier for the task
-  contextId: string; // server-generated id for the session holding the task.
+  contextId: string; // server-generated id for the collection holding the task.
   status: TaskStatus; // current status of the task
   history?: Message[];
   artifacts?: Artifact[]; // collection of artifacts created by the agent.
@@ -194,7 +194,7 @@ interface MessageSendConfiguration {
   acceptedOutputModes: string[];
   historyLength?: number;
   pushNotification?: PushNotificationConfig;
-  blocking?: boolean;
+  blocking?: boolean; // Whether the server should hold all responses until completion
 }
 // Send by the client to the agent as a request. May create, continue or restart a task.
 interface MessageSendParams {
