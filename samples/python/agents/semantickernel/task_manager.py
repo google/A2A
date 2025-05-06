@@ -423,12 +423,9 @@ class TaskManager(InMemoryTaskManager):
         Returns:
             JSONRPCResponse: The response containing the error if validation fails.
         """
-        if not request.params.acceptedOutputModes:
-            return None
-        if not any(
-            mode in SemanticKernelTravelAgent.SUPPORTED_CONTENT_TYPES
-            for mode in request.params.acceptedOutputModes
-        ):
+        invalidOutputs = self._validate_output_modes(
+            request.params, SemanticKernelTravelAgent.SUPPORTED_CONTENT_TYPES)
+        if invalidOutputs:
             logger.warning('Incompatible content type for SK Agent.')
             return JSONRPCResponse(
                 id=request.id,

@@ -282,10 +282,10 @@ class AgentTaskManager(InMemoryTaskManager):
             request.params.message.contextId = context_id
             await self.upsert_task(request.params)
 
-            if request.params.configuration.pushNotificationConfig:
+            if request.params.configuration.pushNotification:
                 if not await self.set_push_notification_info(
                     request.params.id,
-                    request.params.configuration.pushNotificationConfig,
+                    request.params.configuration.pushNotification,
                 ):
                     return JSONRPCResponse(
                         id=request.id,
