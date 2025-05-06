@@ -4,9 +4,9 @@ This sample demonstrates how to implement a travel agent built on [Semantic Kern
 
 - **Multi-turn interactions**: The agent may request clarifications
 - **Streaming responses**: Returns incremental statuses
-- **Conversational memory**: Maintains context (by leveraging Semantic Kernel’s ChatHistory)
+- **Conversational memory**: Maintains context (by leveraging Semantic Kernel's ChatHistory)
 - **Push notifications**: Uses webhook-based notifications for asynchronous updates
-- **External plugins (SK Agents & Frankfurter API)**: Illustrates how an Semantic Kernel Agents are used as plugins, along with APIs, that can be called to generate travel plans and fetch exchange rates
+- **External plugins (SK Agents & Frankfurter API)**: Illustrates how Semantic Kernel Agents are used as plugins, along with APIs, that can be called to generate travel plans and fetch exchange rates
 
 ```mermaid
 sequenceDiagram
@@ -86,12 +86,13 @@ or
 uv run . --host 0.0.0.0 --port 8080
 ```
 
-5. **In a separate terminal, run the A2A client:
+5. **In a separate terminal, run the A2A client**:
 
-> Make sure you run `uv run hosts/cli` from the following directory: `samples/python`
+> Make sure you run `uv run .` from the following directory: `samples/python/hosts/cli`
 
 ```bash
-uv run hosts/cli --agent http://localhost:10020
+cd samples/python/hosts/cli
+uv run . --agent http://localhost:10020
 ```
 
 ## Limitations
