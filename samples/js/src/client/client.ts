@@ -2,7 +2,6 @@
 import {
   // Core types
   AgentCard,
-  AgentCapabilities, // Needed for supports() method check
   JSONRPCRequest,
   JSONRPCResponse,
   JSONRPCError,
@@ -35,6 +34,33 @@ import {
   TaskArtifactUpdateEvent,
 } from "../schema.js";
 
+
+type HttpHeaders = { [key: string]: string };
+
+/**
+ * Handle HTTP 401 and 403 error codes. If the process40x function
+ * returns true, then retry the request using revised headers.
+ */
+export interface AuthenticationHandler {
+  /* Provides additional HTTP request headers */
+  headers: () => HttpHeaders;
+  /**
+   * Called when the HTTP request returns a status code 401 or 403.  If this
+   * function returns true, then the request should be retried with
+   * revised headers from the headers() function.
+   */
+  process40x: (fetchResponse:Response) => Promise<boolean>,
+  /* If the last call using the headers() was successful, report using this function. */
+  onSuccess: () => Promise<void>
+}
+
+export interface A2AClientOptions {
+  /* Optional custom fetch implementation (e.g., for Node.js environments without global fetch). Defaults to global fetch. */
+  fetchImpl?: typeof fetch,
+  /* Optional authentication handler */
+  authHandler?: AuthenticationHandler
+}
+
 // Simple error class for client-side representation of JSON-RPC errors
 class RpcError extends Error {
   code: number;
@@ -56,16 +82,19 @@ export class A2AClient {
   private baseUrl: string;
   private fetchImpl: typeof fetch;
   private cachedAgentCard: AgentCard | null = null;
+  private authHandler: AuthenticationHandler | undefined
 
   /**
    * Creates an instance of A2AClient.
    * @param baseUrl The base URL of the A2A server endpoint.
-   * @param fetchImpl Optional custom fetch implementation (e.g., for Node.js environments without global fetch). Defaults to global fetch.
+   * @param options Client options such as fetch replacement and authentication handler.
    */
-  constructor(baseUrl: string, fetchImpl: typeof fetch = fetch) {
+  constructor(baseUrl: string, options?: A2AClientOptions) {
+    const { fetchImpl = fetch, authHandler } = options ?? {};
     // Ensure baseUrl doesn't end with a slash for consistency
     this.baseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
     this.fetchImpl = fetchImpl;
+    this.authHandler = authHandler;
   }
 
   /**
@@ -106,16 +135,30 @@ export class A2AClient {
     };
 
     try {
-      const response = await this.fetchImpl(this.baseUrl, {
+      const options = () => ({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Accept: acceptHeader,
+          ...(this.authHandler?.headers() ?? {} ) // if we have Authentication header(s), add them
         },
         body: JSON.stringify(requestBody),
         // Consider adding keepalive: true if making many rapid requests
       });
-      return response;
+      let fetchResponse = await this.fetchImpl(this.baseUrl, options());
+
+      // handle 401 (and possibly 403)
+      const { status } = fetchResponse;
+      if( this.authHandler && ( status === 401 || status === 403) ) {
+        if( await this.authHandler.process40x( fetchResponse ) ) {
+          // retry request with new auth header(s) from process40x...
+          fetchResponse = await this.fetchImpl(this.baseUrl, options());
+          if( fetchResponse.ok )
+            await this.authHandler.onSuccess(); // Remember token that worked
+        }
+      }
+
+      return fetchResponse;
     } catch (networkError) {
       console.error("Network error during RPC call:", networkError);
       // Wrap network errors into a standard error format if possible
