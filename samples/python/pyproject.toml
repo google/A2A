@@ -30,7 +30,8 @@ members = [
     "agents/llama_index_file_chat",
     "agents/semantickernel",
     "agents/mindsdb",
-    "agents/ag2"
+    "agents/ag2",
+    "agents/mcp_sqlagent"
 ]
 
 [build-system]
