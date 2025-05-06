@@ -28,9 +28,17 @@ logger = logging.getLogger(__name__)
 def main(host, port):
     """Starts the Currency Agent server."""
     try:
-        if not os.getenv('GOOGLE_API_KEY'):
+        if not os.getenv('API_KEY'):
             raise MissingAPIKeyError(
-                'GOOGLE_API_KEY environment variable not set.'
+                'API_KEY environment variable not set.'
+            )
+        if not os.getenv('TOOL_LLM_URL'):
+            raise MissingAPIKeyError(
+                'TOOL_LLM_URL environment variable not set.Note: the llm must support function calling tools,stream and non-stream chat'
+            )
+        if not os.getenv('TOOL_LLM_NAME'):
+            raise MissingAPIKeyError(
+                'TOOL_LLM_NAME environment variable not set.Note: the llm must support function calling tools,stream and non-stream chat'
             )
 
         capabilities = AgentCapabilities(streaming=True, pushNotifications=True)
