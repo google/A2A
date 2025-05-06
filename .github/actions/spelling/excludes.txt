@@ -86,3 +86,4 @@
 ^\Qdemo/ui/service/server/test_image.py\E$
 ^\Qlychee.toml\E$
 \.gitignore\E$
+\.vscode/
