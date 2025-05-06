@@ -13,7 +13,7 @@ if (!process.env.GEMINI_API_KEY) {
   process.exit(1);
 }
 
-async function* coderAgent({
+export async function* coderAgent({
   task,
   history, // Extract history from context
 }: TaskContext): AsyncGenerator<TaskYieldUpdate, schema.Task | void, unknown> {
@@ -136,7 +136,7 @@ async function* coderAgent({
 
 // --- Server Setup ---
 
-const coderAgentCard: schema.AgentCard = {
+export const coderAgentCard: schema.AgentCard = {
   name: "Coder Agent",
   description:
     "An agent that generates code based on natural language instructions and streams file outputs.",
@@ -173,12 +173,3 @@ const coderAgentCard: schema.AgentCard = {
     },
   ],
 };
-
-const server = new A2AServer(coderAgent, {
-  card: coderAgentCard,
-});
-
-server.start(); // Default port 41241
-
-console.log("[CoderAgent] Server started on http://localhost:41241");
-console.log("[CoderAgent] Press Ctrl+C to stop the server");
