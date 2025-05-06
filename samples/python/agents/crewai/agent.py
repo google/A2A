@@ -23,6 +23,7 @@ from google import genai
 from google.genai import types
 from pydantic import BaseModel
 
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
@@ -144,7 +145,10 @@ class ImageGenerationAgent:
         if os.getenv('GOOGLE_GENAI_USE_VERTEXAI'):
             self.model = LLM(model='vertex_ai/gemini-2.0-flash')
         elif os.getenv('GOOGLE_API_KEY'):
-            self.model = LLM(model='gemini/gemini-2.0-flash', api_key=os.getenv('GOOGLE_API_KEY'))
+            self.model = LLM(
+                model='gemini/gemini-2.0-flash',
+                api_key=os.getenv('GOOGLE_API_KEY'),
+            )
 
         self.image_creator_agent = Agent(
             role='Image Creation Expert',

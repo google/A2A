@@ -33,7 +33,9 @@ logger = logging.getLogger(__name__)
 def main(host, port):
     """Entry point for the A2A + CrewAI Image generation sample."""
     try:
-        if not os.getenv('GOOGLE_API_KEY') and not os.getenv('GOOGLE_GENAI_USE_VERTEXAI'):
+        if not os.getenv('GOOGLE_API_KEY') and not os.getenv(
+            'GOOGLE_GENAI_USE_VERTEXAI'
+        ):
             raise MissingAPIKeyError(
                 'GOOGLE_API_KEY or Vertex AI environment variables not set.'
             )
