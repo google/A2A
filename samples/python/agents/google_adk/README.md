@@ -27,4 +27,13 @@ This agent takes text requests from the client and, if any details are missing, 
     ```bash
     uv run .
     ```
-5. Run one of the [client apps](/samples/python/hosts/README.md)
+
+5. In a separate terminal, run the A2A client:
+    ```
+    # Connect to the agent (specify the agent URL with correct port)
+    cd samples/python/hosts/cli
+    uv run . --agent http://localhost:10002
+
+    # If you changed the port when starting the agent, use that port instead
+    # uv run . --agent http://localhost:YOUR_PORT
+    ```

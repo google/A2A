@@ -2,8 +2,7 @@ import { MessageData } from "genkit";
 import { TaskYieldUpdate } from "../../server/handler.js";
 import {
   TaskContext,
-  A2AServer,
-  InMemoryTaskStore,
+  A2AServer
 } from "../../server/index.js"; // Import server components
 import * as schema from "../../schema.js"; // Import schema for types
 import { ai } from "./genkit.js";
@@ -35,7 +34,7 @@ async function* coderAgent({
       state: "failed",
       message: {
         role: "agent",
-        parts: [{ text: "No input message found." }],
+        parts: [{ type: "text", text: "No input message found." }],
       },
     };
     return;
