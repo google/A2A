@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, Any, Literal, Self
+from typing import Annotated, Any, Literal, Self, Union, List, Optional
 from uuid import uuid4
 
 from pydantic import (

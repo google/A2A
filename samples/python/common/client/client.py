@@ -39,6 +39,7 @@ class A2AClient:
         url: str = None,
         timeout: TimeoutTypes = 60.0,
     ):
+        self.timeout = timeout
         if agent_card:
             self.url = agent_card.url
         elif url:
@@ -95,7 +96,7 @@ class A2AClient:
             try:
                 # Image generation could take time, adding timeout
                 response = await client.post(
-                    self.url, json=request.model_dump(), timeout=timeout
+                    self.url, json=request.model_dump(), timeout=self.timeout
                 )
                 response.raise_for_status()
                 return response.json()

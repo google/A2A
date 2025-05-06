@@ -5,6 +5,8 @@ import urllib
 
 from uuid import uuid4
 
+import asyncclick as click
+
 from common.client import A2AClient, A2ACardResolver
 from common.types import (
     TaskState,

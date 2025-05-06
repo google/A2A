@@ -1,5 +1,5 @@
 from collections.abc import AsyncIterable
-from typing import Any, Literal
+from typing import Any, Literal, Dict
 
 import httpx
 

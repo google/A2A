@@ -8,7 +8,6 @@ from starlette.requests import Request
 from starlette.responses import Response
 
 
-
 class PushNotificationListener:
     def __init__(
         self,

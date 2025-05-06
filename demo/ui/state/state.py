@@ -25,38 +25,52 @@ class StateConversation:
 
 @dataclass
 class StateMessage:
-  """StateMessage provides mesop state compliant view of a message"""
-  message_id: str = ""
-  task_id: str = ""
-  context_id: str = ""
-  role: str = ""
-  # Each content entry is a content, media type pair.
-  content: list[Tuple[ContentPart, str]] = dataclasses.field(default_factory=list)
+    """StateMessage provides mesop state compliant view of a message"""
+
+    message_id: str = ''
+    task_id: str = ''
+    context_id: str = ''
+    role: str = ''
+    # Each content entry is a content, media type pair.
+    content: list[Tuple[ContentPart, str]] = dataclasses.field(
+        default_factory=list
+    )
+
 
 @dataclass
 class StateTask:
-  """StateTask provides mesop state compliant view of task"""
-  task_id: str = ""
-  context_id: str | None = None
-  state: str | None = None
-  message: StateMessage = dataclasses.field(default_factory=StateMessage)
-  artifacts: list[list[Tuple[ContentPart,str]]] = dataclasses.field(default_factory=list)
+    """StateTask provides mesop state compliant view of task"""
+
+    task_id: str = ''
+    context_id: str | None = None
+    state: str | None = None
+    message: StateMessage = dataclasses.field(default_factory=StateMessage)
+    artifacts: list[list[Tuple[ContentPart, str]]] = dataclasses.field(
+        default_factory=list
+    )
+
 
 @dataclass
 class SessionTask:
-  """SessionTask organizes tasks based on conversation"""
-  context_id: str = ""
-  task: StateTask = dataclasses.field(default_factory=StateTask)
+    """SessionTask organizes tasks based on conversation"""
+
+    context_id: str = ''
+    task: StateTask = dataclasses.field(default_factory=StateTask)
+
 
 @dataclass
 class StateEvent:
-  """StateEvent provides mesop state compliant view of event"""
-  context_id: str = ""
-  actor: str = ""
-  role: str = ""
-  id: str = ""
-  # Each entry is a pair of (content, media type)
-  content: list[Tuple[ContentPart, str]] = dataclasses.field(default_factory=list)
+    """StateEvent provides mesop state compliant view of event"""
+
+    context_id: str = ''
+    actor: str = ''
+    role: str = ''
+    id: str = ''
+    # Each entry is a pair of (content, media type)
+    content: list[Tuple[ContentPart, str]] = dataclasses.field(
+        default_factory=list
+    )
+
 
 @me.stateclass
 class AppState:
@@ -87,10 +101,11 @@ class AppState:
 
 @me.stateclass
 class SettingsState:
-  """Settings State"""
-  output_mime_types: list[str] = dataclasses.field(
-    default_factory=lambda: [
-      "image/*",
-      "text/plain",
-    ]
-  )
+    """Settings State"""
+
+    output_mime_types: list[str] = dataclasses.field(
+        default_factory=lambda: [
+            'image/*',
+            'text/plain',
+        ]
+    )

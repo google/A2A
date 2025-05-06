@@ -1,4 +1,5 @@
 from typing import Callable
+from common.client import A2AClient
 from common.types import (
     AgentCard,
     Task,

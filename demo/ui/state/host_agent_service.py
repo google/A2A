@@ -143,7 +143,7 @@ async def UpdateAppState(state: AppState, conversation_id: str):
         for task in await GetTasks():
             state.task_list.append(
                 SessionTask(
-                    session_id=extract_conversation_id(task),
+                    context_id=extract_conversation_id(task),
                     task=convert_task_to_state(task),
                 )
             )
@@ -154,27 +154,13 @@ async def UpdateAppState(state: AppState, conversation_id: str):
         traceback.print_exc(file=sys.stdout)
 
 
-    state.task_list = []
-    for task in await GetTasks():
-      state.task_list.append(
-          SessionTask(
-              context_id=extract_conversation_id(task),
-              task=convert_task_to_state(task)
-          )
-      )
-    state.background_tasks = await GetProcessingMessages()
-    state.message_aliases = GetMessageAliases()
-  except Exception as e:
-    print("Failed to update state: ", e)
-    traceback.print_exc(file=sys.stdout)
-
 async def UpdateApiKey(api_key: str):
     """Update the API key"""
     import httpx
 
     try:
         # Set the environment variable
-        os.environ["GOOGLE_API_KEY"] = api_key
+        os.environ['GOOGLE_API_KEY'] = api_key
 
         # Call the update API endpoint
         async with httpx.AsyncClient() as client:
@@ -187,24 +173,28 @@ async def UpdateApiKey(api_key: str):
         print('Failed to update API key: ', e)
         return False
 
-def convert_message_to_state(message: Message) -> StateMessage:
-  if not message:
-    return StateMessage()
-
-  return StateMessage(
-      message_id = message.messageId,
-      context_id = message.contextId if message.contextId else "",
-      task_id = message.taskId if message.taskId else "",
-      role = message.role,
-      content = extract_content(message.parts),
-  )
 
 def convert_message_to_state(message: Message) -> StateMessage:
     if not message:
         return StateMessage()
 
     return StateMessage(
-        message_id=extract_message_id(message),
+        message_id=message.messageId,
+        context_id=message.contextId if message.contextId else '',
+        task_id=message.taskId if message.taskId else '',
+        role=message.role,
+        content=extract_content(message.parts),
+    )
+
+
+def convert_message_to_state(message: Message) -> StateMessage:
+    if not message:
+        return StateMessage()
+
+    return StateMessage(
+        message_id=message.messageId,
+        context_id=message.contextId if message.contextId else "",
+        task_id=message.taskId if message.taskId else "",
         role=message.role,
         content=extract_content(message.parts),
     )
@@ -222,47 +212,79 @@ def convert_conversation_to_state(
 
 
 def convert_task_to_state(task: Task) -> StateTask:
-  # Get the first message as the description
-  message = task.history[0]
-  last_message = task.history[-1]
-  output = [extract_content(a.parts) for a in task.artifacts] if task.artifacts else []
-  if last_message != message:
-    output = [extract_content(last_message.parts)] + output
-  return StateTask(
-      task_id=task.id,
-      context_id=task.contextId,
-      state=str(task.status.state),
-      message=convert_message_to_state(message),
-      artifacts=output,
-  )
+    # Get the first message as the description
+    message = task.history[0]
+    last_message = task.history[-1]
+    output = (
+        [extract_content(a.parts) for a in task.artifacts]
+        if task.artifacts
+        else []
+    )
+    if last_message != message:
+        output = [extract_content(last_message.parts)] + output
+    return StateTask(
+        task_id=task.id,
+        context_id=task.contextId,
+        state=str(task.status.state),
+        message=convert_message_to_state(message),
+        artifacts=output,
+    )
+
 
 def convert_event_to_state(event: Event) -> StateEvent:
-  return StateEvent(
-      context_id=extract_message_conversation(event.content),
-      actor=event.actor,
-      role=event.content.role,
-      id=event.id,
-      content=extract_content(event.content.parts),
-  )
+    return StateEvent(
+        context_id=extract_message_conversation(event.content),
+        actor=event.actor,
+        role=event.content.role,
+        id=event.id,
+        content=extract_content(event.content.parts),
+    )
+
+
+def extract_content(
+    message_parts: list[Part],
+) -> list[tuple[str | dict[str, Any], str]]:
+    parts = []
+    if not message_parts:
+        return []
+    for p in message_parts:
+        if p.type == 'text':
+            parts.append((p.text, 'text/plain'))
+        elif p.type == 'file':
+            if p.file.bytes:
+                parts.append((p.file.bytes, p.file.mimeType))
+            else:
+                parts.append((p.file.uri, p.file.mimeType))
+        elif p.type == 'data':
+            try:
+                jsonData = json.dumps(p.data)
+                if 'type' in p.data and p.data['type'] == 'form':
+                    parts.append((p.data, 'form'))
+                else:
+                    parts.append((jsonData, 'application/json'))
+            except Exception as e:
+                print('Failed to dump data', e)
+                parts.append(('<data>', 'text/plain'))
+    return parts
 
 
 def extract_message_id(message: Message) -> str:
-  return message.messageId
+    return message.messageId
+
 
 def extract_message_conversation(message: Message) -> str:
-  return message.contextId if message.contextId else ""
+    return message.contextId if message.contextId else ''
+
 
 def extract_conversation_id(task: Task) -> str:
-  if task.contextId:
-    return task.contextId
-  # Tries to find the first conversation id for the message in the task.
-  if (
-      task.status.message and
-      task.status.message.contextId):
-    return task.status.message.contextId
-  if not task.artifacts:
-    return ""
-  for a in task.artifacts:
-    if a.contextId:
-      return a.contextId
-  return ""
+    if task.contextId:
+        return task.contextId
+    # Tries to find the first conversation id for the message in the task.
+    if task.status.message and task.status.message.contextId:
+        return task.status.message.contextId
+    if not task.artifacts:
+        return ''
+    for a in task.artifacts:
+        if a.contextId:
+            return a.contextId
+    return ''

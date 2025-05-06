@@ -1,6 +1,6 @@
 import base64
 import os
-
+from typing import Any, Optional
 from llama_index.core.llms import ChatMessage
 from llama_index.core.workflow import (
     Context,
@@ -36,7 +36,6 @@ class InputEvent(StartEvent):
     msg: str
     attachment: str | None = None
     file_name: str | None = None
-
 
 
 class ParseEvent(Event):

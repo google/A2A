@@ -2,7 +2,7 @@ import dataclasses
 import json
 import uuid
 
-from typing import Any, Literal
+from typing import Any, Literal, Tuple
 
 import mesop as me
 
@@ -104,22 +104,10 @@ def render_form(message: StateMessage, app_state: AppState):
             state.forms[message.message_id] = form_state_to_string(form)
         except Exception as e:
             print('Failed to serialize form', e, form)
-    render_structure(message.message_id, form_structure, instructions)
-
-  state = me.state(State)
-  if message.message_id not in state.forms:
-    form = FormState(
-        message_id=message.message_id,
-        data=data,
-        errors={},
-        elements=form_structure,
+    render_structure(
+        message.message_id, message.task_id, form_structure, instructions
     )
-    try:
-      state.forms[message.message_id] = form_state_to_string(form)
-    except Exception as e:
-      print("Failed to serialize form", e, form)
-  render_structure(
-      message.message_id, message.task_id, form_structure, instructions)
+
 
 def render_form_card(message: StateMessage, data: dict[str, Any] | None):
     """Renders the result of a previous form as a card"""
@@ -152,16 +140,19 @@ def render_form_card(message: StateMessage, data: dict[str, Any] | None):
             me.text('Form canceled')
 
 
-def generate_form_elements(message: StateMessage) -> Tuple[str, list[FormElement]]:
-  """Returns a declarative structure for a form to generate"""
-  # Get the message part with the form information.
-  form_content = next(filter(lambda x: x[1] == 'form', message.content), None)
-  if not form_content:
-    return []
-  form_info = form_content[0]
-  if not isinstance(form_info, dict):
-    return []
-  return instructions_for_form(form_info), make_form_elements(form_info)
+def generate_form_elements(
+    message: StateMessage,
+) -> Tuple[str, list[FormElement]]:
+    """Returns a declarative structure for a form to generate"""
+    # Get the message part with the form information.
+    form_content = next(filter(lambda x: x[1] == 'form', message.content), None)
+    if not form_content:
+        return []
+    form_info = form_content[0]
+    if not isinstance(form_info, dict):
+        return []
+    return instructions_for_form(form_info), make_form_elements(form_info)
+
 
 def make_form_elements(form_info: dict[str, Any]) -> list[FormElement]:
     if 'form' not in form_info or 'properties' not in form_info['form']:
@@ -202,35 +193,44 @@ def instructions_for_form(form_info: dict[str, Any]) -> str:
 
 
 def render_structure(
-    id: str, task_id: str, elements: list[FormElement], instructions: str):
-  with me.box(
-    style=me.Style(
-      padding=me.Padding.all(BOX_PADDING),
-      max_width="75vw",
-      background=me.theme_var("surface"),
-      border_radius=15,
-      margin=me.Margin(top=5, bottom=20, left=5, right=5),
-      box_shadow=("0 1px 2px 0 rgba(60, 64, 67, 0.3), "
-                  "0 1px 3px 1px rgba(60, 64, 67, 0.15)"),
-    )
-  ):
-    if instructions:
-      me.text(
-        instructions,
-        type="headline-4",
-        style=me.Style(margin=me.Margin(bottom=10)),
-      )
-    for element in elements:
-      with form_group():
-        input_field(id=id, element=element)
-    with me.box():
-      me.button(
-          "Cancel", type="flat",
-          on_click=cancel_form, key="_".join([id, task_id])
-      )
-      me.button(
-          "Submit", type="flat",
-          on_click=submit_form, key="_".join([id, task_id]))
+    id: str, task_id: str, elements: list[FormElement], instructions: str
+):
+    with me.box(
+        style=me.Style(
+            padding=me.Padding.all(BOX_PADDING),
+            max_width='75vw',
+            background=me.theme_var('surface'),
+            border_radius=15,
+            margin=me.Margin(top=5, bottom=20, left=5, right=5),
+            box_shadow=(
+                '0 1px 2px 0 rgba(60, 64, 67, 0.3), '
+                '0 1px 3px 1px rgba(60, 64, 67, 0.15)'
+            ),
+        )
+    ):
+        if instructions:
+            me.text(
+                instructions,
+                type='headline-4',
+                style=me.Style(margin=me.Margin(bottom=10)),
+            )
+        for element in elements:
+            with form_group():
+                input_field(id=id, element=element)
+        with me.box():
+            me.button(
+                'Cancel',
+                type='flat',
+                on_click=cancel_form,
+                key='_'.join([id, task_id]),
+            )
+            me.button(
+                'Submit',
+                type='flat',
+                on_click=submit_form,
+                key='_'.join([id, task_id]),
+            )
+
 
 def input_field(
     *,
@@ -306,60 +306,66 @@ def on_blur(e: me.InputBlurEvent):
 
 
 async def cancel_form(e: me.ClickEvent):
-  message_id = str(uuid.uuid4())
-  app_state = me.state(AppState)
-  key_parts = e.key.split("_")
-  form_message_id, task_id = key_parts[0], key_parts[1]
-  app_state.form_responses[message_id] = form_message_id
-  app_state.background_tasks[message_id] = ""
-  app_state.completed_forms[form_message_id] = None
-  request = Message(
-      messageId=message_id,
-      taskId=task_id,
-      contextId=app_state.current_conversation_id,
-      role="user",
-      parts=[TextPart(text="rejected form entry")],
-  )
-  response = await SendMessage(request)
+    message_id = str(uuid.uuid4())
+    app_state = me.state(AppState)
+    key_parts = e.key.split('_')
+    form_message_id, task_id = key_parts[0], key_parts[1]
+    app_state.form_responses[message_id] = form_message_id
+    app_state.background_tasks[message_id] = ''
+    app_state.completed_forms[form_message_id] = None
+    request = Message(
+        messageId=message_id,
+        taskId=task_id,
+        contextId=app_state.current_conversation_id,
+        role='user',
+        parts=[TextPart(text='rejected form entry')],
+    )
+    response = await SendMessage(request)
+
 
 async def send_response(
-    id: str, task_id: str, state: State, app_state: AppState):
-  message_id = str(uuid.uuid4())
-  app_state.background_tasks[message_id] = ""
-  app_state.form_responses[message_id] = id
-  form = FormState(**json.loads(state.forms[id]))
-  request = Message(
-      messageId=message_id,
-      taskId=task_id,
-      contextId=app_state.current_conversation_id,
-      role="user",
-      parts=[DataPart(data=form.data)],
-  )
-  await SendMessage(request)
+    id: str, task_id: str, state: State, app_state: AppState
+):
+    message_id = str(uuid.uuid4())
+    app_state.background_tasks[message_id] = ''
+    app_state.form_responses[message_id] = id
+    form = FormState(**json.loads(state.forms[id]))
+    request = Message(
+        messageId=message_id,
+        taskId=task_id,
+        contextId=app_state.current_conversation_id,
+        role='user',
+        parts=[DataPart(data=form.data)],
+    )
+    await SendMessage(request)
+
 
 async def submit_form(e: me.ClickEvent):
-  try:
-    state = me.state(State)
-    key_parts = e.key.split("_")
-    id, task_id = key_parts[0], key_parts[1]
-    form = FormState(**json.loads(state.forms[id]))
-    # Replace with real validation logic.
-    errors = {}
-    for element in form.elements:
-      if element.name == "error":
-        continue
-      if not form.data[element.name] and element.required:
-        errors[element.name] = f"{element.name.replace('_', ' ').capitalize()} is required"
-    form.errors = errors
-    state.forms[id] = form_state_to_string(form)
-    # Replace with form processing logic.
-    if errors:
-      return
-    app_state = me.state(AppState)
-    app_state.completed_forms[id] = form.data
-    await send_response(id, task_id, state, app_state)
-  except Exception as e:
-    print("Failed to submit form", e)
+    try:
+        state = me.state(State)
+        key_parts = e.key.split('_')
+        id, task_id = key_parts[0], key_parts[1]
+        form = FormState(**json.loads(state.forms[id]))
+        # Replace with real validation logic.
+        errors = {}
+        for element in form.elements:
+            if element.name == 'error':
+                continue
+            if not form.data[element.name] and element.required:
+                errors[element.name] = (
+                    f'{element.name.replace("_", " ").capitalize()} is required'
+                )
+        form.errors = errors
+        state.forms[id] = form_state_to_string(form)
+        # Replace with form processing logic.
+        if errors:
+            return
+        app_state = me.state(AppState)
+        app_state.completed_forms[id] = form.data
+        await send_response(id, task_id, state, app_state)
+    except Exception as e:
+        print('Failed to submit form', e)
+
 
 # There is some issue with mesop serialization. Instead we use raw string
 # in the server state and interpret it as needed.

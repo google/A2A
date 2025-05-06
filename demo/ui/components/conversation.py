@@ -3,7 +3,11 @@ import mesop as me
 import uuid
 
 from state.state import AppState, SettingsState, StateMessage
-from state.host_agent_service import SendMessage, ListConversations, convert_message_to_state
+from state.host_agent_service import (
+    SendMessage,
+    ListConversations,
+    convert_message_to_state,
+)
 from .chat_bubble import chat_bubble
 from .form_render import is_form, render_form, form_sent
 from common.types import Message, TextPart
@@ -32,36 +36,40 @@ def on_blur(e: me.InputBlurEvent):
     state.message_content = e.value
 
 
-async def send_message(message: str, message_id: str = ""):
-  state = me.state(PageState)
-  app_state = me.state(AppState)
-  c = next(
-      (
-          x
-          for x in await ListConversations()
-          if x.conversation_id == state.conversation_id
-      ),
-      None,
-  )
-  if not c:
-    print("Conversation id ", state.conversation_id, " not found")
-  request = Message(
-      messageId=message_id,
-      contextId=state.conversation_id,
-      role="user",
-      parts=[TextPart(text=message)],
-  )
-  # Add message to state until refresh replaces it.
-  state_message = convert_message_to_state(request)
-  if not app_state.messages:
-    app_state.messages = []
-  app_state.messages.append(state_message)
-  conversation = next(filter(
-      lambda x: x.conversation_id == c.conversation_id,
-      app_state.conversations), None)
-  if conversation:
-    conversation.message_ids.append(state_message.message_id)
-  await SendMessage(request)
+async def send_message(message: str, message_id: str = ''):
+    state = me.state(PageState)
+    app_state = me.state(AppState)
+    c = next(
+        (
+            x
+            for x in await ListConversations()
+            if x.conversation_id == state.conversation_id
+        ),
+        None,
+    )
+    if not c:
+        print('Conversation id ', state.conversation_id, ' not found')
+    request = Message(
+        messageId=message_id,
+        contextId=state.conversation_id,
+        role='user',
+        parts=[TextPart(text=message)],
+    )
+    # Add message to state until refresh replaces it.
+    state_message = convert_message_to_state(request)
+    if not app_state.messages:
+        app_state.messages = []
+    app_state.messages.append(state_message)
+    conversation = next(
+        filter(
+            lambda x: x.conversation_id == c.conversation_id,
+            app_state.conversations,
+        ),
+        None,
+    )
+    if conversation:
+        conversation.message_ids.append(state_message.message_id)
+    await SendMessage(request)
 
 
 async def send_message_enter(e: me.InputEnterEvent):  # pylint: disable=unused-argument

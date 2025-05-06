@@ -18,7 +18,6 @@ from service.types import Conversation, Event
 from utils.agent_card import get_agent_card
 
 
-
 class InMemoryFakeAgentManager(ApplicationManager):
     """An implementation of memory based management with fake agent actions
 
@@ -45,78 +44,31 @@ class InMemoryFakeAgentManager(ApplicationManager):
         self._agents = []
         self._task_map = {}
 
-  def sanitize_message(self, message: Message) -> Message:
-    if message.contextId:
-      conversation = self.get_conversation(message.contextId)
-      # Check if the last event in the conversation was tied to a task.
-      if conversation.messages:
-        if (conversation.messages[-1].taskId and
-            task_still_open(next(
-                filter(lambda x: x.id == conversation.messages[-1].taskId,
-                       self._tasks), None))):
-          message.taskId = conversation.messages[-1].taskId
+    def sanitize_message(self, message: Message) -> Message:
+        if message.contextId:
+            conversation = self.get_conversation(message.contextId)
+        # Check if the last event in the conversation was tied to a task.
+        if conversation.messages:
+            if conversation.messages[-1].taskId and task_still_open(
+                next(
+                    filter(
+                        lambda x: x.id == conversation.messages[-1].taskId,
+                        self._tasks,
+                    ),
+                    None,
+                )
+            ):
+                message.taskId = conversation.messages[-1].taskId
 
-    return message
-
-  async def process_message(self, message: Message):
-    self._messages.append(message)
-    message_id = message.messageId
-    if message_id:
-      self._pending_message_ids.append(message_id)
-    context_id = message.contextId
-    conversation = self.get_conversation(context_id)
-    if conversation:
-      conversation.messages.append(message)
-    self._events.append(Event(
-        id=str(uuid.uuid4()),
-        actor="host",
-        content=message,
-        timestamp=datetime.datetime.utcnow().timestamp(),
-    ))
-    # Now actually process the message. If the response is async, return None
-    # for the message response and the updated message information for the
-    # incoming message (with ids attached).
-    task_id = message.taskId
-    task = Task(
-              id=task_id,
-              sessionId=conversation_id,
-              status=TaskStatus(
-                  state=TaskState.SUBMITTED,
-                  message=message,
-              ),
-              history=[message],
-          )
-    if self._next_message_idx != 0:
-      self.add_task(task)
-    await asyncio.sleep(self._next_message_idx)
-    response = self.next_message()
-    if conversation:
-      conversation.messages.append(response)
-    self._events.append(Event(
-        id=str(uuid.uuid4()),
-        actor="host",
-        content=response,
-        timestamp=datetime.datetime.utcnow().timestamp(),
-    ))
-    self._pending_message_ids.remove(message_id)
-    # Now clean up the task
-    if task:
-      task.status.state = TaskState.COMPLETED
-      task.artifacts = [Artifact(name="response", parts=response.parts)]
-      task.history.append(response)
-      self.update_task(task)
+        return message
 
     async def process_message(self, message: Message):
         self._messages.append(message)
-        message_id = message.metadata['message_id']
-        self._pending_message_ids.append(message_id)
-        conversation_id = (
-            message.metadata['conversation_id']
-            if 'conversation_id' in message.metadata
-            else None
-        )
-        # Now check the conversation and attach the message id.
-        conversation = self.get_conversation(conversation_id)
+        message_id = message.messageId
+        if message_id:
+            self._pending_message_ids.append(message_id)
+        task_id = message.contextId
+        conversation = self.get_conversation(context_id)
         if conversation:
             conversation.messages.append(message)
         self._events.append(
@@ -124,16 +76,16 @@ class InMemoryFakeAgentManager(ApplicationManager):
                 id=str(uuid.uuid4()),
                 actor='host',
                 content=message,
-                timestamp=datetime.datetime.now(datetime.UTC).timestamp(),
+                timestamp=datetime.datetime.utcnow().timestamp(),
             )
         )
         # Now actually process the message. If the response is async, return None
         # for the message response and the updated message information for the
         # incoming message (with ids attached).
-        task_id = str(uuid.uuid4())
+        task_id = message.taskId
         task = Task(
             id=task_id,
-            sessionId=conversation_id,
+            contextId=context_id,
             status=TaskStatus(
                 state=TaskState.SUBMITTED,
                 message=message,
@@ -141,14 +93,9 @@ class InMemoryFakeAgentManager(ApplicationManager):
             history=[message],
         )
         if self._next_message_idx != 0:
-            self._task_map[message_id] = task_id
             self.add_task(task)
         await asyncio.sleep(self._next_message_idx)
         response = self.next_message()
-        response.metadata = {
-            **message.metadata,
-            'message_id': str(uuid.uuid4()),
-        }
         if conversation:
             conversation.messages.append(response)
         self._events.append(
@@ -156,10 +103,10 @@ class InMemoryFakeAgentManager(ApplicationManager):
                 id=str(uuid.uuid4()),
                 actor='host',
                 content=response,
-                timestamp=datetime.datetime.now(datetime.UTC).timestamp(),
+                timestamp=datetime.datetime.utcnow().timestamp(),
             )
         )
-        self._pending_message_ids.remove(message.metadata['message_id'])
+        self._pending_message_ids.remove(message_id)
         # Now clean up the task
         if task:
             task.status.state = TaskState.COMPLETED
@@ -245,19 +192,20 @@ class InMemoryFakeAgentManager(ApplicationManager):
     def tasks(self) -> list[Task]:
         return self._tasks
 
+
 _contextId = str(uuid.uuid4())
 
 # This represents the precanned responses that will be returned in order.
 # Extend this list to test more functionality of the UI
 _message_queue: list[Message] = [
     Message(
-        role="agent",
-        parts=[TextPart(text="Hello")],
+        role='agent',
+        parts=[TextPart(text='Hello')],
         contextId=_contextId,
-        messageId=str(uuid.uuid4())
+        messageId=str(uuid.uuid4()),
     ),
     Message(
-        role="agent",
+        role='agent',
         parts=[
             DataPart(
                 data={
@@ -282,7 +230,7 @@ _message_queue: list[Message] = [
                     'form_data': {
                         'name': 'John Smith',
                     },
-                    'instructions': "Please provide your birthday and name",
+                    'instructions': 'Please provide your birthday and name',
                 }
             ),
         ],
@@ -290,15 +238,15 @@ _message_queue: list[Message] = [
         messageId=str(uuid.uuid4()),
     ),
     Message(
-        role="agent",
-        parts=[TextPart(text="I like cats")],
+        role='agent',
+        parts=[TextPart(text='I like cats')],
         contextId=_contextId,
         messageId=str(uuid.uuid4()),
     ),
     test_image.make_test_image(_contextId),
     Message(
-        role="agent",
-        parts=[TextPart(text="And I like dogs")],
+        role='agent',
+        parts=[TextPart(text='And I like dogs')],
         contextId=_contextId,
         messageId=str(uuid.uuid4()),
     ),

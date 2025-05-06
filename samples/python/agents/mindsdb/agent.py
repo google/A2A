@@ -37,7 +37,7 @@ class MindsDBAgent:
     def invoke(self, query, session_id) -> str:
         return {'content': 'Use stream method to get the results!'}
 
-    async def stream(self, query, session_id) -> AsyncIterable[Dict[str, Any]]:
+    async def stream(self, query, session_id) -> AsyncIterable[dict[str, Any]]:
         payload = {
             'model': self.model,
             'messages': [

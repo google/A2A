@@ -31,6 +31,7 @@ from common.types import (
     SendTaskStreamingRequest,  # deprecated
     SendMessageRequest,
     SendMessageStreamRequest,
+    JSONRPCResponse,
 )
 
 import logging

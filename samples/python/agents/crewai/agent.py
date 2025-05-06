@@ -7,6 +7,7 @@ import base64
 from io import BytesIO
 import os
 import re
+import logging
 from typing import Any, AsyncIterable, Dict
 from uuid import uuid4
 
@@ -198,9 +199,8 @@ class ImageGenerationAgent:
 
             if match:
                 return match.group(1)
-            else:
-                return None
-        except Exception as e:
+            return None
+        except Exception:
             return None
 
     def invoke(self, query, session_id) -> str:
@@ -217,7 +217,7 @@ class ImageGenerationAgent:
         response = self.image_crew.kickoff(inputs)
         return response
 
-    async def stream(self, query: str) -> AsyncIterable[Dict[str, Any]]:
+    async def stream(self, query: str) -> AsyncIterable[dict[str, Any]]:
         """Streaming is not supported by CrewAI."""
         raise NotImplementedError('Streaming is not supported by CrewAI.')
 
@@ -226,12 +226,8 @@ class ImageGenerationAgent:
         cache = InMemoryCache()
         session_data = cache.get(session_id)
         try:
-            if session_data:
-                return session_data[image_key]
-            else:
-                return Imagedata(
-                    error='Error generating image, please try again.'
-                )
+            cache.get(session_id)
+            return session_data[image_key]
         except KeyError:
             logger.error('Error generating image')
             return Imagedata(error='Error generating image, please try again.')
