@@ -128,15 +128,16 @@ class AgentTaskManager(InMemoryTaskManager):
     ) -> SendTaskResponse:
         # task_send_params: TaskSendParams = request.params
         query = self._get_user_query(request.params)
-        taskId, contextId = self._extract_task_and_context(request.params)
+        task_id, context_id = self._extract_task_and_context(request.params)
         try:
-            result = self.agent.invoke(query, contextId)
+            result = self.agent.invoke(query, context_id)
+            print(f'Final Result ===> {result}')
         except Exception as e:
             logger.error('Error invoking agent: %s', e)
             raise ValueError(f'Error invoking agent: {e}') from e
 
         data = self.agent.get_image_data(
-            session_id=contextId, image_key=result.raw
+            session_id=context_id, image_key=result.raw
         )
         if data and not data.error:
             parts = [
@@ -154,9 +155,8 @@ class AgentTaskManager(InMemoryTaskManager):
                 }
             ]
 
-        print(f'Final Result ===> {result}')
         task = await self._update_store(
-            taskId,
+            task_id,
             TaskStatus(state=TaskState.COMPLETED),
             [Artifact(parts=parts)],
         )
