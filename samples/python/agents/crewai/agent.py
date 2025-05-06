@@ -23,6 +23,7 @@ from google import genai
 from google.genai import types
 from pydantic import BaseModel
 
+load_dotenv()
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +46,6 @@ class Imagedata(BaseModel):
     error: str | None = None
 
 
-def get_api_key() -> str:
-    """Helper method to handle API Key."""
-    load_dotenv()
-    return os.getenv('GOOGLE_API_KEY')
-
-
 @tool('ImageGenerationTool')
 def generate_image_tool(
     prompt: str, session_id: str, artifact_file_id: str = None
@@ -59,7 +54,7 @@ def generate_image_tool(
     if not prompt:
         raise ValueError('Prompt cannot be empty')
 
-    client = genai.Client(api_key=get_api_key())
+    client = genai.Client()
     cache = InMemoryCache()
 
     text_input = (
@@ -103,7 +98,7 @@ def generate_image_tool(
 
     try:
         response = client.models.generate_content(
-            model='gemini-2.0-flash-exp-image-generation',
+            model='gemini-2.0-flash-exp',
             contents=contents,
             config=types.GenerateContentConfig(
                 response_modalities=['Text', 'Image']
@@ -146,7 +141,10 @@ class ImageGenerationAgent:
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain', 'image/png']
 
     def __init__(self):
-        self.model = LLM(model='gemini/gemini-2.0-flash', api_key=get_api_key())
+        if os.getenv('GOOGLE_GENAI_USE_VERTEXAI'):
+            self.model = LLM(model='vertex_ai/gemini-2.0-flash')
+        elif os.getenv('GOOGLE_API_KEY'):
+            self.model = LLM(model='gemini/gemini-2.0-flash', api_key=os.getenv('GOOGLE_API_KEY'))
 
         self.image_creator_agent = Agent(
             role='Image Creation Expert',
