@@ -12,6 +12,8 @@ from pydantic import (
     model_validator,
 )
 
+from .types_fingerprint import Fingerprint, MessageVerification
+
 
 class TaskState(str, Enum):
     SUBMITTED = 'submitted'
@@ -67,6 +69,7 @@ class Message(BaseModel):
     role: Literal['user', 'agent']
     parts: list[Part]
     metadata: dict[str, Any] | None = None
+    verification: MessageVerification | None = None
 
 
 class TaskStatus(BaseModel):
@@ -325,6 +328,7 @@ class AgentCapabilities(BaseModel):
 class AgentAuthentication(BaseModel):
     schemes: list[str]
     credentials: str | None = None
+    fingerprint: Fingerprint | None = None
 
 
 class AgentSkill(BaseModel):
@@ -349,6 +353,7 @@ class AgentCard(BaseModel):
     defaultInputModes: list[str] = ['text']
     defaultOutputModes: list[str] = ['text']
     skills: list[AgentSkill]
+    fingerprint: Fingerprint | None = None
 
 
 class A2AClientError(Exception):
@@ -370,3 +375,11 @@ class A2AClientJSONError(A2AClientError):
 
 class MissingAPIKeyError(Exception):
     """Exception for missing API key."""
+
+
+class FingerprintVerificationError(Exception):
+    """Exception for fingerprint verification failures."""
+    
+    def __init__(self, message: str = "Fingerprint verification failed"):
+        self.message = message
+        super().__init__(message)
