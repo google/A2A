@@ -241,9 +241,9 @@ class AgentTaskManager(InMemoryTaskManager):
         if validation_error:
             return SendMessageResponse(id=request.id, error=validation_error.error)
 
-        if request.params.configuration.pushNotificationConfig:
+        if request.params.configuration.pushNotification:
             if not await self.set_push_notification_info(
-                request.params.id, request.params.configuration.pushNotificationConfig
+                request.params.id, request.params.configuration.pushNotification
             ):
                 return SendMessageResponse(
                     id=request.id,

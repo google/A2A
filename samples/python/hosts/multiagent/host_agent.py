@@ -41,7 +41,7 @@ class HostAgent:
 
     def __init__(
         self,
-        remote_agent_addresses: List[str],
+        remote_agent_addresses: list[str],
         task_callback: TaskUpdateCallback | None = None,
     ):
         self.task_callback = task_callback
@@ -122,8 +122,6 @@ Current agent: {current_agent['active_agent']}
     ):
         state = callback_context.state
         if 'session_active' not in state or not state['session_active']:
-            # if 'context_id' not in state:
-            #  state['_id'] = str(uuid.uuid4())
             state['session_active'] = True
 
     def list_remote_agents(self):
@@ -179,9 +177,10 @@ Current agent: {current_agent['active_agent']}
                 acceptedOutputModes=['text', 'text/plain', 'image/png'],
             ),
         )
-        task = await client.send_message(request, self.task_callback)
-        if isinstance(task, Message):
+        response = await client.send_message(request, self.task_callback)
+        if isinstance(response, Message):
             return convert_parts(task.parts, tool_context)
+        task: Task = response
         # Assume completion unless a state returns that isn't complete
         state['session_active'] = task.status.state not in [
             TaskState.COMPLETED,
