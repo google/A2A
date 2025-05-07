@@ -38,6 +38,8 @@ class RemoteAgentConnections:
             async for response in self.agent_client.send_message_stream(
                 request.model_dump()
             ):
+                if not response.result:
+                    return response.error
                 # In the case a message is returned, that is the end of the interaction.
                 if isinstance(response.result, Message):
                     return response
@@ -47,8 +49,6 @@ class RemoteAgentConnections:
                     task = task_callback(response.result, self.card)
                 if hasattr(response.result, 'final') and response.result.final:
                     break
-                if not response.result:
-                    return response.error
             return task
         else:  # Non-streaming
             response = await self.agent_client.send_message(

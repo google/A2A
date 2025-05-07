@@ -61,7 +61,7 @@ class DataPart(BaseModel):
 
 
 Part = Annotated[
-    Union[TextPart, FilePart, DataPart], Field(discriminator='type')
+    TextPart | FilePart | DataPart, Field(discriminator='type')
 ]
 
 
@@ -173,7 +173,7 @@ class TaskPushNotificationConfig(BaseModel):
     pushNotificationConfig: PushNotificationConfig
 
 
-TaskUpdateEvent = Union[TaskStatusUpdateEvent, TaskArtifactUpdateEvent]
+TaskUpdateEvent = TaskStatusUpdateEvent | TaskArtifactUpdateEvent
 
 ## RPC Messages
 
@@ -284,17 +284,17 @@ class TaskResubscriptionRequest(JSONRPCRequest):
 
 A2ARequest = TypeAdapter(
     Annotated[
-        Union[
-            SendTaskRequest,
-            GetTaskRequest,
-            CancelTaskRequest,
-            SetTaskPushNotificationRequest,
-            GetTaskPushNotificationRequest,
-            TaskResubscriptionRequest,  # deprecated
-            SendTaskStreamingRequest,  # deprecated
-            SendMessageRequest,
-            SendMessageStreamRequest,
-        ],
+        (
+            SendTaskRequest |
+            GetTaskRequest |
+            CancelTaskRequest |
+            SetTaskPushNotificationRequest |
+            GetTaskPushNotificationRequest |
+            TaskResubscriptionRequest |  # deprecated
+            SendTaskStreamingRequest |  # deprecated
+            SendMessageRequest |
+            SendMessageStreamRequest
+        ),
         Field(discriminator='method'),
     ]
 )
@@ -397,9 +397,9 @@ class AgentCard(BaseModel):
     documentationUrl: str | None = None
     capabilities: AgentCapabilities
     authentication: AgentAuthentication | None = None
-    defaultInputModes: List[str] = ['text']
-    defaultOutputModes: List[str] = ['text']
-    skills: List[AgentSkill]
+    defaultInputModes: list[str] = ['text']
+    defaultOutputModes: list[str] = ['text']
+    skills: list[AgentSkill]
 
 
 class A2AClientError(Exception):

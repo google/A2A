@@ -821,6 +821,39 @@
             "title": "Parts",
             "type": "array"
           },
+	  "messageId": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Messageid"
+          },
+	  "taskId":  {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Taskid"
+          },
+	  "contextId":  {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "title": "Contextid"
+          },
           "metadata": {
             "additionalProperties": {},
             "type": "object",
@@ -829,7 +862,8 @@
         },
         "required": [
           "role",
-          "parts"
+          "parts",
+	  "messageId"
         ],
         "title": "Message",
         "type": "object"
@@ -1109,9 +1143,9 @@
             "title": "Id",
             "type": "string"
           },
-          "sessionId": {
+          "contextId": {
             "type": "string",
-            "title": "Sessionid"
+            "title": "Contextid"
           },
           "status": {
             "$ref": "#/$defs/TaskStatus"
@@ -1266,14 +1300,60 @@
         "title": "TaskQueryParams",
         "type": "object"
       },
+      "MessageSendParams": {
+	"properties": {
+	  "id": {},
+	  "message": {
+            "$ref": "#/$defs/Message"
+	  },
+	  "configuration": {
+            "$ref": "#/$defs/MessageSendConfiguration"
+	  },
+          "metadata": {
+            "additionalProperties": {},
+            "type": "object",
+            "title": "Metadata"
+          }
+	},
+	"required": [
+	  "id",
+	  "message"
+	]
+      },
+      "MessageSendConfiguration": {
+	"properties": {
+	  "acceptedOutputModes": {{
+            "items": {
+              "type": "string"
+            },
+            "title": "AcceptedOutputModes",
+            "type": "array"
+          },
+	  "blocking": {
+	    "type": "boolean",
+	    "title": "Blocking"
+	  },
+          "pushNotification": {
+            "$ref": "#/$defs/PushNotificationConfig"
+          },
+          "historyLength": {
+            "type": "integer",
+            "title": "HistoryLength"
+          },
+          "metadata": {
+            "additionalProperties": {},
+            "type": "object",
+            "title": "Metadata"
+          }
+      },
       "TaskSendParams": {
         "properties": {
           "id": {
             "title": "Id",
             "type": "string"
           },
-          "sessionId": {
-            "title": "Sessionid",
+          "contextId": {
+            "title": "Contextid",
             "type": "string"
           },
           "message": {
