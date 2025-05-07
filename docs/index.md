@@ -4,53 +4,93 @@ hide:
   - toc
 ---
 
-#
+<div style="text-align: center; margin-bottom: 1rem;">
+  <img src="assets/a2a-banner.png" alt="A2A Banner" width="70%">
+</div>
 
-<div style="margin-bottom: -100px;"></div>
+<div style="text-align: center; margin-bottom: 2rem;">
+  <img src="assets/a2a-main.png" alt="A2A Main Graphic" width="50%">
+</div>
 
-<img src="assets/a2a-banner.png" alt="A2A Banner" width="80%" style="display: block; margin-left: auto; margin-right: auto;">
+## Unlock Collaborative Agent Scenarios
 
-<img src="assets/a2a-main.png" alt="A2A Main Graphic" width="55%" style="display: block; margin-left: auto; margin-right: auto;">
+The **Agent2Agent (A2A) Protocol** is an open standard designed to enable seamless communication and collaboration between AI agents. In a world where agents are built using diverse frameworks and by different vendors, A2A provides a common language, breaking down silos and fostering interoperability.
 
-## A2A: Unlock collaborative agent-to-agent scenarios with a new open protocol
+- [Blog Post: Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
+- [Watch the A2A Demo Video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4)
 
-- Seamless Agent Collaboration: Introduces a standard protocol for autonomous,
-  opaque agents built on different frameworks and by various vendors to
-  communicate and collaborate effectively with each other and with users,
-  addressing the current lack of agent interoperability.
+---
 
-- Simplifies Enterprise Agent Integration: Provides a straightforward way to
-  integrate intelligent agents into existing enterprise applications, allowing
-  businesses to leverage agent capabilities across their technology landscape.
+### Why A2A Matters
 
-- Supports Key Enterprise Requirements: Offers core functionalities essential
-  for secure, enterprise-grade agent ecosystems, including capability discovery,
-  user experience negotiation, task and state management, and secure
-  collaboration. Open standards for connecting Agents
+<div class="grid cards" markdown>
 
-<img src="assets/a2a-mcp-readme.png" alt="A2A MCP Graphic" width="60%" style="display: block; margin-left: auto; margin-right: auto;">
+- :material-account-group-outline:{ .lg .middle } **Interoperability**
 
-- MCP (Model Context Protocol) for tools and resources
-  - Connect agents to tools, APIs, and resources with structured inputs/outputs.
-  - Google ADK supports MCP tools. Enabling wide range of MCP servers to be used with agents.
-- A2A (Agent2Agent Protocol) for agent-agent collaboration
-  - Dynamic, multimodal communication between different agents without sharing memory, resources, and tools
-  - Open standard driven by community.
-  - Samples available using Google ADK, LangGraph, Crew.AI
+    Connect agents built on different platforms (LangGraph, CrewAI, Semantic Kernel, custom solutions) to create powerful, composite AI systems.
 
-## Community Feedback and Roadmap
+- :material-lan-connect:{ .lg .middle } **Complex Workflows**
 
-A2A is a work in progress and is expected to change based on
-[community feedback](https://google.github.io/A2A/#/community). This repo
-contains the initial specification, documentation, and
-[sample code](https://github.com/google/A2A/tree/main/samples). We will continue
-to update this repository with more features, more examples, specs, and libraries as
-they become available. When the spec and samples can graduate to a production
-quality SDK, we will declare version 1.0 and maintain stable releases.
+    Enable agents to delegate sub-tasks, exchange information, and coordinate actions to solve complex problems that a single agent cannot.
 
-To understand A2A design principles and external partners supporting A2A, read
-our blog post on
-[Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/).
+- :material-shield-key-outline:{ .lg .middle } **Secure & Opaque**
 
-Interested to contribute and know more about the internals of A2A protocol? Join
-our [GitHub repository](https://github.com/google/A2A)!
+    Agents interact without needing to share internal memory, tools, or proprietary logic, ensuring security and preserving intellectual property.
+
+</div>
+
+---
+
+### A2A and MCP: Complementary Protocols
+
+<div style="text-align: center; margin-bottom:1em; margin-top:1em;">
+  <img src="assets/a2a-mcp-readme.png" alt="A2A MCP Graphic" width="60%">
+</div>
+
+A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are complementary standards for building robust agentic applications:
+
+- **MCP (Model Context Protocol):** Connects agents to **tools, APIs, and resources** with structured inputs/outputs. Think of it as the way agents access their capabilities.
+- **A2A (Agent2Agent Protocol):** Facilitates **dynamic, multimodal communication between different agents** as peers. It's how agents collaborate, delegate, and manage shared tasks.
+
+[Learn more about A2A and MCP](./topics/a2a-and-mcp.md)
+
+---
+
+### Get Started with A2A
+
+<div class="grid cards" markdown>
+
+- :fontawesome-solid-book:{ .lg .middle } **Read the Introduction**
+
+    Understand the core ideas behind A2A.
+
+    [:octicons-arrow-right-24: What is A2A?](./what-is-a2a.md)
+    [:octicons-arrow-right-24: Key Concepts](./key-concepts.md)
+
+- :material-file-document-outline:{ .lg .middle } **Dive into the Specification**
+
+    Explore the detailed technical definition of the A2A protocol.
+
+    [:octicons-arrow-right-24: Protocol Specification](./specification.md)
+
+- :material-application-cog-outline:{ .lg .middle } **Follow the Tutorials**
+
+    Build your first A2A-compliant agent with our step-by-step Python quickstart.
+
+    [:octicons-arrow-right-24: Python Tutorial](./tutorials/python/1-introduction.md)
+
+- :material-code-braces:{ .lg .middle } **Explore Code Samples**
+
+    See A2A in action with sample clients, servers, and agent framework integrations.
+
+    [:fontawesome-brands-github: GitHub Samples](https://github.com/google/A2A/tree/main/samples)
+
+</div>
+
+---
+
+### Join the Community
+
+A2A is an open, community-driven initiative.
+Read our blog post on [Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/).
+Join our [GitHub repository](https://github.com/google/A2A) to contribute, ask questions, and stay updated!
