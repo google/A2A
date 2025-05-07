@@ -50,14 +50,17 @@ Agentic applications need to leverage both: agents use tools to gather informati
 
 A2A and MCP are not mutually exclusive; they are highly complementary and address different layers of an agentic system's interaction needs.
 
-<div style="text-align: center; margin: 20px;">
-  <img src="../assets/a2a-mcp.png" alt="Diagram showing A2A and MCP working together. A User interacts with Agent A via A2A. Agent A interacts with Agent B via A2A. Agent B uses MCP to interact with Tool 1 and Tool 2." width="80%">
-  <p><em>An agentic application might use A2A to communicate with other agents, while each agent internally uses MCP to interact with its specific tools and resources.</em></p>
+<div style="text-align: center; margin: 20px;" markdown>
+
+  ![Diagram showing A2A and MCP working together. A User interacts with Agent A via A2A. Agent A interacts with Agent B via A2A. Agent B uses MCP to interact with Tool 1 and Tool 2.](../assets/a2a-mcp.png){width="80%"}
+
+  *An agentic application might use A2A to communicate with other agents, while each agent internally uses MCP to interact with its specific tools and resources.*
+
 </div>
 
 ### Example Scenario: The Auto Repair Shop
 
-Consider an auto repair shop staffed by autonomous AI agent "mechanics":
+> Consider an auto repair shop staffed by autonomous AI agent "mechanics" who use special-purpose tools (such as vehicle jacks, multimeters, and socket wrenches) to diagnose and repair problems. The workers often have to diagnose and repair problems they have not seen before. The repair process can involve extensive conversations with a customer, research, and working with part suppliers.
 
 1. **Customer Interaction (User-to-Agent via A2A):**
     - A customer (or their primary assistant agent) uses A2A to communicate with the "Shop Manager" agent: *"My car is making a rattling noise."*

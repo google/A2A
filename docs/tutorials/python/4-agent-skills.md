@@ -14,7 +14,7 @@ An agent skill is a set of capabilities the agent can perform. Here's an example
 }
 ```
 
-This conforms to the skills section of the [Agent Card](../../specification/agent-card.md)
+This conforms to the skills section of the [Agent Card](../../specification.md#5-agent-discovery-the-agent-card)
 
 ```ts
 {

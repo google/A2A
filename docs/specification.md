@@ -146,6 +146,7 @@ This follows the principles of [RFC 8615](https://datatracker.ietf.org/doc/html/
 ### 5.4. Security of Agent Cards
 
 Agent Cards themselves might contain information that is considered sensitive (e.g., the URL of an internal-only agent, or scheme-specific information in `authentication.credentials`).
+
 - If an Agent Card contains sensitive information, the endpoint serving the card **MUST** be protected by appropriate access controls (e.g., mTLS, network restrictions, authentication required to fetch the card).
 - It is generally **NOT RECOMMENDED** to include plaintext secrets (like static API keys) directly in an Agent Card. Prefer authentication schemes where clients obtain dynamic credentials out-of-band. If `authentication.credentials` is used, it should be for non-secret information like OAuth flow URLs or API key *names* (not values).
 
@@ -936,7 +937,7 @@ interface TaskQueryParams {
 
 Requests the cancellation of an ongoing task. The server will attempt to cancel the task, but success is not guaranteed (e.g., the task might have already completed or failed, or cancellation might not be supported at its current stage).
 
-- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-cancel-and-pushnotificationget)
+- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationget)
 - **Response `result` type (on success)**: [`Task`](#61-task-object) (The state of the task after the cancellation attempt. Ideally, `Task.status.state` will be `"canceled"` if successful).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`TaskNotFoundError`](#82-a2a-specific-errors), [`TaskNotCancelableError`](#82-a2a-specific-errors)).
 
@@ -970,7 +971,7 @@ Sets or updates the push notification configuration for a specified task. This a
 
 Retrieves the current push notification configuration for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-cancel-and-pushnotificationget)
+- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationget)
 - **Response `result` type (on success)**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object) (The current push notification configuration for the task. If no configuration is set, `pushNotificationConfig` field might be `null` or an empty object. The server MAY omit or mask any sensitive details from the `authentication.credentials` field).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
 

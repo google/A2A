@@ -4,13 +4,10 @@ hide:
   - toc
 ---
 
-<div style="text-align: center; margin-bottom: 1rem;">
-  <img src="assets/a2a-banner.png" alt="A2A Banner" width="70%">
-</div>
+# Agent2Agent (A2A) Protocol
 
-<div style="text-align: center; margin-bottom: 2rem;">
-  <img src="assets/a2a-main.png" alt="A2A Main Graphic" width="50%">
-</div>
+![A2A Banner](assets/a2a-banner.png){width="70%"}
+{style="text-align: center; margin-bottom:1em; margin-top:1em;"}
 
 ## Unlock Collaborative Agent Scenarios
 
@@ -18,6 +15,9 @@ The **Agent2Agent (A2A) Protocol** is an open standard designed to enable seamle
 
 - [Blog Post: Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
 - [Watch the A2A Demo Video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4)
+
+![A2A Main Graphic](assets/a2a-main.png){width="50%"}
+{style="text-align: center; margin-bottom:1em; margin-top:2em;"}
 
 ---
 
@@ -43,9 +43,8 @@ The **Agent2Agent (A2A) Protocol** is an open standard designed to enable seamle
 
 ### A2A and MCP: Complementary Protocols
 
-<div style="text-align: center; margin-bottom:1em; margin-top:1em;">
-  <img src="assets/a2a-mcp-readme.png" alt="A2A MCP Graphic" width="60%">
-</div>
+![A2A MCP Graphic](assets/a2a-mcp-readme.png){width="60%"}
+{style="text-align: center; margin-bottom:1em; margin-top:1em;"}
 
 A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are complementary standards for building robust agentic applications:
 
@@ -60,12 +59,13 @@ A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are
 
 <div class="grid cards" markdown>
 
-- :fontawesome-solid-book:{ .lg .middle } **Read the Introduction**
+- :material-book-open:{ .lg .middle } **Read the Introduction**
 
     Understand the core ideas behind A2A.
 
-    [:octicons-arrow-right-24: What is A2A?](./what-is-a2a.md)
-    [:octicons-arrow-right-24: Key Concepts](./key-concepts.md)
+    [:octicons-arrow-right-24: What is A2A?](./topics/what-is-a2a.md)
+
+    [:octicons-arrow-right-24: Key Concepts](./topics/key-concepts.md)
 
 - :material-file-document-outline:{ .lg .middle } **Dive into the Specification**
 
@@ -86,11 +86,3 @@ A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are
     [:fontawesome-brands-github: GitHub Samples](https://github.com/google/A2A/tree/main/samples)
 
 </div>
-
----
-
-### Join the Community
-
-A2A is an open, community-driven initiative.
-Read our blog post on [Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/).
-Join our [GitHub repository](https://github.com/google/A2A) to contribute, ask questions, and stay updated!

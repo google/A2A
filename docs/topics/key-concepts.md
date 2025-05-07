@@ -2,7 +2,7 @@
 
 The Agent2Agent (A2A) protocol is built around a set of core concepts that define how agents interact. Understanding these concepts is crucial for developing or integrating with A2A-compliant systems.
 
-<img src="../assets/a2a-actors.png" width="70%" alt="A2A Actors showing a User, A2A Client (Client Agent), and A2A Server (Remote Agent)" style="margin:20px auto;display:block;">
+![A2A Actors showing a User, A2A Client (Client Agent), and A2A Server (Remote Agent)](../assets/a2a-actors.png){ width="70%" style="margin:20px auto;display:block;" }
 
 ## Core Actors
 
