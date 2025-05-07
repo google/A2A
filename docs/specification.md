@@ -1,6 +1,6 @@
 ---
 hide:
-    - navigation
+  - navigation
 ---
 
 # Agent2Agent (A2A) Protocol Specification
@@ -161,39 +161,39 @@ Agent Cards themselves might contain information that is considered sensitive (e
 // - Default input/output content types (MIME types).
 // - A list of specific skills the agent offers.
 interface AgentCard {
-    // Human-readable name of the agent (e.g., "Recipe Advisor Agent").
-    name: string;
-    // A human-readable description of the agent and its general purpose.
-    // [CommonMark](https://commonmark.org/) MAY be used for rich text formatting.
-    // (e.g., "This agent helps users find recipes, plan meals, and get cooking instructions.")
-    description?: string | null;
-    // The base URL endpoint for the agent's A2A service (where JSON-RPC requests are sent).
-    // Must be an absolute HTTPS URL for production (e.g., `https://agent.example.com/a2a/api`).
-    // HTTP MAY be used for local development/testing only.
-    url: string;
-    // Information about the organization or entity providing the agent.
-    provider?: AgentProvider | null;
-    // Version string for the agent or its A2A implementation
-    // (format is defined by the provider, e.g., "1.0.0", "2023-10-26-beta").
-    version: string;
-    // URL pointing to human-readable documentation for the agent (e.g., API usage, detailed skill descriptions).
-    documentationUrl?: string | null;
-    // Specifies optional A2A protocol features supported by this agent.
-    capabilities: AgentCapabilities;
-    // Authentication schemes required to interact with the agent's `url` endpoint.
-    // If `null`, omitted, or an empty `schemes` array, no A2A-level authentication is explicitly advertised
-    // (NOT recommended for production; other security like network ACLs might still apply).
-    authentication?: AgentAuthentication | null;
-    // Array of [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
-    // the agent generally accepts as input across all skills, unless overridden by a specific skill.
-    // Default if omitted: `["text/plain"]`. Example: `["text/plain", "image/png"]`.
-    defaultInputModes?: string[];
-    // Array of MIME types the agent generally produces as output across all skills, unless overridden by a specific skill.
-    // Default if omitted: `["text/plain"]`. Example: `["text/plain", "application/json"]`.
-    defaultOutputModes?: string[];
-    // An array of specific skills or capabilities the agent offers.
-    // Must contain at least one skill if the agent is expected to perform actions beyond simple presence.
-    skills: AgentSkill[];
+  // Human-readable name of the agent (e.g., "Recipe Advisor Agent").
+  name: string;
+  // A human-readable description of the agent and its general purpose.
+  // [CommonMark](https://commonmark.org/) MAY be used for rich text formatting.
+  // (e.g., "This agent helps users find recipes, plan meals, and get cooking instructions.")
+  description?: string | null;
+  // The base URL endpoint for the agent's A2A service (where JSON-RPC requests are sent).
+  // Must be an absolute HTTPS URL for production (e.g., `https://agent.example.com/a2a/api`).
+  // HTTP MAY be used for local development/testing only.
+  url: string;
+  // Information about the organization or entity providing the agent.
+  provider?: AgentProvider | null;
+  // Version string for the agent or its A2A implementation
+  // (format is defined by the provider, e.g., "1.0.0", "2023-10-26-beta").
+  version: string;
+  // URL pointing to human-readable documentation for the agent (e.g., API usage, detailed skill descriptions).
+  documentationUrl?: string | null;
+  // Specifies optional A2A protocol features supported by this agent.
+  capabilities: AgentCapabilities;
+  // Authentication schemes required to interact with the agent's `url` endpoint.
+  // If `null`, omitted, or an empty `schemes` array, no A2A-level authentication is explicitly advertised
+  // (NOT recommended for production; other security like network ACLs might still apply).
+  authentication?: AgentAuthentication | null;
+  // Array of [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
+  // the agent generally accepts as input across all skills, unless overridden by a specific skill.
+  // Default if omitted: `["text/plain"]`. Example: `["text/plain", "image/png"]`.
+  defaultInputModes?: string[];
+  // Array of MIME types the agent generally produces as output across all skills, unless overridden by a specific skill.
+  // Default if omitted: `["text/plain"]`. Example: `["text/plain", "application/json"]`.
+  defaultOutputModes?: string[];
+  // An array of specific skills or capabilities the agent offers.
+  // Must contain at least one skill if the agent is expected to perform actions beyond simple presence.
+  skills: AgentSkill[];
 }
 ```
 
@@ -217,10 +217,10 @@ Information about the organization or entity providing the agent.
 
 ```typescript
 interface AgentProvider {
-    // Name of the organization or entity.
-    organization: string;
-    // URL for the provider's organization website or relevant contact page.
-    url?: string | null;
+  // Name of the organization or entity.
+  organization: string;
+  // URL for the provider's organization website or relevant contact page.
+  url?: string | null;
 }
 ```
 
@@ -235,15 +235,15 @@ Specifies optional A2A protocol features supported by the agent.
 
 ```typescript
 interface AgentCapabilities {
-    // If `true`, the agent supports `tasks/sendSubscribe` and `tasks/resubscribe` for real-time
-    // updates via Server-Sent Events (SSE). Default: `false`.
-    streaming?: boolean;
-    // If `true`, the agent supports `tasks/pushNotification/set` and `tasks/pushNotification/get`
-    // for asynchronous task updates via webhooks. Default: `false`.
-    pushNotifications?: boolean;
-    // If `true`, the agent may include a detailed history of status changes
-    // within the `Task` object (future enhancement; specific mechanism TBD). Default: `false`.
-    stateTransitionHistory?: boolean;
+  // If `true`, the agent supports `tasks/sendSubscribe` and `tasks/resubscribe` for real-time
+  // updates via Server-Sent Events (SSE). Default: `false`.
+  streaming?: boolean;
+  // If `true`, the agent supports `tasks/pushNotification/set` and `tasks/pushNotification/get`
+  // for asynchronous task updates via webhooks. Default: `false`.
+  pushNotifications?: boolean;
+  // If `true`, the agent may include a detailed history of status changes
+  // within the `Task` object (future enhancement; specific mechanism TBD). Default: `false`.
+  stateTransitionHistory?: boolean;
 }
 ```
 
@@ -259,18 +259,18 @@ Describes the authentication requirements for accessing the agent's `url` endpoi
 
 ```typescript
 interface AgentAuthentication {
-    // Array of authentication scheme names supported/required by the agent's endpoint
-    // (e.g., "Bearer", "Basic", "OAuth2", "ApiKey").
-    // Standard names (e.g., from OpenAPI specification, IANA registry) SHOULD be used where applicable.
-    // An empty array means no specific A2A-level schemes are advertised.
-    schemes: string[];
-    // Optional field, MAY contain non-secret, scheme-specific information.
-    // Examples: For "OAuth2", this could be a JSON string with `tokenUrl`, `authorizationUrl`, `scopes`.
-    // For "ApiKey", it could specify the header name (`in: "header"`, `name: "X-Custom-API-Key"`).
-    // **CRITICAL**: This field MUST NOT contain plaintext secrets (e.g., actual API key values, passwords).
-    // If the Agent Card itself needs to be protected due to this field containing sensitive URLs
-    // or configuration, the endpoint serving the Agent Card MUST be secured.
-    credentials?: string | null; // E.g., A JSON string parsable by the client for scheme details.
+  // Array of authentication scheme names supported/required by the agent's endpoint
+  // (e.g., "Bearer", "Basic", "OAuth2", "ApiKey").
+  // Standard names (e.g., from OpenAPI specification, IANA registry) SHOULD be used where applicable.
+  // An empty array means no specific A2A-level schemes are advertised.
+  schemes: string[];
+  // Optional field, MAY contain non-secret, scheme-specific information.
+  // Examples: For "OAuth2", this could be a JSON string with `tokenUrl`, `authorizationUrl`, `scopes`.
+  // For "ApiKey", it could specify the header name (`in: "header"`, `name: "X-Custom-API-Key"`).
+  // **CRITICAL**: This field MUST NOT contain plaintext secrets (e.g., actual API key values, passwords).
+  // If the Agent Card itself needs to be protected due to this field containing sensitive URLs
+  // or configuration, the endpoint serving the Agent Card MUST be secured.
+  credentials?: string | null; // E.g., A JSON string parsable by the client for scheme details.
 }
 ```
 
@@ -285,28 +285,28 @@ Describes a specific capability, function, or area of expertise the agent can pe
 
 ```typescript
 interface AgentSkill {
-    // A unique identifier for this skill within the context of this agent
-    // (e.g., "currency-converter", "generate-image-from-prompt", "summarize-text-v2").
-    // Clients MAY use this ID to request a specific skill if the agent supports such dispatch.
-    id: string;
-    // Human-readable name of the skill (e.g., "Currency Conversion Service", "Image Generation AI").
-    name: string;
-    // Detailed description of what the skill does, its purpose, and any important considerations.
-    // [CommonMark](https://commonmark.org/) MAY be used for rich text formatting.
-    description?: string | null;
-    // Array of keywords or categories for discoverability and categorization
-    // (e.g., ["finance", "conversion"], ["media", "generative ai", "image"]).
-    tags?: string[] | null;
-    // Array of example prompts, inputs, or use cases illustrating how to use this skill
-    // (e.g., ["convert 100 USD to EUR", "generate a photorealistic image of a cat wearing a wizard hat"]).
-    // These help clients (and potentially end-users or other agents) understand how to formulate requests for this skill.
-    examples?: string[] | null;
-    // Overrides `agentCard.defaultInputModes` specifically for this skill.
-    // If `null` or omitted, the agent's `defaultInputModes` apply.
-    inputModes?: string[] | null; // Array of MIME types
-    // Overrides `agentCard.defaultOutputModes` specifically for this skill.
-    // If `null` or omitted, the agent's `defaultOutputModes` apply.
-    outputModes?: string[] | null; // Array of MIME types
+  // A unique identifier for this skill within the context of this agent
+  // (e.g., "currency-converter", "generate-image-from-prompt", "summarize-text-v2").
+  // Clients MAY use this ID to request a specific skill if the agent supports such dispatch.
+  id: string;
+  // Human-readable name of the skill (e.g., "Currency Conversion Service", "Image Generation AI").
+  name: string;
+  // Detailed description of what the skill does, its purpose, and any important considerations.
+  // [CommonMark](https://commonmark.org/) MAY be used for rich text formatting.
+  description?: string | null;
+  // Array of keywords or categories for discoverability and categorization
+  // (e.g., ["finance", "conversion"], ["media", "generative ai", "image"]).
+  tags?: string[] | null;
+  // Array of example prompts, inputs, or use cases illustrating how to use this skill
+  // (e.g., ["convert 100 USD to EUR", "generate a photorealistic image of a cat wearing a wizard hat"]).
+  // These help clients (and potentially end-users or other agents) understand how to formulate requests for this skill.
+  examples?: string[] | null;
+  // Overrides `agentCard.defaultInputModes` specifically for this skill.
+  // If `null` or omitted, the agent's `defaultInputModes` apply.
+  inputModes?: string[] | null; // Array of MIME types
+  // Overrides `agentCard.defaultOutputModes` specifically for this skill.
+  // If `null` or omitted, the agent's `defaultOutputModes` apply.
+  outputModes?: string[] | null; // Array of MIME types
 }
 ```
 
@@ -324,61 +324,61 @@ interface AgentSkill {
 
 ```json
 {
-    "name": "GeoSpatial Route Planner Agent",
-    "description": "Provides advanced route planning, traffic analysis, and custom map generation services. This agent can calculate optimal routes, estimate travel times considering real-time traffic, and create personalized maps with points of interest.",
-    "url": "https://georoute-agent.example.com/a2a/v1",
-    "provider": {
-        "organization": "Example Geo Services Inc.",
-        "url": "https://www.examplegeoservices.com"
+  "name": "GeoSpatial Route Planner Agent",
+  "description": "Provides advanced route planning, traffic analysis, and custom map generation services. This agent can calculate optimal routes, estimate travel times considering real-time traffic, and create personalized maps with points of interest.",
+  "url": "https://georoute-agent.example.com/a2a/v1",
+  "provider": {
+    "organization": "Example Geo Services Inc.",
+    "url": "https://www.examplegeoservices.com"
+  },
+  "version": "1.2.0",
+  "documentationUrl": "https://docs.examplegeoservices.com/georoute-agent/api",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": true,
+    "stateTransitionHistory": false
+  },
+  "authentication": {
+    "schemes": ["OAuth2"],
+    "credentials": "{\"authorizationUrl\": \"https://auth.examplegeoservices.com/authorize\", \"tokenUrl\": \"https://auth.examplegeoservices.com/token\", \"scopes\": {\"route:plan\": \"Allows planning new routes.\", \"map:custom\": \"Allows creating and managing custom maps.\"}}"
+  },
+  "defaultInputModes": ["application/json", "text/plain"],
+  "defaultOutputModes": ["application/json", "image/png"],
+  "skills": [
+    {
+      "id": "route-optimizer-traffic",
+      "name": "Traffic-Aware Route Optimizer",
+      "description": "Calculates the optimal driving route between two or more locations, taking into account real-time traffic conditions, road closures, and user preferences (e.g., avoid tolls, prefer highways).",
+      "tags": ["maps", "routing", "navigation", "directions", "traffic"],
+      "examples": [
+        "Plan a route from '1600 Amphitheatre Parkway, Mountain View, CA' to 'San Francisco International Airport' avoiding tolls.",
+        "{\"origin\": {\"lat\": 37.422, \"lng\": -122.084}, \"destination\": {\"lat\": 37.7749, \"lng\": -122.4194}, \"preferences\": [\"avoid_ferries\"]}"
+      ],
+      "inputModes": ["application/json", "text/plain"],
+      "outputModes": [
+        "application/json",
+        "application/vnd.geo+json",
+        "text/html"
+      ]
     },
-    "version": "1.2.0",
-    "documentationUrl": "https://docs.examplegeoservices.com/georoute-agent/api",
-    "capabilities": {
-        "streaming": true,
-        "pushNotifications": true,
-        "stateTransitionHistory": false
-    },
-    "authentication": {
-        "schemes": ["OAuth2"],
-        "credentials": "{\"authorizationUrl\": \"https://auth.examplegeoservices.com/authorize\", \"tokenUrl\": \"https://auth.examplegeoservices.com/token\", \"scopes\": {\"route:plan\": \"Allows planning new routes.\", \"map:custom\": \"Allows creating and managing custom maps.\"}}"
-    },
-    "defaultInputModes": ["application/json", "text/plain"],
-    "defaultOutputModes": ["application/json", "image/png"],
-    "skills": [
-        {
-            "id": "route-optimizer-traffic",
-            "name": "Traffic-Aware Route Optimizer",
-            "description": "Calculates the optimal driving route between two or more locations, taking into account real-time traffic conditions, road closures, and user preferences (e.g., avoid tolls, prefer highways).",
-            "tags": ["maps", "routing", "navigation", "directions", "traffic"],
-            "examples": [
-                "Plan a route from '1600 Amphitheatre Parkway, Mountain View, CA' to 'San Francisco International Airport' avoiding tolls.",
-                "{\"origin\": {\"lat\": 37.422, \"lng\": -122.084}, \"destination\": {\"lat\": 37.7749, \"lng\": -122.4194}, \"preferences\": [\"avoid_ferries\"]}"
-            ],
-            "inputModes": ["application/json", "text/plain"],
-            "outputModes": [
-                "application/json",
-                "application/vnd.geo+json",
-                "text/html"
-            ]
-        },
-        {
-            "id": "custom-map-generator",
-            "name": "Personalized Map Generator",
-            "description": "Creates custom map images or interactive map views based on user-defined points of interest, routes, and style preferences. Can overlay data layers.",
-            "tags": ["maps", "customization", "visualization", "cartography"],
-            "examples": [
-                "Generate a map of my upcoming road trip with all planned stops highlighted.",
-                "Show me a map visualizing all coffee shops within a 1-mile radius of my current location."
-            ],
-            "inputModes": ["application/json"],
-            "outputModes": [
-                "image/png",
-                "image/jpeg",
-                "application/json",
-                "text/html"
-            ]
-        }
-    ]
+    {
+      "id": "custom-map-generator",
+      "name": "Personalized Map Generator",
+      "description": "Creates custom map images or interactive map views based on user-defined points of interest, routes, and style preferences. Can overlay data layers.",
+      "tags": ["maps", "customization", "visualization", "cartography"],
+      "examples": [
+        "Generate a map of my upcoming road trip with all planned stops highlighted.",
+        "Show me a map visualizing all coffee shops within a 1-mile radius of my current location."
+      ],
+      "inputModes": ["application/json"],
+      "outputModes": [
+        "image/png",
+        "image/jpeg",
+        "application/json",
+        "text/html"
+      ]
+    }
+  ]
 }
 ```
 
@@ -392,29 +392,29 @@ Represents the stateful unit of work being processed by the A2A Server for an A2
 
 ```typescript
 interface Task {
-    // A unique identifier for the task. This ID is typically generated by the client
-    // when initiating the task and MUST be used by the server to refer to this task.
-    // It should be sufficiently unique (e.g., a UUID v4).
-    id: string;
-    // An optional, client-generated identifier used to group related tasks into a logical session.
-    // Useful for maintaining context across multiple, sequential, or related tasks.
-    sessionId?: string | null;
-    // The current status of the task, including its lifecycle state, an optional associated message,
-    // and a timestamp.
-    status: TaskStatus;
-    // An array of outputs (artifacts) generated by the agent for this task.
-    // This array can be populated incrementally, especially during streaming.
-    // Artifacts represent the tangible results of the task.
-    artifacts?: Artifact[] | null;
-    // An optional array of recent messages exchanged within this task,
-    // ordered chronologically (oldest first).
-    // This history is included if requested by the client via the `historyLength` parameter
-    // in `TaskSendParams` or `TaskQueryParams`.
-    history?: Message[] | null;
-    // Arbitrary key-value metadata associated with the task.
-    // Keys SHOULD be strings; values can be any valid JSON type (string, number, boolean, array, object).
-    // This can be used for application-specific data, tracing info, etc.
-    metadata?: Record<string, any> | null;
+  // A unique identifier for the task. This ID is typically generated by the client
+  // when initiating the task and MUST be used by the server to refer to this task.
+  // It should be sufficiently unique (e.g., a UUID v4).
+  id: string;
+  // An optional, client-generated identifier used to group related tasks into a logical session.
+  // Useful for maintaining context across multiple, sequential, or related tasks.
+  sessionId?: string | null;
+  // The current status of the task, including its lifecycle state, an optional associated message,
+  // and a timestamp.
+  status: TaskStatus;
+  // An array of outputs (artifacts) generated by the agent for this task.
+  // This array can be populated incrementally, especially during streaming.
+  // Artifacts represent the tangible results of the task.
+  artifacts?: Artifact[] | null;
+  // An optional array of recent messages exchanged within this task,
+  // ordered chronologically (oldest first).
+  // This history is included if requested by the client via the `historyLength` parameter
+  // in `TaskSendParams` or `TaskQueryParams`.
+  history?: Message[] | null;
+  // Arbitrary key-value metadata associated with the task.
+  // Keys SHOULD be strings; values can be any valid JSON type (string, number, boolean, array, object).
+  // This can be used for application-specific data, tracing info, etc.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -433,15 +433,15 @@ Represents the current state and associated context (e.g., a message from the ag
 
 ```typescript
 interface TaskStatus {
-    // The current lifecycle state of the task.
-    state: TaskState;
-    // An optional message associated with the current status.
-    // This could be a progress update from the agent, a prompt for more input,
-    // a summary of the final result, or an error message.
-    message?: Message | null;
-    // The date and time (UTC is STRONGLY recommended) when this status was recorded by the server.
-    // Format: ISO 8601 `date-time` string (e.g., "2023-10-27T10:00:00Z").
-    timestamp?: string | null;
+  // The current lifecycle state of the task.
+  state: TaskState;
+  // An optional message associated with the current status.
+  // This could be a progress update from the agent, a prompt for more input,
+  // a summary of the final result, or an error message.
+  message?: Message | null;
+  // The date and time (UTC is STRONGLY recommended) when this status was recorded by the server.
+  // Format: ISO 8601 `date-time` string (e.g., "2023-10-27T10:00:00Z").
+  timestamp?: string | null;
 }
 ```
 
@@ -457,13 +457,13 @@ Defines the possible lifecycle states of a `Task`.
 
 ```typescript
 type TaskState =
-    | 'submitted' // Task received by server, acknowledged, but processing has not yet actively started.
-    | 'working' // Task is actively being processed by the agent.
-    | 'input-required' // Agent requires additional input from the client/user to proceed. (Task is paused)
-    | 'completed' // Task finished successfully. (Terminal state)
-    | 'canceled' // Task was canceled by the client or potentially by the server. (Terminal state)
-    | 'failed' // Task terminated due to an error during processing. (Terminal state)
-    | 'unknown'; // The state of the task cannot be determined (e.g., task ID invalid or expired). (Effectively a terminal state from client's PoV for that ID)
+  | 'submitted' // Task received by server, acknowledged, but processing has not yet actively started.
+  | 'working' // Task is actively being processed by the agent.
+  | 'input-required' // Agent requires additional input from the client/user to proceed. (Task is paused)
+  | 'completed' // Task finished successfully. (Terminal state)
+  | 'canceled' // Task was canceled by the client or potentially by the server. (Terminal state)
+  | 'failed' // Task terminated due to an error during processing. (Terminal state)
+  | 'unknown'; // The state of the task cannot be determined (e.g., task ID invalid or expired). (Effectively a terminal state from client's PoV for that ID)
 ```
 
 | Value            | Description                                                                                              | Terminal?  |
@@ -482,18 +482,18 @@ Represents a single communication turn or a piece of contextual information with
 
 ```typescript
 interface Message {
-    // Indicates the sender of the message:
-    // "user" for messages originating from the A2A Client (acting on behalf of an end-user or system).
-    // "agent" for messages originating from the A2A Server (the remote agent).
-    role: 'user' | 'agent';
-    // An array containing the content of the message, broken down into one or more parts.
-    // A message MUST contain at least one part.
-    // Using multiple parts allows for rich, multi-modal content (e.g., text accompanying an image).
-    parts: Part[];
-    // Arbitrary key-value metadata associated with the message.
-    // Keys SHOULD be strings; values can be any valid JSON type.
-    // Useful for timestamps, source identifiers, language codes, etc.
-    metadata?: Record<string, any> | null;
+  // Indicates the sender of the message:
+  // "user" for messages originating from the A2A Client (acting on behalf of an end-user or system).
+  // "agent" for messages originating from the A2A Server (the remote agent).
+  role: 'user' | 'agent';
+  // An array containing the content of the message, broken down into one or more parts.
+  // A message MUST contain at least one part.
+  // Using multiple parts allows for rich, multi-modal content (e.g., text accompanying an image).
+  parts: Part[];
+  // Arbitrary key-value metadata associated with the message.
+  // Keys SHOULD be strings; values can be any valid JSON type.
+  // Useful for timestamps, source identifiers, language codes, etc.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -515,9 +515,9 @@ For conveying plain textual content.
 
 ```typescript
 interface TextPart {
-    type: 'text'; // Discriminator
-    text: string; // The actual textual content.
-    metadata?: Record<string, any> | null; // Optional metadata (e.g., language, formatting hints if any)
+  type: 'text'; // Discriminator
+  text: string; // The actual textual content.
+  metadata?: Record<string, any> | null; // Optional metadata (e.g., language, formatting hints if any)
 }
 ```
 
@@ -533,9 +533,9 @@ For conveying file-based content.
 
 ```typescript
 interface FilePart {
-    type: 'file'; // Discriminator
-    file: FileContent; // Contains the file details and data (or reference).
-    metadata?: Record<string, any> | null; // Optional metadata (e.g., purpose of the file)
+  type: 'file'; // Discriminator
+  file: FileContent; // Contains the file details and data (or reference).
+  metadata?: Record<string, any> | null; // Optional metadata (e.g., purpose of the file)
 }
 ```
 
@@ -551,13 +551,13 @@ For conveying structured JSON data. Useful for forms, parameters, or any machine
 
 ```typescript
 interface DataPart {
-    type: 'data'; // Discriminator
-    // The structured JSON data payload. This can be any valid JSON object or array.
-    // The schema of this data is application-defined and may be implicitly understood
-    // by the interacting agents or explicitly described (e.g., via a JSON Schema reference
-    // in the `metadata` or associated `AgentSkill`).
-    data: Record<string, any> | any[];
-    metadata?: Record<string, any> | null; // Optional metadata (e.g., schema URL, version)
+  type: 'data'; // Discriminator
+  // The structured JSON data payload. This can be any valid JSON object or array.
+  // The schema of this data is application-defined and may be implicitly understood
+  // by the interacting agents or explicitly described (e.g., via a JSON Schema reference
+  // in the `metadata` or associated `AgentSkill`).
+  data: Record<string, any> | any[];
+  metadata?: Record<string, any> | null; // Optional metadata (e.g., schema URL, version)
 }
 ```
 
@@ -573,22 +573,22 @@ Represents the data or reference for a file, used within a `FilePart`.
 
 ```typescript
 interface FileContent {
-    // The original filename, if known (e.g., "document.pdf", "avatar.png").
-    name?: string | null;
-    // The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
-    // of the file (e.g., "application/pdf", "image/png"). Strongly recommended for proper handling.
-    mimeType?: string | null;
-    // Base64 encoded string of the raw file content.
-    // Use this for embedding small to medium-sized files directly.
-    bytes?: string | null; // Base64 string
-    // A URI (absolute URL is STRONGLY recommended) pointing to the file content.
-    // Accessibility of this URI depends on the context (e.g., public URL, pre-signed URL, internal URL).
-    // The client and server must have a way to resolve and access this URI if used.
-    uri?: string | null;
+  // The original filename, if known (e.g., "document.pdf", "avatar.png").
+  name?: string | null;
+  // The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
+  // of the file (e.g., "application/pdf", "image/png"). Strongly recommended for proper handling.
+  mimeType?: string | null;
+  // Base64 encoded string of the raw file content.
+  // Use this for embedding small to medium-sized files directly.
+  bytes?: string | null; // Base64 string
+  // A URI (absolute URL is STRONGLY recommended) pointing to the file content.
+  // Accessibility of this URI depends on the context (e.g., public URL, pre-signed URL, internal URL).
+  // The client and server must have a way to resolve and access this URI if used.
+  uri?: string | null;
 
-    // Constraint: If file content is being transmitted, exactly one of `bytes` or `uri` MUST be non-null.
-    // Both MAY be `null` or absent if the `FilePart` is merely representing a file reference
-    // without transmitting its content in the current message (e.g., referring to a previously uploaded file).
+  // Constraint: If file content is being transmitted, exactly one of `bytes` or `uri` MUST be non-null.
+  // Both MAY be `null` or absent if the `FilePart` is merely representing a file reference
+  // without transmitting its content in the current message (e.g., referring to a previously uploaded file).
 }
 ```
 
@@ -607,35 +607,35 @@ Represents a tangible output generated by the agent during a task. Artifacts are
 
 ```typescript
 interface Artifact {
-    // A descriptive name for the artifact (e.g., "Quarterly Sales Report.pdf", "Generated Logo Design", "analysis_results.json").
-    // This name might be used by the client for display or identification.
-    name?: string | null;
-    // A human-readable description of the artifact. [CommonMark](https://commonmark.org/) MAY be used.
-    description?: string | null;
-    // An array containing the content of the artifact, broken down into one or more parts.
-    // An artifact MUST contain at least one part.
-    // Using multiple parts allows for complex artifacts (e.g., a report with embedded images or data tables).
-    parts: Part[];
-    // A non-negative integer index for ordering artifacts or identifying artifact chunks during streaming.
-    // Multiple artifacts (or artifact updates) can share the same index if they represent parts of the same logical output
-    // that are being streamed or delivered separately.
-    // Default: 0 if omitted.
-    index?: number;
-    // Used with streaming (`TaskArtifactUpdateEvent`):
-    // If `true`, indicates this update's `parts` should be appended to the content of the artifact
-    // currently identified by the same `index` value. This is useful for streaming textual data or
-    // appending elements to a list in a `DataPart`.
-    // If `false` or `null` (or omitted), this update replaces the artifact content at the given `index`.
-    // This field is typically `false` for the first chunk of a streamed artifact.
-    append?: boolean | null;
-    // Used with streaming (`TaskArtifactUpdateEvent`):
-    // If `true`, indicates this is the final update/chunk for the artifact at this `index`.
-    // Signals the end of a streamed file or data structure.
-    lastChunk?: boolean | null;
-    // Arbitrary key-value metadata associated with the artifact.
-    // Keys SHOULD be strings; values can be any valid JSON type.
-    // Useful for creation timestamps, versioning info, checksums, etc.
-    metadata?: Record<string, any> | null;
+  // A descriptive name for the artifact (e.g., "Quarterly Sales Report.pdf", "Generated Logo Design", "analysis_results.json").
+  // This name might be used by the client for display or identification.
+  name?: string | null;
+  // A human-readable description of the artifact. [CommonMark](https://commonmark.org/) MAY be used.
+  description?: string | null;
+  // An array containing the content of the artifact, broken down into one or more parts.
+  // An artifact MUST contain at least one part.
+  // Using multiple parts allows for complex artifacts (e.g., a report with embedded images or data tables).
+  parts: Part[];
+  // A non-negative integer index for ordering artifacts or identifying artifact chunks during streaming.
+  // Multiple artifacts (or artifact updates) can share the same index if they represent parts of the same logical output
+  // that are being streamed or delivered separately.
+  // Default: 0 if omitted.
+  index?: number;
+  // Used with streaming (`TaskArtifactUpdateEvent`):
+  // If `true`, indicates this update's `parts` should be appended to the content of the artifact
+  // currently identified by the same `index` value. This is useful for streaming textual data or
+  // appending elements to a list in a `DataPart`.
+  // If `false` or `null` (or omitted), this update replaces the artifact content at the given `index`.
+  // This field is typically `false` for the first chunk of a streamed artifact.
+  append?: boolean | null;
+  // Used with streaming (`TaskArtifactUpdateEvent`):
+  // If `true`, indicates this is the final update/chunk for the artifact at this `index`.
+  // Signals the end of a streamed file or data structure.
+  lastChunk?: boolean | null;
+  // Arbitrary key-value metadata associated with the artifact.
+  // Keys SHOULD be strings; values can be any valid JSON type.
+  // Useful for creation timestamps, versioning info, checksums, etc.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -655,17 +655,17 @@ Configuration provided by the client to the server for sending asynchronous push
 
 ```typescript
 interface PushNotificationConfig {
-    // The absolute HTTPS webhook URL where the A2A Server should POST task updates.
-    // This URL MUST be HTTPS for security.
-    url: string;
-    // An optional, client-generated opaque token (e.g., a secret, a task-specific identifier, or a nonce).
-    // The A2A Server SHOULD include this token in the notification request it sends to the `url`
-    // (e.g., in a custom HTTP header like `X-A2A-Notification-Token` or similar).
-    // This allows the client's webhook receiver to validate the relevance and authenticity of the notification.
-    token?: string | null;
-    // Authentication details the A2A Server needs to use when calling the client's `url`.
-    // The client's webhook endpoint defines these requirements. This tells the A2A Server how to authenticate *itself* to the client's webhook.
-    authentication?: AuthenticationInfo | null;
+  // The absolute HTTPS webhook URL where the A2A Server should POST task updates.
+  // This URL MUST be HTTPS for security.
+  url: string;
+  // An optional, client-generated opaque token (e.g., a secret, a task-specific identifier, or a nonce).
+  // The A2A Server SHOULD include this token in the notification request it sends to the `url`
+  // (e.g., in a custom HTTP header like `X-A2A-Notification-Token` or similar).
+  // This allows the client's webhook receiver to validate the relevance and authenticity of the notification.
+  token?: string | null;
+  // Authentication details the A2A Server needs to use when calling the client's `url`.
+  // The client's webhook endpoint defines these requirements. This tells the A2A Server how to authenticate *itself* to the client's webhook.
+  authentication?: AuthenticationInfo | null;
 }
 ```
 
@@ -681,20 +681,20 @@ A generic structure for specifying authentication requirements, typically used w
 
 ```typescript
 interface AuthenticationInfo {
-    // Array of authentication scheme names the caller (i.e., the A2A Server, in the context of push notifications)
-    // must use when sending the request to the webhook URL (e.g., "Bearer" for an OAuth token, "ApiKey" for a pre-shared key, "Basic").
-    // Standard names SHOULD be used.
-    schemes: string[];
-    // Optional field for providing static credentials or scheme-specific information
-    // that the A2A Server needs to use.
-    // Examples:
-    // - For "ApiKey": A JSON string like `{"in": "header", "name": "X-Client-Webhook-Key", "value": "actual_api_key_value"}`.
-    // - For "Bearer": If the A2A Server is expected to use a specific pre-issued token, it could be provided here. More commonly, the server would obtain its own token using OAuth client credentials flow if this field specifies an OAuth scheme.
-    // **CRITICAL**: Use with extreme caution if this field contains secrets. This configuration is sent from client to server.
-    // Prefer mechanisms where the server fetches its own credentials dynamically (e.g., OAuth client credentials flow with a pre-configured client ID/secret on the server side for the webhook's audience)
-    // rather than having the client provide secrets to the server.
-    // If this field *must* carry a secret, the A2A communication channel itself must be exceptionally secure, and both client and server must handle this data with care.
-    credentials?: string | null; // E.g., A JSON string parsable by the server.
+  // Array of authentication scheme names the caller (i.e., the A2A Server, in the context of push notifications)
+  // must use when sending the request to the webhook URL (e.g., "Bearer" for an OAuth token, "ApiKey" for a pre-shared key, "Basic").
+  // Standard names SHOULD be used.
+  schemes: string[];
+  // Optional field for providing static credentials or scheme-specific information
+  // that the A2A Server needs to use.
+  // Examples:
+  // - For "ApiKey": A JSON string like `{"in": "header", "name": "X-Client-Webhook-Key", "value": "actual_api_key_value"}`.
+  // - For "Bearer": If the A2A Server is expected to use a specific pre-issued token, it could be provided here. More commonly, the server would obtain its own token using OAuth client credentials flow if this field specifies an OAuth scheme.
+  // **CRITICAL**: Use with extreme caution if this field contains secrets. This configuration is sent from client to server.
+  // Prefer mechanisms where the server fetches its own credentials dynamically (e.g., OAuth client credentials flow with a pre-configured client ID/secret on the server side for the webhook's audience)
+  // rather than having the client provide secrets to the server.
+  // If this field *must* carry a secret, the A2A communication channel itself must be exceptionally secure, and both client and server must handle this data with care.
+  credentials?: string | null; // E.g., A JSON string parsable by the server.
 }
 ```
 
@@ -709,13 +709,13 @@ Used as the `params` object for the [`tasks/pushNotification/set`](#75-taskspush
 
 ```typescript
 interface TaskPushNotificationConfig {
-    // The ID of the task for which push notification settings are being configured or retrieved.
-    id: string;
-    // The push notification configuration details.
-    // When used as params for `set`, this provides the configuration to apply.
-    // When used as result for `get`, this reflects the currently active configuration (server MAY omit secrets).
-    // If `null` when setting, it might indicate clearing existing configuration (server-dependent).
-    pushNotificationConfig: PushNotificationConfig | null;
+  // The ID of the task for which push notification settings are being configured or retrieved.
+  id: string;
+  // The push notification configuration details.
+  // When used as params for `set`, this provides the configuration to apply.
+  // When used as result for `get`, this reflects the currently active configuration (server MAY omit secrets).
+  // If `null` when setting, it might indicate clearing existing configuration (server-dependent).
+  pushNotificationConfig: PushNotificationConfig | null;
 }
 ```
 
@@ -753,16 +753,16 @@ When a JSON-RPC call encounters an error, the Response Object will contain an `e
 
 ```typescript
 interface JSONRPCError {
-    // A Number that indicates the error type that occurred.
-    // This MUST be an integer.
-    code: number;
-    // A String providing a short description of the error.
-    // The message SHOULD be limited to a concise single sentence.
-    message: string;
-    // A Primitive or Structured value that contains additional information about the error.
-    // This may be omitted. The value of this member is defined by the Server (e.g. detailed error codes,
-    // debugging information).
-    data?: any;
+  // A Number that indicates the error type that occurred.
+  // This MUST be an integer.
+  code: number;
+  // A String providing a short description of the error.
+  // The message SHOULD be limited to a concise single sentence.
+  message: string;
+  // A Primitive or Structured value that contains additional information about the error.
+  // This may be omitted. The value of this member is defined by the Server (e.g. detailed error codes,
+  // debugging information).
+  data?: any;
 }
 ```
 
@@ -790,25 +790,25 @@ Sends a message to an agent to initiate a new task or to continue an existing on
 
 ```typescript
 interface TaskSendParams {
-    // The ID for the task.
-    // - If this is the first message for a new task, the client generates this ID.
-    // - If this message continues an existing task (e.g., providing more input after an `input-required` state),
-    //   this ID MUST match the ID of the existing task.
-    id: string;
-    // Optional client-generated session ID to group this task with others.
-    sessionId?: string | null;
-    // The message to send to the agent. The `role` within this message is typically "user".
-    message: Message;
-    // Optional: If initiating a new task, the client MAY include push notification configuration.
-    // If provided for an existing task, server behavior (e.g., update config, ignore) is server-dependent.
-    // Requires `AgentCard.capabilities.pushNotifications: true`.
-    pushNotification?: PushNotificationConfig | null;
-    // Optional: If a positive integer `N` is provided, the server SHOULD include the last `N` messages
-    // (chronologically) of the task's history in the `Task.history` field of the response.
-    // If `0`, `null`, or omitted, no history is explicitly requested (server MAY still include some by default).
-    historyLength?: number | null;
-    // Arbitrary metadata for this specific `tasks/send` request.
-    metadata?: Record<string, any> | null;
+  // The ID for the task.
+  // - If this is the first message for a new task, the client generates this ID.
+  // - If this message continues an existing task (e.g., providing more input after an `input-required` state),
+  //   this ID MUST match the ID of the existing task.
+  id: string;
+  // Optional client-generated session ID to group this task with others.
+  sessionId?: string | null;
+  // The message to send to the agent. The `role` within this message is typically "user".
+  message: Message;
+  // Optional: If initiating a new task, the client MAY include push notification configuration.
+  // If provided for an existing task, server behavior (e.g., update config, ignore) is server-dependent.
+  // Requires `AgentCard.capabilities.pushNotifications: true`.
+  pushNotification?: PushNotificationConfig | null;
+  // Optional: If a positive integer `N` is provided, the server SHOULD include the last `N` messages
+  // (chronologically) of the task's history in the `Task.history` field of the response.
+  // If `0`, `null`, or omitted, no history is explicitly requested (server MAY still include some by default).
+  historyLength?: number | null;
+  // Arbitrary metadata for this specific `tasks/send` request.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -840,16 +840,16 @@ This is the structure of the JSON object found in the `data` field of each Serve
 
 ```typescript
 interface SendTaskStreamingResponse extends JSONRPCResponse {
-    // The `id` MUST match the `id` from the originating `tasks/sendSubscribe` (or `tasks/resubscribe`)
-    // JSON-RPC request that established this SSE stream.
-    id: string | number; // Overrides JSONRPCResponse 'id' type for clarity and to emphasize it matches the original request.
-    // The `result` field contains the actual event payload for this streaming update.
-    // It will be either a TaskStatusUpdateEvent or a TaskArtifactUpdateEvent.
-    result: TaskStatusUpdateEvent | TaskArtifactUpdateEvent;
-    // For streaming events, `error` is typically `null` or absent.
-    // If a fatal error occurs that terminates the stream, the server MAY send a final
-    // SSE event with this `error` field populated before closing the connection.
-    error?: JSONRPCError | null;
+  // The `id` MUST match the `id` from the originating `tasks/sendSubscribe` (or `tasks/resubscribe`)
+  // JSON-RPC request that established this SSE stream.
+  id: string | number; // Overrides JSONRPCResponse 'id' type for clarity and to emphasize it matches the original request.
+  // The `result` field contains the actual event payload for this streaming update.
+  // It will be either a TaskStatusUpdateEvent or a TaskArtifactUpdateEvent.
+  result: TaskStatusUpdateEvent | TaskArtifactUpdateEvent;
+  // For streaming events, `error` is typically `null` or absent.
+  // If a fatal error occurs that terminates the stream, the server MAY send a final
+  // SSE event with this `error` field populated before closing the connection.
+  error?: JSONRPCError | null;
 }
 ```
 
@@ -866,20 +866,20 @@ Carries information about a change in the task's status during streaming. This i
 
 ```typescript
 interface TaskStatusUpdateEvent {
-    // The ID of the task being updated. This MUST match the `TaskSendParams.id`
-    // from the `tasks/sendSubscribe` request that initiated this stream.
-    id: string;
-    // The new status object for the task.
-    status: TaskStatus;
-    // If `true`, this `TaskStatusUpdateEvent` signifies the terminal status update for the current
-    // `tasks/sendSubscribe` interaction cycle. This means the task has reached a state like
-    // `completed`, `failed`, `canceled`, or `input-required`, and the server does not expect to send
-    // more updates for *this specific* `sendSubscribe` request. The server typically closes the SSE
-    // connection after sending an event with `final: true`.
-    // Default: `false` if omitted.
-    final?: boolean;
-    // Arbitrary metadata for this specific status update event.
-    metadata?: Record<string, any> | null;
+  // The ID of the task being updated. This MUST match the `TaskSendParams.id`
+  // from the `tasks/sendSubscribe` request that initiated this stream.
+  id: string;
+  // The new status object for the task.
+  status: TaskStatus;
+  // If `true`, this `TaskStatusUpdateEvent` signifies the terminal status update for the current
+  // `tasks/sendSubscribe` interaction cycle. This means the task has reached a state like
+  // `completed`, `failed`, `canceled`, or `input-required`, and the server does not expect to send
+  // more updates for *this specific* `sendSubscribe` request. The server typically closes the SSE
+  // connection after sending an event with `final: true`.
+  // Default: `false` if omitted.
+  final?: boolean;
+  // Arbitrary metadata for this specific status update event.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -896,15 +896,15 @@ Carries a new or updated artifact (or a chunk of an artifact) generated by the t
 
 ```typescript
 interface TaskArtifactUpdateEvent {
-    // The ID of the task that generated this artifact. This MUST match the `TaskSendParams.id`
-    // from the `tasks/sendSubscribe` request that initiated this stream.
-    id: string;
-    // The artifact data. This could be a complete artifact or an incremental chunk.
-    // The client uses `artifact.index`, `artifact.append`, and `artifact.lastChunk`
-    // to correctly assemble or update the artifact on its side.
-    artifact: Artifact;
-    // Arbitrary metadata for this specific artifact update event.
-    metadata?: Record<string, any> | null;
+  // The ID of the task that generated this artifact. This MUST match the `TaskSendParams.id`
+  // from the `tasks/sendSubscribe` request that initiated this stream.
+  id: string;
+  // The artifact data. This could be a complete artifact or an incremental chunk.
+  // The client uses `artifact.index`, `artifact.append`, and `artifact.lastChunk`
+  // to correctly assemble or update the artifact on its side.
+  artifact: Artifact;
+  // Arbitrary metadata for this specific artifact update event.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -926,14 +926,14 @@ Retrieves the current state (including status, artifacts, and optionally history
 
 ```typescript
 interface TaskQueryParams {
-    // The ID of the task to retrieve.
-    id: string;
-    // Optional: If a positive integer `N` is provided, the server SHOULD include the last `N` messages
-    // (chronologically) of the task's history in the `Task.history` field of the response.
-    // If `0`, `null`, or omitted, no history is explicitly requested.
-    historyLength?: number | null;
-    // Arbitrary metadata for this specific `tasks/get` request.
-    metadata?: Record<string, any> | null;
+  // The ID of the task to retrieve.
+  id: string;
+  // Optional: If a positive integer `N` is provided, the server SHOULD include the last `N` messages
+  // (chronologically) of the task's history in the `Task.history` field of the response.
+  // If `0`, `null`, or omitted, no history is explicitly requested.
+  historyLength?: number | null;
+  // Arbitrary metadata for this specific `tasks/get` request.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -957,10 +957,10 @@ A simple object containing just the task ID and optional metadata.
 
 ```typescript
 interface TaskIdParams {
-    // The ID of the task to which the operation applies (e.g., cancel, get push notification config).
-    id: string;
-    // Arbitrary metadata for this specific request.
-    metadata?: Record<string, any> | null;
+  // The ID of the task to which the operation applies (e.g., cancel, get push notification config).
+  id: string;
+  // Arbitrary metadata for this specific request.
+  metadata?: Record<string, any> | null;
 }
 ```
 
@@ -1047,66 +1047,66 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 1. **Client sends a message using `tasks/send`:**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-001",
-        "method": "tasks/send",
-        "params": {
-            "id": "task-abc-123",
-            "sessionId": "session-xyz-789",
-            "message": {
-                "role": "user",
-                "parts": [
-                    {
-                        "type": "text",
-                        "text": "What is the capital of France?"
-                    }
-                ]
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-001",
+     "method": "tasks/send",
+     "params": {
+       "id": "task-abc-123",
+       "sessionId": "session-xyz-789",
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "What is the capital of France?"
+           }
+         ]
+       }
+     }
+   }
+   ```
 
 2. **Server processes the request and responds (task completes quickly):**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-001",
-        "result": {
-            "id": "task-abc-123",
-            "sessionId": "session-xyz-789",
-            "status": {
-                "state": "completed",
-                "message": {
-                    "role": "agent",
-                    "parts": [
-                        {
-                            "type": "text",
-                            "text": "The capital of France is Paris."
-                        }
-                    ]
-                },
-                "timestamp": "2024-03-15T10:00:05Z"
-            },
-            "artifacts": [
-                {
-                    "name": "Answer",
-                    "index": 0,
-                    "parts": [
-                        {
-                            "type": "text",
-                            "text": "The capital of France is Paris."
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-001",
+     "result": {
+       "id": "task-abc-123",
+       "sessionId": "session-xyz-789",
+       "status": {
+         "state": "completed",
+         "message": {
+           "role": "agent",
+           "parts": [
+             {
+               "type": "text",
+               "text": "The capital of France is Paris."
+             }
+           ]
+         },
+         "timestamp": "2024-03-15T10:00:05Z"
+       },
+       "artifacts": [
+         {
+           "name": "Answer",
+           "index": 0,
+           "parts": [
+             {
+               "type": "text",
+               "text": "The capital of France is Paris."
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
 
-    _If the task were longer-running, the server might initially respond with `status.state: "working"`. The client would then periodically call `tasks/get` with `params: {"id": "task-abc-123"}` until the task reaches a terminal state._
+   _If the task were longer-running, the server might initially respond with `status.state: "working"`. The client would then periodically call `tasks/get` with `params: {"id": "task-abc-123"}` until the task reaches a terminal state._
 
 ### 9.2. Streaming Task Execution (SSE)
 
@@ -1114,70 +1114,70 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 1. **Client sends a message and subscribes using `tasks/sendSubscribe`:**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-002",
-        "method": "tasks/sendSubscribe",
-        "params": {
-            "id": "task-story-456",
-            "message": {
-                "role": "user",
-                "parts": [
-                    {
-                        "type": "text",
-                        "text": "Write a very short story about a curious robot exploring Mars."
-                    }
-                ]
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-002",
+     "method": "tasks/sendSubscribe",
+     "params": {
+       "id": "task-story-456",
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "Write a very short story about a curious robot exploring Mars."
+           }
+         ]
+       }
+     }
+   }
+   ```
 
 2. **Server responds with HTTP 200 OK, `Content-Type: text/event-stream`, and starts sending SSE events:**
 
-    _Event 1: Task status update - working_
+   _Event 1: Task status update - working_
 
-    ```sse
-    id: sse-evt-101
-    event: message
-    data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","status":{"state":"working","message":{"role":"agent","parts":[{"type":"text","text":"Okay, I'm starting to write that story for you..."}]},"timestamp":"2024-03-15T10:05:01Z"},"final":false}}
-    ```
+   ```sse
+   id: sse-evt-101
+   event: message
+   data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","status":{"state":"working","message":{"role":"agent","parts":[{"type":"text","text":"Okay, I'm starting to write that story for you..."}]},"timestamp":"2024-03-15T10:05:01Z"},"final":false}}
+   ```
 
-    _Event 2: Artifact update - first chunk of the story_
+   _Event 2: Artifact update - first chunk of the story_
 
-    ```sse
-    id: sse-evt-102
-    event: message
-    data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","artifact":{"name":"MarsStory.txt","index":0,"parts":[{"type":"text","text":"Unit 734, a small rover with oversized optical sensors, trundled across the ochre plains. "}]}}}
-    ```
+   ```sse
+   id: sse-evt-102
+   event: message
+   data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","artifact":{"name":"MarsStory.txt","index":0,"parts":[{"type":"text","text":"Unit 734, a small rover with oversized optical sensors, trundled across the ochre plains. "}]}}}
+   ```
 
-    _Event 3: Artifact update - second chunk (appended)_
+   _Event 3: Artifact update - second chunk (appended)_
 
-    ```sse
-    id: sse-evt-103
-    event: message
-    data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","artifact":{"name":"MarsStory.txt","index":0,"append":true,"parts":[{"type":"text","text":"Its mission: to find the source of a peculiar signal. "}]}}}
-    ```
+   ```sse
+   id: sse-evt-103
+   event: message
+   data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","artifact":{"name":"MarsStory.txt","index":0,"append":true,"parts":[{"type":"text","text":"Its mission: to find the source of a peculiar signal. "}]}}}
+   ```
 
-    _Event 4: Artifact update - final chunk_
+   _Event 4: Artifact update - final chunk_
 
-    ```sse
-    id: sse-evt-104
-    event: message
-    data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","artifact":{"name":"MarsStory.txt","index":0,"append":true,"lastChunk":true,"parts":[{"type":"text","text":"Olympus Mons loomed, a silent giant, as Unit 734 beeped excitedly."}]}}}
-    ```
+   ```sse
+   id: sse-evt-104
+   event: message
+   data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","artifact":{"name":"MarsStory.txt","index":0,"append":true,"lastChunk":true,"parts":[{"type":"text","text":"Olympus Mons loomed, a silent giant, as Unit 734 beeped excitedly."}]}}}
+   ```
 
-    _Event 5: Task status update - completed_
+   _Event 5: Task status update - completed_
 
-    ```sse
-    id: sse-evt-105
-    event: message
-    data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","status":{"state":"completed","message":{"role":"agent","parts":[{"type":"text","text":"The story is complete!"}]},"timestamp":"2024-03-15T10:05:05Z"},"final":true}}
-    ```
+   ```sse
+   id: sse-evt-105
+   event: message
+   data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","status":{"state":"completed","message":{"role":"agent","parts":[{"type":"text","text":"The story is complete!"}]},"timestamp":"2024-03-15T10:05:05Z"},"final":true}}
+   ```
 
-    _(Server closes the SSE connection after the `final:true` event)._
-    _(Note: SSE `id` and `event` fields are part of the SSE protocol itself, distinct from the JSON-RPC `id` within the `data` payload)._
+   _(Server closes the SSE connection after the `final:true` event)._
+   _(Note: SSE `id` and `event` fields are part of the SSE protocol itself, distinct from the JSON-RPC `id` within the `data` payload)._
 
 ### 9.3. Multi-Turn Interaction (Input Required)
 
@@ -1185,112 +1185,110 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 1. **Client `tasks/send` (initial request):**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-003",
-        "method": "tasks/send",
-        "params": {
-            "id": "task-flightbook-789",
-            "message": {
-                "role": "user",
-                "parts": [
-                    { "type": "text", "text": "I'd like to book a flight." }
-                ]
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-003",
+     "method": "tasks/send",
+     "params": {
+       "id": "task-flightbook-789",
+       "message": {
+         "role": "user",
+         "parts": [{ "type": "text", "text": "I'd like to book a flight." }]
+       }
+     }
+   }
+   ```
 
 2. **Server responds, task state is `input-required`:**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-003",
-        "result": {
-            "id": "task-flightbook-789",
-            "status": {
-                "state": "input-required",
-                "message": {
-                    "role": "agent",
-                    "parts": [
-                        {
-                            "type": "text",
-                            "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
-                        }
-                    ]
-                },
-                "timestamp": "2024-03-15T10:10:00Z"
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-003",
+     "result": {
+       "id": "task-flightbook-789",
+       "status": {
+         "state": "input-required",
+         "message": {
+           "role": "agent",
+           "parts": [
+             {
+               "type": "text",
+               "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
+             }
+           ]
+         },
+         "timestamp": "2024-03-15T10:10:00Z"
+       }
+     }
+   }
+   ```
 
 3. **Client `tasks/send` (providing the requested input, using the _same_ task ID):**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-004",
-        "method": "tasks/send",
-        "params": {
-            "id": "task-flightbook-789" /* Same task ID */,
-            "message": {
-                "role": "user",
-                "parts": [
-                    {
-                        "type": "text",
-                        "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
-                    }
-                ]
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-004",
+     "method": "tasks/send",
+     "params": {
+       "id": "task-flightbook-789" /* Same task ID */,
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
+           }
+         ]
+       }
+     }
+   }
+   ```
 
 4. **Server processes the new input and responds (e.g., task completed or more input needed):**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-004",
-        "result": {
-            "id": "task-flightbook-789",
-            "status": {
-                "state": "completed",
-                "message": {
-                    "role": "agent",
-                    "parts": [
-                        {
-                            "type": "text",
-                            "text": "Okay, I've found a flight for you. Confirmation XYZ123. Details are in the artifact."
-                        }
-                    ]
-                },
-                "timestamp": "2024-03-15T10:11:00Z"
-            },
-            "artifacts": [
-                {
-                    "name": "FlightItinerary.json",
-                    "parts": [
-                        {
-                            "type": "data",
-                            "data": {
-                                "confirmationId": "XYZ123",
-                                "from": "JFK",
-                                "to": "LHR",
-                                "departure": "2024-10-10T18:00:00Z",
-                                "arrival": "2024-10-11T06:00:00Z",
-                                "returnDeparture": "..."
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-004",
+     "result": {
+       "id": "task-flightbook-789",
+       "status": {
+         "state": "completed",
+         "message": {
+           "role": "agent",
+           "parts": [
+             {
+               "type": "text",
+               "text": "Okay, I've found a flight for you. Confirmation XYZ123. Details are in the artifact."
+             }
+           ]
+         },
+         "timestamp": "2024-03-15T10:11:00Z"
+       },
+       "artifacts": [
+         {
+           "name": "FlightItinerary.json",
+           "parts": [
+             {
+               "type": "data",
+               "data": {
+                 "confirmationId": "XYZ123",
+                 "from": "JFK",
+                 "to": "LHR",
+                 "departure": "2024-10-10T18:00:00Z",
+                 "arrival": "2024-10-11T06:00:00Z",
+                 "returnDeparture": "..."
+               }
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
 
 ### 9.4. Push Notification Setup and Usage
 
@@ -1298,90 +1296,87 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 1. **Client `tasks/send` with `pushNotification` config:**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-005",
-        "method": "tasks/send",
-        "params": {
-            "id": "task-reportgen-aaa",
-            "message": {
-                "role": "user",
-                "parts": [
-                    {
-                        "type": "text",
-                        "text": "Generate the Q1 sales report. This usually takes a while. Notify me when it's ready."
-                    }
-                ]
-            },
-            "pushNotification": {
-                "url": "https://client.example.com/webhook/a2a-notifications",
-                "token": "secure-client-token-for-task-aaa",
-                "authentication": {
-                    "schemes": ["Bearer"]
-                    // Assuming server knows how to get a Bearer token for this webhook audience,
-                    // or this implies the webhook is public/uses the 'token' for auth.
-                    // 'credentials' could provide more specifics if needed by the server.
-                }
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-005",
+     "method": "tasks/send",
+     "params": {
+       "id": "task-reportgen-aaa",
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "Generate the Q1 sales report. This usually takes a while. Notify me when it's ready."
+           }
+         ]
+       },
+       "pushNotification": {
+         "url": "https://client.example.com/webhook/a2a-notifications",
+         "token": "secure-client-token-for-task-aaa",
+         "authentication": {
+           "schemes": ["Bearer"]
+           // Assuming server knows how to get a Bearer token for this webhook audience,
+           // or this implies the webhook is public/uses the 'token' for auth.
+           // 'credentials' could provide more specifics if needed by the server.
+         }
+       }
+     }
+   }
+   ```
 
 2. **Server acknowledges the task (e.g., status `submitted` or `working`):**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-005",
-        "result": {
-            "id": "task-reportgen-aaa",
-            "status": {
-                "state": "submitted",
-                "timestamp": "2024-03-15T11:00:00Z"
-            }
-            // ... other fields ...
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-005",
+     "result": {
+       "id": "task-reportgen-aaa",
+       "status": { "state": "submitted", "timestamp": "2024-03-15T11:00:00Z" }
+       // ... other fields ...
+     }
+   }
+   ```
 
 3. **(Later) A2A Server completes the task and POSTs a notification to `https://client.example.com/webhook/a2a-notifications`:**
 
-    - **HTTP Headers might include:**
-        - `Authorization: Bearer <server_jwt_for_webhook_audience>` (if server authenticates to webhook)
-        - `Content-Type: application/json`
-        - `X-A2A-Notification-Token: secure-client-token-for-task-aaa`
-    - **HTTP Body (example, actual payload is server-defined, but SHOULD include `taskId` and `status`):**
+   - **HTTP Headers might include:**
+     - `Authorization: Bearer <server_jwt_for_webhook_audience>` (if server authenticates to webhook)
+     - `Content-Type: application/json`
+     - `X-A2A-Notification-Token: secure-client-token-for-task-aaa`
+   - **HTTP Body (example, actual payload is server-defined, but SHOULD include `taskId` and `status`):**
 
-    ```json
-    {
-        "eventType": "taskUpdate",
-        "taskId": "task-reportgen-aaa",
-        "status": { "state": "completed", "timestamp": "2024-03-15T18:30:00Z" },
-        "summary": "Q1 sales report generated successfully."
-        // Server MAY include more details or a link to fetch the full task.
-    }
-    ```
+   ```json
+   {
+     "eventType": "taskUpdate",
+     "taskId": "task-reportgen-aaa",
+     "status": { "state": "completed", "timestamp": "2024-03-15T18:30:00Z" },
+     "summary": "Q1 sales report generated successfully."
+     // Server MAY include more details or a link to fetch the full task.
+   }
+   ```
 
 4. **Client's Webhook Service:**
 
-    - Receives the POST.
-    - Validates the `Authorization` header (if applicable).
-    - Validates the `X-A2A-Notification-Token`.
-    - Internally processes the notification (e.g., updates application state, notifies end-user).
+   - Receives the POST.
+   - Validates the `Authorization` header (if applicable).
+   - Validates the `X-A2A-Notification-Token`.
+   - Internally processes the notification (e.g., updates application state, notifies end-user).
 
 5. **Client (optionally, upon receiving and validating the push notification) calls `tasks/get` to retrieve full artifacts:**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-006",
-        "method": "tasks/get",
-        "params": { "id": "task-reportgen-aaa" }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-006",
+     "method": "tasks/get",
+     "params": { "id": "task-reportgen-aaa" }
+   }
+   ```
 
-    _(Server responds with the full `Task` object, including the generated report in `Task.artifacts`)_.
+   _(Server responds with the full `Task` object, including the generated report in `Task.artifacts`)_.
 
 ### 9.5. File Exchange (Upload and Download)
 
@@ -1389,68 +1384,65 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 1. **Client `tasks/send` with a `FilePart` (uploading image bytes):**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-007",
-        "method": "tasks/send",
-        "params": {
-            "id": "task-imageanalysis-bbb",
-            "message": {
-                "role": "user",
-                "parts": [
-                    {
-                        "type": "text",
-                        "text": "Analyze this image and highlight any faces."
-                    },
-                    {
-                        "type": "file",
-                        "file": {
-                            "name": "input_image.png",
-                            "mimeType": "image/png",
-                            "bytes": "iVBORw0KGgoAAAANSUhEUgAAAAUA..." // Base64 encoded image data
-                        }
-                    }
-                ]
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-007",
+     "method": "tasks/send",
+     "params": {
+       "id": "task-imageanalysis-bbb",
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "Analyze this image and highlight any faces."
+           },
+           {
+             "type": "file",
+             "file": {
+               "name": "input_image.png",
+               "mimeType": "image/png",
+               "bytes": "iVBORw0KGgoAAAANSUhEUgAAAAUA..." // Base64 encoded image data
+             }
+           }
+         ]
+       }
+     }
+   }
+   ```
 
 2. **Server processes the image and responds with a `FilePart` in an artifact (e.g., providing a URI to the modified image):**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-007",
-        "result": {
-            "id": "task-imageanalysis-bbb",
-            "status": {
-                "state": "completed",
-                "timestamp": "2024-03-15T12:05:00Z"
-            },
-            "artifacts": [
-                {
-                    "name": "processed_image_with_faces.png",
-                    "index": 0,
-                    "parts": [
-                        {
-                            "type": "file",
-                            "file": {
-                                "name": "output.png",
-                                "mimeType": "image/png",
-                                // Server might provide a URI to a temporary storage location
-                                "uri": "https://storage.example.com/processed/task-bbb/output.png?token=xyz"
-                                // Or, alternatively, it could return bytes directly:
-                                // "bytes": "ASEDGhw0KGgoAAAANSUhEUgAA..."
-                            }
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-007",
+     "result": {
+       "id": "task-imageanalysis-bbb",
+       "status": { "state": "completed", "timestamp": "2024-03-15T12:05:00Z" },
+       "artifacts": [
+         {
+           "name": "processed_image_with_faces.png",
+           "index": 0,
+           "parts": [
+             {
+               "type": "file",
+               "file": {
+                 "name": "output.png",
+                 "mimeType": "image/png",
+                 // Server might provide a URI to a temporary storage location
+                 "uri": "https://storage.example.com/processed/task-bbb/output.png?token=xyz"
+                 // Or, alternatively, it could return bytes directly:
+                 // "bytes": "ASEDGhw0KGgoAAAANSUhEUgAA..."
+               }
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
 
 ### 9.6. Structured Data Exchange (Requesting and Providing JSON)
 
@@ -1459,75 +1451,72 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 1. **Client `tasks/send`, `Part.metadata` hints at desired output schema/MIME type:**
    _(Note: A2A doesn't formally standardize schema negotiation in v0.1.0, but `metadata` can be used for such hints by convention between client/server)._
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-008",
-        "method": "tasks/send",
-        "params": {
-            "id": "task-gettickets-ccc",
-            "message": {
-                "role": "user",
-                "parts": [
-                    {
-                        "type": "text",
-                        "text": "List my open IT support tickets created in the last week.",
-                        "metadata": {
-                            "desiredOutputMimeType": "application/json",
-                            "desiredOutputSchemaRef": "https://schemas.example.com/supportTicketList_v1.json"
-                            // This metadata is a convention, not strictly enforced by A2A spec
-                        }
-                    }
-                ]
-            }
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-008",
+     "method": "tasks/send",
+     "params": {
+       "id": "task-gettickets-ccc",
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "List my open IT support tickets created in the last week.",
+             "metadata": {
+               "desiredOutputMimeType": "application/json",
+               "desiredOutputSchemaRef": "https://schemas.example.com/supportTicketList_v1.json"
+               // This metadata is a convention, not strictly enforced by A2A spec
+             }
+           }
+         ]
+       }
+     }
+   }
+   ```
 
 2. **Server responds with a `DataPart` containing the structured JSON data:**
 
-    ```json
-    {
-        "jsonrpc": "2.0",
-        "id": "req-008",
-        "result": {
-            "id": "task-gettickets-ccc",
-            "status": {
-                "state": "completed",
-                "timestamp": "2024-03-15T12:15:00Z"
-            },
-            "artifacts": [
-                {
-                    "name": "open_support_tickets.json",
-                    "index": 0,
-                    "parts": [
-                        {
-                            "type": "data",
-                            "metadata": {
-                                "mimeType": "application/json", // Explicitly state MIME type
-                                "schemaRef": "https://schemas.example.com/supportTicketList_v1.json" // Confirming schema
-                            },
-                            "data": [
-                                {
-                                    "ticketId": "IT00123",
-                                    "summary": "Cannot connect to VPN",
-                                    "status": "Open",
-                                    "createdDate": "2024-03-14T09:30:00Z"
-                                },
-                                {
-                                    "ticketId": "IT00125",
-                                    "summary": "Printer not working on 3rd floor",
-                                    "status": "In Progress",
-                                    "createdDate": "2024-03-13T15:00:00Z"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-    ```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-008",
+     "result": {
+       "id": "task-gettickets-ccc",
+       "status": { "state": "completed", "timestamp": "2024-03-15T12:15:00Z" },
+       "artifacts": [
+         {
+           "name": "open_support_tickets.json",
+           "index": 0,
+           "parts": [
+             {
+               "type": "data",
+               "metadata": {
+                 "mimeType": "application/json", // Explicitly state MIME type
+                 "schemaRef": "https://schemas.example.com/supportTicketList_v1.json" // Confirming schema
+               },
+               "data": [
+                 {
+                   "ticketId": "IT00123",
+                   "summary": "Cannot connect to VPN",
+                   "status": "Open",
+                   "createdDate": "2024-03-14T09:30:00Z"
+                 },
+                 {
+                   "ticketId": "IT00125",
+                   "summary": "Printer not working on 3rd floor",
+                   "status": "In Progress",
+                   "createdDate": "2024-03-13T15:00:00Z"
+                 }
+               ]
+             }
+           ]
+         }
+       ]
+     }
+   }
+   ```
 
 These examples illustrate the flexibility of A2A in handling various interaction patterns and data types. Implementers should refer to the detailed object definitions for all fields and constraints.
 
