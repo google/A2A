@@ -11,14 +11,14 @@ In the landscape of AI agent development, two key types of protocols are emergin
 The distinction arises from the nature of what an agent interacts with:
 
 - **Tools & Resources:**
-  - These are typically primitives with well-defined, structured inputs and outputs. They perform specific, often stateless, functions (e.g., a calculator, a database query API, a weather lookup service).
-  - Their behavior is generally predictable and transactional.
-  - Interaction is often a single request-response cycle.
+    - These are typically primitives with well-defined, structured inputs and outputs. They perform specific, often stateless, functions (e.g., a calculator, a database query API, a weather lookup service).
+    - Their behavior is generally predictable and transactional.
+    - Interaction is often a single request-response cycle.
 
 - **Agents:**
-  - These are more autonomous systems. They can reason, plan, use multiple tools, maintain state over longer interactions, and engage in complex, often multi-turn dialogues to achieve novel or evolving tasks.
-  - Their behavior can be emergent and less predictable than a simple tool.
-  - Interaction often involves ongoing tasks, context sharing, and negotiation.
+    - These are more autonomous systems. They can reason, plan, use multiple tools, maintain state over longer interactions, and engage in complex, often multi-turn dialogues to achieve novel or evolving tasks.
+    - Their behavior can be emergent and less predictable than a simple tool.
+    - Interaction often involves ongoing tasks, context sharing, and negotiation.
 
 Agentic applications need to leverage both: agents use tools to gather information and perform actions, and agents collaborate with other agents to tackle broader, more complex goals.
 
@@ -27,23 +27,23 @@ Agentic applications need to leverage both: agents use tools to gather informati
 - **Focus:** MCP standardizes how AI models and agents connect to and interact with **tools, APIs, data sources, and other external resources.**
 - **Mechanism:** It defines a structured way to describe tool capabilities (akin to function calling in Large Language Models), pass inputs to them, and receive structured outputs.
 - **Use Cases:**
-  - Enabling an LLM to call an external API (e.g., fetch current stock prices).
-  - Allowing an agent to query a database with specific parameters.
-  - Connecting an agent to a set of predefined functions or services.
+    - Enabling an LLM to call an external API (e.g., fetch current stock prices).
+    - Allowing an agent to query a database with specific parameters.
+    - Connecting an agent to a set of predefined functions or services.
 - **Ecosystem:** MCP aims to create an ecosystem where tool providers can easily expose their services to various AI models and agent frameworks, and agent developers can easily consume these tools in a standardized way.
 
 ## Agent2Agent Protocol (A2A)
 
 - **Focus:** A2A standardizes how independent, often opaque, **AI agents communicate and collaborate with each other as peers.**
 - **Mechanism:** It provides an application-level protocol for agents to:
-  - Discover each other's high-level skills and capabilities (via Agent Cards).
-  - Negotiate interaction modalities (text, files, structured data).
-  - Manage shared, stateful, and potentially long-running tasks.
-  - Exchange conversational context, instructions, and complex, multi-part results.
+    - Discover each other's high-level skills and capabilities (via Agent Cards).
+    - Negotiate interaction modalities (text, files, structured data).
+    - Manage shared, stateful, and potentially long-running tasks.
+    - Exchange conversational context, instructions, and complex, multi-part results.
 - **Use Cases:**
-  - A customer service agent delegating a complex billing inquiry to a specialized billing agent, maintaining context of the customer interaction.
-  - A travel planning agent coordinating with separate flight, hotel, and activity booking agents, managing a multi-stage booking process.
-  - Agents exchanging information and status updates for a collaborative project that evolves over time.
+    - A customer service agent delegating a complex billing inquiry to a specialized billing agent, maintaining context of the customer interaction.
+    - A travel planning agent coordinating with separate flight, hotel, and activity booking agents, managing a multi-stage booking process.
+    - Agents exchanging information and status updates for a collaborative project that evolves over time.
 - **Key Difference from Tool Interaction:** A2A allows for more dynamic, stateful, and potentially multi-modal interactions than typically seen with simple tool calls. Agents using A2A communicate *as agents* (or on behalf of users) rather than just invoking a discrete function.
 
 ## How A2A and MCP Complement Each Other

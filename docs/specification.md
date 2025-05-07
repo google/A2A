@@ -817,12 +817,12 @@ Sends a message to an agent to initiate/continue a task AND subscribes the clien
 
 - **Request `params` type**: [`TaskSendParams`](#711-tasksendparams-object) (same as `tasks/send`).
 - **Response (on successful subscription)**:
-  - HTTP Status: `200 OK`.
-  - HTTP `Content-Type`: `text/event-stream`.
-  - HTTP Body: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendTaskStreamingResponse`](#721-sendtaskstreamingresponse-object) JSON object.
+    - HTTP Status: `200 OK`.
+    - HTTP `Content-Type`: `text/event-stream`.
+    - HTTP Body: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendTaskStreamingResponse`](#721-sendtaskstreamingresponse-object) JSON object.
 - **Response (on initial subscription failure)**:
-  - Standard HTTP error code (e.g., 4xx, 5xx).
-  - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object detailing the failure.
+    - Standard HTTP error code (e.g., 4xx, 5xx).
+    - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object detailing the failure.
 
 #### 7.2.1. `SendTaskStreamingResponse` Object
 
@@ -983,12 +983,12 @@ The purpose is to resume receiving *subsequent* updates. The server's behavior r
 
 - **Request `params` type**: [`TaskQueryParams`](#731-taskqueryparams-object) (The `historyLength` parameter is typically ignored for resubscription, as the focus is on future events, but it's included for structural consistency).
 - **Response (on successful resubscription)**:
-  - HTTP Status: `200 OK`.
-  - HTTP `Content-Type`: `text/event-stream`.
-  - HTTP Body: A stream of Server-Sent Events, identical in format to `tasks/sendSubscribe`, carrying *subsequent* [`SendTaskStreamingResponse`](#721-sendtaskstreamingresponse-object) events for the task.
+    - HTTP Status: `200 OK`.
+    - HTTP `Content-Type`: `text/event-stream`.
+    - HTTP Body: A stream of Server-Sent Events, identical in format to `tasks/sendSubscribe`, carrying *subsequent* [`SendTaskStreamingResponse`](#721-sendtaskstreamingresponse-object) events for the task.
 - **Response (on resubscription failure)**:
-  - Standard HTTP error code (e.g., 4xx, 5xx).
-  - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
+    - Standard HTTP error code (e.g., 4xx, 5xx).
+    - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
 
 ## 8. Error Handling
 
@@ -1127,6 +1127,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 2. **Server responds with HTTP 200 OK, `Content-Type: text/event-stream`, and starts sending SSE events:**
 
     *Event 1: Task status update - working*
+
     ```sse
     id: sse-evt-101
     event: message
@@ -1134,6 +1135,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
     ```
 
     *Event 2: Artifact update - first chunk of the story*
+
     ```sse
     id: sse-evt-102
     event: message
@@ -1141,6 +1143,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
     ```
 
     *Event 3: Artifact update - second chunk (appended)*
+
     ```sse
     id: sse-evt-103
     event: message
@@ -1148,6 +1151,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
     ```
 
     *Event 4: Artifact update - final chunk*
+
     ```sse
     id: sse-evt-104
     event: message
@@ -1155,11 +1159,13 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
     ```
 
     *Event 5: Task status update - completed*
+
     ```sse
     id: sse-evt-105
     event: message
     data: {"jsonrpc":"2.0","id":"req-002","result":{"id":"task-story-456","status":{"state":"completed","message":{"role":"agent","parts":[{"type":"text","text":"The story is complete!"}]},"timestamp":"2024-03-15T10:05:05Z"},"final":true}}
     ```
+
     *(Server closes the SSE connection after the `final:true` event).*
     *(Note: SSE `id` and `event` fields are part of the SSE protocol itself, distinct from the JSON-RPC `id` within the `data` payload).*
 
@@ -1289,6 +1295,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
         - `Content-Type: application/json`
         - `X-A2A-Notification-Token: secure-client-token-for-task-aaa`
     - **HTTP Body (example, actual payload is server-defined, but SHOULD include `taskId` and `status`):**
+
         ```json
         {
           "eventType": "taskUpdate",
@@ -1313,6 +1320,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
       "params": { "id": "task-reportgen-aaa" }
     }
     ```
+
     *(Server responds with the full `Task` object, including the generated report in `Task.artifacts`)*.
 
 ### 9.5. File Exchange (Upload and Download)
@@ -1452,19 +1460,19 @@ Security is a paramount concern in A2A. Key considerations include:
 
 - **Transport Security:** Always use HTTPS with strong TLS configurations in production environments.
 - **Authentication:**
-  - Handled via standard HTTP mechanisms (e.g., `Authorization` header with Bearer tokens, API keys).
-  - Requirements are declared in the `AgentCard`.
-  - Credentials MUST be obtained out-of-band by the client.
-  - A2A Servers MUST authenticate every request.
+    - Handled via standard HTTP mechanisms (e.g., `Authorization` header with Bearer tokens, API keys).
+    - Requirements are declared in the `AgentCard`.
+    - Credentials MUST be obtained out-of-band by the client.
+    - A2A Servers MUST authenticate every request.
 - **Authorization:**
-  - A server-side responsibility based on the authenticated identity.
-  - Implement the principle of least privilege.
-  - Can be granular, based on skills, actions, or data.
+    - A server-side responsibility based on the authenticated identity.
+    - Implement the principle of least privilege.
+    - Can be granular, based on skills, actions, or data.
 - **Push Notification Security:**
-  - Webhook URL validation (by the A2A Server sending notifications) is crucial to prevent SSRF.
-  - Authentication of the A2A Server to the client's webhook is essential.
-  - Authentication of the notification by the client's webhook receiver (verifying it came from the legitimate A2A Server and is relevant) is critical.
-  - See the [Streaming & Asynchronous Operations guide](./topics/streaming-and-async.md#security-considerations-for-push-notifications) for detailed push notification security.
+    - Webhook URL validation (by the A2A Server sending notifications) is crucial to prevent SSRF.
+    - Authentication of the A2A Server to the client's webhook is essential.
+    - Authentication of the notification by the client's webhook receiver (verifying it came from the legitimate A2A Server and is relevant) is critical.
+    - See the [Streaming & Asynchronous Operations guide](./topics/streaming-and-async.md#security-considerations-for-push-notifications) for detailed push notification security.
 - **Input Validation:** Servers MUST rigorously validate all RPC parameters and the content/structure of data in `Message` and `Artifact` parts to prevent injection attacks or processing errors.
 - **Resource Management:** Implement rate limiting, concurrency controls, and resource limits to protect agents from abuse or overload.
 - **Data Privacy:** Adhere to all applicable privacy regulations for data exchanged in `Message` and `Artifact` parts. Minimize sensitive data transfer.

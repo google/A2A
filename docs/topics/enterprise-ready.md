@@ -21,8 +21,8 @@ A2A delegates authentication to standard web mechanisms, primarily relying on HT
 - **Out-of-Band Credential Acquisition:** The A2A Client is responsible for obtaining the necessary credential materials (e.g., OAuth 2.0 tokens, API keys, JWTs) through processes external to the A2A protocol itself. This could involve OAuth flows (authorization code, client credentials), secure key distribution, etc.
 - **HTTP Header Transmission:** Credentials **MUST** be transmitted in standard HTTP headers as per the requirements of the chosen authentication scheme (e.g., `Authorization: Bearer <token>`, `X-API-Key: <key_value>`).
 - **Server-Side Validation:** The A2A Server **MUST** authenticate **every** incoming request based on the credentials provided in the HTTP headers and its declared requirements.
-  - If authentication fails or is missing, the server **SHOULD** respond with standard HTTP status codes such as `401 Unauthorized` or `403 Forbidden`.
-  - A `401 Unauthorized` response **SHOULD** include a `WWW-Authenticate` header indicating the required scheme(s), guiding the client on how to authenticate correctly.
+    - If authentication fails or is missing, the server **SHOULD** respond with standard HTTP status codes such as `401 Unauthorized` or `403 Forbidden`.
+    - A `401 Unauthorized` response **SHOULD** include a `WWW-Authenticate` header indicating the required scheme(s), guiding the client on how to authenticate correctly.
 - **In-Task Authentication (Secondary Credentials):** If an agent, during a task, requires additional credentials for a *different* system (e.g., to access a specific tool on behalf of the user), A2A recommends:
     1. The A2A Server transitions the A2A task to the `input-required` state.
     2. The `TaskStatus.message` (often using a `DataPart`) should provide details about the required authentication for the secondary system, potentially using an `AuthenticationInfo`-like structure.
@@ -49,9 +49,9 @@ Once a client is authenticated, the A2A Server is responsible for authorizing th
 A2A's reliance on HTTP allows for straightforward integration with standard enterprise tracing, logging, and monitoring tools.
 
 - **Distributed Tracing:**
-  - A2A Clients and Servers **SHOULD** participate in distributed tracing systems (e.g., OpenTelemetry, Jaeger, Zipkin).
-  - Trace context (trace IDs, span IDs) **SHOULD** be propagated via standard HTTP headers (e.g., W3C Trace Context headers like `traceparent` and `tracestate`).
-  - This enables end-to-end visibility of requests as they flow across multiple agents and underlying services, which is invaluable for debugging and performance analysis.
+    - A2A Clients and Servers **SHOULD** participate in distributed tracing systems (e.g., OpenTelemetry, Jaeger, Zipkin).
+    - Trace context (trace IDs, span IDs) **SHOULD** be propagated via standard HTTP headers (e.g., W3C Trace Context headers like `traceparent` and `tracestate`).
+    - This enables end-to-end visibility of requests as they flow across multiple agents and underlying services, which is invaluable for debugging and performance analysis.
 - **Comprehensive Logging:** Implement detailed logging on both client and server sides. Logs should include relevant identifiers such as `taskId`, `sessionId`, correlation IDs, and trace context to facilitate troubleshooting and auditing.
 - **Metrics:** A2A Servers should expose key operational metrics (e.g., request rates, error rates, task processing latency, resource utilization) to enable performance monitoring, alerting, and capacity planning. These can be integrated with systems like Prometheus or Google Cloud Monitoring.
 - **Auditing:** Maintain audit trails for significant events, such as task creation, critical state changes, and actions performed by agents, especially those involving sensitive data access, modifications, or high-impact operations.
