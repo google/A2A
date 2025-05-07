@@ -148,7 +148,7 @@ class InMemoryTaskManager(TaskManager):
 
             return self.push_notification_infos[task_id]
 
-        return None
+    
 
     async def has_push_notification_info(self, task_id: str) -> bool:
         async with self.lock:
