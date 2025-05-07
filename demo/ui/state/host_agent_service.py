@@ -32,9 +32,9 @@ from .state import (
     StateTask,
 )
 
-
-server_url = 'http://localhost:12000'
-
+host = os.environ.get('A2A_AGENT_HOST', 'localhost')
+port = int(os.environ.get('A2A_AGENT_PORT', '12000'))
+server_url = f'http://{host}:{port}'
 
 async def ListConversations() -> list[Conversation]:
     client = ConversationClient(server_url)
