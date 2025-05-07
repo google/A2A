@@ -87,3 +87,4 @@
 ^\Qlychee.toml\E$
 \.gitignore\E$
 \.vscode/
+^\Qdocs/partners.md\E$
