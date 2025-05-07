@@ -1,0 +1,6 @@
+# Requirements for running fingerprint tests
+web3>=6.15.1
+eth-account>=0.10.0
+requests>=2.31.0
+pytest>=8.3.5
+pytest-mock>=3.14.0

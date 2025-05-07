@@ -3,7 +3,7 @@ name = "a2a-samples"
 version = "0.1.0"
 description = "Agent2Agent samples"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.9"
 dependencies = [
     "httpx>=0.28.1",
     "httpx-sse>=0.4.0",
@@ -14,6 +14,9 @@ dependencies = [
     "starlette>=0.46.1",
     "typing-extensions>=4.12.2",
     "uvicorn>=0.34.0",
+    "web3>=6.15.1",
+    "eth-account>=0.10.0",
+    "requests>=2.31.0",
 ]
 
 [tool.hatch.build.targets.wheel]
