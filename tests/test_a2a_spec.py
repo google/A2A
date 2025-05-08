@@ -36,6 +36,7 @@ from common.types import (
     JSONParseError,
     JSONRPCError,
     Message,
+    MessageSendParams,
     MethodNotFoundError,
     OAuth2SecurityScheme,
     OAuthFlows,
@@ -43,9 +44,9 @@ from common.types import (
     PasswordOAuthFlow,
     PushNotificationConfig,
     PushNotificationNotSupportedError,
-    SendTaskRequest,
-    SendTaskResponse,
-    SendTaskStreamingResponse,
+    SendMessageRequest,
+    SendMessageResponse,
+    SendMessageStreamResponse,
     SetTaskPushNotificationRequest,
     SetTaskPushNotificationResponse,
     Task,
@@ -55,7 +56,6 @@ from common.types import (
     TaskNotFoundError,
     TaskPushNotificationConfig,
     TaskQueryParams,
-    TaskSendParams,
     TaskState,
     TaskStatus,
     TaskStatusUpdateEvent,
@@ -179,7 +179,7 @@ def test_message(schema, resolver):
     text_part = TextPart(text='Query')
     file_part = FilePart(file=FileContent(bytes='YWFh'))
     data_part = DataPart(data={'param': 1})
-    instance_user = Message(role='user', parts=[text_part])
+    instance_user = Message(role='user', parts=[text_part], messageId='abc')
     validate_instance(
         instance_user.model_dump(mode='json', exclude_none=True),
         'Message',
@@ -190,6 +190,7 @@ def test_message(schema, resolver):
     instance_agent = Message(
         role='agent',
         parts=[text_part, file_part, data_part],
+        messageId='abc',
         metadata={'timestamp': datetime.now().isoformat()},
     )
     dumped_agent_msg = instance_agent.model_dump(mode='json', exclude_none=True)
@@ -204,7 +205,11 @@ def test_task_status(schema, resolver):
     ts = datetime.now()
     instance = TaskStatus(
         state=TaskState.WORKING,
-        message=Message(role='agent', parts=[TextPart(text='Processing...')]),
+        message=Message(
+            role='agent',
+            parts=[TextPart(text='Processing...')],
+            messageId='abc',
+        ),
     )
     dumped_data = instance.model_dump(mode='json', exclude_none=True)
     assert 'timestamp' in dumped_data
@@ -255,7 +260,7 @@ def test_task(schema, resolver):
     artifact = Artifact(parts=[TextPart(text='Result')])
     instance = Task(
         id=uuid4().hex,
-        sessionId=uuid4().hex,
+        contextId=uuid4().hex,
         status=status,
         artifacts=[artifact],
         metadata={'user_id': 123},
@@ -266,7 +271,11 @@ def test_task(schema, resolver):
         schema,
         resolver,
     )
-    instance_minimal = Task(id=uuid4().hex, status=TaskStatus(state=TaskState.SUBMITTED))
+    instance_minimal = Task(
+        id=uuid4().hex,
+        contextId=uuid4().hex,
+        status=TaskStatus(state=TaskState.SUBMITTED)
+    )
     validate_instance(
         instance_minimal.model_dump(mode='json', exclude_none=True),
         'Task',
@@ -277,14 +286,25 @@ def test_task(schema, resolver):
 
 def test_task_status_update_event(schema, resolver):
     status = TaskStatus(state=TaskState.WORKING)
-    instance = TaskStatusUpdateEvent(id=uuid4().hex, status=status, final=False, metadata={'update_seq': 1})
+    instance = TaskStatusUpdateEvent(
+        id=uuid4().hex,
+        contextId=uuid4().hex,
+        status=status,
+        final=False,
+        metadata={'update_seq': 1}
+    )
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
         'TaskStatusUpdateEvent',
         schema,
         resolver,
     )
-    instance_final = TaskStatusUpdateEvent(id=uuid4().hex, status=TaskStatus(state=TaskState.FAILED), final=True)
+    instance_final = TaskStatusUpdateEvent(
+        id=uuid4().hex,
+        contextId=uuid4().hex,
+        status=TaskStatus(state=TaskState.FAILED),
+        final=True
+    )
     validate_instance(
         instance_final.model_dump(mode='json', exclude_none=True),
         'TaskStatusUpdateEvent',
@@ -302,6 +322,7 @@ def test_task_artifact_update_event(schema, resolver):
     )
     instance = TaskArtifactUpdateEvent(
         id=uuid4().hex,
+        contextId=uuid4().hex,
         artifact=artifact,
         final=False,
         metadata={'update_seq': 1},
@@ -312,7 +333,12 @@ def test_task_artifact_update_event(schema, resolver):
         schema,
         resolver,
     )
-    instance_final = TaskArtifactUpdateEvent(id=uuid4().hex, artifact=artifact, final=True)
+    instance_final = TaskArtifactUpdateEvent(
+        id=uuid4().hex,
+        contextId=uuid4().hex,
+        artifact=artifact,
+        final=True
+    )
     validate_instance(
         instance_final.model_dump(mode='json', exclude_none=True),
         'TaskArtifactUpdateEvent',
@@ -373,12 +399,16 @@ def test_task_id_params(schema, resolver):
     )
 
 
-def test_task_send_params(schema, resolver):
-    msg = Message(role='user', parts=[TextPart(text='Start processing')])
+def test_message_send_params(schema, resolver):
+    msg = Message(
+        role='user',
+        parts=[TextPart(text='Start processing')],
+        messageId='abc',
+        contextId=uuid4().hex,
+    )
     pushNotificationConfig = PushNotificationConfig(url='http://...', token='tok')
-    instance = TaskSendParams(
+    instance = MessageSendParams(
         id=uuid4().hex,
-        sessionId=uuid4().hex,  # Explicit session ID
         message=msg,
         stream=True,
         pushNotification=pushNotificationConfig,
@@ -386,16 +416,16 @@ def test_task_send_params(schema, resolver):
     )
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
-        'TaskSendParams',
+        'MessageSendParams',
         schema,
         resolver,
     )
 
-    # Test with default session ID
-    instance_default_session = TaskSendParams(id=uuid4().hex, message=msg)
-    dumped_data = instance_default_session.model_dump(mode='json', exclude_none=True)
-    assert isinstance(dumped_data.get('sessionId'), str)  # Check factory worked
-    validate_instance(dumped_data, 'TaskSendParams', schema, resolver)
+    # Test with default context ID
+    msg.contextId = None
+    instance_default_context = MessageSendParams(id=uuid4().hex, message=msg)
+    dumped_data = instance_default_context.model_dump(mode='json', exclude_none=True)
+    validate_instance(dumped_data, 'MessageSendParams', schema, resolver)
 
 
 def test_task_push_notification_config(schema, resolver):
@@ -464,51 +494,71 @@ def test_specific_errors(error_cls, schema, resolver):
         )
 
 
-def test_send_task_request(schema, resolver):
-    params = TaskSendParams(id='t1', message=Message(role='user', parts=[TextPart(text='go')]))
-    instance = SendTaskRequest(params=params, id=1)  # Use default method and jsonrpc
+def test_send_message_request(schema, resolver):
+    params = MessageSendParams(
+        id='t1',
+        message=Message(
+            role='user',
+            parts=[TextPart(text='go')],
+            messageId='abc'
+        )
+    )
+
+    instance = SendMessageRequest(params=params, id=1)  # Use default method and jsonrpc
     dumped_data = instance.model_dump(mode='json', exclude_none=True)
-    assert dumped_data['method'] == 'tasks/send'
-    validate_instance(dumped_data, 'SendTaskRequest', schema, resolver)
+    assert dumped_data['method'] == 'message/send'
+    validate_instance(dumped_data, 'SendMessageRequest', schema, resolver)
 
 
-def test_send_task_response(schema, resolver):
+def test_send_message_response(schema, resolver):
     # Result case 1: Task
-    task_result = Task(id='t1', status=TaskStatus(state=TaskState.SUBMITTED))
-    instance_task = SendTaskResponse(id=1, result=task_result)
+    task_result = Task(
+        id='t1',
+        contextId='context123',
+        status=TaskStatus(state=TaskState.SUBMITTED))
+    instance_task = SendMessageResponse(id=1, result=task_result)
     validate_instance(
         instance_task.model_dump(mode='json', exclude_none=True),
-        'SendTaskResponse',
+        'SendMessageResponse',
         schema,
         resolver,
     )
 
     # Result case 2: TaskStatusUpdateEvent
-    update_result = TaskStatusUpdateEvent(id='t1', status=TaskStatus(state=TaskState.WORKING))
-    instance_update = SendTaskStreamingResponse(id=1, result=update_result)
+    update_result = TaskStatusUpdateEvent(
+        id='t1',
+        contextId='context123',
+        status=TaskStatus(state=TaskState.WORKING))
+    instance_update = SendMessageStreamResponse(id=1, result=update_result)
     validate_instance(
         instance_update.model_dump(mode='json', exclude_none=True),
-        'SendTaskStreamingResponse',
+        'SendMessageStreamResponse',
         schema,
         resolver,
     )
 
     # Error case
     error = TaskNotFoundError()
-    instance_error = SendTaskStreamingResponse(id=1, error=error)
+    instance_error = SendMessageStreamResponse(id=1, error=error)
     validate_instance(
         instance_error.model_dump(mode='json', exclude_none=True),
-        'SendTaskStreamingResponse',
+        'SendMessageStreamResponse',
         schema,
         resolver,
     )
 
     artifact = Artifact(name='result.txt', parts=[TextPart(text='Done')])
-    task_artifact_update_event = TaskArtifactUpdateEvent(id='t1', artifact=artifact)
-    response_event = SendTaskStreamingResponse(id=1, result=task_artifact_update_event)
+    task_artifact_update_event = TaskArtifactUpdateEvent(
+        id='t1',
+        contextId='context123',
+        artifact=artifact
+    )
+    response_event = SendMessageStreamResponse(
+        id=1, result=task_artifact_update_event
+    )
     validate_instance(
         response_event.model_dump(mode='json', exclude_none=True),
-        'SendTaskStreamingResponse',
+        'SendMessageStreamResponse',
         schema,
         resolver,
     )
@@ -523,7 +573,11 @@ def test_get_task_request(schema, resolver):
 
 
 def test_get_task_response(schema, resolver):
-    task_result = Task(id='t1', status=TaskStatus(state=TaskState.COMPLETED))
+    task_result = Task(
+        id='t1',
+        contextId='context123',
+        status=TaskStatus(state=TaskState.COMPLETED)
+    )
     instance = GetTaskResponse(id=2, result=task_result)
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
@@ -551,7 +605,11 @@ def test_cancel_task_request(schema, resolver):
 
 
 def test_cancel_task_response(schema, resolver):
-    task_result = Task(id='t1', status=TaskStatus(state=TaskState.CANCELED))
+    task_result = Task(
+        id='t1',
+        contextId='context123',
+        status=TaskStatus(state=TaskState.CANCELED)
+    )
     instance = CancelTaskResponse(id=3, result=task_result)
     validate_instance(
         instance.model_dump(mode='json', exclude_none=True),
@@ -657,10 +715,14 @@ def test_task_subscription_request(schema, resolver):
 @pytest.mark.parametrize(
     'request_instance',
     [
-        SendTaskRequest(
-            params=TaskSendParams(
+        SendMessageRequest(
+            params=MessageSendParams(
                 id='t1',
-                message=Message(role='user', parts=[TextPart(text='go')]),
+                message=Message(
+                    role='user',
+                    parts=[TextPart(text='go')],
+                    messageId='abc'
+                ),
             )
         ),
         GetTaskRequest(params=TaskQueryParams(id='t2')),
