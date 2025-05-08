@@ -114,10 +114,12 @@ A fully formed piece of content exchanged between a client and a remote agent as
 ```typescript
 interface TextPart {
   type: "text";
+  name?: string;
   text: string;
 }
 interface FilePart {
   type: "file";
+  name?: string;
   file: {
     name?: string;
     mimeType?: string;
@@ -129,6 +131,7 @@ interface FilePart {
 }
 interface DataPart {
   type: "data";
+  name?: string;
   data: Record<string, any>;
 }
 type Part = (TextPart | FilePart | DataPart) & {

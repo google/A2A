@@ -183,6 +183,7 @@ Represents a distinct piece of content within a `Message` or `Artifact`. A `Part
 | Field Name | Type               | Required | Description              |
 | :--------- | :----------------- | :------- | :----------------------- |
 | `type`     | `"text"`           | Yes      | Identifies this as text. |
+| `name`     | `string`           | No       | The part name.           |
 | `text`     | `string`           | Yes      | The textual content.     |
 | `metadata` | `object` \| `null` | No       | Part-specific metadata.  |
 
@@ -191,6 +192,7 @@ Represents a distinct piece of content within a `Message` or `Artifact`. A `Part
 | Field Name | Type                                    | Required | Description                     |
 | :--------- | :-------------------------------------- | :------- | :------------------------------ |
 | `type`     | `"file"`                                | Yes      | Identifies this as a file.      |
+| `name`     | `string`                                | No       | The part name.                  |
 | `file`     | [`FileContent`](#66-filecontent-object) | Yes      | Contains the file details/data. |
 | `metadata` | `object` \| `null`                      | No       | Part-specific metadata.         |
 
@@ -199,6 +201,7 @@ Represents a distinct piece of content within a `Message` or `Artifact`. A `Part
 | Field Name | Type               | Required | Description                                                     |
 | :--------- | :----------------- | :------- | :-------------------------------------------------------------- |
 | `type`     | `"data"`           | Yes      | Identifies this as structured data.                             |
+| `name`     | `string`           | No       | The part name.                                                  |
 | `data`     | `object`           | Yes      | The structured JSON data payload (e.g., form data, parameters). |
 | `metadata` | `object` \| `null` | No       | Part-specific metadata.                                         |
 
