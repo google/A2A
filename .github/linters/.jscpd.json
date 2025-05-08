@@ -1,5 +1,8 @@
 {
+  "files": [
+    "docs/**/*",
+    "specification/**/*"
+  ],
   "threshold": 3,
-  "reporters": ["html", "markdown"],
-  "ignore": ["**/node_modules/**", "**/.git/**", "**/*.md", "**/samples/**"]
+  "reporters": ["html", "markdown"]
 }
