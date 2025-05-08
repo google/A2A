@@ -1,7 +1,10 @@
 {
-  "files": [
-    "docs/**/*",
-    "specification/**/*"
+  "ignore": [
+      ".github/**",
+      "demo/**",
+      "images/**",
+      "samples/**",
+      "tests/**"
   ],
   "threshold": 3,
   "reporters": ["html", "markdown"]
