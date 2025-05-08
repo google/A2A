@@ -96,6 +96,7 @@ noxfile
 npush
 ollama
 oneof
+prefecthq
 pyguide
 pymdownx
 pypackages
