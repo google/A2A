@@ -54,6 +54,7 @@ collaborate effectively with each other and with users.
 - [LlamaIndex](https://x.com/llama_index/status/1912949446322852185)
 - LTIMindTtree
 - Lyzr.ai
+- [Microsoft](https://www.microsoft.com/en-us/microsoft-cloud/blog/2025/05/07/empowering-multi-agent-apps-with-the-open-agent2agent-a2a-protocol/)
 - McKinsey
 - MongoDB
 - Neo4j
