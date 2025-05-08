@@ -25,6 +25,7 @@ class TaskState(str, Enum):
 
 class TextPart(BaseModel):
     type: Literal['text'] = 'text'
+    name: str | None = None
     text: str
     metadata: dict[str, Any] | None = None
 
@@ -50,12 +51,14 @@ class FileContent(BaseModel):
 
 class FilePart(BaseModel):
     type: Literal['file'] = 'file'
+    name: str | None = None
     file: FileContent
     metadata: dict[str, Any] | None = None
 
 
 class DataPart(BaseModel):
     type: Literal['data'] = 'data'
+    name: str | None = None
     data: dict[str, Any]
     metadata: dict[str, Any] | None = None
 

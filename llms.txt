@@ -98,12 +98,15 @@ Key features of the A2A protocol highlighted by the specification and samples in
 *   **`Part` (Union Type):** Represents a piece of content within a Message or Artifact.
     *   **`TextPart`:**
         *   `type`: "text"
+        *   `name`: (string) The part name
         *   `text`: (string) The textual content.
     *   **`FilePart`:**
         *   `type`: "file"
+        *   `name`: (string) The part name
         *   `file`: (`FileContent`) File details (bytes or URI).
     *   **`DataPart`:**
         *   `type`: "data"
+        *   `name`: (string) The part name
         *   `data`: (object) Structured JSON data (e.g., for forms).
     *   `metadata`: (object | null) Optional metadata for the specific part.
 *   **`FileContent`:** Represents file data.
