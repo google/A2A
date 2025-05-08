@@ -83,7 +83,7 @@ Discovery:
 can use to delegate the task.
 
 Execution:
-- For actionable tasks, you can use `create_task` to assign tasks to remote agents to perform.
+- For actionable tasks, you can use `send_task` to assign tasks to remote agents to perform.
 Be sure to include the remote agent name when you respond to the user.
 
 You can use `check_pending_task_states` to check the states of the pending
