@@ -1,75 +1,64 @@
-# Set up Your Environment
 
-## What You'll Need
+# 2. Setup Your Environment
 
-- A code editor such as Visual Studio Code (VS Code).
-- A command prompt/terminal (e.g., Terminal on Linux/macOS, Command Prompt or PowerShell on Windows, or the integrated terminal in VS Code).
-- Python 3.10 or newer. You can download it from [python.org](https://www.python.org/downloads/). To check your Python version, open your terminal and type `python --version` or `python3 --version`.
+## Prerequisites
 
-## Project Setup
+- Python 3.10 or higher.
+- Access to a terminal or command prompt.
+- Git, for cloning the repository.
+- A code editor (e.g., VS Code) is recommended.
 
-1. **Clone the Repository:**
-    First, clone the A2A repository which contains the Python SDK and examples:
+## Clone the Repository
 
-    ```bash
-    git clone https://github.com/google/A2A.git
-    cd A2A/a2a-python-sdk
-    ```
+If you haven't already, clone the A2A repository and navigate to the Python SDK directory:
 
-    This tutorial will primarily use the `a2a-python-sdk` directory.
+```bash
+git clone https://github.com/google/A2A.git
+cd A2A/a2a-python-sdk
+```
 
-2. **Create and Activate a Virtual Environment:**
-    It's highly recommended to use a virtual environment to manage your project's dependencies. This isolates your project's packages from your global Python installation.
+## Python Environment & SDK Installation
 
-    Navigate to the `a2a-python-sdk` directory if you're not already there.
+We recommend using a virtual environment for Python projects. The A2A Python SDK uses `uv` for dependency management, but you can use `pip` with `venv` as well.
 
-    ```bash
-    # If you're in the A2A/ root, run:
-    # cd a2a-python-sdk
-    ```
+1. **Create and activate a virtual environment:**
 
-    Create a virtual environment (we'll call it `.venv`):
+    Using `venv` (standard library):
 
     ```bash
     python -m venv .venv
+    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
     ```
 
-    Activate the virtual environment:
-    - On macOS and Linux:
-
-        ```bash
-        source .venv/bin/activate
-        ```
-
-    - On Windows (Command Prompt):
-
-        ```bash
-        .\.venv\Scripts\activate.bat
-        ```
-
-    - On Windows (PowerShell):
-
-        ```bash
-        .\.venv\Scripts\Activate.ps1
-        ```
-
-    Your terminal prompt should now indicate that you are in the virtual environment (e.g., `(.venv) ...`). If you open a new terminal window, remember to activate the virtual environment again.
-
-3. **Install the A2A Python SDK:**
-    With the virtual environment activated, install the A2A Python SDK and its core dependencies from the `a2a-python-sdk` directory:
+    Or, if you have `uv` installed ([see uv installation](https://docs.astral.sh/uv/getting-started/installation/)):
 
     ```bash
-    pip install .
+    uv venv
+    source .venv/bin/activate # On Windows: .venv\Scripts\activate
     ```
 
-    This command installs the SDK defined in the `pyproject.toml` file located in the current directory.
+2. **Install the A2A SDK and its dependencies:**
 
-## Check Your Setup
+    The `a2a-python-sdk` directory contains the SDK source code. To make it and its dependencies available in your environment, run:
 
-Run the following command to ensure Python is working correctly within your virtual environment and the SDK's core modules are importable:
+    ```bash
+    pip install -e .[dev]
+    ```
+
+    This command installs the SDK in "editable" mode (`-e`), meaning changes to the SDK source code are immediately available. It also installs development dependencies specified in `pyproject.toml`.
+
+    If you are using `uv`, it will use the `uv.lock` file to install dependencies:
+
+    ```bash
+    uv sync --dev
+    ```
+
+## Verify Installation
+
+After installation, you should be able to import the `a2a` package in a Python interpreter:
 
 ```bash
-python -c "import a2a.server; import a2a.client; import a2a.types; print('A2A SDK basic imports successful!')"
+python -c "import a2a; print('A2A SDK imported successfully!')"
 ```
 
-If you see the message "A2A SDK basic imports successful!", you are ready to proceed to the next step.
+If this command runs without error and prints the success message, your environment is set up correctly.
