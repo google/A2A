@@ -1,0 +1,30 @@
+[project]
+name = "a2a-mcp-connector"
+version = "0.1.0"
+description = "A simple agent that connects A2A and MCP with an intuitive and easy to use interface"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "httpx-sse>=0.4.0",
+    "jwcrypto>=1.5.6",
+    "pydantic>=2.10.6",
+    "pyjwt>=2.10.1",
+    "sse-starlette>=2.2.1",
+    "starlette>=0.46.1",
+    "typing-extensions>=4.12.2",
+    "uvicorn>=0.34.0",
+    "click>=8.1.8",
+    "google-adk>=0.0.3",
+    "google-genai>=1.9.0",
+    "python-dotenv>=1.1.0",
+    "requests>=2.31.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+only-packages = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

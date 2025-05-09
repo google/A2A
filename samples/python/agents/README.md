@@ -25,7 +25,9 @@ Sample agent which can parse a file and then chat with the user using the parsed
 Demonstrates an agent using the [Marvin](https://github.com/prefecthq/marvin) framework to extract structured contact information from text, integrated with the Agent2Agent (A2A) protocol.
 
 * [**Enterprise Data Agent**](/samples/python/agents/mindsdb/README.md)  
-Sample agent which can answer questions from any database, datawarehouse, app. - Powered by Gemini 2.5 flash + MindsDB.
+
+Sample agent which can answer questions from any database, datawarehouse, app. - With Gemini 2.5 flash + MindsDB.
 
 * [**Semantic Kernel Agent**](/samples/python/agents/semantickernel/README.md)  
 Demonstrates how to implement a travel agent built on [Semantic Kernel](https://github.com/microsoft/semantic-kernel/) and exposed through the A2A protocol.
+

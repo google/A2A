@@ -1,6 +1,6 @@
 ## MindsDB Enterprise Data Agent
 
-Powered by Gemini 2.5 flash + MindsDB. This sample uses A2A to connect, query and analyze data across hundreds of federated data sources including databases, data lakes, and SaaS applications.
+With Gemini 2.5 flash + MindsDB. This sample uses A2A to connect, query and analyze data across hundreds of federated data sources including databases, data lakes, and SaaS applications.
 
 The agent takes natural language queries from users and translates them into appropriate SQL queries for MindsDB, handling data federation across multiple sources. It can:
 

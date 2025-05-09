@@ -1,3 +1,7 @@
+
+from starlette.applications import Starlette
+from starlette.responses import JSONResponse, HTMLResponse
+
 import json
 import logging
 
@@ -5,6 +9,7 @@ from collections.abc import AsyncIterable
 from typing import Any
 
 from pydantic import ValidationError
+
 from sse_starlette.sse import EventSourceResponse
 from starlette.applications import Starlette
 from starlette.requests import Request
@@ -46,6 +51,10 @@ class A2AServer:
         self.task_manager = task_manager
         self.agent_card = agent_card
         self.app = Starlette()
+
+        self.app.add_route(self.endpoint, self._process_request, methods=["POST"])
+        self.app.add_route(self.endpoint, self._handle_root_get, methods=["GET"])
+
         self.app.add_route(
             self.endpoint, self._process_request, methods=['POST']
         )
@@ -62,10 +71,55 @@ class A2AServer:
 
         import uvicorn
 
+        logger.info(f"Starting A2A server at http://{self.host}:{self.port}")
+        logger.info(f"Agent Card available at http://{self.host}:{self.port}/.well-known/agent.json")
         uvicorn.run(self.app, host=self.host, port=self.port)
 
     def _get_agent_card(self, request: Request) -> JSONResponse:
         return JSONResponse(self.agent_card.model_dump(exclude_none=True))
+    
+    async def _handle_root_get(self, request: Request) -> HTMLResponse:
+        """Handle GET requests to the root endpoint with a helpful message."""
+        agent_name = self.agent_card.name if self.agent_card else "A2A Agent"
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>{agent_name}</title>
+            <style>
+                body {{ font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; max-width: 800px; margin: 0 auto; }}
+                h1 {{ color: #333; }}
+                code {{ background-color: #f4f4f4; padding: 2px 4px; border-radius: 4px; }}
+                .card {{ border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: 20px; }}
+                .note {{ background-color: #f8f9fa; padding: 10px; border-left: 4px solid #007bff; margin: 20px 0; }}
+            </style>
+        </head>
+        <body>
+            <h1>🤖 {agent_name}</h1>
+            <p>This is an <strong>A2A (Agent-to-Agent) protocol</strong> endpoint. Direct browser access is not supported.</p>
+            
+            <div class="note">
+                <p>The Agent Card is available at: <a href="/.well-known/agent.json">/.well-known/agent.json</a></p>
+            </div>
+            
+            <h2>How to interact with this agent:</h2>
+            <ol>
+                <li>Use an A2A client like the CLI tool or demo web UI</li>
+                <li>Send POST requests to this endpoint with proper A2A protocol messages</li>
+                <li>Refer to the <a href="https://google.github.io/A2A/#/documentation">A2A documentation</a> for protocol details</li>
+            </ol>
+            
+            <div class="card">
+                <h3>API Endpoints:</h3>
+                <ul>
+                    <li><code>GET /.well-known/agent.json</code> - Agent Card (capabilities, metadata)</li>
+                    <li><code>POST /</code> - A2A Protocol interactions (tasks/send, tasks/get, etc.)</li>
+                </ul>
+            </div>
+        </body>
+        </html>
+        """
+        return HTMLResponse(content=html_content)
 
     async def _process_request(self, request: Request):
         try:
