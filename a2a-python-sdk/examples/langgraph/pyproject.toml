@@ -1,0 +1,26 @@
+[project]
+name = "langgraph-example"
+version = "0.1.0"
+description = "Currency conversion agent example"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "a2a",
+    "click>=8.1.8",
+    "dotenv>=0.9.9",
+    "httpx>=0.28.1",
+    "langchain-google-genai>=2.1.4",
+    "langgraph>=0.4.1",
+    "pydantic>=2.11.4",
+    "python-dotenv>=1.1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.uv.sources]
+a2a = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
