@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Literal
+from typing import Any, Literal, Optional, Union
 
 from pydantic import BaseModel, Field, field_serializer
 
@@ -17,7 +17,7 @@ class Fingerprint(BaseModel):
     signature: str = Field(
         description='Cryptographic signature proving ownership'
     )
-    blockchain_ref: str | None = Field(
+    blockchain_ref: Optional[str] = Field(
         default=None,
         description='Reference to blockchain transaction or smart contract',
     )
@@ -25,7 +25,7 @@ class Fingerprint(BaseModel):
         default_factory=datetime.now,
         description='Timestamp of fingerprint creation',
     )
-    validation_endpoint: str | None = Field(
+    validation_endpoint: Optional[str] = Field(
         default=None, description='URL endpoint for validating this fingerprint'
     )
 

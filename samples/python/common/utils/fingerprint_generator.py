@@ -21,7 +21,7 @@ class FingerprintGenerator:
     """Generator for creating and registering agent fingerprints."""
 
     def __init__(
-        self, private_key: str | None = None, ethereum_url: str | None = None
+        self, private_key: Optional[str] = None, ethereum_url: Optional[str] = None
     ):
         """Initialize the fingerprint generator.
 
@@ -46,9 +46,9 @@ class FingerprintGenerator:
         agent_name: str,
         provider: str,
         version: str,
-        metadata: dict[str, str] | None = None,
+        metadata: Optional[dict[str, str]] = None,
         register_on_blockchain: bool = False,
-        validation_endpoint: str | None = None,
+        validation_endpoint: Optional[str] = None,
     ) -> Fingerprint:
         """Generate a unique fingerprint for an agent.
 
@@ -143,7 +143,7 @@ class FingerprintGenerator:
         )
         return signed_message.signature.hex()
 
-    def compute_message_hash(self, message_content: str | dict | bytes) -> str:
+    def compute_message_hash(self, message_content: Union[str, dict, bytes]) -> str:
         """Compute a hash for a message.
 
         Args:

@@ -20,11 +20,11 @@ class FingerprintEnabledClient(A2AClient):
 
     def __init__(
         self,
-        agent_card: AgentCard | None = None,
-        url: str | None = None,
+        agent_card: Optional[AgentCard] = None,
+        url: Optional[str] = None,
         timeout: float = 60.0,
-        fingerprint_generator: FingerprintGenerator | None = None,
-        fingerprint_validator: FingerprintValidator | None = None,
+        fingerprint_generator: Optional[FingerprintGenerator] = None,
+        fingerprint_validator: Optional[FingerprintValidator] = None,
         verify_incoming: bool = True,
         sign_outgoing: bool = True,
     ):
@@ -51,7 +51,7 @@ class FingerprintEnabledClient(A2AClient):
         self.sign_outgoing = sign_outgoing
 
         # Store our own fingerprint
-        self.fingerprint: Fingerprint | None = None
+        self.fingerprint: Optional[Fingerprint] = None
 
     def set_agent_fingerprint(self, fingerprint: Fingerprint) -> None:
         """Set the fingerprint for this client.
@@ -67,9 +67,9 @@ class FingerprintEnabledClient(A2AClient):
         agent_name: str,
         provider: str,
         version: str,
-        metadata: dict[str, str] | None = None,
+        metadata: Optional[dict[str, str]] = None,
         register_on_blockchain: bool = False,
-        validation_endpoint: str | None = None,
+        validation_endpoint: Optional[str] = None,
     ) -> Fingerprint:
         """Generate a fingerprint for this client.
 

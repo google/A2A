@@ -19,7 +19,7 @@ from ..types_fingerprint import Fingerprint
 class FingerprintValidator:
     """Validator for verifying agent fingerprints."""
 
-    def __init__(self, ethereum_url: str | None = None, cache_ttl: int = 3600):
+    def __init__(self, ethereum_url: Optional[str] = None, cache_ttl: int = 3600):
         """Initialize the fingerprint validator.
 
         Args:
@@ -215,7 +215,7 @@ class FingerprintValidator:
 
     def verify_message(
         self,
-        message_content: str | dict | bytes,
+        message_content: Union[str, dict, bytes],
         message_hash: str,
         fingerprint: Fingerprint,
     ) -> bool:

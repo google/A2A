@@ -1,6 +1,7 @@
 from datetime import datetime
 from enum import Enum
-from typing import Annotated, Any, Literal, Self
+from typing import Annotated, Any, Literal, Optional, Union
+from typing_extensions import Self
 from uuid import uuid4
 
 from pydantic import (
@@ -28,14 +29,14 @@ class TaskState(str, Enum):
 class TextPart(BaseModel):
     type: Literal['text'] = 'text'
     text: str
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class FileContent(BaseModel):
-    name: str | None = None
-    mimeType: str | None = None
-    bytes: str | None = None
-    uri: str | None = None
+    name: Optional[str] = None
+    mimeType: Optional[str] = None
+    bytes: Optional[str] = None
+    uri: Optional[str] = None
 
     @model_validator(mode='after')
     def check_content(self) -> Self:
@@ -53,28 +54,28 @@ class FileContent(BaseModel):
 class FilePart(BaseModel):
     type: Literal['file'] = 'file'
     file: FileContent
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class DataPart(BaseModel):
     type: Literal['data'] = 'data'
     data: dict[str, Any]
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
 
 
-Part = Annotated[TextPart | FilePart | DataPart, Field(discriminator='type')]
+Part = Annotated[Union[TextPart, FilePart, DataPart], Field(discriminator='type')]
 
 
 class Message(BaseModel):
     role: Literal['user', 'agent']
     parts: list[Part]
-    metadata: dict[str, Any] | None = None
-    verification: MessageVerification | None = None
+    metadata: Optional[dict[str, Any]] = None
+    verification: Optional[MessageVerification] = None
 
 
 class TaskStatus(BaseModel):
     state: TaskState
-    message: Message | None = None
+    message: Optional[Message] = None
     timestamp: datetime = Field(default_factory=datetime.now)
 
     @field_serializer('timestamp')
@@ -83,67 +84,67 @@ class TaskStatus(BaseModel):
 
 
 class Artifact(BaseModel):
-    name: str | None = None
-    description: str | None = None
+    name: Optional[str] = None
+    description: Optional[str] = None
     parts: list[Part]
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
     index: int = 0
-    append: bool | None = None
-    lastChunk: bool | None = None
+    append: Optional[bool] = None
+    lastChunk: Optional[bool] = None
 
 
 class Task(BaseModel):
     id: str
-    sessionId: str | None = None
+    sessionId: Optional[str] = None
     status: TaskStatus
-    artifacts: list[Artifact] | None = None
-    history: list[Message] | None = None
-    metadata: dict[str, Any] | None = None
+    artifacts: Optional[list[Artifact]] = None
+    history: Optional[list[Message]] = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class TaskStatusUpdateEvent(BaseModel):
     id: str
     status: TaskStatus
     final: bool = False
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class TaskArtifactUpdateEvent(BaseModel):
     id: str
     artifact: Artifact
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class AuthenticationInfo(BaseModel):
     model_config = ConfigDict(extra='allow')
 
     schemes: list[str]
-    credentials: str | None = None
+    credentials: Optional[str] = None
 
 
 class PushNotificationConfig(BaseModel):
     url: str
-    token: str | None = None
-    authentication: AuthenticationInfo | None = None
+    token: Optional[str] = None
+    authentication: Optional[AuthenticationInfo] = None
 
 
 class TaskIdParams(BaseModel):
     id: str
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class TaskQueryParams(TaskIdParams):
-    historyLength: int | None = None
+    historyLength: Optional[int] = None
 
 
 class TaskSendParams(BaseModel):
     id: str
     sessionId: str = Field(default_factory=lambda: uuid4().hex)
     message: Message
-    acceptedOutputModes: list[str] | None = None
-    pushNotification: PushNotificationConfig | None = None
-    historyLength: int | None = None
-    metadata: dict[str, Any] | None = None
+    acceptedOutputModes: Optional[list[str]] = None
+    pushNotification: Optional[PushNotificationConfig] = None
+    historyLength: Optional[int] = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 class TaskPushNotificationConfig(BaseModel):
@@ -156,23 +157,23 @@ class TaskPushNotificationConfig(BaseModel):
 
 class JSONRPCMessage(BaseModel):
     jsonrpc: Literal['2.0'] = '2.0'
-    id: int | str | None = Field(default_factory=lambda: uuid4().hex)
+    id: Optional[Union[int, str]] = Field(default_factory=lambda: uuid4().hex)
 
 
 class JSONRPCRequest(JSONRPCMessage):
     method: str
-    params: dict[str, Any] | None = None
+    params: Optional[dict[str, Any]] = None
 
 
 class JSONRPCError(BaseModel):
     code: int
     message: str
-    data: Any | None = None
+    data: Optional[Any] = None
 
 
 class JSONRPCResponse(JSONRPCMessage):
-    result: Any | None = None
-    error: JSONRPCError | None = None
+    result: Optional[Any] = None
+    error: Optional[JSONRPCError] = None
 
 
 class SendTaskRequest(JSONRPCRequest):
@@ -181,7 +182,7 @@ class SendTaskRequest(JSONRPCRequest):
 
 
 class SendTaskResponse(JSONRPCResponse):
-    result: Task | None = None
+    result: Optional[Task] = None
 
 
 class SendTaskStreamingRequest(JSONRPCRequest):
@@ -190,7 +191,7 @@ class SendTaskStreamingRequest(JSONRPCRequest):
 
 
 class SendTaskStreamingResponse(JSONRPCResponse):
-    result: TaskStatusUpdateEvent | TaskArtifactUpdateEvent | None = None
+    result: Optional[Union[TaskStatusUpdateEvent, TaskArtifactUpdateEvent]] = None
 
 
 class GetTaskRequest(JSONRPCRequest):
@@ -199,54 +200,56 @@ class GetTaskRequest(JSONRPCRequest):
 
 
 class GetTaskResponse(JSONRPCResponse):
-    result: Task | None = None
+    result: Optional[Task] = None
 
 
 class CancelTaskRequest(JSONRPCRequest):
-    method: Literal['tasks/cancel',] = 'tasks/cancel'
+    method: Literal['tasks/cancel'] = 'tasks/cancel'
     params: TaskIdParams
 
 
 class CancelTaskResponse(JSONRPCResponse):
-    result: Task | None = None
+    result: Optional[Task] = None
 
 
 class SetTaskPushNotificationRequest(JSONRPCRequest):
-    method: Literal['tasks/pushNotification/set',] = (
+    method: Literal['tasks/pushNotification/set'] = (
         'tasks/pushNotification/set'
     )
     params: TaskPushNotificationConfig
 
 
 class SetTaskPushNotificationResponse(JSONRPCResponse):
-    result: TaskPushNotificationConfig | None = None
+    result: Optional[TaskPushNotificationConfig] = None
 
 
 class GetTaskPushNotificationRequest(JSONRPCRequest):
-    method: Literal['tasks/pushNotification/get',] = (
+    method: Literal['tasks/pushNotification/get'] = (
         'tasks/pushNotification/get'
     )
     params: TaskIdParams
 
 
 class GetTaskPushNotificationResponse(JSONRPCResponse):
-    result: TaskPushNotificationConfig | None = None
+    result: Optional[TaskPushNotificationConfig] = None
 
 
 class TaskResubscriptionRequest(JSONRPCRequest):
-    method: Literal['tasks/resubscribe',] = 'tasks/resubscribe'
+    method: Literal['tasks/resubscribe'] = 'tasks/resubscribe'
     params: TaskIdParams
 
 
 A2ARequest = TypeAdapter(
     Annotated[
-        SendTaskRequest
-        | GetTaskRequest
-        | CancelTaskRequest
-        | SetTaskPushNotificationRequest
-        | GetTaskPushNotificationRequest
-        | TaskResubscriptionRequest
-        | SendTaskStreamingRequest,
+        Union[
+            SendTaskRequest,
+            GetTaskRequest,
+            CancelTaskRequest,
+            SetTaskPushNotificationRequest,
+            GetTaskPushNotificationRequest,
+            TaskResubscriptionRequest,
+            SendTaskStreamingRequest
+        ],
         Field(discriminator='method'),
     ]
 )
@@ -257,13 +260,13 @@ A2ARequest = TypeAdapter(
 class JSONParseError(JSONRPCError):
     code: int = -32700
     message: str = 'Invalid JSON payload'
-    data: Any | None = None
+    data: Optional[Any] = None
 
 
 class InvalidRequestError(JSONRPCError):
     code: int = -32600
     message: str = 'Request payload validation error'
-    data: Any | None = None
+    data: Optional[Any] = None
 
 
 class MethodNotFoundError(JSONRPCError):
@@ -275,13 +278,13 @@ class MethodNotFoundError(JSONRPCError):
 class InvalidParamsError(JSONRPCError):
     code: int = -32602
     message: str = 'Invalid parameters'
-    data: Any | None = None
+    data: Optional[Any] = None
 
 
 class InternalError(JSONRPCError):
     code: int = -32603
     message: str = 'Internal error'
-    data: Any | None = None
+    data: Optional[Any] = None
 
 
 class TaskNotFoundError(JSONRPCError):
@@ -316,7 +319,7 @@ class ContentTypeNotSupportedError(JSONRPCError):
 
 class AgentProvider(BaseModel):
     organization: str
-    url: str | None = None
+    url: Optional[str] = None
 
 
 class AgentCapabilities(BaseModel):
@@ -327,33 +330,33 @@ class AgentCapabilities(BaseModel):
 
 class AgentAuthentication(BaseModel):
     schemes: list[str]
-    credentials: str | None = None
-    fingerprint: Fingerprint | None = None
+    credentials: Optional[str] = None
+    fingerprint: Optional[Fingerprint] = None
 
 
 class AgentSkill(BaseModel):
-    id: str
+    id: Optional[str] = None
     name: str
-    description: str | None = None
-    tags: list[str] | None = None
-    examples: list[str] | None = None
-    inputModes: list[str] | None = None
-    outputModes: list[str] | None = None
+    description: str
+    tags: Optional[list[str]] = None
+    examples: Optional[list[str]] = None
+    inputModes: Optional[list[str]] = None
+    outputModes: Optional[list[str]] = None
 
 
 class AgentCard(BaseModel):
     name: str
-    description: str | None = None
+    description: Optional[str] = None
     url: str
-    provider: AgentProvider | None = None
+    provider: Optional[AgentProvider] = None
     version: str
-    documentationUrl: str | None = None
-    capabilities: AgentCapabilities
-    authentication: AgentAuthentication | None = None
+    documentationUrl: Optional[str] = None
+    capabilities: Optional[AgentCapabilities] = None
+    authentication: Optional[AgentAuthentication] = None
     defaultInputModes: list[str] = ['text']
     defaultOutputModes: list[str] = ['text']
-    skills: list[AgentSkill]
-    fingerprint: Fingerprint | None = None
+    skills: Optional[list[AgentSkill]] = None
+    fingerprint: Optional[Fingerprint] = None
 
 
 class A2AClientError(Exception):
