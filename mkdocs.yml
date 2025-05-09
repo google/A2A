@@ -48,8 +48,8 @@ theme:
   font:
     text: Google Sans
     code: Roboto Mono
-  logo: assets/a2a-logo.png
-  favicon: assets/a2a-logo.png
+  logo: assets/a2a-logo-white.svg
+  favicon: assets/a2a-logo-black.svg
   icon:
     repo: fontawesome/brands/github
   palette:
@@ -60,7 +60,7 @@ theme:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: white
+      primary: indigo
       accent: white
       toggle:
         icon: material/brightness-4
