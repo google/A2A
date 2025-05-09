@@ -1,0 +1,140 @@
+#################################################################################
+#
+# Ruff linter and code formatter for A2A
+#
+# This file follows the standards in Google Python Style Guide
+# https://google.github.io/styleguide/pyguide.html
+#  
+# The settings below are for the IDE configuration, and are optional.
+#{
+#    "editor.formatOnSave": true,
+#    "[python]": {
+#        "editor.defaultFormatter": "charliermarsh.ruff",
+#        "editor.formatOnSave": true,
+#        "editor.codeActionsOnSave": {
+#            "source.organizeImports": "true"
+#        },
+#    },    
+#    "ruff.importStrategy": "fromEnvironment",
+#}
+
+line-length = 80 # Google Style Guide §3.2: 80 columns
+indent-width = 4 # Google Style Guide §3.4: 4 spaces
+
+target-version = "py310" # Minimum Python version
+
+[lint]
+ignore = [
+    "COM812",
+    "FBT001",
+    "FBT002",
+    "D203",
+    "D213",
+    "ANN001",
+    "ANN201",
+    "ANN204",
+    "D100", # Ignore Missing docstring in public module (often desired at top level __init__.py)
+    "D102", # Ignore return type annotiation in public method
+    "D104", # Ignore Missing docstring in public package (often desired at top level __init__.py)
+    "D107", # Ignore Missing docstring in __init__ (use class docstring)
+    "TD002", # Ignore Missing author in TODOs (often not required)
+    "TD003", # Ignore Missing issue link in TODOs (often not required/available)
+    "T201", # Ignore print presence
+    "RUF012", # Ignore Mutable class attributes should be annotated with `typing.ClassVar`
+    "RUF013", # Ignore implicit optional
+]
+
+select = [
+    "E",  # pycodestyle errors (PEP 8)
+    "W",  # pycodestyle warnings (PEP 8)
+    "F",  # Pyflakes (logical errors, unused imports/variables)
+    "I",  # isort (import sorting - Google Style §3.1.2)
+    "D",  # pydocstyle (docstring conventions - Google Style §3.8)
+    "N",  # pep8-naming (naming conventions - Google Style §3.16)
+    "UP", # pyupgrade (use modern Python syntax)
+    "ANN",# flake8-annotations (type hint usage/style - Google Style §2.22)
+    "A",  # flake8-builtins (avoid shadowing builtins)
+    "B",  # flake8-bugbear (potential logic errors & style issues - incl. mutable defaults B006, B008)
+    "C4", # flake8-comprehensions (unnecessary list/set/dict comprehensions)
+    "ISC",# flake8-implicit-str-concat (disallow implicit string concatenation across lines)
+    "T20",# flake8-print (discourage `print` - prefer logging)
+    "SIM",# flake8-simplify (simplify code, e.g., `if cond: return True else: return False`)
+    "PTH",# flake8-use-pathlib (use pathlib instead of os.path where possible)
+    "PL", # Pylint rules ported to Ruff (PLC, PLE, PLR, PLW)
+    "PIE",# flake8-pie (misc code improvements, e.g., no-unnecessary-pass)
+    "RUF",# Ruff-specific rules (e.g., RUF001-003 ambiguous unicode)
+    "RET",# flake8-return (consistency in return statements)
+    "SLF",# flake8-self (check for private member access via `self`)
+    "TID",# flake8-tidy-imports (relative imports, banned imports - configure if needed)
+    "YTT",# flake8-boolean-trap (checks for boolean positional arguments, truthiness tests - Google Style §3.10)
+    "TD", # flake8-todos (check TODO format - Google Style §3.7)
+]
+
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+    "*/migrations/*",
+    "test_*",
+]
+
+[lint.isort]
+#force-sort-within-sections = true
+#combine-as-imports = true
+case-sensitive = true
+#force-single-line = false
+#known-first-party = []
+#known-third-party = []
+lines-after-imports = 2
+lines-between-types = 1
+#no-lines-before = ["LOCALFOLDER"]
+#required-imports = []
+#section-order = ["future", "standard-library", "third-party", "first-party", "local-folder"]
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.flake8-annotations]
+mypy-init-return = true
+allow-star-arg-any = true
+
+[lint.pep8-naming]
+ignore-names = ["test_*", "setUp", "tearDown", "mock_*"]
+classmethod-decorators = ["classmethod", "pydantic.validator", "pydantic.root_validator"]
+staticmethod-decorators = ["staticmethod"]
+
+[lint.flake8-tidy-imports]
+ban-relative-imports = "all" # Google generally prefers absolute imports (§3.1.2)
+
+[lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+
+[lint.per-file-ignores]
+"__init__.py" = ["F401"]  # Ignore unused imports in __init__.py
+"*_test.py" = ["D", "ANN"]  # Ignore docstring and annotation issues in test files
+"test_*.py" = ["D", "ANN"]  # Ignore docstring and annotation issues in test files
+"types.py" = ["D", "E501", "N815"]  # Ignore docstring and annotation issues in types.py
+
+[format]
+docstring-code-format = true
+docstring-code-line-length = "dynamic" # Or set to 80
+quote-style = "single"
+indent-style = "space"
