@@ -35,6 +35,7 @@ collaborate effectively with each other and with users.
 - Decagon.ai
 - [Deloitte](https://www.prnewswire.com/news-releases/deloitte-expands-alliances-with-google-cloud-and-servicenow-to-accelerate-agentic-ai-adoption-in-the-enterprise-302423941.html)
 - Devnagri
+- Distyl.ai
 - Elastic
 - Ema.co
 - EPAM
