@@ -4,36 +4,34 @@ site_url: https://google.github.io/A2A
 site_description: >-
   An open protocol enabling communication and interoperability between opaque agentic applications
 site_dir: site
-
 # Navigation
 nav:
   - Home: index.md
   - Why A2A?:
-    - A2A and MCP: topics/a2a-and-mcp.md
-    - Agent Discovery: topics/agent-discovery.md
-    - Enterprise Ready: topics/enterprise-ready.md
-    - Push Notifications: topics/push-notifications.md
+      - A2A and MCP: topics/a2a-and-mcp.md
+      - Agent Discovery: topics/agent-discovery.md
+      - Enterprise Ready: topics/enterprise-ready.md
+      - Push Notifications: topics/push-notifications.md
   - A2A Protocol:
-    - About: specification/index.md
-    - Overview: specification/overview.md
-    - Agent Card: specification/agent-card.md
-    - Agent-to-Agent Communication: specification/agent-to-agent-communication.md
-    - Sample Messages: specification/sample-messages.md
+      - About: specification/index.md
+      - Overview: specification/overview.md
+      - Agent Card: specification/agent-card.md
+      - Agent-to-Agent Communication: specification/agent-to-agent-communication.md
+      - Sample Messages: specification/sample-messages.md
   - Community: community.md
   - Partners: partners.md
   - Resources: resources.md
   - A2A Tutorial (Python):
-    - Introduction: tutorials/python/1-introduction.md
-    - Setup: tutorials/python/2-setup.md
-    - Create project: tutorials/python/3-create-project.md
-    - Agent Skills: tutorials/python/4-agent-skills.md
-    - Add Agent Card: tutorials/python/5-add-agent-card.md
-    - Start server: tutorials/python/6-start-server.md
-    - Interact with server: tutorials/python/7-interact-with-server.md
-    - Agent capabilities: tutorials/python/8-agent-capabilities.md
-    - Ollama agent: tutorials/python/9-ollama-agent.md
-    - Next steps: tutorials/python/10-next-steps.md
-
+      - Introduction: tutorials/python/1-introduction.md
+      - Setup: tutorials/python/2-setup.md
+      - Create project: tutorials/python/3-create-project.md
+      - Agent Skills: tutorials/python/4-agent-skills.md
+      - Add Agent Card: tutorials/python/5-add-agent-card.md
+      - Start server: tutorials/python/6-start-server.md
+      - Interact with server: tutorials/python/7-interact-with-server.md
+      - Agent capabilities: tutorials/python/8-agent-capabilities.md
+      - Ollama agent: tutorials/python/9-ollama-agent.md
+      - Next steps: tutorials/python/10-next-steps.md
 
 # Repository
 repo_name: A2A
@@ -113,10 +111,30 @@ markdown_extensions:
   - toc:
       permalink: true
 
-
 # Plugins
-# plugins:
-#   - search
-#   - redirects:
-#       redirect_maps:
-#         'community.md': 'open-source.md'  # Example redirect rule
+plugins:
+  #  - search
+  - redirects:
+      redirect_maps:
+        "topics/a2a_and_mcp.md": "topics/a2a-and-mcp.md"
+        "topics/agent_discovery.md": "topics/agent-discovery.md"
+        "topics/enterprise_ready.md": "topics/enterprise-ready.md"
+        "topics/push_notification.md": "topics/push-notifications.md"
+        "topics/push_notifications.md": "topics/push-notifications.md"
+        # temp period of time with wrong links in source
+        "specification/topics/a2a_and_mcp.md": "topics/a2a-and-mcp.md"
+        "specification/topics/agent_discovery.md": "topics/agent-discovery.md"
+        "specification/topics/enterprise_ready.md": "topics/enterprise-ready.md"
+        "specification/topics/push_notification.md": "topics/push-notifications.md"
+        "specification/topics/push_notifications.md": "topics/push-notifications.md"
+        # Tutorial
+        "tutorials/python/1_introduction.md": "tutorials/python/1-introduction.md"
+        "tutorials/python/2_setup.md": "tutorials/python/2-setup.md"
+        "tutorials/python/3_create_project.md": "tutorials/python/3-create-project.md"
+        "tutorials/python/4_agent_skills.md": "tutorials/python/4-agent-skills.md"
+        "tutorials/python/5_add_agent_card.md": "tutorials/python/5-add-agent-card.md"
+        "tutorials/python/6_start_server.md": "tutorials/python/6-start-server.md"
+        "tutorials/python/7_interact_with_server.md": "tutorials/python/7-interact-with-server.md"
+        "tutorials/python/8_agent_capabilities.md": "tutorials/python/8-agent-capabilities.md"
+        "tutorials/python/9_ollama_agent.md": "tutorials/python/9-ollama-agent.md"
+        "tutorials/python/10_next_steps.md": "tutorials/python/10-next-steps.md"

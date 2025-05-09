@@ -31,12 +31,12 @@ hide:
 <img src="assets/a2a-mcp-readme.png" alt="A2A MCP Graphic" width="60%" style="display: block; margin-left: auto; margin-right: auto;">
 
 - MCP (Model Context Protocol) for tools and resources
-    - Connect agents to tools, APIs, and resources with structured inputs/outputs.
-    - Google ADK supports MCP tools. Enabling wide range of MCP servers to be used with agents.
+  - Connect agents to tools, APIs, and resources with structured inputs/outputs.
+  - Google ADK supports MCP tools. Enabling wide range of MCP servers to be used with agents.
 - A2A (Agent2Agent Protocol) for agent-agent collaboration
-    - Dynamic, multimodal communication between different agents without sharing memory, resources, and tools
-    - Open standard driven by community.
-    - Samples available using Google ADK, LangGraph, Crew.AI
+  - Dynamic, multimodal communication between different agents without sharing memory, resources, and tools
+  - Open standard driven by community.
+  - Samples available using Google ADK, LangGraph, Crew.AI
 
 ## Community Feedback and Roadmap
 

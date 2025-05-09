@@ -1,4 +1,5 @@
-from .client import A2AClient
 from .card_resolver import A2ACardResolver
+from .client import A2AClient
 
-__all__ = ["A2AClient", "A2ACardResolver"]
+
+__all__ = ['A2ACardResolver', 'A2AClient']

@@ -10,7 +10,7 @@
 
 <!-- /TOC -->
 
-A2A's [Agent Card](/documentation.md#agent-card) standardizes the _format_ of the data shared during discovery. However there are unlimited ways to discover these Agent Cards. We anticipate this being an open topic for discussion and look forward to ideas from the community.
+A2A's [Agent Card](../specification/agent-card.md) standardizes the _format_ of the data shared during discovery. However there are unlimited ways to discover these Agent Cards. We anticipate this being an open topic for discussion and look forward to ideas from the community.
 
 Here is our current thinking.
 
