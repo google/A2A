@@ -1,79 +1,47 @@
-# Agent Skills
+# Agent Skills: Defining What Your Agent Can Do
 
-An agent skill is a set of capabilities the agent can perform. Here's an example of what it would look like for our echo agent.
+An **Agent Skill** describes a specific capability or function that an A2A agent can perform. Clients use this information, which is part of the Agent Card, to understand what tasks they can delegate to the agent and how to interact with it for specific purposes.
 
-```ts
-{
-  id: "my-project-echo-skill"
-  name: "Echo Tool",
-  description: "Echos the input given",
-  tags: ["echo", "repeater"],
-  examples: ["I will see this echoed back to me"],
-  inputModes: ["text"],
-  outputModes: ["text"]
-}
-```
-
-This conforms to the skills section of the [Agent Card](../../specification.md#5-agent-discovery-the-agent-card)
-
-```ts
-{
-  id: string; // unique identifier for the agent's skill
-  name: string; //human readable name of the skill
-  // description of the skill - will be used by the client or a human
-  // as a hint to understand what the skill does.
-  description: string;
-  // Set of tag words describing classes of capabilities for this specific
-  // skill (e.g. "cooking", "customer support", "billing")
-  tags: string[];
-  // The set of example scenarios that the skill can perform.
-  // Will be used by the client as a hint to understand how the skill can be
-  // used. (e.g. "I need a recipe for bread")
-  examples?: string[]; // example prompts for tasks
-  // The set of interaction modes that the skill supports
-  // (if different than the default)
-  inputModes?: string[]; // supported mime types for input
-  outputModes?: string[]; // supported mime types for output
-}
-```
-
-## Implementation <!-- {docsify-ignore} -->
-
-Let's create this Agent Skill in code. Open up `src/my-project/__init__.py` and replace the contents with the following code
+The A2A Python SDK provides the `AgentSkill` Pydantic model from `a2a.types` to define these skills. Let's examine how the HelloWorld agent defines its single skill in the `a2a-python-sdk/examples/helloworld/__main__.py` script:
 
 ```python
-import google_a2a
-from google_a2a.common.types import AgentSkill
+# From examples/helloworld/__main__.py
 
-def main():
-  skill = AgentSkill(
-    id="my-project-echo-skill",
-    name="Echo Tool",
-    description="Echos the input given",
-    tags=["echo", "repeater"],
-    examples=["I will see this echoed back to me"],
-    inputModes=["text"],
-    outputModes=["text"],
-  )
-  print(skill)
+from a2a.types import (
+    AgentAuthentication,
+    AgentCapabilities,
+    AgentCard,
+    AgentSkill,  # This is the class we're focusing on
+)
 
-if __name__ == "__main__":
-  main()
+# ... inside the if __name__ == '__main__': block ...
+    skill = AgentSkill(
+        id='hello_world',
+        name='Returns hello world',
+        description='just returns hello world',
+        tags=['hello world'],
+        examples=['hi', 'hello world'],
+    )
+# ...
 ```
 
-## Test Run <!-- {docsify-ignore} -->
+## Understanding `AgentSkill` Fields
 
-Let's give this a run.
+The `AgentSkill` model has several important fields, as detailed in the [A2A Protocol Specification for AgentSkill](../specification.md#554-agentskill-object). Here's a breakdown of the fields used by the HelloWorld agent:
 
-```bash
-uv run my-project
-```
+- `id` (string, required): A unique identifier for this skill within the context of this particular agent. The HelloWorld agent uses `"hello_world"`.
+- `name` (string, required): A human-readable name for the skill. Here, it's `"Returns hello world"`.
+- `description` (string, optional but recommended): A more detailed explanation of what the skill does. For HelloWorld, it's `"just returns hello world"`.
+- `tags` (list of strings, optional): Keywords or categories that can help with discoverability and classification of the skill (e.g., `["hello world"]`).
+- `examples` (list of strings, optional): Example prompts or use cases that illustrate how to use this skill. This helps clients (and potentially human users or other agents) understand how to formulate requests. HelloWorld provides `["hi", "hello world"]`.
+- `inputModes` (list of strings, optional): Specifies the [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) this skill accepts as input. If omitted (as in this HelloWorld skill), it defaults to the `defaultInputModes` defined in the main `AgentCard`.
+- `outputModes` (list of strings, optional): Specifies the MIME types this skill produces as output. If omitted, it defaults to the `defaultOutputModes` from the `AgentCard`.
 
-The output should look something like this.
+In the HelloWorld example, the `AgentSkill` is straightforward:
 
-```bash
-id='my-project-echo-skill' name='Echo Tool' description='Echos the input given' tags=['echo', 'repeater'] examples=['I will see this echoed back to me'] inputModes=['text'] outputModes=['text']
-```
+- It identifies a single capability: responding with "hello world".
+- The `inputModes` and `outputModes` are not specified at the skill level, meaning this skill will use the default modes defined in the `AgentCard` (which we'll see are `["text"]` in the next section).
 
-[Prev](./3-create-project.md)
-[Next](./5-add-agent-card.md)
+Defining clear and descriptive skills, even for simple agents, is a good practice. It makes your agent more understandable and easier to integrate into larger systems.
+
+In the next section, we'll see how this `AgentSkill` is incorporated into the full `AgentCard` for the HelloWorld agent.

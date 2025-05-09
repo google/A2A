@@ -1,157 +1,189 @@
-# A2A Server
+# Starting the A2A Server
 
-We're almost ready to start our server! We'll be using the `A2AServer` class from `Google-A2A` which under the hood starts a [uvicorn](https://www.uvicorn.org/) server. However in the future this may change as `Google-A2A` is still in development.
+With the Agent Card defined, the next step is to implement the server logic that will handle incoming A2A requests and execute the agent's capabilities. The A2A Python SDK provides classes to help build this server in a structured way.
 
-## Task Manager <!-- {docsify-ignore} -->
+## Core Server Components in the SDK
 
-Before we create our server, we need a task manager to handle incoming requests.
+1. **`AgentExecutor` (from `a2a.server`)**:
+    - This is an abstract base class (ABC) that you must implement.
+    - It defines methods corresponding to the core A2A RPC calls related to task and message handling, such as:
+        - `on_message_send(request, task)`: For handling non-streaming `message/send` requests.
+        - `on_message_stream(request, task)`: For handling streaming `message/sendStream` requests, returning an `AsyncGenerator`.
+        - `on_cancel(request, task)`: For handling `tasks/cancel` requests.
+        - `on_resubscribe(request, task)`: For handling `tasks/resubscribe` requests for streaming.
+    - Your agent's specific logic for how it processes these requests and generates responses goes into your implementation of these methods.
 
-We'll be implementing the InMemoryTaskManager interface which requires us to implement two methods
+2. **`A2ARequestHandler` (e.g., `DefaultA2ARequestHandler` from `a2a.server`)**:
+    - This class takes your `AgentExecutor` implementation.
+    - It is responsible for the lower-level details of:
+        - Receiving incoming, validated A2A JSON-RPC requests.
+        - Routing these requests to the appropriate method on your `AgentExecutor`.
+        - Managing task state if a `TaskStore` is provided (for more complex agents that handle persistent tasks).
+
+3. **`A2AServer` (from `a2a.server`)**:
+    - This class orchestrates the entire server setup.
+    - It takes the `AgentCard` (which describes your agent) and an instance of `A2ARequestHandler`.
+    - Under the hood, it uses `Starlette` (a lightweight ASGI framework) and `Uvicorn` (an ASGI server) to create and run the HTTP server. This server listens for A2A requests at the URL specified in your Agent Card and also serves the Agent Card itself (typically at `/.well-known/agent.json`).
+
+## HelloWorld Server Implementation
+
+Let's examine how these components are used in the `a2a-python-sdk/examples/helloworld/` directory:
+
+### 1. `HelloWorldAgentExecutor` (in `agent_executor.py`)
+
+This class provides the concrete implementation for the `AgentExecutor` interface, defining how the HelloWorld agent behaves.
 
 ```python
-async def on_send_task(
-  self,
-  request: SendTaskRequest
-) -> SendTaskResponse:
-  """
-  This method queries or creates a task for the agent.
-  The caller will receive exactly one response.
-  """
-  pass
+# From examples/helloworld/agent_executor.py
+import asyncio
+from collections.abc import AsyncGenerator
+from typing import Any
+from uuid import uuid4
 
-async def on_send_task_subscribe(
-  self,
-  request: SendTaskStreamingRequest
-) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
-  """
-  This method subscribes the caller to future updates regarding a task.
-  The caller will receive a response and additionally receive subscription
-  updates over a session established between the client and the server
-  """
-  pass
-
-```
-
-Open up `src/my_project/task_manager.py` and add the following code. We will simply returns a direct echo response and immediately mark the task complete without any sessions or subscriptions
-
-```python
-from typing import AsyncIterable
-
-import google_a2a
-from google_a2a.common.server.task_manager import InMemoryTaskManager
-from google_a2a.common.types import (
-  Artifact,
-  JSONRPCResponse,
-  Message,
-  SendTaskRequest,
-  SendTaskResponse,
-  SendTaskStreamingRequest,
-  SendTaskStreamingResponse,
-  Task,
-  TaskState,
-  TaskStatus,
-  TaskStatusUpdateEvent,
+from a2a.server import AgentExecutor # Base class
+from a2a.types import (
+    CancelTaskRequest, CancelTaskResponse, JSONRPCErrorResponse, Message, Part, Role,
+    SendMessageRequest, SendMessageResponse, SendMessageStreamingRequest,
+    SendMessageStreamingResponse, SendMessageStreamingSuccessResponse,
+    SendMessageSuccessResponse, Task, TaskResubscriptionRequest, TextPart,
+    UnsupportedOperationError,
 )
 
-class MyAgentTaskManager(InMemoryTaskManager):
-  def __init__(self):
-    super().__init__()
+class HelloWorldAgent:
+    """A simple agent that can return 'Hello World' or stream it."""
+    async def invoke(self):
+        return 'Hello World'
 
-  async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
-    # Upsert a task stored by InMemoryTaskManager
-    await self.upsert_task(request.params)
+    async def stream(self) -> AsyncGenerator[dict[str, Any], None]:
+        yield {'content': 'Hello ', 'done': False}
+        await asyncio.sleep(0.1) # Simulate a small delay for demonstration
+        yield {'content': 'World', 'done': True}
 
-    task_id = request.params.id
-    # Our custom logic that simply marks the task as complete
-    # and returns the echo text
-    received_text = request.params.message.parts[0].text
-    task = await self._update_task(
-      task_id=task_id,
-      task_state=TaskState.COMPLETED,
-      response_text=f"on_send_task received: {received_text}"
-    )
+class HelloWorldAgentExecutor(AgentExecutor):
+    """HelloWorld AgentExecutor Implementation."""
+    def __init__(self):
+        self.agent = HelloWorldAgent() # The actual "logic" part
 
-    # Send the response
-    return SendTaskResponse(id=request.id, result=task)
+    async def on_message_send(
+        self, request: SendMessageRequest, task: Task | None # Task is not used in this simple example
+    ) -> SendMessageResponse:
+        """Handles non-streaming message/send requests."""
+        result_text = await self.agent.invoke()
+        response_message = Message(
+            role=Role.agent,
+            parts=[Part(root=TextPart(text=result_text))],
+            messageId=str(uuid4()),
+        )
+        # For a simple agent not managing persistent tasks,
+        # we can return the message directly in the success response.
+        return SendMessageResponse(
+            root=SendMessageSuccessResponse(id=request.id, result=response_message)
+        )
 
-  async def on_send_task_subscribe(
-    self,
-    request: SendTaskStreamingRequest
-  ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
-    pass
+    async def on_message_stream(
+        self, request: SendMessageStreamingRequest, task: Task | None # Task is not used here
+    ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
+        """Handles streaming message/sendStream requests."""
+        async for chunk in self.agent.stream():
+            stream_message = Message(
+                role=Role.agent,
+                parts=[Part(root=TextPart(text=chunk['content']))],
+                messageId=str(uuid4()),
+                final=chunk['done'], # Crucial for SSE: signals if this is the last chunk
+            )
+            yield SendMessageStreamingResponse(
+                root=SendMessageStreamingSuccessResponse(id=request.id, result=stream_message)
+            )
 
-  async def _update_task(
-    self,
-    task_id: str,
-    task_state: TaskState,
-    response_text: str,
-  ) -> Task:
-    task = self.tasks[task_id]
-    agent_response_parts = [
-      {
-        "type": "text",
-        "text": response_text,
-      }
-    ]
-    task.status = TaskStatus(
-      state=task_state,
-      message=Message(
-        role="agent",
-        parts=agent_response_parts,
-      )
-    )
-    task.artifacts = [
-      Artifact(
-        parts=agent_response_parts,
-      )
-    ]
-    return task
+    # For methods not explicitly supported by this simple agent,
+    # we return an UnsupportedOperationError.
+    async def on_cancel(
+        self, request: CancelTaskRequest, task: Task
+    ) -> CancelTaskResponse:
+        return CancelTaskResponse(
+            root=JSONRPCErrorResponse(id=request.id, error=UnsupportedOperationError())
+        )
 
+    async def on_resubscribe(
+        self, request: TaskResubscriptionRequest, task: Task
+    ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
+        yield SendMessageStreamingResponse(
+            root=JSONRPCErrorResponse(id=request.id, error=UnsupportedOperationError())
+        )
 ```
 
-## A2A Server <!-- {docsify-ignore} -->
+**Key Points for `HelloWorldAgentExecutor`:**
 
-With a task manager complete, we can now create our server
+- It instantiates a `HelloWorldAgent` which contains the very simple logic.
+- `on_message_send`: Handles synchronous requests. It invokes the agent, gets the "Hello World" string, and packages it into an A2A `Message` within a `SendMessageSuccessResponse`.
+- `on_message_stream`: Handles streaming requests. It iterates over the chunks produced by `self.agent.stream()` (which is an async generator) and yields each chunk as a `SendMessageStreamingSuccessResponse` containing an A2A `Message`. The `final` attribute on the `Message` is set to `True` for the last chunk.
+- Other methods like `on_cancel` and `on_resubscribe` are implemented to return an `UnsupportedOperationError`, as this basic agent doesn't manage complex task lifecycles or resubscriptions.
 
-Open up `src/my_project/__init__.py` and add the following code.
+### 2. Server Setup in `__main__.py`
+
+This script ties all the components together to start the server:
 
 ```python
-# ...
-from google_a2a.common.server import A2AServer
-from my_project.task_manager import MyAgentTaskManager
-# ...
-def main(host, port):
-  # ...
+# From examples/helloworld/__main__.py
+from agent_executor import HelloWorldAgentExecutor # Our AgentExecutor implementation
+from a2a.server import A2AServer, DefaultA2ARequestHandler # SDK components
+from a2a.types import (
+    AgentAuthentication, AgentCapabilities, AgentCard, AgentSkill, # Types for AgentCard
+)
 
-  task_manager = MyAgentTaskManager()
-  server = A2AServer(
-    agent_card=agent_card,
-    task_manager=task_manager,
-    host=host,
-    port=port,
-  )
-  server.start()
+if __name__ == '__main__':
+    # Define the skill (as shown in "Agent Skills" section)
+    skill = AgentSkill(
+        id='hello_world',
+        name='Returns hello world',
+        description='just returns hello world',
+        tags=['hello world'],
+        examples=['hi', 'hello world'],
+    )
 
+    # Define the AgentCard (as shown in "Add Agent Card" section)
+    agent_card = AgentCard(
+        name='Hello World Agent',
+        description='Just a hello world agent',
+        url='http://localhost:9999/',
+        version='1.0.0',
+        defaultInputModes=['text'],
+        defaultOutputModes=['text'],
+        capabilities=AgentCapabilities(), # Default capabilities
+        skills=[skill],
+        authentication=AgentAuthentication(schemes=['public']),
+    )
+
+    # Create the request handler with our agent executor
+    request_handler = DefaultA2ARequestHandler(
+        agent_executor=HelloWorldAgentExecutor()
+    )
+
+    # Create and start the A2A server
+    server = A2AServer(agent_card=agent_card, request_handler=request_handler)
+    server.start(host='0.0.0.0', port=9999)
 ```
 
-## Test Run <!-- {docsify-ignore} -->
+**Sequence of setup:**
 
-Let's give this a run.
+1. The `AgentSkill` and `AgentCard` are defined.
+2. An instance of our `HelloWorldAgentExecutor` is created.
+3. This executor is passed to `DefaultA2ARequestHandler`. For this simple example, we're not explicitly providing a `TaskStore`, so the `DefaultA2ARequestHandler` will use a transient, in-memory one if its task-related features were engaged (they are minimally used by HelloWorld's direct responses).
+4. The `agent_card` and the `request_handler` are used to initialize the `A2AServer`.
+5. `server.start(host='0.0.0.0', port=9999)` launches the Uvicorn server, making the HelloWorld A2A agent available at `http://localhost:9999/`. The server will also serve its Agent Card at `http://localhost:9999/.well-known/agent.json`.
 
-```bash
-uv run my-project
-```
+## Running the Server
 
-The output should look something like this.
+As you did in the previous "Create Project" step:
 
-```bash
-INFO:     Started server process [20506]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://localhost:10002 (Press CTRL+C to quit)
-```
+1. Make sure your virtual environment is activated.
+2. Navigate to the `a2a-python-sdk/examples/helloworld` directory in your terminal.
+3. Run the main script:
 
-Congratulations! Your A2A server is now running!
+    ```bash
+    python __main__.py
+    ```
 
-[Prev](./5-add-agent-card.md)
-[Next](./7-interact-with-server.md)
+The server will start, and you'll see Uvicorn's output indicating it's running and listening on port 9999.
+
+Your A2A server for the HelloWorld agent is now live and ready to receive requests! In the next step, we'll use the provided `test_client.py` to interact with it.

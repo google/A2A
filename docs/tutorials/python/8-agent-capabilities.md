@@ -1,204 +1,105 @@
-# Adding Agent Capabilities
+# Agent Capabilities: Streaming and Asynchronicity
 
-Now that we have a basic A2A server running, let's add some more functionality. We'll explore how A2A can work asynchronously and stream responses.
+The Agent2Agent (A2A) protocol is designed to handle more than just simple, immediate request-response interactions. Real-world agent collaborations often involve:
 
-## Streaming <!-- {docsify-ignore} -->
+- **Streaming**: Receiving partial results or continuous updates as an agent processes a task. This is useful for providing immediate feedback or handling large amounts of data incrementally.
+- **Long-Running Tasks**: Operations that might take considerable time to complete, where the client shouldn't block waiting for a single response.
+- **Multi-Turn Conversations**: Interactions where the agent might need to ask clarifying questions or provide intermediate feedback before reaching a final result.
 
-This allows clients to subscribe to the server and receive multiple updates instead of a single response. This can be useful for long running agent tasks, or where multiple Artifacts may streamed back to the client. See the [Streaming Documentation](../../topics/streaming-and-async.md)
+A2A supports these through Server-Sent Events (SSE) for streaming and by defining task lifecycle states that allow for asynchronous operations and further client input.
 
-First we'll declare our agent as ready for streaming. Open up `src/my_project/__init__.py` and update AgentCapabilities
+## Streaming with Server-Sent Events (SSE)
 
-```python
-# ...
-def main(host, port):
-  # ...
-  capabilities = AgentCapabilities(
-    streaming=True
-  )
-  # ...
-```
+As demonstrated by our HelloWorld agent and its `test_client.py`, A2A supports streaming responses using SSE.
 
-Now in `src/my_project/task_manager.py` we'll have to implement `on_send_task_subscribe`
+**Recap of Server-Side Streaming (`HelloWorldAgentExecutor`):**
+The `on_message_stream` method in your `AgentExecutor` implementation is key for SSE.
 
 ```python
-import asyncio
+# From examples/helloworld/agent_executor.py
 # ...
-class MyAgentTaskManager(InMemoryTaskManager):
-  # ...
-  async def _stream_3_messages(self, request: SendTaskStreamingRequest):
-    task_id = request.params.id
-    received_text = request.params.message.parts[0].text
-
-    text_messages = ["one", "two", "three"]
-    for text in text_messages:
-      parts = [
-        {
-          "type": "text",
-          "text": f"{received_text}: {text}",
-        }
-      ]
-      message = Message(role="agent", parts=parts)
-      is_last = text == text_messages[-1]
-      task_state = TaskState.COMPLETED if is_last else TaskState.WORKING
-      task_status = TaskStatus(
-        state=task_state,
-        message=message
-      )
-      task_update_event = TaskStatusUpdateEvent(
-        id=request.params.id,
-        status=task_status,
-        final=is_last,
-      )
-      await self.enqueue_events_for_sse(
-        request.params.id,
-        task_update_event
-      )
-
-  async def on_send_task_subscribe(
-    self,
-    request: SendTaskStreamingRequest
-  ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
-    # Upsert a task stored by InMemoryTaskManager
-    await self.upsert_task(request.params)
-
-    task_id = request.params.id
-    # Create a queue of work to be done for this task
-    sse_event_queue = await self.setup_sse_consumer(task_id=task_id)
-
-    # Start the asynchronous work for this task
-    asyncio.create_task(self._stream_3_messages(request))
-
-    # Tell the client to expect future streaming responses
-    return self.dequeue_events_for_sse(
-      request_id=request.id,
-      task_id=task_id,
-      sse_event_queue=sse_event_queue,
-    )
-```
-
-Restart your A2A server to pickup the new changes and then rerun the cli
-
-```bash
-$ uv run google-a2a-cli --agent http://localhost:10002
-=========  starting a new task ========
-
-What do you want to send to the agent? (:q or quit to exit): Streaming?
-
-"status":{"state":"working","message":{"role":"agent","parts":[{"type":"text","text":"Streaming?: one"}]}
-"status":{"state":"working","message":{"role":"agent","parts":[{"type":"text","text":"Streaming?: two"}]}
-"status":{"state":"completed","message":{"role":"agent","parts":[{"type":"text","text":"Streaming?: three"}]}
-
-```
-
-Sometimes the agent might need additional input. For example, maybe the agent will ask the client if they'd like to keep repeating the 3 messages. In this case, the agent will respond with `TaskState.INPUT_REQUIRED` to which the client will then resend `send_task_streaming` with the same `task_id` and `session_id` but with an updated message providing the input required by the agent. On the server-side we'll update `on_send_task_subscribe` to handle this case.
-
-```python
-# ...
-
-class MyAgentTaskManager(InMemoryTaskManager):
-  # ...
-  async def _stream_3_messages(self, request: SendTaskStreamingRequest):
+class HelloWorldAgentExecutor(AgentExecutor):
     # ...
-    async for message in messages:
-      # ...
-      # is_last = message == messages[-1] # Delete this line
-      task_state = TaskState.WORKING
-      # ...
-      task_update_event = TaskStatusUpdateEvent(
-        id=request.params.id,
-        status=task_status,
-        final=False,
-      )
-      # ...
+    async def on_message_stream(
+        self, request: SendMessageStreamingRequest, task: Task | None
+    ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
+        async for chunk in self.agent.stream(): # self.agent.stream() is an async generator
+            message = Message(
+                role=Role.agent,
+                parts=[Part(root=TextPart(text=chunk['content']))],
+                messageId=str(uuid4()),
+                final=chunk['done'], # Key for SSE: signals if this is the last chunk
+            )
+            yield SendMessageStreamingResponse(
+                root=SendMessageStreamingSuccessResponse(id=request.id, result=message)
+            )
+```
 
-    ask_message = Message(
-      role="agent",
-      parts=[
-        {
-          "type": "text",
-          "text": "Would you like more messages? (Y/N)"
-        }
-      ]
-    )
-    task_update_event = TaskStatusUpdateEvent(
-      id=request.params.id,
-      status=TaskStatus(
-        state=TaskState.INPUT_REQUIRED,
-        message=ask_message
-      ),
-      final=True,
-    )
-    await self.enqueue_events_for_sse(
-      request.params.id,
-      task_update_event
-    )
-  # ...
-  async def on_send_task_subscribe(
-    self,
-    request: SendTaskStreamingRequest
-  ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
-    task_id = request.params.id
-    is_new_task = task_id in self.tasks
-    # Upsert a task stored by InMemoryTaskManager
-    await self.upsert_task(request.params)
+When an `AgentExecutor`'s `on_message_stream` method is an `async def` that `yields` `SendMessageStreamingResponse` objects, the `A2AServer` (via `DefaultA2ARequestHandler` and `Starlette`) automatically handles:
 
-    received_text = request.params.message.parts[0].text
-    sse_event_queue = await self.setup_sse_consumer(task_id=task_id)
-    if not is_new_task and received_text == "N":
-      task_update_event = TaskStatusUpdateEvent(
-        id=request.params.id,
-        status=TaskStatus(
-          state=TaskState.COMPLETED,
-          message=Message(
-            role="agent",
-            parts=[
-              {
-                "type": "text",
-                "text": "All done!"
-              }
-            ]
-          )
-        ),
-        final=True,
-      )
-      await self.enqueue_events_for_sse(
-        request.params.id,
-        task_update_event,
-      )
-    else:
-      asyncio.create_task(self._stream_3_messages(request))
+1. Establishing an SSE connection with the client.
+2. Sending each `yielded` response as an individual server-sent event.
+The `message.final` attribute in the yielded `Message` object is crucial: when `True`, it indicates to the client that this is the last piece of the current streamed response for that particular request.
 
-    return self.dequeue_events_for_sse(
-      request_id=request.id,
-      task_id=task_id,
-      sse_event_queue=sse_event_queue,
+**Recap of Client-Side SSE Handling (`test_client.py`):**
+
+```python
+# From examples/helloworld/test_client.py
+# ...
+        stream_response_generator = client.send_message_streaming(
+            payload=send_message_payload
+        )
+        async for chunk in stream_response_generator: # Iterates over SSE events
+            # Each 'chunk' is a SendMessageStreamingResponse
+            print(chunk.model_dump_json(exclude_none=True, indent=2))
+```
+
+The `A2AClient.send_message_streaming()` method returns an `AsyncGenerator`. The client code can then use `async for` to iterate over this generator, processing each `SendMessageStreamingResponse` (each SSE event) as it arrives from the server.
+
+**Advertising Streaming Capability in `AgentCard`:**
+To formally let clients know that an agent supports streaming, its `AgentCard` should set the `streaming` capability to `true`.
+
+```python
+# In __main__.py for an agent that supports streaming
+# (e.g., if we were to update HelloWorld's AgentCard explicitly)
+    agent_card = AgentCard(
+        # ... other fields ...
+        capabilities=AgentCapabilities(streaming=True), # Explicitly enable streaming
+        # ...
     )
 ```
 
-Now after restarting the server and running the cli, we can see the task will keep running until we tell the agent `N`
+While our `HelloWorldAgentExecutor` *does* implement `on_message_stream`, its `AgentCard` in `__main__.py` currently initializes `AgentCapabilities()` with no arguments, meaning `streaming` defaults to `None` (which is effectively `False` if a client strictly checks this capability before attempting a streaming call). For production agents, accurately reflecting capabilities in the Agent Card is important.
 
-```bash
-$ uv run google-a2a-cli --agent http://localhost:10002
-=========  starting a new task ========
+## Handling Task State and Multi-Turn Interactions
 
-What do you want to send to the agent? (:q or quit to exit): Streaming?
+Beyond simple request-response or one-way streams, A2A is designed for complex, stateful tasks that might involve multiple back-and-forth exchanges.
 
-"status":{"state":"working","message":{"role":"agent","parts":[{"type":"text","text":"Streaming?: one"}]}
-"status":{"state":"working","message":{"role":"agent","parts":[{"type":"text","text":"Streaming?: two"}]}
-"status":{"state":"working","message":{"role":"agent","parts":[{"type":"text","text":"Streaming?: three"}]}
-"status":{"state":"input-required","message":{"role":"agent","parts":[{"type":"text","text":"Would you like more messages? (Y/N)"}]}
+- **The `Task` Object**: As defined in `a2a.types.Task` and the [A2A Specification](../specification.md#61-task-object), the `Task` object is central to managing the state of an interaction. It includes:
+  - `id`: A unique identifier for the task.
+  - `contextId` (previously `sessionId` in older drafts): For grouping related messages or tasks within a broader conversational context.
+  - `status`: A `TaskStatus` object indicating the current `TaskState` (e.g., `submitted`, `working`, `input_required`, `completed`, `failed`), an optional `Message` providing context for that status, and a `timestamp`.
+  - `history`: An optional list of `Message` objects exchanged so far.
+  - `artifacts`: A list of outputs generated by the agent.
 
-What do you want to send to the agent? (:q or quit to exit): N
+- **`TaskStore`**: The `a2a.server.TaskStore` (with `InMemoryTaskStore` as a basic implementation) allows the server-side `A2ARequestHandler` to persist and retrieve `Task` state. This is crucial for multi-turn interactions where the task's context needs to be maintained across multiple client requests.
 
-"status":{"state":"completed","message":{"role":"agent","parts":[{"type":"text","text":"All done!"}]}
+- **`TaskState.input_required`**: A key state for multi-turn dialogues. If an agent needs more information from the client to proceed with a task, its `AgentExecutor` can:
+    1. Update the `Task` object's status to `TaskState.input_required`.
+    2. Include a `Message` in `Task.status.message` that prompts the user for the necessary input.
+    3. Save the updated `Task` to the `TaskStore`.
+    The client, upon receiving this status (either as a direct response or via a stream update), would then gather the required input and send a new `message/send` or `message/sendStream` request. This new request **must use the same `Task.id`** (and typically the same `Task.contextId`) to allow the server to retrieve the existing task context and continue processing.
 
-```
+The HelloWorld example, being very simple, doesn't deeply utilize `TaskStore` or the `input_required` state for complex dialogues because its interactions are typically one-shot. However, the infrastructure within the SDK's `DefaultA2ARequestHandler` is prepared to use a `TaskStore` if the `AgentExecutor`'s responses involve `Task` objects that evolve over time.
 
-Congradulations! You now have an agent that is able to asynchronously perform work and ask users for input when needed.
+The `LangGraph` example, which we will explore in the next section, provides a more comprehensive demonstration of these advanced capabilities, including:
 
-## Other Capabilities <!-- {docsify-ignore} -->
+- Creating and persisting `Task` objects.
+- Using a `TaskStore` (specifically `InMemoryTaskStore`).
+- Streaming intermediate "thinking" steps or progress updates.
+- Potentially transitioning a task to `TaskState.input_required` if the LangGraph agent needs clarification.
+- Updating the task with final results or artifacts upon completion.
 
-If you're interested, check out the [documentation](../../topics/key-concepts.md) for other capabilities for your A2A agent. For now we'll jump into adding AI into A2A using a local LLM.
+These features are essential for building A2A agents that can engage in meaningful, stateful, and potentially lengthy collaborations.
 
-[Prev](./7-interact-with-server.md)
-[Next](./9-ollama-agent.md)
+In the next section, we'll dive into the `LangGraph` example to see these more advanced concepts in action.

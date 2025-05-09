@@ -18,18 +18,17 @@ nav:
   - Specification: specification.md
   - Community: community.md
   - Partners: partners.md
-  # TODO: Re-add tutorial when A2A Python SDK is available
-  # - Tutorial (Python):
-  #   - Introduction: tutorials/python/1-introduction.md
-  #   - Setup: tutorials/python/2-setup.md
-  #   - Create Project: tutorials/python/3-create-project.md
-  #   - Agent Skills: tutorials/python/4-agent-skills.md
-  #   - Add Agent Card: tutorials/python/5-add-agent-card.md
-  #   - Start Server: tutorials/python/6-start-server.md
-  #   - Interact with Server: tutorials/python/7-interact-with-server.md
-  #   - Agent Capabilities: tutorials/python/8-agent-capabilities.md
-  #   - Ollama Agent: tutorials/python/9-ollama-agent.md
-  #   - Next Steps: tutorials/python/10-next-steps.md
+  - Tutorial (Python):
+    - Introduction: tutorials/python/1-introduction.md
+    - Setup: tutorials/python/2-setup.md
+    - Create Project: tutorials/python/3-create-project.md
+    - Agent Skills: tutorials/python/4-agent-skills.md
+    - Add Agent Card: tutorials/python/5-add-agent-card.md
+    - Start Server: tutorials/python/6-start-server.md
+    - Interact with Server: tutorials/python/7-interact-with-server.md
+    - Agent Capabilities: tutorials/python/8-agent-capabilities.md
+    - LangGraph Agent: tutorials/python/9-langgraph-agent.md
+    - Next Steps: tutorials/python/10-next-steps.md
 
 # Repository
 repo_name: google/A2A
@@ -136,5 +135,6 @@ plugins:
         "tutorials/python/6_start_server.md": "tutorials/python/6-start-server.md"
         "tutorials/python/7_interact_with_server.md": "tutorials/python/7-interact-with-server.md"
         "tutorials/python/8_agent_capabilities.md": "tutorials/python/8-agent-capabilities.md"
-        "tutorials/python/9_ollama_agent.md": "tutorials/python/9-ollama-agent.md"
+        "tutorials/python/9_ollama_agent.md": "tutorials/python/9-langgraph-agent.md"
+        "tutorials/python/9-ollama-agent.md": "tutorials/python/9-langgraph-agent.md"
         "tutorials/python/10_next_steps.md": "tutorials/python/10-next-steps.md"

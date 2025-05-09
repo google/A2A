@@ -1,71 +1,53 @@
-# Creating A Project
+# Using the HelloWorld Example Project
 
-Let's first create a project using `uv`. We'll add the `--package` flag in case you want to add tests, or publish your project later
+For this tutorial, we'll start with the "HelloWorld" example provided within the A2A Python SDK. This example demonstrates the fundamental structure of an A2A agent and server using the SDK components.
 
-```bash
-uv init --package my-project
-cd my-project
-```
+## Navigate to the HelloWorld Example
 
-## Using a Virtual Env <!-- {docsify-ignore} -->
-
-We'll create a venv for this project. This only needs to be done once
+Ensure your virtual environment from the [Setup](./2-setup.md) step is still activated. From the `a2a-python-sdk` directory (where you installed the SDK), navigate to the `examples/helloworld` directory:
 
 ```bash
-uv venv .venv
+cd examples/helloworld
 ```
 
-For this and any future terminal windows you open, you'll need to source this venv
+## Project Structure
+
+The HelloWorld example has a simple and focused structure:
+
+```console { .no-copy }
+a2a-python-sdk/
+└── examples/
+    └── helloworld/
+        ├── __main__.py         # Main script to define AgentCard and run the A2A server
+        ├── agent_executor.py   # Implements the agent's core logic (HelloWorldAgentExecutor)
+        └── test_client.py      # A simple client script to test the HelloWorld server
+```
+
+- `__main__.py`: This script is the entry point. It defines the `AgentCard` (which describes the agent's capabilities) and uses `A2AServer` from the SDK to start the HTTP server.
+- `agent_executor.py`: This file contains the `HelloWorldAgentExecutor` class. This class implements the `a2a.server.AgentExecutor` interface, providing the actual logic for how the agent responds to `message/send` and `message/sendStream` requests.
+- `test_client.py`: This script demonstrates how to use `a2a.client.A2AClient` to connect to the running HelloWorld A2A server, send requests, and process responses.
+
+We will explore the contents of these files in detail in the upcoming sections of the tutorial.
+
+## Test Run: Starting the HelloWorld Server
+
+Let's try running the HelloWorld server to make sure everything is set up correctly. From within the `a2a-python-sdk/examples/helloworld` directory, execute the main script:
 
 ```bash
-source .venv/bin/activate
+python __main__.py
 ```
 
-If you're using a code editor such as VS Code, you'll want to set the Python Interpreter for code completions. In VS Code, press `Ctrl-Shift-P` and select `Python: Select Interpreter`. Then select your project `my-project` followed by the correct python interpreter `Python 3.12.3 ('.venv':venv) ./.venv/bin/python`
+If the server starts successfully, you should see output similar to this in your terminal:
 
-The source code should now look similar to this.
-
-```bash
-tree .
-.
-├── pyproject.toml
-├── README.md
-├── src
-│   └── my-project
-│       ├── __init__.py
+```console { .no-copy }
+INFO:     Started server process [XXXXX]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:9999 (Press CTRL+C to quit)
 ```
 
-## Adding the Google-A2A Python Libraries <!-- {docsify-ignore} -->
+*(The process ID `[XXXXX]` will vary.)*
 
-Next we'll add the sample A2A python libraries from Google.
+This output indicates that your A2A server is running and listening for requests on port 9999. You can stop the server for now by pressing `CTRL+C` in the terminal.
 
-```bash
-uv add git+https://github.com/google/A2A#subdirectory=samples/python
-```
-
-## Setting up the project structure <!-- {docsify-ignore} -->
-
-Let's now create some files we'll later be using
-
-```bash
-touch src/my_project/agent.py
-touch src/my_project/task_manager.py
-```
-
-## Test Run <!-- {docsify-ignore} -->
-
-If everything is setup correctly, you should now be able to run your application.
-
-```bash
-uv run my-project
-```
-
-The output should look something like this.
-
-```bash
-Hello from my-project!
-```
-
-
-[Prev](./2-setup.md)
-[Next](./4-agent-skills.md)
+In the next sections, we'll dive into the code to understand how this HelloWorld agent is defined, how its server operates, and how to interact with it.
