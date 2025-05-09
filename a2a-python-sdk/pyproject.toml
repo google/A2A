@@ -1,0 +1,36 @@
+[project]
+name = "a2a"
+version = "0.2.0"
+description = "A2A Python SDK"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "httpx>=0.28.1",
+    "httpx-sse>=0.4.0",
+    "pydantic>=2.11.3",
+    "sse-starlette>=2.3.3",
+    "starlette>=0.46.2",
+    "typing-extensions>=4.13.2",
+    "uvicorn>=0.34.2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+addopts = "--cov=src --cov-report term --cov-report xml:coverage.xml --cov-branch"
+
+[tool.uv.workspace]
+members = ["examples/langgraph"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "datamodel-code-generator>=0.30.0",
+    "pytest>=8.3.5",
+    "pytest-cov>=6.1.1",
+    "ruff>=0.11.6",
+]

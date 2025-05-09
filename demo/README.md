@@ -2,7 +2,7 @@
 
 This demo application showcases agents talking to other agents over A2A.
 
-![image](/images/a2a_demo_arch.png)
+![image](./a2a_demo_arch.png)
 
 - The frontend is a [mesop](https://github.com/mesop-dev/mesop) web application that renders conversations as content between the end user and the "Host Agent". This app can render text content, thought bubbles, web forms (requests for input from agents), and images. More content types coming soon
 

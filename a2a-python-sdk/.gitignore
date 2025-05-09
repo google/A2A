@@ -1,0 +1,10 @@
+.DS_Store
+__pycache__
+.env
+.coverage
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.venv
+coverage.xml
+spec.json

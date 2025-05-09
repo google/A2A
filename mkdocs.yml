@@ -1,40 +1,38 @@
 # Project information
 site_name: Agent2Agent Protocol (A2A)
-site_url: https://google.github.io/A2A
+site_url: https://google.github.io/A2A/
 site_description: >-
-  An open protocol enabling communication and interoperability between opaque agentic applications
+  An open protocol enabling communication and interoperability between opaque agentic applications.
 site_dir: site
+
 # Navigation
 nav:
   - Home: index.md
-  - Why A2A?:
-      - A2A and MCP: topics/a2a-and-mcp.md
-      - Agent Discovery: topics/agent-discovery.md
-      - Enterprise Ready: topics/enterprise-ready.md
-      - Push Notifications: topics/push-notifications.md
-  - A2A Protocol:
-      - About: specification/index.md
-      - Overview: specification/overview.md
-      - Agent Card: specification/agent-card.md
-      - Agent-to-Agent Communication: specification/agent-to-agent-communication.md
-      - Sample Messages: specification/sample-messages.md
+  - Topics:
+    - What is A2A?: topics/what-is-a2a.md
+    - Key Concepts: topics/key-concepts.md
+    - A2A and MCP: topics/a2a-and-mcp.md
+    - Agent Discovery: topics/agent-discovery.md
+    - Enterprise-Ready Features: topics/enterprise-ready.md
+    - Streaming & Asynchronous Operations: topics/streaming-and-async.md
+  - Specification: specification.md
   - Community: community.md
   - Partners: partners.md
-  - Resources: resources.md
-  - A2A Tutorial (Python):
-      - Introduction: tutorials/python/1-introduction.md
-      - Setup: tutorials/python/2-setup.md
-      - Create project: tutorials/python/3-create-project.md
-      - Agent Skills: tutorials/python/4-agent-skills.md
-      - Add Agent Card: tutorials/python/5-add-agent-card.md
-      - Start server: tutorials/python/6-start-server.md
-      - Interact with server: tutorials/python/7-interact-with-server.md
-      - Agent capabilities: tutorials/python/8-agent-capabilities.md
-      - Ollama agent: tutorials/python/9-ollama-agent.md
-      - Next steps: tutorials/python/10-next-steps.md
+  # TODO: Re-add tutorial when A2A Python SDK is available
+  # - Tutorial (Python):
+  #   - Introduction: tutorials/python/1-introduction.md
+  #   - Setup: tutorials/python/2-setup.md
+  #   - Create Project: tutorials/python/3-create-project.md
+  #   - Agent Skills: tutorials/python/4-agent-skills.md
+  #   - Add Agent Card: tutorials/python/5-add-agent-card.md
+  #   - Start Server: tutorials/python/6-start-server.md
+  #   - Interact with Server: tutorials/python/7-interact-with-server.md
+  #   - Agent Capabilities: tutorials/python/8-agent-capabilities.md
+  #   - Ollama Agent: tutorials/python/9-ollama-agent.md
+  #   - Next Steps: tutorials/python/10-next-steps.md
 
 # Repository
-repo_name: A2A
+repo_name: google/A2A
 repo_url: https://github.com/google/A2A
 
 # Copyright
@@ -50,8 +48,8 @@ theme:
   font:
     text: Google Sans
     code: Roboto Mono
-  logo: assets/a2a-logo.png
-  favicon: assets/a2a-logo.png
+  logo: assets/a2a-logo-white.svg
+  favicon: assets/a2a-logo-black.svg
   icon:
     repo: fontawesome/brands/github
   palette:
@@ -62,7 +60,7 @@ theme:
         icon: material/brightness-7
         name: Switch to dark mode
     - scheme: slate
-      primary: white
+      primary: indigo
       accent: white
       toggle:
         icon: material/brightness-4
@@ -113,20 +111,22 @@ markdown_extensions:
 
 # Plugins
 plugins:
-  #  - search
+  - search
   - redirects:
       redirect_maps:
-        "topics/a2a_and_mcp.md": "topics/a2a-and-mcp.md"
-        "topics/agent_discovery.md": "topics/agent-discovery.md"
-        "topics/enterprise_ready.md": "topics/enterprise-ready.md"
-        "topics/push_notification.md": "topics/push-notifications.md"
-        "topics/push_notifications.md": "topics/push-notifications.md"
-        # temp period of time with wrong links in source
+        "specification/overview.md": "specification.md"
+        "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
+        "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
+        "specification/sample-messages.md": "specification.md#9-common-workflows-examples"
+        "specification/details.md": "specification.md"
+        "documentation.md": "topics/key-concepts.md"
+        "resources.md": "index.md"
+        "topics/push-notifications.md": "topics/streaming-and-async.md"
         "specification/topics/a2a_and_mcp.md": "topics/a2a-and-mcp.md"
         "specification/topics/agent_discovery.md": "topics/agent-discovery.md"
         "specification/topics/enterprise_ready.md": "topics/enterprise-ready.md"
-        "specification/topics/push_notification.md": "topics/push-notifications.md"
-        "specification/topics/push_notifications.md": "topics/push-notifications.md"
+        "specification/topics/push_notification.md": "topics/streaming-and-async.md"
+        "specification/topics/push_notifications.md": "topics/streaming-and-async.md"
         # Tutorial
         "tutorials/python/1_introduction.md": "tutorials/python/1-introduction.md"
         "tutorials/python/2_setup.md": "tutorials/python/2-setup.md"
