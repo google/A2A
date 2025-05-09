@@ -54,10 +54,10 @@ As AI agents become more prevalent, their ability to interoperate is crucial for
   - [Semantic Kernel](/samples/python/agents/semantickernel/README.md)
   - [AG2 + MCP](/samples/python/agents/ag2/README.md)
 - 📑 Review key topics to understand protocol details
-  - [A2A and MCP](https://google.github.io/A2A/topics/a2a_and_mcp/)
-  - [Agent Discovery](https://google.github.io/A2A/topics/agent_discovery/)
-  - [Enterprise Ready](https://google.github.io/A2A/topics/enterprise_ready/)
-  - [Push Notifications](https://google.github.io/A2A/topics/push_notifications/)
+  - [A2A and MCP](https://google.github.io/A2A/topics/a2a-and-mcp/)
+  - [Agent Discovery](https://google.github.io/A2A/topics/agent-discovery/)
+  - [Enterprise Ready](https://google.github.io/A2A/topics/enterprise-ready/)
+  - [Push Notifications](https://google.github.io/A2A/topics/push-notifications/)
 
 ## Contributing
 
