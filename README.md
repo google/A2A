@@ -5,7 +5,7 @@
 
 **An open protocol enabling communication and interoperability between opaque agentic applications.**
 
-The Agent2Agent (A2A) protocol, an initiative by Google, addresses a critical challenge in the AI landscape: enabling AI agents, built on diverse frameworks and by various vendors, to communicate and collaborate effectively. A2A aims to provide a common language for agents, fostering a more interconnected, powerful, and innovative AI ecosystem.
+The Agent2Agent (A2A) protocol addresses a critical challenge in the AI landscape: enabling gen AI agents, built on diverse frameworks by different companies running on separate servers, to communicate and collaborate effectively - as agents, not just as tools. A2A aims to provide a common language for agents, fostering a more interconnected, powerful, and innovative AI ecosystem.
 
 With A2A, agents can:
 
