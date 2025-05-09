@@ -53,7 +53,7 @@ A2A models agents as enterprise applications (and can do so because A2A agents a
 
 A2A follows [OpenAPI's Authentication specification](https://swagger.io/docs/specification/v3_0/authentication/) for authentication. Importantly, A2A agents do not exchange identity information within the A2A protocol. Instead, they obtain materials (such as tokens) out of band and transmit materials in HTTP headers and not in A2A payloads.
 
-While A2A does not transmit identity in-band, servers do send authentication requirements in A2A payloads. At minimum, servers are expected to publish their requirements in their [Agent Card](#agent-card). Thoughts about discovering agent cards are in [eopic: Agent Cards](topics/agent-discovery.md).
+While A2A does not transmit identity in-band, servers do send authentication requirements in A2A payloads. At minimum, servers are expected to publish their requirements in their [Agent Card](#agent-card). Thoughts about discovering agent cards are in [topic: Agent Discovery](topics/agent-discovery.md).
 
 Clients should use one of the servers published authentication protocols to authenticate their identity and obtain credential material. A2A servers should authenticate **every** request and reject or challenge requests with standard HTTP response codes (401, 403), and authentication-protocol-specific headers and bodies (such as a HTTP 401 response with a [WWW-Authenticate](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) header indicating the required authentication schema, or OIDC discovery document at a well-known path). More details discussed in [topic: Enterprise Ready](topics/enterprise-ready.md).
 
@@ -100,7 +100,7 @@ interface AgentCard {
   capabilities: {
     streaming?: boolean; // true if the agent supports SSE
     pushNotifications?: boolean; // true if the agent can notify updates to client
-    stateTransitionHistory?: boolean; //true if the agent exposes status change history for tasks
+    stateTransitionHistory?: boolean; // true if the agent exposes status change history for tasks
   };
   // Authentication requirements for the agent.
   // Intended to match OpenAPI authentication structure.
@@ -316,7 +316,8 @@ interface TaskPushNotificationConfig {
   "defaultOutputModes": ["text/plain", "application/html"],
   "capabilities": {
     "streaming": true,
-    "pushNotifications": false
+    "pushNotifications": false,
+    "stateTransitionHistory": false
   },
   "skills": [
     {
