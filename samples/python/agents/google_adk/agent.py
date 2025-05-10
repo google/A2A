@@ -1,6 +1,5 @@
 import json
 import random
-
 from typing import Any
 
 from google.adk.agents.llm_agent import LlmAgent
@@ -11,15 +10,14 @@ from google.adk.sessions import InMemorySessionService
 from google.adk.tools.tool_context import ToolContext
 from task_manager import AgentWithTaskManager
 
-
 # Local cache of created request_ids for demo purposes.
 request_ids = set()
 
 
 def create_request_form(
-    date: str | None = None,
-    amount: str | None = None,
-    purpose: str | None = None,
+    date: str = '',
+    amount: str = '',
+    purpose: str = '',
 ) -> dict[str, Any]:
     """Create a request form for the employee to fill out.
 
@@ -31,6 +29,14 @@ def create_request_form(
     Returns:
         dict[str, Any]: A dictionary containing the request form data.
     """
+    # changing semantics from empty string to None
+    if date == '':
+        date = None
+    if amount == '':
+        amount = None
+    if purpose == '':
+        purpose = None
+
     request_id = 'request_id_' + str(random.randint(1000000, 9999999))
     request_ids.add(request_id)
     return {
@@ -46,7 +52,7 @@ def create_request_form(
 def return_form(
     form_request: dict[str, Any],
     tool_context: ToolContext,
-    instructions: str | None = None,
+    instructions: str = '',
 ) -> dict[str, Any]:
     """Returns a structured json object indicating a form to complete.
 
@@ -58,6 +64,10 @@ def return_form(
     Returns:
         dict[str, Any]: A JSON dictionary for the form response.
     """
+    # changing semantics from empty string to None
+    if instructions == '':
+        instructions = None
+
     if isinstance(form_request, str):
         form_request = json.loads(form_request)
 
