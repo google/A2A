@@ -1,6 +1,9 @@
+import click
+
 from agent_executor import HelloWorldAgentExecutor
 
-from a2a.server import A2AServer, DefaultA2ARequestHandler
+from a2a.server import A2AServer
+from a2a.server.request_handlers import DefaultA2ARequestHandler
 from a2a.types import (
     AgentAuthentication,
     AgentCapabilities,
@@ -9,7 +12,10 @@ from a2a.types import (
 )
 
 
-if __name__ == '__main__':
+@click.command()
+@click.option('--host', 'host', default='localhost')
+@click.option('--port', 'port', default=9999)
+def main(host: str, port: int):
     skill = AgentSkill(
         id='hello_world',
         name='Returns hello world',
@@ -35,4 +41,8 @@ if __name__ == '__main__':
     )
 
     server = A2AServer(agent_card=agent_card, request_handler=request_handler)
-    server.start(host='0.0.0.0', port=9999)
+    server.start(host=host, port=port)
+
+
+if __name__ == '__main__':
+    main()

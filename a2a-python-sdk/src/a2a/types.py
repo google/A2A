@@ -213,6 +213,26 @@ class InternalError(BaseModel):
     """
 
 
+class InvalidAgentResponseError(BaseModel):
+    """
+    A2A specific error indicating agent returned invalid response for the current method
+    """
+
+    code: Literal[-32006] = -32006
+    """
+    A Number that indicates the error type that occurred.
+    """
+    data: Any | None = None
+    """
+    A Primitive or Structured value that contains additional information about the error.
+    This may be omitted.
+    """
+    message: str | None = 'Invalid agent response'
+    """
+    A String providing a short description of the error.
+    """
+
+
 class InvalidParamsError(BaseModel):
     """
     JSON-RPC error indicating invalid method parameter(s).
@@ -615,6 +635,7 @@ class A2AError(
         | PushNotificationNotSupportedError
         | UnsupportedOperationError
         | ContentTypeNotSupportedError
+        | InvalidAgentResponseError
     ]
 ):
     root: (
@@ -628,6 +649,7 @@ class A2AError(
         | PushNotificationNotSupportedError
         | UnsupportedOperationError
         | ContentTypeNotSupportedError
+        | InvalidAgentResponseError
     )
 
 
@@ -819,6 +841,7 @@ class JSONRPCErrorResponse(BaseModel):
         | PushNotificationNotSupportedError
         | UnsupportedOperationError
         | ContentTypeNotSupportedError
+        | InvalidAgentResponseError
     )
     id: str | int | None = None
     """
@@ -976,6 +999,10 @@ class Message(BaseModel):
     """
     identifier of task the message is related to
     """
+    type: Literal['message'] = 'message'
+    """
+    event type
+    """
 
 
 class MessageSendParams(BaseModel):
@@ -1021,9 +1048,9 @@ class SendMessageRequest(BaseModel):
     """
 
 
-class SendMessageStreamingRequest(BaseModel):
+class SendStreamingMessageRequest(BaseModel):
     """
-    JSON-RPC request model for the 'message/sendStream' method.
+    JSON-RPC request model for the 'message/stream' method.
     """
 
     id: str | int | None = None
@@ -1035,7 +1062,7 @@ class SendMessageStreamingRequest(BaseModel):
     """
     Specifies the version of the JSON-RPC protocol. MUST be exactly "2.0".
     """
-    method: Literal['message/sendStream'] = 'message/sendStream'
+    method: Literal['message/stream'] = 'message/stream'
     """
     A String containing the name of the method to be invoked.
     """
@@ -1066,6 +1093,10 @@ class TaskArtifactUpdateEvent(BaseModel):
     artifact: Artifact
     """
     generated artifact
+    """
+    contextId: str
+    """
+    the context the task is associated with
     """
     lastChunk: bool | None = None
     """
@@ -1106,6 +1137,10 @@ class TaskStatusUpdateEvent(BaseModel):
     sent by server during sendStream or subscribe requests
     """
 
+    contextId: str
+    """
+    the context the task is associated with
+    """
     final: bool
     """
     indicates the end of the event stream
@@ -1131,7 +1166,7 @@ class TaskStatusUpdateEvent(BaseModel):
 class A2ARequest(
     RootModel[
         SendMessageRequest
-        | SendMessageStreamingRequest
+        | SendStreamingMessageRequest
         | GetTaskRequest
         | CancelTaskRequest
         | SetTaskPushNotificationConfigRequest
@@ -1141,7 +1176,7 @@ class A2ARequest(
 ):
     root: (
         SendMessageRequest
-        | SendMessageStreamingRequest
+        | SendStreamingMessageRequest
         | GetTaskRequest
         | CancelTaskRequest
         | SetTaskPushNotificationConfigRequest
@@ -1150,26 +1185,6 @@ class A2ARequest(
     )
     """
     A2A supported request types
-    """
-
-
-class SendMessageStreamingSuccessResponse(BaseModel):
-    """
-    JSON-RPC success response model for the 'message/sendStream' method.
-    """
-
-    id: str | int | None = None
-    """
-    An identifier established by the Client that MUST contain a String, Number
-    Numbers SHOULD NOT contain fractional parts.
-    """
-    jsonrpc: Literal['2.0'] = '2.0'
-    """
-    Specifies the version of the JSON-RPC protocol. MUST be exactly "2.0".
-    """
-    result: Message | TaskStatusUpdateEvent | TaskArtifactUpdateEvent
-    """
-    The result object on success
     """
 
 
@@ -1194,6 +1209,10 @@ class Task(BaseModel):
     status: TaskStatus
     """
     current status of the task
+    """
+    type: Literal['task'] = 'task'
+    """
+    event type
     """
 
 
@@ -1237,15 +1256,6 @@ class GetTaskSuccessResponse(BaseModel):
     """
 
 
-class SendMessageStreamingResponse(
-    RootModel[JSONRPCErrorResponse | SendMessageStreamingSuccessResponse]
-):
-    root: JSONRPCErrorResponse | SendMessageStreamingSuccessResponse
-    """
-    JSON-RPC response model for the 'message/sendStream' method.
-    """
-
-
 class SendMessageSuccessResponse(BaseModel):
     """
     JSON-RPC success response model for the 'message/send' method.
@@ -1261,6 +1271,26 @@ class SendMessageSuccessResponse(BaseModel):
     Specifies the version of the JSON-RPC protocol. MUST be exactly "2.0".
     """
     result: Task | Message
+    """
+    The result object on success
+    """
+
+
+class SendStreamingMessageSuccessResponse(BaseModel):
+    """
+    JSON-RPC success response model for the 'message/stream' method.
+    """
+
+    id: str | int | None = None
+    """
+    An identifier established by the Client that MUST contain a String, Number
+    Numbers SHOULD NOT contain fractional parts.
+    """
+    jsonrpc: Literal['2.0'] = '2.0'
+    """
+    Specifies the version of the JSON-RPC protocol. MUST be exactly "2.0".
+    """
+    result: Task | Message | TaskStatusUpdateEvent | TaskArtifactUpdateEvent
     """
     The result object on success
     """
@@ -1284,7 +1314,7 @@ class JSONRPCResponse(
     RootModel[
         JSONRPCErrorResponse
         | SendMessageSuccessResponse
-        | SendMessageStreamingSuccessResponse
+        | SendStreamingMessageSuccessResponse
         | GetTaskSuccessResponse
         | CancelTaskSuccessResponse
         | SetTaskPushNotificationConfigSuccessResponse
@@ -1294,7 +1324,7 @@ class JSONRPCResponse(
     root: (
         JSONRPCErrorResponse
         | SendMessageSuccessResponse
-        | SendMessageStreamingSuccessResponse
+        | SendStreamingMessageSuccessResponse
         | GetTaskSuccessResponse
         | CancelTaskSuccessResponse
         | SetTaskPushNotificationConfigSuccessResponse
@@ -1309,4 +1339,13 @@ class SendMessageResponse(RootModel[JSONRPCErrorResponse | SendMessageSuccessRes
     root: JSONRPCErrorResponse | SendMessageSuccessResponse
     """
     JSON-RPC response model for the 'message/send' method.
+    """
+
+
+class SendStreamingMessageResponse(
+    RootModel[JSONRPCErrorResponse | SendStreamingMessageSuccessResponse]
+):
+    root: JSONRPCErrorResponse | SendStreamingMessageSuccessResponse
+    """
+    JSON-RPC response model for the 'message/stream' method.
     """

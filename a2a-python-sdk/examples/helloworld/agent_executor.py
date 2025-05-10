@@ -4,24 +4,18 @@ from collections.abc import AsyncGenerator
 from typing import Any
 from uuid import uuid4
 
-from a2a.server import AgentExecutor
+from typing_extensions import override
+
+from a2a.server.agent_execution import BaseAgentExecutor
+from a2a.server.events import EventQueue
 from a2a.types import (
-    CancelTaskRequest,
-    CancelTaskResponse,
-    JSONRPCErrorResponse,
     Message,
     Part,
     Role,
     SendMessageRequest,
-    SendMessageResponse,
-    SendMessageStreamingRequest,
-    SendMessageStreamingResponse,
-    SendMessageStreamingSuccessResponse,
-    SendMessageSuccessResponse,
+    SendStreamingMessageRequest,
     Task,
-    TaskResubscriptionRequest,
     TextPart,
-    UnsupportedOperationError,
 )
 
 
@@ -37,57 +31,40 @@ class HelloWorldAgent:
         yield {'content': 'World', 'done': True}
 
 
-class HelloWorldAgentExecutor(AgentExecutor):
+class HelloWorldAgentExecutor(BaseAgentExecutor):
     """Test AgentProxy Implementation."""
 
     def __init__(self):
         self.agent = HelloWorldAgent()
 
+    @override
     async def on_message_send(
-        self, request: SendMessageRequest, task: Task | None
-    ) -> SendMessageResponse:
+        self,
+        request: SendMessageRequest,
+        event_queue: EventQueue,
+        task: Task | None,
+    ) -> None:
         result = await self.agent.invoke()
 
         message: Message = Message(
             role=Role.agent,
-            parts=[Part(root=TextPart(text=result))],
+            parts=[Part(TextPart(text=result))],
             messageId=str(uuid4()),
         )
+        event_queue.enqueue_event(message)
 
-        return SendMessageResponse(
-            root=SendMessageSuccessResponse(id=request.id, result=message)
-        )
-
-    async def on_message_stream(  # type: ignore
-        self, request: SendMessageStreamingRequest, task: Task | None
-    ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
+    @override
+    async def on_message_stream(
+        self,
+        request: SendStreamingMessageRequest,
+        event_queue: EventQueue,
+        task: Task | None,
+    ) -> None:
         async for chunk in self.agent.stream():
             message: Message = Message(
                 role=Role.agent,
-                parts=[Part(root=TextPart(text=chunk['content']))],
+                parts=[Part(TextPart(text=chunk['content']))],
                 messageId=str(uuid4()),
                 final=chunk['done'],
             )
-            yield SendMessageStreamingResponse(
-                root=SendMessageStreamingSuccessResponse(
-                    id=request.id, result=message
-                )
-            )
-
-    async def on_cancel(
-        self, request: CancelTaskRequest, task: Task
-    ) -> CancelTaskResponse:
-        return CancelTaskResponse(
-            root=JSONRPCErrorResponse(
-                id=request.id, error=UnsupportedOperationError()
-            )
-        )
-
-    async def on_resubscribe(  # type: ignore
-        self, request: TaskResubscriptionRequest, task: Task
-    ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
-        yield SendMessageStreamingResponse(
-            root=JSONRPCErrorResponse(
-                id=request.id, error=UnsupportedOperationError()
-            )
-        )
+            event_queue.enqueue_event(message)
