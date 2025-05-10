@@ -81,7 +81,7 @@ Click on the task list to see all the A2A task updates from the remote agents
    Next go start up **any** sample agent:
 
    ```bash
-   cd ../../samples/agents/google_adk/
+   cd ../../samples/python/agents/google_adk/
    cp ../../../../demo/ui/.env ./
    uv run .
    ```
