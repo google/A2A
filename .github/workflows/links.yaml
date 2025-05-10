@@ -9,6 +9,10 @@ on:
 jobs:
   linkChecker:
     runs-on: ubuntu-latest
+    # if on repo to avoid failing runs on forks
+    if: |
+      github.repository == 'google/A2A'
+
     steps:
       - uses: actions/checkout@v4
 
