@@ -29,3 +29,29 @@ Sample agent which can answer questions from any database, datawarehouse, app. -
 
 * [**Semantic Kernel Agent**](/samples/python/agents/semantickernel/README.md)  
 Demonstrates how to implement a travel agent built on [Semantic Kernel](https://github.com/microsoft/semantic-kernel/) and exposed through the A2A protocol.
+## Agent Security Features
+
+Some of these sample agents now demonstrate A2A security features:
+
+### Fingerprint Authentication
+
+The following agents support the new blockchain-based agent fingerprinting system:
+
+| Agent | Fingerprint Support |
+|-------|---------------------|
+| LangGraph | ✅ |
+| CrewAI | ✅ |
+| Google ADK | ✅ |
+
+To test fingerprint authentication, use the [fingerprint demo client](/samples/python/hosts/cli/fingerprint_client_demo.py):
+
+```bash
+cd samples/python/hosts/cli
+python fingerprint_client_demo.py --agent http://localhost:10000
+```
+
+The fingerprint authentication system provides:
+- Cryptographic proof of agent identity
+- Message integrity verification
+- Blockchain-based identity verification (optional)
+- Decentralized trust for agent-to-agent communication

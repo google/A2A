@@ -179,3 +179,5 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+**/.claude/settings.local.json

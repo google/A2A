@@ -3,6 +3,7 @@ import logging
 
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable
+from typing import Union
 
 from common.server.utils import new_not_implemented_error
 from common.types import (
