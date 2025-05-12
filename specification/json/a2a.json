@@ -39,6 +39,11 @@
             "default": false,
             "title": "Statetransitionhistory",
             "type": "boolean"
+          },
+          "scheduling": {
+            "default": false,
+            "title": "Scheduling",
+            "type": "boolean"
           }
         },
         "title": "AgentCapabilities",
@@ -1431,6 +1436,12 @@
           },
           "task": {
             "$ref": "#/$defs/TaskSendParams"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean",
+            "default": true,
+            "description": "Whether the scheduled task is enabled"
           }
         },
         "required": [
@@ -1450,6 +1461,12 @@
           },
           "task": {
             "$ref": "#/$defs/TaskSendParams"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean",
+            "default": true,
+            "description": "Whether the scheduled task is enabled"
           }
         },
         "required": [
@@ -1472,6 +1489,11 @@
           },
           "task": {
             "$ref": "#/$defs/TaskSendParams"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean",
+            "description": "Whether the scheduled task is enabled"
           }
         },
         "required": [
