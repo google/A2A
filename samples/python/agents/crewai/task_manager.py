@@ -56,7 +56,7 @@ class AgentTaskManager(BaseAgentTaskManager):
       return error
 
     await self.upsert_task(request.params)
-    # crewai는 streaming 미구현
+    # streaming is not implemented for crewai
     raise NotImplementedError("Not implemented")
 
   async def _update_store(
