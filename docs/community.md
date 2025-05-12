@@ -21,9 +21,9 @@ The launch of A2A has sparked lively discussions and positive reactions on vario
 
 - **Microsoft's interest via Semantic Kernel:** [Asha Sharma](https://www.linkedin.com/in/aboutasha/), Head of AI Platform Product at Microsoft, [announced on LinkedIn](https://www.linkedin.com/posts/aboutasha_a2a-ugcPost-7318649411704602624-0C_8) that "**Semantic Kernel now speaks A2A: a lightweight JSON-RPC protocol that lets agents swap context, not code or credentials, over plain HTTP. Drop it into your Foundry stack for instant, secure, async interoperability with any A2A-compliant agent, regardless of modality**". The post received numerous positive reactions, including "**A2A support in Semantic Kernel is a key unlock — context-level interoperability without sharing code or creds is how agent ecosystems scale securely across clouds**".
 
-- **Matt Pocock's Diagramming Intent:** [Matt Pocock](https://x.com/mattpocockuk), a well-known developer educator, [shared on X](https://x.com/mattpocockuk/status/1910002033018421400) that "**I've just been reading the Agent2Agent technical docs - Google's new protocol for agent to agent communication. You know what that means. Let's diagram them:**". This tweet, liked and reposted hundreds of times, includes some great diagrams explaining the A2A protocol.
+- **Matt Pocock's Diagramming Intent:** [Matt Pocock](https://x.com/mattpocockuk), a well-known developer educator, [shared on X](https://x.com/mattpocockuk/status/1910002033018421400) "**I've just been reading the Agent2Agent technical docs - Google's new protocol for agent to agent communication. You know what that means. Let's diagram them:**". This tweet, liked and reposted hundreds of times, includes some great diagrams explaining the A2A protocol.
 
-- **Craig McLuckie's "Hot Take":** [Craig McLuckie](https://www.linkedin.com/in/craigmcluckie/) shared his initial thoughts on [LinkedIn](https://www.linkedin.com/posts/craigmcluckie_hot-take-on-agent2agent-vs-mcp-google-just-activity-7315939233792176128-4rGQ) that "**Hot take on Agent2Agent vs MCP**". His post highlighted Google's careful positioning of A2A as focused on interactions _between_ agentic systems, rather than agents interacting with resources (the focus of MCP). This distinction is crucial for improving models' ability to understand expectations from other agents. McLuckie also pointed out the potential for A2A to enable systems to **advertise specific capabilities and specialities**, which is seen as "**sensible**".
+- **Craig McLuckie's "Hot Take":** [Craig McLuckie](https://www.linkedin.com/in/craigmcluckie/) shared his initial thoughts on [LinkedIn](https://www.linkedin.com/posts/craigmcluckie_hot-take-on-agent2agent-vs-mcp-google-just-activity-7315939233792176128-4rGQ) "**Hot take on Agent2Agent vs MCP**". His post highlighted Google's careful positioning of A2A as focused on interactions _between_ agentic systems, rather than agents interacting with resources (the focus of MCP). This distinction is crucial for improving models' ability to understand expectations from other agents. McLuckie also pointed out the potential for A2A to enable systems to **advertise specific capabilities and specialities**, which is seen as "**sensible**".
 
 ## Community deep dive videos
 
@@ -34,12 +34,12 @@ The launch of A2A has sparked lively discussions and positive reactions on vario
 
 ## Community Contributions to A2A
 
-- LlamaIndex submitted a sample implementation [PR#179](https://github.com/google/A2A/pull/179)
-- Autogen sample server [PR#232](https://github.com/google/A2A/pull/232)
-- AG2 + MCP example [PR#230](https://github.com/google/A2A/pull/230)
-- PydanticAI example [PR#127](https://github.com/google/A2A/pull/127)
-- Go example [PR#52](https://github.com/google/A2A/pull/52)
-- Daytona sandbox running agent [PR#170](https://github.com/google/A2A/pull/170)
+- LlamaIndex submitted a sample implementation [PR\#179](https://github.com/google/A2A/pull/179)
+- Autogen sample server [PR\#232](https://github.com/google/A2A/pull/232)
+- AG2 \+ MCP example [PR\#230](https://github.com/google/A2A/pull/230)
+- PydanticAI example [PR\#127](https://github.com/google/A2A/pull/127)
+- Go example [PR\#52](https://github.com/google/A2A/pull/52)
+- Daytona sandbox running agent [PR\#170](https://github.com/google/A2A/pull/170)
 
 ## What is Driving This Excitement?
 
