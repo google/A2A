@@ -74,7 +74,7 @@ class A2AApplication:
         )
         error_details = f"Code={error_resp.error.code}, Message='{error_resp.error.message}'"
         if error_resp.error.data is not None:
-            error_details += f', Data={str(error_resp.error.data)}'
+            error_details += f', Data={error_resp.error.data!s}'
 
         logger.log(
             log_level,
@@ -115,7 +115,7 @@ class A2AApplication:
             return await self._process_non_streaming_request(
                 request_id, a2a_request
             )
-        except MethodNotImplementedError as e:
+        except MethodNotImplementedError:
             return self._generate_error_response(
                 request_id, A2AError(UnsupportedOperationError())
             )
