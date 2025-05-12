@@ -35,6 +35,7 @@ collaborate effectively with each other and with users.
 - Decagon.ai
 - [Deloitte](https://www.prnewswire.com/news-releases/deloitte-expands-alliances-with-google-cloud-and-servicenow-to-accelerate-agentic-ai-adoption-in-the-enterprise-302423941.html)
 - Devnagri
+- Distyl.ai
 - Elastic
 - Ema.co
 - EPAM
@@ -54,6 +55,7 @@ collaborate effectively with each other and with users.
 - [LlamaIndex](https://x.com/llama_index/status/1912949446322852185)
 - LTIMindTtree
 - Lyzr.ai
+- [Microsoft](https://www.microsoft.com/en-us/microsoft-cloud/blog/2025/05/07/empowering-multi-agent-apps-with-the-open-agent2agent-a2a-protocol/)
 - McKinsey
 - MongoDB
 - Neo4j

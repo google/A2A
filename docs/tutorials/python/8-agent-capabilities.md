@@ -4,7 +4,7 @@ Now that we have a basic A2A server running, let's add some more functionality. 
 
 ## Streaming <!-- {docsify-ignore} -->
 
-This allows clients to subscribe to the server and receive multiple updates instead of a single response. This can be useful for long running agent tasks, or where multiple Artifacts may streamed back to the client. See the [Streaming Documentation](../../documentation.md?id=streaming-support)
+This allows clients to subscribe to the server and receive multiple updates instead of a single response. This can be useful for long running agent tasks, or where multiple Artifacts may streamed back to the client. See the [Streaming Documentation](../../topics/streaming-and-async.md)
 
 First we'll declare our agent as ready for streaming. Open up `src/my_project/__init__.py` and update AgentCapabilities
 
@@ -198,7 +198,7 @@ Congradulations! You now have an agent that is able to asynchronously perform wo
 
 ## Other Capabilities <!-- {docsify-ignore} -->
 
-If you're interested, check out the [documentation](../../documentation.md?id=sample-methods-and-json-responses) for other capabilities for your A2A agent. For now we'll jump into adding AI into A2A using a local LLM.
+If you're interested, check out the [documentation](../../topics/key-concepts.md) for other capabilities for your A2A agent. For now we'll jump into adding AI into A2A using a local LLM.
 
 [Prev](./7-interact-with-server.md)
 [Next](./9-ollama-agent.md)

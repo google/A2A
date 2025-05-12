@@ -19,7 +19,7 @@ https://google.github.io/A2A
   in the `docs/` directory in the A2A repository
 - `mkdocs.yml` in the repository root contains all of the docs config, including
   the site navigation and organization
-- There is a GitHub action in `.github/workflows/docs.yml` that builds and
+- There is a GitHub Action in `.github/workflows/docs.yml` that builds and
   publishes the docs and pushes the built assets to the `gh-pages` branch in
   this rep using `mkdocs gh-deploy --force`. This happens automatically for all
   commits / merges to `main`.
