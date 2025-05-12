@@ -20,12 +20,12 @@ python_files = "test_*.py"
 python_functions = "test_*"
 addopts = "--cov=src --cov-report term --cov-report xml:coverage.xml --cov-branch"
 
-[tool.uv.workspace]
-members = ["examples/langgraph"]
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.workspace]
+members = ["examples/langgraph", "examples/helloworld"]
 
 [dependency-groups]
 dev = [

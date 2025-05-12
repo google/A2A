@@ -1,9 +1,33 @@
 import logging
 
-from a2a.types import Artifact, Part, Task, TaskArtifactUpdateEvent, TextPart
+from uuid import uuid4
+
+from a2a.types import (
+    Artifact,
+    MessageSendParams,
+    Part,
+    Task,
+    TaskArtifactUpdateEvent,
+    TaskState,
+    TaskStatus,
+    TextPart,
+)
 
 
 logger = logging.getLogger(__name__)
+
+
+def create_task_obj(message_send_params: MessageSendParams) -> Task:
+    """Create a new task object from message send params."""
+    if not message_send_params.message.contextId:
+        message_send_params.message.contextId = str(uuid4())
+
+    return Task(
+        id=str(uuid4()),
+        contextId=message_send_params.message.contextId,
+        status=TaskStatus(state=TaskState.submitted),
+        history=[message_send_params.message],
+    )
 
 
 def append_artifact_to_task(task: Task, event: TaskArtifactUpdateEvent) -> None:
@@ -49,12 +73,12 @@ def append_artifact_to_task(task: Task, event: TaskArtifactUpdateEvent) -> None:
         # We received a chunk to append, but we don't have an existing artifact.
         # we will ignore this chunk
         logger.warning(
-            f'Received append=True for non-existent artifact index {artifact_id} in task {task.id}. Ignoring chunk.'
+            f'Received append=True for nonexistent artifact index {artifact_id} in task {task.id}. Ignoring chunk.'
         )
 
 
 def build_text_artifact(text: str, artifact_id: str) -> Artifact:
     """Helper to convert agent text to artifact."""
     text_part = TextPart(text=text)
-    part = Part(root=text_part)
+    part = Part(text_part)
     return Artifact(parts=[part], artifactId=artifact_id)

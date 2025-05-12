@@ -12,7 +12,7 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import Route
 
 from a2a.server.errors import MethodNotImplementedError
-from a2a.server.request_handler import A2ARequestHandler
+from a2a.server.request_handlers.request_handler import A2ARequestHandler
 from a2a.types import (
     A2AError,
     A2ARequest,
@@ -27,8 +27,8 @@ from a2a.types import (
     JSONRPCErrorResponse,
     JSONRPCResponse,
     SendMessageRequest,
-    SendMessageStreamingRequest,
-    SendMessageStreamingResponse,
+    SendStreamingMessageRequest,
+    SendStreamingMessageResponse,
     SetTaskPushNotificationConfigRequest,
     TaskResubscriptionRequest,
     UnsupportedOperationError,
@@ -72,15 +72,16 @@ class A2AApplication:
             or isinstance(error.root, InternalError)
             else logging.WARNING
         )
+        error_details = f"Code={error_resp.error.code}, Message='{error_resp.error.message}'"
+        if error_resp.error.data is not None:
+            error_details += f', Data={error_resp.error.data!s}'
+
         logger.log(
             log_level,
-            f'Request Error (ID: {request_id}: '
-            f"Code={error_resp.error.code}, Message='{error_resp.error.message}'"
-            f'{", Data=" + str(error_resp.error.data) if hasattr(error, "data") and error_resp.error.data else ""}',
+            f'Request Error (ID: {request_id}): {error_details}',
         )
         return JSONResponse(
-            error_resp.model_dump(mode='json', exclude_none=True),
-            status_code=200,
+            error_resp.model_dump(mode='json', exclude_none=True)
         )
 
     async def _handle_requests(self, request: Request) -> Response:
@@ -92,8 +93,6 @@ class A2AApplication:
         returning appropriate JSON-RPC error responses.
         """
         request_id = None
-        body = None
-
         try:
             body = await request.json()
             a2a_request = A2ARequest.model_validate(body)
@@ -101,9 +100,13 @@ class A2AApplication:
             request_id = a2a_request.root.id
             request_obj = a2a_request.root
 
+            logger.info(
+                f'Processing request ID: {request_id}, Method: {request_obj.method}'
+            )
+
             if isinstance(
                 request_obj,
-                TaskResubscriptionRequest | SendMessageStreamingRequest,
+                TaskResubscriptionRequest | SendStreamingMessageRequest,
             ):
                 return await self._process_streaming_request(
                     request_id, a2a_request
@@ -112,23 +115,26 @@ class A2AApplication:
             return await self._process_non_streaming_request(
                 request_id, a2a_request
             )
-        except MethodNotImplementedError as e:
+        except MethodNotImplementedError:
             return self._generate_error_response(
-                request_id, A2AError(root=UnsupportedOperationError())
+                request_id, A2AError(UnsupportedOperationError())
             )
         except json.decoder.JSONDecodeError as e:
             return self._generate_error_response(
-                None, A2AError(root=JSONParseError(message=str(e)))
+                None, A2AError(JSONParseError(message=str(e)))
             )
         except ValidationError as e:
             return self._generate_error_response(
                 request_id,
-                A2AError(root=InvalidRequestError(data=json.loads(e.json()))),
+                A2AError(InvalidRequestError(data=json.loads(e.json()))),
             )
         except Exception as e:
-            logger.error(f'Unhandled exception: {e}')
+            logger.error(
+                f'Unhandled exception during request (ID: {request_id}): {e}',
+                exc_info=True,
+            )
             return self._generate_error_response(
-                request_id, A2AError(root=InternalError(message=str(e)))
+                request_id, A2AError(InternalError(message=str(e)))
             )
 
     async def _process_streaming_request(
@@ -140,11 +146,16 @@ class A2AApplication:
             request_id: The ID of the request.
             a2a_request: The validated A2ARequest object.
         """
+        logger.debug(
+            'Processing the streaming request with id %s and type %s',
+            request_id,
+            type(a2a_request.root),
+        )
         request_obj = a2a_request.root
         handler_result: Any = None
         if isinstance(
             request_obj,
-            SendMessageStreamingRequest,
+            SendStreamingMessageRequest,
         ):
             handler_result = self.request_handler.on_message_send_stream(
                 request_obj
@@ -154,7 +165,7 @@ class A2AApplication:
                 request_obj
             )
 
-        return self._create_response(await handler_result)
+        return self._create_response(handler_result)
 
     async def _process_non_streaming_request(
         self, request_id: str | int | None, a2a_request: A2ARequest
@@ -165,6 +176,11 @@ class A2AApplication:
             request_id: The ID of the request.
             a2a_request: The validated A2ARequest object.
         """
+        logger.debug(
+            'Processing the non-streaming request with id %s and type %s',
+            request_id,
+            type(a2a_request.root),
+        )
         request_obj = a2a_request.root
         handler_result: Any = None
         match request_obj:
@@ -181,20 +197,17 @@ class A2AApplication:
                     request_obj
                 )
             case SetTaskPushNotificationConfigRequest():
-                handler_result = (
-                    await self.request_handler.on_set_task_push_notification(
-                        request_obj
-                    )
+                handler_result = await self.request_handler.on_set_task_push_notification_config(
+                    request_obj
                 )
             case GetTaskPushNotificationConfigRequest():
-                handler_result = (
-                    await self.request_handler.on_get_task_push_notification(
-                        request_obj
-                    )
+                handler_result = await self.request_handler.on_get_task_push_notification_config(
+                    request_obj
                 )
             case _:
                 logger.error(
-                    f'Unhandled validated request type: {type(request_obj)}'
+                    f'Unhandled validated request type: {type(request_obj)}',
+                    exc_info=False,
                 )
                 error = UnsupportedOperationError(
                     message=f'Request type {type(request_obj).__name__} is unknown.'
@@ -207,7 +220,7 @@ class A2AApplication:
 
     def _create_response(
         self,
-        handler_result: AsyncGenerator[SendMessageStreamingResponse, None]
+        handler_result: AsyncGenerator[SendStreamingMessageResponse, None]
         | JSONRPCErrorResponse
         | JSONRPCResponse,
     ) -> Response:
@@ -226,15 +239,21 @@ class A2AApplication:
             A Starlette JSONResponse or EventSourceResponse.
         """
         if isinstance(handler_result, AsyncGenerator):
-            # Result is a stream of SendMessageStreamingResponse objects
+            # Result is a stream of SendStreamingMessageResponse objects
+            logger.debug('Creating EventSourceResponse for streaming data.')
+
             async def event_generator(
-                stream: AsyncGenerator[SendMessageStreamingResponse, None],
+                stream: AsyncGenerator[SendStreamingMessageResponse, None],
             ) -> AsyncGenerator[dict[str, str], None]:
                 async for item in stream:
                     yield {'data': item.root.model_dump_json(exclude_none=True)}
 
+                logger.debug('Streaming completed')
+
             return EventSourceResponse(event_generator(handler_result))
+
         if isinstance(handler_result, JSONRPCErrorResponse):
+            logger.debug('Returning error response.')
             return JSONResponse(
                 handler_result.model_dump(
                     mode='json',
@@ -248,6 +267,7 @@ class A2AApplication:
 
     async def _handle_get_agent_card(self, request: Request) -> JSONResponse:
         """Handles GET requests for the agent card."""
+        logger.info(f'Serving the agent card at {request.url.path}')
         return JSONResponse(
             self.agent_card.model_dump(mode='json', exclude_none=True)
         )
@@ -268,7 +288,8 @@ class A2AApplication:
         Returns:
             A configured Starlette application instance.
         """
-        routes = [
+        logger.info('Building A2A Application instance')
+        default_routes = [
             Route(
                 rpc_url,
                 self._handle_requests,
@@ -282,9 +303,7 @@ class A2AApplication:
                 name='agent_card',
             ),
         ]
-        if 'routes' in kwargs:
-            kwargs['routes'] += routes
-        else:
-            kwargs['routes'] = routes
+        provided_routes = kwargs.pop('routes', [])
+        all_routes = provided_routes + default_routes
 
-        return Starlette(**kwargs)
+        return Starlette(routes=all_routes, **kwargs)

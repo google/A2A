@@ -15,6 +15,7 @@ from a2a.types import (
     Artifact,
     CancelTaskRequest,
     CancelTaskResponse,
+    CancelTaskSuccessResponse,
     ContentTypeNotSupportedError,
     DataPart,
     FileBase,
@@ -23,8 +24,10 @@ from a2a.types import (
     FileWithUri,
     GetTaskPushNotificationConfigRequest,
     GetTaskPushNotificationConfigResponse,
+    GetTaskPushNotificationConfigSuccessResponse,
     GetTaskRequest,
     GetTaskResponse,
+    GetTaskSuccessResponse,
     InternalError,
     InvalidParamsError,
     InvalidRequestError,
@@ -35,18 +38,23 @@ from a2a.types import (
     JSONRPCRequest,
     JSONRPCResponse,
     Message,
+    MessageSendParams,
     MethodNotFoundError,
     Part,
     PartBase,
     PushNotificationAuthenticationInfo,
     PushNotificationConfig,
     PushNotificationNotSupportedError,
+    Role,
     SendMessageRequest,
     SendMessageResponse,
-    SendMessageStreamingRequest,
-    SendMessageStreamingResponse,
+    SendMessageSuccessResponse,
+    SendStreamingMessageRequest,
+    SendStreamingMessageResponse,
+    SendStreamingMessageSuccessResponse,
     SetTaskPushNotificationConfigRequest,
     SetTaskPushNotificationConfigResponse,
+    SetTaskPushNotificationConfigSuccessResponse,
     Task,
     TaskArtifactUpdateEvent,
     TaskIdParams,
@@ -55,20 +63,13 @@ from a2a.types import (
     TaskPushNotificationConfig,
     TaskQueryParams,
     TaskResubscriptionRequest,
-    MessageSendParams,
     TaskState,
     TaskStatus,
     TaskStatusUpdateEvent,
     TextPart,
     UnsupportedOperationError,
-    GetTaskSuccessResponse,
-    SendMessageStreamingSuccessResponse,
-    SendMessageSuccessResponse,
-    CancelTaskSuccessResponse,
-    Role,
-    SetTaskPushNotificationConfigSuccessResponse,
-    GetTaskPushNotificationConfigSuccessResponse,
 )
+
 
 # --- Helper Data ---
 
@@ -121,6 +122,7 @@ MINIMAL_MESSAGE_USER: dict[str, Any] = {
     'role': 'user',
     'parts': [TEXT_PART_DATA],
     'messageId': 'msg-123',
+    'type': 'message',
 }
 
 AGENT_MESSAGE_WITH_FILE: dict[str, Any] = {
@@ -141,6 +143,7 @@ MINIMAL_TASK: dict[str, Any] = {
     'id': 'task-abc',
     'contextId': 'session-xyz',
     'status': MINIMAL_TASK_STATUS,
+    'type': 'task',
 }
 FULL_TASK: dict[str, Any] = {
     'id': 'task-abc',
@@ -155,6 +158,7 @@ FULL_TASK: dict[str, Any] = {
         }
     ],
     'metadata': {'priority': 'high'},
+    'type': 'task',
 }
 
 MINIMAL_TASK_ID_PARAMS: dict[str, Any] = {'id': 'task-123'}
@@ -515,17 +519,17 @@ def test_send_subscribe_request() -> None:
     params = MessageSendParams(message=Message(**MINIMAL_MESSAGE_USER))
     req_data: dict[str, Any] = {
         'jsonrpc': '2.0',
-        'method': 'message/sendStream',
+        'method': 'message/stream',
         'params': params.model_dump(),
         'id': 5,
     }
-    req = SendMessageStreamingRequest.model_validate(req_data)
-    assert req.method == 'message/sendStream'
+    req = SendStreamingMessageRequest.model_validate(req_data)
+    assert req.method == 'message/stream'
     assert isinstance(req.params, MessageSendParams)
     assert req.params.message.role == Role.user
 
     with pytest.raises(ValidationError):  # Wrong method literal
-        SendMessageStreamingRequest.model_validate(
+        SendStreamingMessageRequest.model_validate(
             {**req_data, 'method': 'wrong/method'}
         )
 
@@ -651,6 +655,7 @@ def test_send_message_streaming_status_update_response() -> None:
     task_status_update_event_data: dict[str, Any] = {
         'status': MINIMAL_TASK_STATUS,
         'taskId': '1',
+        'contextId': '2',
         'final': False,
         'type': 'status-update',
     }
@@ -660,9 +665,9 @@ def test_send_message_streaming_status_update_response() -> None:
         'id': 1,
         'result': task_status_update_event_data,
     }
-    response = SendMessageStreamingResponse.model_validate(event_data)
+    response = SendStreamingMessageResponse.model_validate(event_data)
     assert response.root.id == 1
-    assert isinstance(response.root, SendMessageStreamingSuccessResponse)
+    assert isinstance(response.root, SendStreamingMessageSuccessResponse)
     assert isinstance(response.root.result, TaskStatusUpdateEvent)
     assert response.root.result.status.state == TaskState.submitted
     assert response.root.result.taskId == '1'
@@ -671,7 +676,7 @@ def test_send_message_streaming_status_update_response() -> None:
     with pytest.raises(
         ValidationError
     ):  # Result is not a TaskStatusUpdateEvent
-        SendMessageStreamingResponse.model_validate(
+        SendStreamingMessageResponse.model_validate(
             {'jsonrpc': '2.0', 'result': {'wrong': 'data'}, 'id': 1}
         )
 
@@ -680,9 +685,9 @@ def test_send_message_streaming_status_update_response() -> None:
         'id': 1,
         'result': {**task_status_update_event_data, 'final': True},
     }
-    response = SendMessageStreamingResponse.model_validate(event_data)
+    response = SendStreamingMessageResponse.model_validate(event_data)
     assert response.root.id == 1
-    assert isinstance(response.root, SendMessageStreamingSuccessResponse)
+    assert isinstance(response.root, SendStreamingMessageSuccessResponse)
     assert isinstance(response.root.result, TaskStatusUpdateEvent)
     assert response.root.result.final
 
@@ -691,7 +696,7 @@ def test_send_message_streaming_status_update_response() -> None:
         'error': JSONRPCError(**TaskNotFoundError().model_dump()),
         'id': 'resp-1',
     }
-    resp_err = SendMessageStreamingResponse.model_validate(resp_data_err)
+    resp_err = SendStreamingMessageResponse.model_validate(resp_data_err)
     assert resp_err.root.id == 'resp-1'
     assert isinstance(resp_err.root, JSONRPCErrorResponse)
     assert resp_err.root.error is not None
@@ -704,11 +709,12 @@ def test_send_message_streaming_artifact_update_response() -> None:
     artifact = Artifact(
         artifactId='artifact-123',
         name='result_data',
-        parts=[Part(root=text_part), Part(root=data_part)],
+        parts=[Part(text_part), Part(data_part)],
     )
     task_artifact_update_event_data: dict[str, Any] = {
         'artifact': artifact,
         'taskId': 'task_id',
+        'contextId': '2',
         'append': False,
         'lastChunk': True,
         'type': 'artifact-update',
@@ -718,9 +724,9 @@ def test_send_message_streaming_artifact_update_response() -> None:
         'id': 1,
         'result': task_artifact_update_event_data,
     }
-    response = SendMessageStreamingResponse.model_validate(event_data)
+    response = SendStreamingMessageResponse.model_validate(event_data)
     assert response.root.id == 1
-    assert isinstance(response.root, SendMessageStreamingSuccessResponse)
+    assert isinstance(response.root, SendStreamingMessageSuccessResponse)
     assert isinstance(response.root.result, TaskArtifactUpdateEvent)
     assert response.root.result.artifact.artifactId == 'artifact-123'
     assert response.root.result.artifact.name == 'result_data'
@@ -866,16 +872,16 @@ def test_a2a_request_root_model() -> None:
     assert isinstance(a2a_req_send.root, SendMessageRequest)
     assert a2a_req_send.root.method == 'message/send'
 
-    # SendMessageStreamingRequest case
+    # SendStreamingMessageRequest case
     send_subs_req_data: dict[str, Any] = {
         'jsonrpc': '2.0',
-        'method': 'message/sendStream',
+        'method': 'message/stream',
         'params': send_params.model_dump(),
         'id': 1,
     }
     a2a_req_send_subs = A2ARequest.model_validate(send_subs_req_data)
-    assert isinstance(a2a_req_send_subs.root, SendMessageStreamingRequest)
-    assert a2a_req_send_subs.root.method == 'message/sendStream'
+    assert isinstance(a2a_req_send_subs.root, SendStreamingMessageRequest)
+    assert a2a_req_send_subs.root.method == 'message/stream'
 
     # GetTaskRequest case
     get_params = TaskQueryParams(id='t2')
