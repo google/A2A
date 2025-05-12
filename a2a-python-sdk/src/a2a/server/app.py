@@ -253,7 +253,7 @@ class A2AApplication:
             return EventSourceResponse(event_generator(handler_result))
 
         if isinstance(handler_result, JSONRPCErrorResponse):
-            logger.debug('Returing error response.')
+            logger.debug('Returning error response.')
             return JSONResponse(
                 handler_result.model_dump(
                     mode='json',

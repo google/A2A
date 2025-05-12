@@ -39,5 +39,5 @@ class InMemoryTaskStore(TaskStore):
                 logger.info('Task %s deleted successfully.', task_id)
             else:
                 logger.warning(
-                    'Attempted to delete non-existent task with id: %s', task_id
+                    'Attempted to delete nonexistent task with id: %s', task_id
                 )
