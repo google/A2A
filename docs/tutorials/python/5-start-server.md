@@ -2,13 +2,13 @@
 
 Now that we have an Agent Card and an Agent Executor, we can set up and start the A2A server.
 
-The `a2a-python-sdk` provides an `A2AServer` class that simplifies running an A2A-compliant HTTP server. It uses Starlette and Uvicorn under the hood.
+The `a2a-python-sdk` provides an `A2AServer` class that simplifies running an A2A-compliant HTTP server. It uses [Starlette](https://www.starlette.io/) and [Uvicorn](https://www.uvicorn.org/) under the hood.
 
 ## Server Setup in Helloworld
 
 Let's look at `examples/helloworld/__main__.py` again to see how the server is initialized and started.
 
-```python
+```python { .no-copy }
 # examples/helloworld/__main__.py
 from agent_executor import HelloWorldAgentExecutor
 
@@ -21,7 +21,7 @@ from a2a.types import (
 
 if __name__ == '__main__':
     # ... AgentSkill and AgentCard definition from previous steps ...
-    skill = AgentSkill(...) 
+    skill = AgentSkill(...)
     agent_card = AgentCard(...)
 
     # 1. Request Handler
@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     # 2. A2A Server
     server = A2AServer(agent_card=agent_card, request_handler=request_handler)
-    
+
     # 3. Start Server
     server.start(host='0.0.0.0', port=9999)
 ```
@@ -39,15 +39,18 @@ if __name__ == '__main__':
 Let's break this down:
 
 1. **`DefaultA2ARequestHandler`**:
+
     - The SDK provides `DefaultA2ARequestHandler`. This handler takes your `AgentExecutor` implementation (here, `HelloWorldAgentExecutor`) and routes incoming A2A RPC calls to the appropriate methods (`on_message_send`, `on_message_stream`, etc.) on your executor.
     - It also manages task persistence if a `TaskStore` is provided (which Helloworld doesn't use explicitly, so an in-memory one is used by default within the handler for streaming contexts).
 
 2. **`A2AServer`**:
+
     - The `A2AServer` class is instantiated with the `agent_card` and the `request_handler`.
     - The `agent_card` is crucial because the server will expose it at the `/.well-known/agent.json` endpoint.
     - The `request_handler` is responsible for processing all incoming A2A method calls.
 
 3. **`server.start()`**:
+
     - This method starts the Uvicorn server, making your agent accessible over HTTP.
     - `host='0.0.0.0'` makes the server accessible on all network interfaces on your machine.
     - `port=9999` specifies the port to listen on. This matches the `url` in the `AgentCard`.
@@ -64,7 +67,7 @@ python examples/helloworld/__main__.py
 
 You should see output similar to this, indicating the server is running:
 
-```console
+```console { .no-copy }
 INFO:     Started server process [xxxxx]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.

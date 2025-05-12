@@ -1,4 +1,3 @@
-
 # 2. Setup Your Environment
 
 ## Prerequisites
@@ -25,17 +24,19 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
 
     Using `venv` (standard library):
 
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-    ```
+    === "Mac/Linux"
 
-    Or, if you have `uv` installed ([see uv installation](https://docs.astral.sh/uv/getting-started/installation/)):
+        ```sh
+        python -m venv .venv
+        source .venv/bin/activate
+        ```
 
-    ```bash
-    uv venv
-    source .venv/bin/activate # On Windows: .venv\Scripts\activate
-    ```
+    === "Windows"
+
+        ```powershell
+        python -m venv .venv
+        .venv\Scripts\activate
+        ```
 
 2. **Install the A2A SDK and its dependencies:**
 
@@ -47,18 +48,12 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
 
     This command installs the SDK in "editable" mode (`-e`), meaning changes to the SDK source code are immediately available. It also installs development dependencies specified in `pyproject.toml`.
 
-    If you are using `uv`, it will use the `uv.lock` file to install dependencies:
-
-    ```bash
-    uv sync --dev
-    ```
-
 ## Verify Installation
 
 After installation, you should be able to import the `a2a` package in a Python interpreter:
 
 ```bash
-python -c "import a2a; print('A2A SDK imported successfully!')"
+python -c "import a2a; print('A2A SDK imported successfully')"
 ```
 
 If this command runs without error and prints the success message, your environment is set up correctly.

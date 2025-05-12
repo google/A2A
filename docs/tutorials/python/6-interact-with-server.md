@@ -13,6 +13,20 @@ The `examples/helloworld/test_client.py` script demonstrates how to:
 
 Open a **new terminal window**, activate your virtual environment, and navigate to the `a2a-python-sdk` directory.
 
+Activate virtual environment (Be sure to do this in the same directory where you created the virtual environment):
+
+=== "Mac/Linux"
+
+    ```sh
+    source .venv/bin/activate
+    ```
+
+=== "Windows"
+
+    ```powershell
+    .venv\Scripts\activate
+    ```
+
 Run the test client:
 
 ```bash
@@ -25,7 +39,7 @@ Let's look at key parts of `examples/helloworld/test_client.py`:
 
 1. **Fetching the Agent Card & Initializing the Client**:
 
-    ```python
+    ```python { .no-copy }
     # examples/helloworld/test_client.py
     async with httpx.AsyncClient() as httpx_client:
         client = await A2AClient.get_client_from_agent_card_url(
@@ -37,7 +51,7 @@ Let's look at key parts of `examples/helloworld/test_client.py`:
 
 2. **Sending a Non-Streaming Message (`send_message`)**:
 
-    ```python
+    ```python { .no-copy }
     # examples/helloworld/test_client.py
     send_message_payload: dict[str, Any] = {
         'message': {
@@ -60,7 +74,7 @@ Let's look at key parts of `examples/helloworld/test_client.py`:
 3. **Handling Task IDs (Illustrative)**:
     The Helloworld client attempts to demonstrate `get_task` and `cancel_task`.
 
-    ```python
+    ```python { .no-copy }
     # examples/helloworld/test_client.py
     # ... (after send_message)
     if isinstance(response.root, SendMessageSuccessResponse) and isinstance(
@@ -80,7 +94,7 @@ Let's look at key parts of `examples/helloworld/test_client.py`:
 
 4. **Sending a Streaming Message (`send_message_streaming`)**:
 
-    ```python
+    ```python { .no-copy }
     # examples/helloworld/test_client.py
     stream_response = client.send_message_streaming(
         payload=send_message_payload # Same payload can be used
@@ -101,4 +115,13 @@ When you run `test_client.py`, you'll see JSON outputs for:
 - A message indicating that `get_task` and `cancel_task` are not applicable because the non-streaming Helloworld returns a direct message.
 - The streaming responses (two chunks: "Hello " and then "World", each wrapped in an A2A message structure).
 
+```console { .no-copy }
+{'id': '67f37deb381f4cae8c26e78e4d95bdb3', 'jsonrpc': '2.0', 'result': {'messageId': '7dd074d5-aff5-41c6-828a-f3a38325c46b', 'parts': [{'text': 'Hello World', 'type': 'text'}], 'role': 'agent', 'type': 'message'}}
+Received an instance of Message, getTask and cancelTask are not applicable for invocation
+{'id': '39aacacac4914ba4ac75a00e0a870615', 'jsonrpc': '2.0', 'result': {'final': False, 'messageId': '9a95f6e6-9577-46d7-b814-31a61efbd1d7', 'parts': [{'text': 'Hello ', 'type': 'text'}], 'role': 'agent', 'type': 'message'}}
+{'id': '39aacacac4914ba4ac75a00e0a870615', 'jsonrpc': '2.0', 'result': {'final': True, 'messageId': 'a55c44da-dcda-47ac-a255-0f314a5de8c9', 'parts': [{'text': 'World', 'type': 'text'}], 'role': 'agent', 'type': 'message'}
+```
+
 This confirms your server is correctly handling basic A2A interactions!
+
+Now you can shut down the server by typing Ctrl+C in the terminal window.

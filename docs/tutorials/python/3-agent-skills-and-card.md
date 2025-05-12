@@ -1,6 +1,6 @@
 # 3. Agent Skills & Agent Card
 
-Before an A2A agent can do anything, it needs to define what it *can* do (its skills) and how other agents or clients can find out about these capabilities (its Agent Card).
+Before an A2A agent can do anything, it needs to define what it _can_ do (its skills) and how other agents or clients can find out about these capabilities (its Agent Card).
 
 We'll use the `helloworld` example located in `a2a-python-sdk/examples/helloworld/`.
 
@@ -19,7 +19,7 @@ Key attributes of an `AgentSkill` (defined in `a2a.types`):
 
 In `examples/helloworld/__main__.py`, you can see how a skill for the Helloworld agent is defined:
 
-```python
+```python { .no-copy }
 # examples/helloworld/__main__.py
 # ...
     skill = AgentSkill(
@@ -49,7 +49,7 @@ Key attributes of an `AgentCard` (defined in `a2a.types`):
 
 The `helloworld` example defines its Agent Card like this:
 
-```python
+```python { .no-copy }
 # examples/helloworld/__main__.py
 # ...
     agent_card = AgentCard(
@@ -66,6 +66,6 @@ The `helloworld` example defines its Agent Card like this:
 # ...
 ```
 
-This card tells us the agent is named "Hello World Agent", runs at `http://localhost:9999/`, supports text interactions, and has the "hello_world" skill. It also indicates public authentication, meaning no specific credentials are required.
+This card tells us the agent is named "Hello World Agent", runs at `http://localhost:9999/`, supports text interactions, and has the `hello_world` skill. It also indicates public authentication, meaning no specific credentials are required.
 
 Understanding the Agent Card is crucial because it's how a client discovers an agent and learns how to interact with it.
