@@ -50,20 +50,20 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
 
         ```python { .no-copy }
         # examples/helloworld/agent_executor.py
-            async def on_message_send(
-                self, request: SendMessageRequest, task: Task | None
-            ) -> SendMessageResponse:
-                result = await self.agent.invoke() # Calls the agent's logic
+        async def on_message_send(
+            self, request: SendMessageRequest, task: Task | None
+        ) -> SendMessageResponse:
+            result = await self.agent.invoke() # Calls the agent's logic
 
-                message: Message = Message( # Constructs the A2A Message
-                    role=Role.agent,
-                    parts=[Part(root=TextPart(text=result))],
-                    messageId=str(uuid4()),
-                )
-                # Wraps it in a success response
-                return SendMessageResponse(
-                    root=SendMessageSuccessResponse(id=request.id, result=message)
-                )
+            message: Message = Message( # Constructs the A2A Message
+                role=Role.agent,
+                parts=[Part(root=TextPart(text=result))],
+                messageId=str(uuid4()),
+            )
+            # Wraps it in a success response
+            return SendMessageResponse(
+                root=SendMessageSuccessResponse(id=request.id, result=message)
+            )
         ```
 
         When a non-streaming `message/send` request comes in:
@@ -76,22 +76,22 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
 
         ```python { .no-copy }
         # examples/helloworld/agent_executor.py
-            async def on_message_stream( # type: ignore
-                self, request: SendMessageStreamingRequest, task: Task | None
-            ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
-                async for chunk in self.agent.stream(): # Iterates over agent's stream
-                    message: Message = Message(
-                        role=Role.agent,
-                        parts=[Part(root=TextPart(text=chunk['content']))],
-                        messageId=str(uuid4()),
-                        final=chunk['done'], # Indicates if this is the last chunk
+        async def on_message_stream( # type: ignore
+            self, request: SendMessageStreamingRequest, task: Task | None
+        ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
+            async for chunk in self.agent.stream(): # Iterates over agent's stream
+                message: Message = Message(
+                    role=Role.agent,
+                    parts=[Part(root=TextPart(text=chunk['content']))],
+                    messageId=str(uuid4()),
+                    final=chunk['done'], # Indicates if this is the last chunk
+                )
+                # Yields each chunk as a streaming success response
+                yield SendMessageStreamingResponse(
+                    root=SendMessageStreamingSuccessResponse(
+                        id=request.id, result=message
                     )
-                    # Yields each chunk as a streaming success response
-                    yield SendMessageStreamingResponse(
-                        root=SendMessageStreamingSuccessResponse(
-                            id=request.id, result=message
-                        )
-                    )
+                )
         ```
 
         When a streaming `message/sendStream` request is received:
@@ -106,14 +106,14 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
         ```python { .no-copy }
         # examples/helloworld/agent_executor.py
         # ...
-            async def on_cancel(
-                self, request: CancelTaskRequest, task: Task
-            ) -> CancelTaskResponse:
-                return CancelTaskResponse(
-                    root=JSONRPCErrorResponse(
-                        id=request.id, error=UnsupportedOperationError()
-                    )
+        async def on_cancel(
+            self, request: CancelTaskRequest, task: Task
+        ) -> CancelTaskResponse:
+            return CancelTaskResponse(
+                root=JSONRPCErrorResponse(
+                    id=request.id, error=UnsupportedOperationError()
                 )
+            )
         # ... similar for on_resubscribe
         ```
 
