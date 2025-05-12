@@ -27,18 +27,17 @@ from common.types import (
     TaskResubscriptionRequest,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
 class A2AServer:
     def __init__(
-        self,
-        host='0.0.0.0',
-        port=5000,
-        endpoint='/',
-        agent_card: AgentCard = None,
-        task_manager: TaskManager = None,
+            self,
+            host='0.0.0.0',
+            port=5000,
+            endpoint='/',
+            agent_card: AgentCard = None,
+            task_manager: TaskManager = None,
     ):
         self.host = host
         self.port = port
@@ -69,32 +68,36 @@ class A2AServer:
 
     async def _process_request(self, request: Request):
         try:
+            scope: dict | None = None
+            if request.scope is not None:
+                scope = request.scope
+
             body = await request.json()
             json_rpc_request = A2ARequest.validate_python(body)
 
             if isinstance(json_rpc_request, GetTaskRequest):
-                result = await self.task_manager.on_get_task(json_rpc_request)
+                result = await self.task_manager.on_get_task(json_rpc_request, scope)
             elif isinstance(json_rpc_request, SendTaskRequest):
-                result = await self.task_manager.on_send_task(json_rpc_request)
+                result = await self.task_manager.on_send_task(json_rpc_request, scope)
             elif isinstance(json_rpc_request, SendTaskStreamingRequest):
                 result = await self.task_manager.on_send_task_subscribe(
-                    json_rpc_request
+                    json_rpc_request, scope
                 )
             elif isinstance(json_rpc_request, CancelTaskRequest):
                 result = await self.task_manager.on_cancel_task(
-                    json_rpc_request
+                    json_rpc_request, scope
                 )
             elif isinstance(json_rpc_request, SetTaskPushNotificationRequest):
                 result = await self.task_manager.on_set_task_push_notification(
-                    json_rpc_request
+                    json_rpc_request, scope
                 )
             elif isinstance(json_rpc_request, GetTaskPushNotificationRequest):
                 result = await self.task_manager.on_get_task_push_notification(
-                    json_rpc_request
+                    json_rpc_request, scope
                 )
             elif isinstance(json_rpc_request, TaskResubscriptionRequest):
                 result = await self.task_manager.on_resubscribe_to_task(
-                    json_rpc_request
+                    json_rpc_request, scope
                 )
             else:
                 logger.warning(
@@ -122,7 +125,7 @@ class A2AServer:
         )
 
     def _create_response(
-        self, result: Any
+            self, result: Any
     ) -> JSONResponse | EventSourceResponse:
         if isinstance(result, AsyncIterable):
 

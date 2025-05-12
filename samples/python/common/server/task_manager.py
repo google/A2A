@@ -36,46 +36,45 @@ from common.types import (
     TaskStatusUpdateEvent,
 )
 
-
 logger = logging.getLogger(__name__)
 
 
 class TaskManager(ABC):
     @abstractmethod
-    async def on_get_task(self, request: GetTaskRequest) -> GetTaskResponse:
+    async def on_get_task(self, request: GetTaskRequest, scope: dict = None) -> GetTaskResponse:
         pass
 
     @abstractmethod
     async def on_cancel_task(
-        self, request: CancelTaskRequest
+            self, request: CancelTaskRequest, scope: dict = None
     ) -> CancelTaskResponse:
         pass
 
     @abstractmethod
-    async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
+    async def on_send_task(self, request: SendTaskRequest, scope: dict = None) -> SendTaskResponse:
         pass
 
     @abstractmethod
     async def on_send_task_subscribe(
-        self, request: SendTaskStreamingRequest
+            self, request: SendTaskStreamingRequest, scope: dict = None
     ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
         pass
 
     @abstractmethod
     async def on_set_task_push_notification(
-        self, request: SetTaskPushNotificationRequest
+            self, request: SetTaskPushNotificationRequest, scope: dict = None
     ) -> SetTaskPushNotificationResponse:
         pass
 
     @abstractmethod
     async def on_get_task_push_notification(
-        self, request: GetTaskPushNotificationRequest
+            self, request: GetTaskPushNotificationRequest, scope: dict = None
     ) -> GetTaskPushNotificationResponse:
         pass
 
     @abstractmethod
     async def on_resubscribe_to_task(
-        self, request: TaskResubscriptionRequest
+            self, request: TaskResubscriptionRequest, scope: dict = None
     ) -> AsyncIterable[SendTaskResponse] | JSONRPCResponse:
         pass
 
@@ -88,7 +87,7 @@ class InMemoryTaskManager(TaskManager):
         self.task_sse_subscribers: dict[str, list[asyncio.Queue]] = {}
         self.subscriber_lock = asyncio.Lock()
 
-    async def on_get_task(self, request: GetTaskRequest) -> GetTaskResponse:
+    async def on_get_task(self, request: GetTaskRequest, scope: dict = None) -> GetTaskResponse:
         logger.info(f'Getting task {request.params.id}')
         task_query_params: TaskQueryParams = request.params
 
@@ -104,7 +103,7 @@ class InMemoryTaskManager(TaskManager):
         return GetTaskResponse(id=request.id, result=task_result)
 
     async def on_cancel_task(
-        self, request: CancelTaskRequest
+            self, request: CancelTaskRequest, scope: dict = None
     ) -> CancelTaskResponse:
         logger.info(f'Cancelling task {request.params.id}')
         task_id_params: TaskIdParams = request.params
@@ -119,17 +118,17 @@ class InMemoryTaskManager(TaskManager):
         return CancelTaskResponse(id=request.id, error=TaskNotCancelableError())
 
     @abstractmethod
-    async def on_send_task(self, request: SendTaskRequest) -> SendTaskResponse:
+    async def on_send_task(self, request: SendTaskRequest, scope: dict = None) -> SendTaskResponse:
         pass
 
     @abstractmethod
     async def on_send_task_subscribe(
-        self, request: SendTaskStreamingRequest
+            self, request: SendTaskStreamingRequest, scope: dict = None
     ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
         pass
 
     async def set_push_notification_info(
-        self, task_id: str, notification_config: PushNotificationConfig
+            self, task_id: str, notification_config: PushNotificationConfig
     ):
         async with self.lock:
             task = self.tasks.get(task_id)
@@ -139,7 +138,7 @@ class InMemoryTaskManager(TaskManager):
             self.push_notification_infos[task_id] = notification_config
 
     async def get_push_notification_info(
-        self, task_id: str
+            self, task_id: str
     ) -> PushNotificationConfig:
         async with self.lock:
             task = self.tasks.get(task_id)
@@ -148,14 +147,12 @@ class InMemoryTaskManager(TaskManager):
 
             return self.push_notification_infos[task_id]
 
-    
-
     async def has_push_notification_info(self, task_id: str) -> bool:
         async with self.lock:
             return task_id in self.push_notification_infos
 
     async def on_set_task_push_notification(
-        self, request: SetTaskPushNotificationRequest
+            self, request: SetTaskPushNotificationRequest, scope: dict = None
     ) -> SetTaskPushNotificationResponse:
         logger.info(f'Setting task push notification {request.params.id}')
         task_notification_params: TaskPushNotificationConfig = request.params
@@ -179,7 +176,7 @@ class InMemoryTaskManager(TaskManager):
         )
 
     async def on_get_task_push_notification(
-        self, request: GetTaskPushNotificationRequest
+            self, request: GetTaskPushNotificationRequest, scope: dict = None
     ) -> GetTaskPushNotificationResponse:
         logger.info(f'Getting task push notification {request.params.id}')
         task_params: TaskIdParams = request.params
@@ -223,12 +220,12 @@ class InMemoryTaskManager(TaskManager):
             return task
 
     async def on_resubscribe_to_task(
-        self, request: TaskResubscriptionRequest
+            self, request: TaskResubscriptionRequest, scope: dict = None
     ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
         return new_not_implemented_error(request.id)
 
     async def update_store(
-        self, task_id: str, status: TaskStatus, artifacts: list[Artifact]
+            self, task_id: str, status: TaskStatus, artifacts: list[Artifact]
     ) -> Task:
         async with self.lock:
             try:
@@ -259,7 +256,7 @@ class InMemoryTaskManager(TaskManager):
         return new_task
 
     async def setup_sse_consumer(
-        self, task_id: str, is_resubscribe: bool = False
+            self, task_id: str, is_resubscribe: bool = False
     ):
         async with self.subscriber_lock:
             if task_id not in self.task_sse_subscribers:
@@ -281,7 +278,7 @@ class InMemoryTaskManager(TaskManager):
                 await subscriber.put(task_update_event)
 
     async def dequeue_events_for_sse(
-        self, request_id, task_id, sse_event_queue: asyncio.Queue
+            self, request_id, task_id, sse_event_queue: asyncio.Queue
     ) -> AsyncIterable[SendTaskStreamingResponse] | JSONRPCResponse:
         try:
             while True:
