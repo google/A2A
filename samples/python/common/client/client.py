@@ -41,6 +41,7 @@ class A2AClient:
             self.url = url
         else:
             raise ValueError('Must provide either agent_card or url')
+        self.timeout = timeout
 
     async def send_task(self, payload: dict[str, Any]) -> SendTaskResponse:
         request = SendTaskRequest(params=payload)
@@ -67,7 +68,7 @@ class A2AClient:
             try:
                 # Image generation could take time, adding timeout
                 response = await client.post(
-                    self.url, json=request.model_dump(), timeout=timeout
+                    self.url, json=request.model_dump(), timeout=self.timeout
                 )
                 response.raise_for_status()
                 return response.json()

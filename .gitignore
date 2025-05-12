@@ -166,14 +166,6 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
-
 # Miscellaneous
 **/.angular/*
 /.angular/cache
@@ -187,4 +179,3 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
-*.vscode*

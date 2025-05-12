@@ -10,6 +10,10 @@ if available) who are part of the A2A community and are helping build, codify,
 and adopt A2A as the standard standard protocol for AI agents to communicate and
 collaborate effectively with each other and with users.
 
+!!! note
+
+    If you're interested in becoming a partner of A2A and getting your listing added to or updated on this page, let us know by [submitting this form](https://forms.gle/BuQQ2zvXfFUA1bu98), and we'll contact you soon!
+
 - Accenture
 - [Arize](https://arize.com/blog/arize-ai-and-future-of-agent-interoperability-embracing-googles-a2a-protocol/)
 - [Articul8](https://www.articul8.ai/news/unleashing-the-next-frontier-of-enterprise-ai-introducing-model-mesh-dock-and-inter-lock-and-our-a2-a-partnership-with-google)
@@ -31,6 +35,7 @@ collaborate effectively with each other and with users.
 - Decagon.ai
 - [Deloitte](https://www.prnewswire.com/news-releases/deloitte-expands-alliances-with-google-cloud-and-servicenow-to-accelerate-agentic-ai-adoption-in-the-enterprise-302423941.html)
 - Devnagri
+- Distyl.ai
 - Elastic
 - Ema.co
 - EPAM
@@ -47,8 +52,10 @@ collaborate effectively with each other and with users.
 - LabelBox
 - LangChain
 - Livex.ai
+- [LlamaIndex](https://x.com/llama_index/status/1912949446322852185)
 - LTIMindTtree
 - Lyzr.ai
+- [Microsoft](https://www.microsoft.com/en-us/microsoft-cloud/blog/2025/05/07/empowering-multi-agent-apps-with-the-open-agent2agent-a2a-protocol/)
 - McKinsey
 - MongoDB
 - Neo4j
@@ -65,12 +72,10 @@ collaborate effectively with each other and with users.
 - TCS
 - Typeface
 - UKG
+- [UiPath](https://www.uipath.com/newsroom/uipath-launches-first-enterprise-grade-platform-for-agentic-automation)
 - [Weights & Biases](https://wandb.ai/wandb_fc/product-announcements-fc/reports/Powering-Agent-Collaboration-Weights-Biases-Partners-with-Google-Cloud-on-Agent2Agent-Interoperability-Protocol---VmlldzoxMjE3NDg3OA)
 - Wipro
 - Workday
 - Writer
 - Zeotap
-
-!!! note
-
-    If you're interested in becoming a partner of A2A and getting your listing added to or updated on this page, let us know by [submitting this form](https://forms.gle/BuQQ2zvXfFUA1bu98), and we'll contact you soon!
+- Zoom
