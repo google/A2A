@@ -51,6 +51,7 @@ Xca
 YTT
 YWFh
 Zipkin
+aacacac
 aboutasha
 achat
 aconnect
@@ -69,6 +70,7 @@ backstory
 backticks
 bbb
 bzr
+cae
 ccc
 cdn
 cfe
@@ -78,7 +80,9 @@ codegen
 crewai
 datamodel
 datapart
+dcda
 direnv
+efbd
 evt
 excinfo
 firewalls

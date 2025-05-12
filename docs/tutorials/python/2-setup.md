@@ -12,7 +12,7 @@
 If you haven't already, clone the A2A repository and navigate to the Python SDK directory:
 
 ```bash
-git clone https://github.com/google/A2A.git
+git clone https://github.com/google/A2A.git -b main --depth 1
 cd A2A/a2a-python-sdk
 ```
 
