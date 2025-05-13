@@ -1666,9 +1666,6 @@
         },
         {
           "$ref": "#/$defs/TaskResubscriptionRequest"
-        },
-        {
-          "$ref": "#/$defs/GetAuthenticatedExtendedCardRequest"
         }
       ],
       "title": "A2ARequest"
