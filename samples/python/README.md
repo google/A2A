@@ -1,6 +1,8 @@
 # Sample Code
 
-This code is used to demonstrate A2A capabilities as the spec progresses.\ Samples are divided into 3 sub directories:
+This code is used to demonstrate A2A capabilities as the spec progresses.
+
+Samples are divided into 3 sub directories:
 
 * [**Common**](/samples/python/common)  
 Common code that all sample agents and apps use to speak A2A over HTTP. 
