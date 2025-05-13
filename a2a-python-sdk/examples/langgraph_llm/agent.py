@@ -84,7 +84,7 @@ class CurrencyAgent:
     )
 
     def __init__(self):
-        with open("lang_chain_config.json") as f:
+        with open("llm_config.json") as f:
             config = json.load(f)
         self.model = ChatOpenAI(
             model=config["model_name"],
