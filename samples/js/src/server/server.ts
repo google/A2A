@@ -10,7 +10,7 @@ import * as schema from "../schema.js";
 import { TaskStore, InMemoryTaskStore, TaskAndHistory } from "./store.js";
 // Import TaskHandler and the original TaskContext to derive the new one
 import { TaskHandler, TaskContext as OldTaskContext } from "./handler.js";
-import { A2AError } from "./error.js";
+import { A2AError, errorHandler, normalizeError } from "./error.js";
 import {
   getCurrentTimestamp,
   isTaskStatusUpdate,
@@ -164,7 +164,7 @@ export class A2AServer {
     app.post(this.basePath, this.endpoint());
 
     // Basic error handler
-    app.use(this.errorHandler);
+    app.use(errorHandler);
 
     // Start listening
     app.listen(port, () => {
@@ -225,7 +225,7 @@ export class A2AServer {
         if (error instanceof A2AError && taskId && !error.taskId) {
           error.taskId = taskId; // Add task ID context if missing
         }
-        next(this.normalizeError(error, requestBody?.id ?? null));
+        next(normalizeError(error, requestBody?.id ?? null));
       }
     };
   }
@@ -294,7 +294,7 @@ export class A2AServer {
         );
         // Still throw the original handler error
       }
-      throw this.normalizeError(handlerError, req.id, taskId); // Rethrow original error
+      throw normalizeError(handlerError, req.id, taskId); // Rethrow original error
     }
 
     // The loop finished, send the final task state
@@ -698,50 +698,6 @@ export class A2AServer {
     };
   }
 
-  private createErrorResponse(
-    id: number | string | null,
-    error: schema.JSONRPCError<unknown>
-  ): schema.JSONRPCResponse<null, unknown> {
-    // For errors, ID should be the same as request ID, or null if that couldn't be determined
-    return {
-      jsonrpc: "2.0",
-      id: id, // Can be null if request ID was invalid/missing
-      error: error,
-    };
-  }
-
-  /** Normalizes various error types into a JSONRPCResponse containing an error */
-  private normalizeError(
-    error: any,
-    reqId: number | string | null,
-    taskId?: string
-  ): schema.JSONRPCResponse<null, unknown> {
-    let a2aError: A2AError;
-    if (error instanceof A2AError) {
-      a2aError = error;
-    } else if (error instanceof Error) {
-      // Generic JS error
-      a2aError = A2AError.internalError(error.message, { stack: error.stack });
-    } else {
-      // Unknown error type
-      a2aError = A2AError.internalError("An unknown error occurred.", error);
-    }
-
-    // Ensure Task ID context is present if possible
-    if (taskId && !a2aError.taskId) {
-      a2aError.taskId = taskId;
-    }
-
-    console.error(
-      `Error processing request (Task: ${a2aError.taskId ?? "N/A"}, ReqID: ${
-        reqId ?? "N/A"
-      }):`,
-      a2aError
-    );
-
-    return this.createErrorResponse(reqId, a2aError.toJSONRPCError());
-  }
-
   /** Creates a TaskStatusUpdateEvent object */
   private createTaskStatusEvent(
     taskId: string,
@@ -767,69 +723,6 @@ export class A2AServer {
       final: final, // Usually false unless it's the very last thing
     };
   }
-
-  /** Express error handling middleware */
-  private errorHandler = (
-    err: any,
-    req: Request,
-    res: Response,
-    next: NextFunction // eslint-disable-line @typescript-eslint/no-unused-vars
-  ) => {
-    // If headers already sent (likely streaming), just log and end.
-    // The stream handler should have sent an error event if possible.
-    if (res.headersSent) {
-      console.error(
-        `[ErrorHandler] Error after headers sent (ReqID: ${
-          req.body?.id ?? "N/A"
-        }, TaskID: ${err?.taskId ?? "N/A"}):`,
-        err
-      );
-      // Ensure the response is ended if it wasn't already
-      if (!res.writableEnded) {
-        res.end();
-      }
-      return;
-    }
-
-    let responseError: schema.JSONRPCResponse<null, unknown>;
-
-    if (err instanceof A2AError) {
-      // Already normalized somewhat by the endpoint handler
-      responseError = this.normalizeError(
-        err,
-        req.body?.id ?? null,
-        err.taskId
-      );
-    } else {
-      // Normalize other errors caught by Express itself (e.g., JSON parse errors)
-      let reqId = null;
-      try {
-        // Try to parse body again to get ID, might fail
-        const body = JSON.parse(req.body); // Assumes body might be raw string on parse fail
-        reqId = body?.id ?? null;
-      } catch (_) {
-        /* Ignore parsing errors */
-      }
-
-      // Check for Express/body-parser JSON parsing error
-      if (
-        err instanceof SyntaxError &&
-        "body" in err &&
-        "status" in err &&
-        err.status === 400
-      ) {
-        responseError = this.normalizeError(
-          A2AError.parseError(err.message),
-          reqId
-        );
-      } else {
-        responseError = this.normalizeError(err, reqId); // Normalize other unexpected errors
-      }
-    }
-
-    res.status(200); // JSON-RPC errors use 200 OK, error info is in the body
-    res.json(responseError);
-  };
 
   /** Sends a standard JSON success response */
   private sendJsonResponse<T>(
