@@ -64,6 +64,7 @@ collaborate effectively with each other and with users.
 - Pendo
 - PWC
 - Quantiphi
+- Red Hat
 - S\&P
 - Salesforce
 - [SAP](https://news.sap.com/2025/04/sap-google-cloud-enterprise-ai-open-agent-collaboration-model-choice-multimodal-intelligence/)
