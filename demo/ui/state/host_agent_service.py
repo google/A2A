@@ -47,6 +47,10 @@ async def ListConversations() -> list[Conversation]:
 async def SendMessage(message: Message) -> str | None:
     client = ConversationClient(server_url)
     try:
+        # Pass the Demo UI OAuth Callback URI in the metadata
+        if not message.metadata:
+            message.metadata = {}
+        message.metadata['oauth_redirect_uri'] = f'{server_url}/auth'
         response = await client.send_message(SendMessageRequest(params=message))
         return response.result
     except Exception as e:
