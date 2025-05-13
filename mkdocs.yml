@@ -124,6 +124,7 @@ plugins:
         "specification/topics/enterprise_ready.md": "topics/enterprise-ready.md"
         "specification/topics/push_notification.md": "topics/streaming-and-async.md"
         "specification/topics/push_notifications.md": "topics/streaming-and-async.md"
+        "topics/index.md": "topics/what-is-a2a.md"
         # Tutorial
         "tutorials/index.md": "tutorials/python/1-introduction.md"
         "tutorials/python/index.md": "tutorials/python/1-introduction.md"
