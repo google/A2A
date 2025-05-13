@@ -125,6 +125,8 @@ plugins:
         "specification/topics/push_notification.md": "topics/streaming-and-async.md"
         "specification/topics/push_notifications.md": "topics/streaming-and-async.md"
         # Tutorial
+        "tutorials/index.md": "tutorials/python/1-introduction.md"
+        "tutorials/python/index.md": "tutorials/python/1-introduction.md"
         "tutorials/python/1_introduction.md": "tutorials/python/1-introduction.md"
         "tutorials/python/3-create-project.md": "tutorials/python/2-setup.md"
         "tutorials/python/4-agent-skills.md": "tutorials/python/3-agent-skills-and-card.md"
