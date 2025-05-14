@@ -1,11 +1,10 @@
-import asyncio
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
 import json
 from collections.abc import AsyncGenerator
 
 class TravelPlannerAgent:
-    """ DialogueHealingAgent."""
+    """ travel planner Agent."""
 
     def __init__(self):
         """初始化对话模型"""

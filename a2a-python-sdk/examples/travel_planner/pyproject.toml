@@ -1,7 +1,7 @@
 [project]
-name = "dialogueHealing"
+name = "travel_planner"
 version = "0.1.0"
-description = "dialogueHealing agent example that only returns Messages"
+description = "travel_planner agent example that only returns Messages"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
