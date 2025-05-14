@@ -2,7 +2,7 @@
 
 Before an A2A agent can do anything, it needs to define what it _can_ do (its skills) and how other agents or clients can find out about these capabilities (its Agent Card).
 
-We'll use the `helloworld` example located in `a2a-python-sdk/examples/helloworld/`.
+We'll use the `helloworld` example located in `a2a-python/examples/helloworld/`.
 
 ## Agent Skills
 
