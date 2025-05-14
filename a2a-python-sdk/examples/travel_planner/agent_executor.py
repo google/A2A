@@ -25,25 +25,6 @@ class HelloWorldAgentExecutor(BaseAgentExecutor):
         self.agent = TravelPlannerAgent()
 
     @override
-    async def on_message_send(
-        self,
-        request: SendMessageRequest,
-        event_queue: EventQueue,
-        task: Task | None,
-    ) -> None:
-        params: MessageSendParams = request.params
-        query = self._get_user_query(params)
-        result = await self.agent.invoke(query)
-
-        message: Message = Message(
-            role=Role.agent,
-            parts=[Part(TextPart(text=result))],
-            messageId=str(uuid4()),
-        )
-        print(message)
-        event_queue.enqueue_event(message)
-
-    @override
     async def on_message_stream(
         self,
         request: SendStreamingMessageRequest,
@@ -60,7 +41,6 @@ class HelloWorldAgentExecutor(BaseAgentExecutor):
                 messageId=str(uuid4()),
                 final=chunk['done'],
             )
-            print(chunk['content'])
             event_queue.enqueue_event(message)
 
     def _get_user_query(self, task_send_params: MessageSendParams) -> str:
