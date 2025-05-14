@@ -111,6 +111,7 @@ plugins:
   - search
   - redirects:
       redirect_maps:
+        "spec-json.md": https://raw.githubusercontent.com/google/A2A/refs/heads/main/specification/json/a2a.json
         "specification/overview.md": "specification.md"
         "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
         "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
