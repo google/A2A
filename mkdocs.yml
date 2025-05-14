@@ -111,6 +111,7 @@ plugins:
   - search
   - redirects:
       redirect_maps:
+        "spec-json.md": https://raw.githubusercontent.com/google/A2A/refs/heads/main/specification/json/a2a.json
         "specification/overview.md": "specification.md"
         "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
         "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
@@ -124,6 +125,7 @@ plugins:
         "specification/topics/enterprise_ready.md": "topics/enterprise-ready.md"
         "specification/topics/push_notification.md": "topics/streaming-and-async.md"
         "specification/topics/push_notifications.md": "topics/streaming-and-async.md"
+        "topics/index.md": "topics/what-is-a2a.md"
         # Tutorial
         "tutorials/index.md": "tutorials/python/1-introduction.md"
         "tutorials/python/index.md": "tutorials/python/1-introduction.md"

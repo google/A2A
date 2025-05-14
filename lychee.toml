@@ -8,6 +8,11 @@ exclude = [
     'http://localhost:12000/',
     'http://localhost:10020/',
     'https://www.askmarvin.ai/',
+    'https://www.bcg.com/',
+    'https://www.oracle.com/netsuite',
+    'https://www.spglobal.com/',
+    'https://www.epam.com/',
+    'https://www.servicenow.com/',
 ]
 exclude_path = [
     ".github/actions/spelling",
