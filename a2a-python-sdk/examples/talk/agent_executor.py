@@ -3,12 +3,14 @@ import asyncio
 from collections.abc import AsyncGenerator
 from typing import Any
 from uuid import uuid4
+from agent import TalkAgent
 
 from typing_extensions import override
 
 from a2a.server.agent_execution import BaseAgentExecutor
 from a2a.server.events import EventQueue
 from a2a.types import (
+    MessageSendParams,
     Message,
     Part,
     Role,
@@ -19,23 +21,12 @@ from a2a.types import (
 )
 
 
-class HelloWorldAgent:
-    """Hello World Agent."""
-
-    async def invoke(self):
-        return 'Hello World'
-
-    async def stream(self) -> AsyncGenerator[dict[str, Any], None]:
-        yield {'content': 'Hello ', 'done': False}
-        await asyncio.sleep(2)
-        yield {'content': 'World', 'done': True}
-
 
 class HelloWorldAgentExecutor(BaseAgentExecutor):
     """Test AgentProxy Implementation."""
 
     def __init__(self):
-        self.agent = HelloWorldAgent()
+        self.agent = TalkAgent()
 
     @override
     async def on_message_send(
@@ -44,13 +35,16 @@ class HelloWorldAgentExecutor(BaseAgentExecutor):
         event_queue: EventQueue,
         task: Task | None,
     ) -> None:
-        result = await self.agent.invoke()
+        params: MessageSendParams = request.params
+        query = self._get_user_query(params)
+        result = await self.agent.invoke(query)
 
         message: Message = Message(
             role=Role.agent,
             parts=[Part(TextPart(text=result))],
             messageId=str(uuid4()),
         )
+        print(message)
         event_queue.enqueue_event(message)
 
     @override
@@ -68,3 +62,10 @@ class HelloWorldAgentExecutor(BaseAgentExecutor):
                 final=chunk['done'],
             )
             event_queue.enqueue_event(message)
+
+    def _get_user_query(self, task_send_params: MessageSendParams) -> str:
+        """Helper to get user query from task send params."""
+        part = task_send_params.message.parts[0].root
+        if not isinstance(part, TextPart):
+            raise ValueError('Only text parts are supported')
+        return part.text

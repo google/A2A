@@ -33,29 +33,11 @@ async def interact_with_server(client: A2AClient) -> None:
             response = await client.send_message(payload=send_message_payload)
             print(response.model_dump(mode='json', exclude_none=True))
 
-            if isinstance(response.root, SendMessageSuccessResponse) and isinstance(
-                response.root.result, Task
-            ):
-                task_id: str = response.root.result.id
-                get_task_payload = {'id': task_id}
-                get_response = await client.get_task(payload=get_task_payload)
-                print(get_response.model_dump(mode='json', exclude_none=True))
-
-                cancel_task_payload = {'id': task_id}
-                cancel_response = await client.cancel_task(
-                    payload=cancel_task_payload
-                )
-                print(cancel_response.model_dump(mode='json', exclude_none=True))
-            else:
-                print(
-                    'Received an instance of Message, getTask and cancelTask are not applicable for invocation'
-                )
-
-            stream_response = client.send_message_streaming(
-                payload=send_message_payload
-            )
-            async for chunk in stream_response:
-                print(chunk.model_dump(mode='json', exclude_none=True))
+            # stream_response = client.send_message_streaming(
+            #     payload=send_message_payload
+            # )
+            # async for chunk in stream_response:
+            #     print(chunk.model_dump(mode='json', exclude_none=True))
 
         except Exception as e:
             print(f"发生错误: {e}")
