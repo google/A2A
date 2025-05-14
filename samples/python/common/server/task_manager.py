@@ -33,6 +33,7 @@ from common.types import (
     GetAuthenticatedExtendedCardRequest,
     GetAuthenticatedExtendedCardResponse,
     UnsupportedOperationError,
+    AgentCard,
     InvalidRequestError,
     AgentSkill,
     TextPart,
@@ -90,7 +91,7 @@ class TaskManager(ABC):
 
     @abstractmethod
     async def on_get_authenticated_extended_card(
-        self, http_request: Request, rpc_request: GetAuthenticatedExtendedCardRequest, base_agent_card: "AgentCard" # type: ignore
+        self, http_request: Request, rpc_request: GetAuthenticatedExtendedCardRequest, base_agent_card: AgentCard
     ) -> GetAuthenticatedExtendedCardResponse:
         pass
 
@@ -369,7 +370,7 @@ class InMemoryTaskManager(TaskManager):
             )
 
     async def on_get_authenticated_extended_card(
-        self, http_request: Request, rpc_request: GetAuthenticatedExtendedCardRequest, base_agent_card: "AgentCard" # type: ignore
+        self, http_request: Request, rpc_request: GetAuthenticatedExtendedCardRequest, base_agent_card: AgentCard
     ) -> GetAuthenticatedExtendedCardResponse:
         # This base implementation in InMemoryTaskManager assumes authentication has been handled by a subclass or is not required.
         logger.info(f'InMemoryTaskManager: Handling GetAuthenticatedExtendedCard request: {rpc_request.id}')

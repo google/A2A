@@ -26,6 +26,7 @@ from common.types import (
     GetAuthenticatedExtendedCardResponse,
     InvalidRequestError,
     AgentSkill,
+    AgentCard,
     UnsupportedOperationError,
 )
 from google.genai import types
@@ -307,7 +308,7 @@ class AgentTaskManager(InMemoryTaskManager):
         return SendMessageResponse(id=request.id, result=task)
 
     async def on_get_authenticated_extended_card(
-        self, http_request: Request, rpc_request: GetAuthenticatedExtendedCardRequest, base_agent_card: "AgentCard" # type: ignore
+        self, http_request: Request, rpc_request: GetAuthenticatedExtendedCardRequest, base_agent_card: AgentCard
     ) -> GetAuthenticatedExtendedCardResponse:
         logger.info(f'AgentTaskManager: Handling GetAuthenticatedExtendedCard request: {rpc_request.id}')
 
