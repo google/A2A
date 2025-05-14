@@ -1,8 +1,14 @@
-from a2a.client import A2AClient
 from typing import Any
-import httpx
 from uuid import uuid4
-from a2a.types import SendMessageSuccessResponse, Task
+
+import httpx
+
+from a2a.client import A2AClient
+from a2a.types import (
+    MessageSendParams,
+    SendMessageRequest,
+    SendStreamingMessageRequest,
+)
 
 
 async def main() -> None:
@@ -19,31 +25,18 @@ async def main() -> None:
                 'messageId': uuid4().hex,
             },
         }
+        request = SendMessageRequest(
+            params=MessageSendParams(**send_message_payload)
+        )
 
-        response = await client.send_message(payload=send_message_payload)
+        response = await client.send_message(request)
         print(response.model_dump(mode='json', exclude_none=True))
 
-        if isinstance(response.root, SendMessageSuccessResponse) and isinstance(
-            response.root.result, Task
-        ):
-            task_id: str = response.root.result.id
-            get_task_payload = {'id': task_id}
-            get_response = await client.get_task(payload=get_task_payload)
-            print(get_response.model_dump(mode='json', exclude_none=True))
-
-            cancel_task_payload = {'id': task_id}
-            cancel_response = await client.cancel_task(
-                payload=cancel_task_payload
-            )
-            print(cancel_response.model_dump(mode='json', exclude_none=True))
-        else:
-            print(
-                'Received an instance of Message, getTask and cancelTask are not applicable for invocation'
-            )
-
-        stream_response = client.send_message_streaming(
-            payload=send_message_payload
+        streaming_request = SendStreamingMessageRequest(
+            params=MessageSendParams(**send_message_payload)
         )
+
+        stream_response = client.send_message_streaming(streaming_request)
         async for chunk in stream_response:
             print(chunk.model_dump(mode='json', exclude_none=True))
 

@@ -2,9 +2,6 @@ from typing_extensions import override
 
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.server.events import EventQueue
-from a2a.types import (
-    Task,
-)
 from a2a.utils import new_agent_text_message
 
 
@@ -24,7 +21,7 @@ class HelloWorldAgentExecutor(AgentExecutor):
     @override
     async def execute(
         self,
-        request: RequestContext,
+        context: RequestContext,
         event_queue: EventQueue,
     ) -> None:
         result = await self.agent.invoke()
@@ -32,6 +29,6 @@ class HelloWorldAgentExecutor(AgentExecutor):
 
     @override
     async def cancel(
-        self, request: RequestContext, event_queue: EventQueue
-    ) -> Task | None:
+        self, context: RequestContext, event_queue: EventQueue
+    ) -> None:
         raise Exception('cancel not supported')

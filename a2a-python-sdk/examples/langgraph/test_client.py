@@ -7,10 +7,15 @@ import httpx
 
 from a2a.client import A2AClient
 from a2a.types import (
+    GetTaskRequest,
     GetTaskResponse,
+    MessageSendParams,
+    SendMessageRequest,
     SendMessageResponse,
     SendMessageSuccessResponse,
+    SendStreamingMessageRequest,
     Task,
+    TaskQueryParams,
     TaskState,
 )
 
@@ -53,10 +58,11 @@ async def run_single_turn_test(client: A2AClient) -> None:
     send_payload = create_send_message_payload(
         text='how much is 100 USD in CAD?'
     )
+    request = SendMessageRequest(params=MessageSendParams(**send_payload))
+
+    print('--- Single Turn Request ---')
     # Send Message
-    send_response: SendMessageResponse = await client.send_message(
-        payload=send_payload
-    )
+    send_response: SendMessageResponse = await client.send_message(request)
     print_json_response(send_response, 'Single Turn Request Response')
     if not isinstance(send_response.root, SendMessageSuccessResponse):
         print('received non-success response. Aborting get task ')
@@ -70,9 +76,8 @@ async def run_single_turn_test(client: A2AClient) -> None:
     print('---Query Task---')
     # query the task
     task_id_payload = {'id': task_id}
-    get_response: GetTaskResponse = await client.get_task(
-        payload=task_id_payload
-    )
+    get_request = GetTaskRequest(params=TaskQueryParams(**task_id_payload))
+    get_response: GetTaskResponse = await client.get_task(get_request)
     print_json_response(get_response, 'Query Task Response')
 
 
@@ -83,8 +88,12 @@ async def run_streaming_test(client: A2AClient) -> None:
         text='how much is 50 EUR in JPY?'
     )
 
+    request = SendStreamingMessageRequest(
+        params=MessageSendParams(**send_payload)
+    )
+
     print('--- Single Turn Streaming Request ---')
-    stream_response = client.send_message_streaming(payload=send_payload)
+    stream_response = client.send_message_streaming(request)
     async for chunk in stream_response:
         print_json_response(chunk, 'Streaming Chunk')
 
@@ -97,8 +106,11 @@ async def run_multi_turn_test(client: A2AClient) -> None:
     first_turn_payload = create_send_message_payload(
         text='how much is 100 USD?'
     )
+    request1 = SendMessageRequest(
+        params=MessageSendParams(**first_turn_payload)
+    )
     first_turn_response: SendMessageResponse = await client.send_message(
-        payload=first_turn_payload
+        request1
     )
     print_json_response(first_turn_response, 'Multi-Turn: First Turn Response')
 
@@ -115,9 +127,10 @@ async def run_multi_turn_test(client: A2AClient) -> None:
             second_turn_payload = create_send_message_payload(
                 'in GBP', task.id, context_id
             )
-            second_turn_response = await client.send_message(
-                payload=second_turn_payload
+            request2 = SendMessageRequest(
+                params=MessageSendParams(**second_turn_payload)
             )
+            second_turn_response = await client.send_message(request2)
             print_json_response(
                 second_turn_response, 'Multi-Turn: Second Turn Response'
             )

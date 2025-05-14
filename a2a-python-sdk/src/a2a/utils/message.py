@@ -19,3 +19,12 @@ def new_agent_text_message(
         taskId=task_id,
         contextId=context_id,
     )
+
+
+def get_text_parts(parts: list[Part]) -> list[str]:
+    """Return all text parts from a list of parts."""
+    return [part.root.text for part in parts if isinstance(part.root, TextPart)]
+
+
+def get_message_text(message: Message, delimiter='\n') -> str:
+    return delimiter.join(get_text_parts(message.parts))

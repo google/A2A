@@ -3,9 +3,7 @@ import logging
 from collections.abc import AsyncIterable
 
 from a2a.server.request_handlers.request_handler import RequestHandler
-from a2a.server.request_handlers.response_helpers import (
-    prepare_response_object,
-)
+from a2a.server.request_handlers.response_helpers import prepare_response_object
 from a2a.types import (
     AgentCard,
     CancelTaskRequest,
@@ -37,6 +35,7 @@ from a2a.types import (
     TaskStatusUpdateEvent,
 )
 from a2a.utils.errors import ServerError
+from a2a.utils.helpers import validate
 
 
 logger = logging.getLogger(__name__)
@@ -83,6 +82,10 @@ class JSONRPCHandler:
             )
 
     # message/stream
+    @validate(
+        lambda self: self.agent_card.capabilities.streaming,
+        'Streaming is not supported by the agent',
+    )
     async def on_message_send_stream(
         self, request: SendStreamingMessageRequest
     ) -> AsyncIterable[SendStreamingMessageResponse]:
@@ -183,6 +186,10 @@ class JSONRPCHandler:
             )
 
     # tasks/pushNotification/set
+    @validate(
+        lambda self: self.agent_card.capabilities.pushNotifications,
+        'Push notifications are not supported by the agent',
+    )
     async def set_push_notification(
         self, request: SetTaskPushNotificationConfigRequest
     ) -> SetTaskPushNotificationConfigResponse:

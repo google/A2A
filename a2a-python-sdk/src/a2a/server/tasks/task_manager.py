@@ -127,14 +127,17 @@ class TaskManager:
 
         return task
 
-    async def process(self, event: Event) -> Task | Message:
+    async def process(self, event: Event) -> Event:
         """Processes an event, store the task state and return the task or message.
 
         The returned Task or Message represent the current status of the result.
         """
-        if isinstance(event, Message):
-            return Message
-        return await self.save_task_event(event)
+        if isinstance(
+            event, Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent
+        ):
+            await self.save_task_event(event)
+
+        return event
 
     def _init_task_obj(self, task_id: str, context_id: str) -> Task:
         """Initializes a new task object."""

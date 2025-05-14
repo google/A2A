@@ -68,4 +68,4 @@ class EventQueue:
         """Closes the queue for future push events."""
         self.queue.shutdown()
         for child in self._children:
-            child.shutdown()
+            child.close()

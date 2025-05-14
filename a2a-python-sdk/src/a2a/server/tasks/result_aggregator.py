@@ -28,22 +28,19 @@ class ResultAggregator:
 
     def __init__(self, task_manager: TaskManager):
         self.task_manager = task_manager
-        self._message = None
+        self._message: Message | None = None
 
     @property
-    def current_result(self) -> Task | Message | None:
+    async def current_result(self) -> Task | Message | None:
         if self._message:
             return self._message
-        return self.task_manager.get_task()
+        return await self.task_manager.get_task()
 
     async def consume_and_emit(
         self, consumer: EventConsumer
     ) -> AsyncGenerator[Event, None]:
         """Processes the event stream and emits the same event stream out."""
         async for event in consumer.consume_all():
-            if isinstance(event, Message):
-                self._current_task_or_message = event
-                break
             await self.task_manager.process(event)
             yield event
 
@@ -53,17 +50,17 @@ class ResultAggregator:
         """Processes the entire event stream and returns the final result."""
         async for event in consumer.consume_all():
             if isinstance(event, Message):
-                self._current_task_or_message = event
+                self._message = event
                 return event
             await self.task_manager.process(event)
         return await self.task_manager.get_task()
 
-    async def consume_and_emit_task(
-        self, consumer: EventConsumer
-    ) -> AsyncGenerator[Event, None]:
-        """Processes the event stream and emits the current state of the task."""
-        async for event in consumer.consume_all():
-            if isinstance(event, Message):
-                self._current_task_or_message = event
-                break
-            yield await self.task_manager.process(event)
+    # async def consume_and_emit_task(
+    #     self, consumer: EventConsumer
+    # ) -> AsyncGenerator[Event, None]:
+    #     """Processes the event stream and emits the current state of the task."""
+    #     async for event in consumer.consume_all():
+    #         if isinstance(event, Message):
+    #             self._current_task_or_message = event
+    #             break
+    #         yield await self.task_manager.process(event)

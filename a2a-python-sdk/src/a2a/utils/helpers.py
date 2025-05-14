@@ -12,6 +12,7 @@ from a2a.types import (
     TaskStatus,
     TextPart,
 )
+from a2a.utils.errors import ServerError, UnsupportedOperationError
 
 
 logger = logging.getLogger(__name__)
@@ -82,3 +83,22 @@ def build_text_artifact(text: str, artifact_id: str) -> Artifact:
     text_part = TextPart(text=text)
     part = Part(root=text_part)
     return Artifact(parts=[part], artifactId=artifact_id)
+
+
+def validate(expression, error_message=None):
+    """Decorator that validates if the given expression evaluates to True."""
+
+    def decorator(function):
+        def wrapper(self, *args, **kwargs):
+            if not expression(self):
+                if not error_message:
+                    message = str(expression)
+                logger.error(f'Unsuppported Operation: {error_message}')
+                raise ServerError(
+                    UnsupportedOperationError(message=error_message)
+                )
+            return function(self, *args, **kwargs)
+
+        return wrapper
+
+    return decorator

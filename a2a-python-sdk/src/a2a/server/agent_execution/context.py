@@ -5,8 +5,8 @@ from a2a.types import (
     Message,
     MessageSendParams,
     Task,
-    TextPart,
 )
+from a2a.utils import get_message_text
 from a2a.utils.errors import ServerError
 
 
@@ -48,11 +48,7 @@ class RequestContext:
         if not self._params:
             return ''
 
-        parts = []
-        for part in self._params.message.parts:
-            if isinstance(part.root, TextPart):
-                parts.append(part.root.text)
-        return delimiter.join(parts)
+        return get_message_text(self._params.message, delimiter)
 
     def attach_related_task(self, task: Task):
         self._related_tasks.append(task)

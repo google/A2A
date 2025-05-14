@@ -7,6 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "httpx>=0.28.1",
     "httpx-sse>=0.4.0",
+    "mypy>=1.15.0",
     "pydantic>=2.11.3",
     "sse-starlette>=2.3.3",
     "starlette>=0.46.2",

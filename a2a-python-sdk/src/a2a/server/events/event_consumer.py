@@ -29,11 +29,11 @@ class EventConsumer:
         logger.debug('Attempting to consume one event.')
         try:
             event = await self.queue.dequeue_event(no_wait=True)
-        except asyncio.QueueEmpty:
+        except asyncio.QueueEmpty as e:
             logger.warning('Event queue was empty in consume_one.')
             raise ServerError(
                 InternalError(message='Agent did not return any response')
-            ) from None
+            ) from e
 
         logger.debug(f'Dequeued event of type: {type(event)} in consume_one.')
 
