@@ -104,7 +104,7 @@ Let's look at key parts of `examples/helloworld/test_client.py`:
     ```
 
     - This method calls the agent's `message/sendStream` endpoint.
-    - It returns an `AsyncGenerator`. As the server streams SSE events, the client receives them as `SendMessageStreamingResponse` objects.
+    - It returns an `AsyncGenerator`. As the server streams SSE events, the client receives them as `SendStreamingMessageResponse` objects.
     - The Helloworld agent will stream "Hello " and then "World".
 
 ## Expected Output
