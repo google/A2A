@@ -8,10 +8,9 @@ The `examples/helloworld/test_client.py` script demonstrates how to:
 
 1. Fetch the Agent Card from the server.
 2. Create an `A2AClient` instance.
-3. Send both non-streaming (`message/send`) and streaming (`message/sendStream`) requests.
-4. Handle task-related operations like `get_task` and `cancel_task` (though Helloworld doesn't fully support these).
+3. Send both non-streaming (`message/send`) and streaming (`message/stream`) requests.
 
-Open a **new terminal window**, activate your virtual environment, and navigate to the `a2a-python-sdk` directory.
+Open a **new terminal window**, activate your virtual environment, and navigate to the `a2a-python` directory.
 
 Activate virtual environment (Be sure to do this in the same directory where you created the virtual environment):
 
@@ -30,6 +29,7 @@ Activate virtual environment (Be sure to do this in the same directory where you
 Run the test client:
 
 ```bash
+# from the a2a-python directory
 python examples/helloworld/test_client.py
 ```
 
@@ -53,75 +53,72 @@ Let's look at key parts of `examples/helloworld/test_client.py`:
 
     ```python { .no-copy }
     # examples/helloworld/test_client.py
+    from a2a.types import (
+        MessageSendParams,
+        SendMessageRequest,
+        SendStreamingMessageRequest,
+    )
+    # ...
     send_message_payload: dict[str, Any] = {
         'message': {
             'role': 'user',
             'parts': [{'type': 'text', 'text': 'how much is 10 USD in INR?'}], # Content doesn't matter for Helloworld
             'messageId': uuid4().hex,
         },
-        # 'id' for the task can also be provided here. If not, the server/handler might generate one.
     }
+    request = SendMessageRequest(
+        params=MessageSendParams(**send_message_payload)
+    )
 
-    response = await client.send_message(payload=send_message_payload)
+    response = await client.send_message(request)
     print(response.model_dump(mode='json', exclude_none=True))
     ```
 
-    - The `payload` constructs the `params` for the `message/send` RPC call.
+    - The `send_message_payload` constructs the data for `MessageSendParams`.
+    - This is wrapped in a `SendMessageRequest`.
     - It includes a `message` object with the `role` set to "user" and the content in `parts`.
-    - The Helloworld agent will simply echo "Hello World" back.
+    - The Helloworld agent's `execute` method will enqueue a single "Hello World" message. The `DefaultRequestHandler` will retrieve this and send it as the response.
     - The `response` will be a `SendMessageResponse` object, which contains either a `SendMessageSuccessResponse` (with the agent's `Message` as the result) or a `JSONRPCErrorResponse`.
 
-3. **Handling Task IDs (Illustrative)**:
-    The Helloworld client attempts to demonstrate `get_task` and `cancel_task`.
-
-    ```python { .no-copy }
-    # examples/helloworld/test_client.py
-    # ... (after send_message)
-    if isinstance(response.root, SendMessageSuccessResponse) and isinstance(
-        response.root.result, Task # If the agent returned a Task object
-    ):
-        task_id: str = response.root.result.id
-        # ... client.get_task(...) and client.cancel_task(...) ...
-    else:
-        # Helloworld send_message returns a direct Message, not a Task object,
-        # so this branch will be taken.
-        print(
-            'Received an instance of Message, getTask and cancelTask are not applicable for invocation'
-        )
-    ```
-
-    - **Important Note:** The Helloworld `HelloWorldAgentExecutor.on_message_send` returns a direct `Message` as the result, not a `Task` object. More complex agents that manage long-running operations would typically return a `Task` object, whose `id` could then be used for `get_task` or `cancel_task`. The `langgraph` example demonstrates this.
+3. **Handling Task IDs (Illustrative Note for Helloworld)**:
+    The Helloworld client (`examples/helloworld/test_client.py`) doesn't attempt `get_task` or `cancel_task` directly because the simple Helloworld agent's `execute` method, when called via `message/send`, results in the `DefaultRequestHandler` returning a direct `Message` response rather than a `Task` object. More complex agents that explicitly manage tasks (like the LangGraph example) would return a `Task` object from `message/send`, and its `id` could then be used for `get_task` or `cancel_task`.
 
 4. **Sending a Streaming Message (`send_message_streaming`)**:
 
     ```python { .no-copy }
     # examples/helloworld/test_client.py
-    stream_response = client.send_message_streaming(
-        payload=send_message_payload # Same payload can be used
+    streaming_request = SendStreamingMessageRequest(
+        params=MessageSendParams(**send_message_payload) # Same payload can be used
     )
+
+    stream_response = client.send_message_streaming(streaming_request)
     async for chunk in stream_response:
         print(chunk.model_dump(mode='json', exclude_none=True))
     ```
 
-    - This method calls the agent's `message/sendStream` endpoint.
-    - It returns an `AsyncGenerator`. As the server streams SSE events, the client receives them as `SendMessageStreamingResponse` objects.
-    - The Helloworld agent will stream "Hello " and then "World".
+    - This method calls the agent's `message/stream` endpoint. The `DefaultRequestHandler` will invoke the `HelloWorldAgentExecutor.execute` method.
+    - The `execute` method enqueues one "Hello World" message, and then the event queue is closed.
+    - The client will receive this single message as one `SendStreamingMessageResponse` event, and then the stream will terminate.
+    - The `stream_response` is an `AsyncGenerator`.
 
 ## Expected Output
 
 When you run `test_client.py`, you'll see JSON outputs for:
 
 - The non-streaming response (a single "Hello World" message).
-- A message indicating that `get_task` and `cancel_task` are not applicable because the non-streaming Helloworld returns a direct message.
-- The streaming responses (two chunks: "Hello " and then "World", each wrapped in an A2A message structure).
+- The streaming response (a single "Hello World" message as one chunk, after which the stream ends).
+
+The `id` fields in the output will vary with each run.
 
 ```console { .no-copy }
-{'id': '67f37deb381f4cae8c26e78e4d95bdb3', 'jsonrpc': '2.0', 'result': {'messageId': '7dd074d5-aff5-41c6-828a-f3a38325c46b', 'parts': [{'text': 'Hello World', 'type': 'text'}], 'role': 'agent', 'type': 'message'}}
-Received an instance of Message, getTask and cancelTask are not applicable for invocation
-{'id': '39aacacac4914ba4ac75a00e0a870615', 'jsonrpc': '2.0', 'result': {'final': False, 'messageId': '9a95f6e6-9577-46d7-b814-31a61efbd1d7', 'parts': [{'text': 'Hello ', 'type': 'text'}], 'role': 'agent', 'type': 'message'}}
-{'id': '39aacacac4914ba4ac75a00e0a870615', 'jsonrpc': '2.0', 'result': {'final': True, 'messageId': 'a55c44da-dcda-47ac-a255-0f314a5de8c9', 'parts': [{'text': 'World', 'type': 'text'}], 'role': 'agent', 'type': 'message'}
+// Non-streaming response
+{"jsonrpc":"2.0","id":"xxxxxxxx","result":{"type":"message","role":"agent","parts":[{"type":"text","text":"Hello World"}],"messageId":"yyyyyyyy"}}
+// Streaming response (one chunk)
+{"jsonrpc":"2.0","id":"zzzzzzzz","result":{"type":"message","role":"agent","parts":[{"type":"text","text":"Hello World"}],"messageId":"wwwwwwww","final":true}}
 ```
 
-This confirms your server is correctly handling basic A2A interactions!
+*(Actual IDs like `xxxxxxxx`, `yyyyyyyy`, `zzzzzzzz`, `wwwwwwww` will be different UUIDs/request IDs)*
 
-Now you can shut down the server by typing Ctrl+C in the terminal window.
+This confirms your server is correctly handling basic A2A interactions with the updated SDK structure!
+
+Now you can shut down the server by typing Ctrl+C in the terminal window where `__main__.py` is running.
