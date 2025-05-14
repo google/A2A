@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "A2A Protocol Schema",
     "description": "JSON Schema for A2A Protocol",
-    "$defs": {
+    "definitions": {
       "AgentAuthentication": {
         "properties": {
           "schemes": {
@@ -59,7 +59,7 @@
             "type": "string"
           },
           "provider": {
-            "$ref": "#/$defs/AgentProvider"
+            "$ref": "#/definitions/AgentProvider"
           },
           "version": {
             "title": "Version",
@@ -70,10 +70,10 @@
             "title": "Documentationurl"
           },
           "capabilities": {
-            "$ref": "#/$defs/AgentCapabilities"
+            "$ref": "#/definitions/AgentCapabilities"
           },
           "authentication": {
-            "$ref": "#/$defs/AgentAuthentication"
+            "$ref": "#/definitions/AgentAuthentication"
           },
           "defaultInputModes": {
             "default": [
@@ -97,7 +97,7 @@
           },
           "skills": {
             "items": {
-              "$ref": "#/$defs/AgentSkill"
+              "$ref": "#/definitions/AgentSkill"
             },
             "title": "Skills",
             "type": "array"
@@ -192,7 +192,7 @@
           },
           "parts": {
             "items": {
-              "$ref": "#/$defs/Part"
+              "$ref": "#/definitions/Part"
             },
             "title": "Parts",
             "type": "array"
@@ -302,7 +302,7 @@
             "type": "string"
           },
           "params": {
-            "$ref": "#/$defs/TaskIdParams"
+            "$ref": "#/definitions/TaskIdParams"
           }
         },
         "required": [
@@ -332,10 +332,10 @@
             "title": "Id"
           },
           "result": {
-            "$ref": "#/$defs/Task"
+            "$ref": "#/definitions/Task"
           },
           "error": {
-            "$ref": "#/$defs/JSONRPCError"
+            "$ref": "#/definitions/JSONRPCError"
           }
         },
         "title": "CancelTaskResponse",
@@ -407,7 +407,7 @@
             "type": "string"
           },
           "file": {
-            "$ref": "#/$defs/FileContent"
+            "$ref": "#/definitions/FileContent"
           },
           "metadata": {
             "additionalProperties": {},
@@ -448,7 +448,7 @@
             "type": "string"
           },
           "params": {
-            "$ref": "#/$defs/TaskIdParams"
+            "$ref": "#/definitions/TaskIdParams"
           }
         },
         "required": [
@@ -478,10 +478,10 @@
             "title": "Id"
           },
           "result": {
-            "$ref": "#/$defs/TaskPushNotificationConfig"
+            "$ref": "#/definitions/TaskPushNotificationConfig"
           },
           "error": {
-            "$ref": "#/$defs/JSONRPCError"
+            "$ref": "#/definitions/JSONRPCError"
           }
         },
         "title": "GetTaskPushNotificationResponse",
@@ -513,7 +513,7 @@
             "type": "string"
           },
           "params": {
-            "$ref": "#/$defs/TaskQueryParams"
+            "$ref": "#/definitions/TaskQueryParams"
           }
         },
         "required": [
@@ -543,10 +543,10 @@
             "title": "Id"
           },
           "result": {
-            "$ref": "#/$defs/Task"
+            "$ref": "#/definitions/Task"
           },
           "error": {
-            "$ref": "#/$defs/JSONRPCError"
+            "$ref": "#/definitions/JSONRPCError"
           }
         },
         "title": "GetTaskResponse",
@@ -798,7 +798,7 @@
             "title": "Result"
           },
           "error": {
-            "$ref": "#/$defs/JSONRPCError"
+            "$ref": "#/definitions/JSONRPCError"
           }
         },
         "title": "JSONRPCResponse",
@@ -816,7 +816,7 @@
           },
           "parts": {
             "items": {
-              "$ref": "#/$defs/Part"
+              "$ref": "#/definitions/Part"
             },
             "title": "Parts",
             "type": "array"
@@ -878,7 +878,7 @@
             "type": "string"
           },
           "authentication": {
-            "$ref": "#/$defs/AuthenticationInfo"
+            "$ref": "#/definitions/AuthenticationInfo"
           }
         },
         "required": [
@@ -890,13 +890,13 @@
       "Part": {
         "anyOf": [
           {
-            "$ref": "#/$defs/TextPart"
+            "$ref": "#/definitions/TextPart"
           },
           {
-            "$ref": "#/$defs/FilePart"
+            "$ref": "#/definitions/FilePart"
           },
           {
-            "$ref": "#/$defs/DataPart"
+            "$ref": "#/definitions/DataPart"
           }
         ],
         "title": "Part"
@@ -927,7 +927,7 @@
             "type": "string"
           },
           "params": {
-            "$ref": "#/$defs/TaskSendParams"
+            "$ref": "#/definitions/TaskSendParams"
           }
         },
         "required": [
@@ -957,10 +957,10 @@
             "title": "Id"
           },
           "result": {
-            "$ref": "#/$defs/Task"
+            "$ref": "#/definitions/Task"
           },
           "error": {
-            "$ref": "#/$defs/JSONRPCError"
+            "$ref": "#/definitions/JSONRPCError"
           }
         },
         "title": "SendTaskResponse",
@@ -992,7 +992,7 @@
             "type": "string"
           },
           "params": {
-            "$ref": "#/$defs/TaskSendParams"
+            "$ref": "#/definitions/TaskSendParams"
           }
         },
         "required": [
@@ -1024,15 +1024,15 @@
           "result": {
             "anyOf": [
               {
-                "$ref": "#/$defs/TaskStatusUpdateEvent"
+                "$ref": "#/definitions/TaskStatusUpdateEvent"
               },
               {
-                "$ref": "#/$defs/TaskArtifactUpdateEvent"
+                "$ref": "#/definitions/TaskArtifactUpdateEvent"
               }
             ]
           },
           "error": {
-            "$ref": "#/$defs/JSONRPCError"
+            "$ref": "#/definitions/JSONRPCError"
           }
         },
         "title": "SendTaskStreamingResponse",
@@ -1064,7 +1064,7 @@
             "type": "string"
           },
           "params": {
-            "$ref": "#/$defs/TaskPushNotificationConfig"
+            "$ref": "#/definitions/TaskPushNotificationConfig"
           }
         },
         "required": [
@@ -1094,10 +1094,10 @@
             "title": "Id"
           },
           "result": {
-            "$ref": "#/$defs/TaskPushNotificationConfig"
+            "$ref": "#/definitions/TaskPushNotificationConfig"
           },
           "error": {
-            "$ref": "#/$defs/JSONRPCError"
+            "$ref": "#/definitions/JSONRPCError"
           }
         },
         "title": "SetTaskPushNotificationResponse",
@@ -1114,18 +1114,18 @@
             "title": "Sessionid"
           },
           "status": {
-            "$ref": "#/$defs/TaskStatus"
+            "$ref": "#/definitions/TaskStatus"
           },
           "artifacts": {
             "items": {
-              "$ref": "#/$defs/Artifact"
+              "$ref": "#/definitions/Artifact"
             },
             "type": "array",
             "title": "Artifacts"
           },
           "history": {
             "items": {
-              "$ref": "#/$defs/Message"
+              "$ref": "#/definitions/Message"
             },
             "type": "array",
             "title": "History"
@@ -1150,7 +1150,7 @@
             "type": "string"
           },
           "pushNotificationConfig": {
-            "$ref": "#/$defs/PushNotificationConfig"
+            "$ref": "#/definitions/PushNotificationConfig"
           }
         },
         "required": [
@@ -1277,10 +1277,10 @@
             "type": "string"
           },
           "message": {
-            "$ref": "#/$defs/Message"
+            "$ref": "#/definitions/Message"
           },
           "pushNotification": {
-            "$ref": "#/$defs/PushNotificationConfig"
+            "$ref": "#/definitions/PushNotificationConfig"
           },
           "historyLength": {
             "type": "integer",
@@ -1316,10 +1316,10 @@
       "TaskStatus": {
         "properties": {
           "state": {
-            "$ref": "#/$defs/TaskState"
+            "$ref": "#/definitions/TaskState"
           },
           "message": {
-            "$ref": "#/$defs/Message"
+            "$ref": "#/definitions/Message"
           },
           "timestamp": {
             "format": "date-time",
@@ -1359,7 +1359,7 @@
             "type": "string"
           },
           "params": {
-            "$ref": "#/$defs/TaskQueryParams"
+            "$ref": "#/definitions/TaskQueryParams"
           }
         },
         "required": [
@@ -1376,7 +1376,7 @@
             "type": "string"
           },
           "status": {
-            "$ref": "#/$defs/TaskStatus"
+            "$ref": "#/definitions/TaskStatus"
           },
           "final": {
             "default": false,
@@ -1403,7 +1403,7 @@
             "type": "string"
           },
           "artifact": {
-            "$ref": "#/$defs/Artifact"
+            "$ref": "#/definitions/Artifact"
           },
           "metadata": {
             "additionalProperties": {},
@@ -1483,22 +1483,22 @@
       "A2ARequest": {
         "oneOf": [
           {
-            "$ref": "#/$defs/SendTaskRequest"
+            "$ref": "#/definitions/SendTaskRequest"
           },
           {
-            "$ref": "#/$defs/GetTaskRequest"
+            "$ref": "#/definitions/GetTaskRequest"
           },
           {
-            "$ref": "#/$defs/CancelTaskRequest"
+            "$ref": "#/definitions/CancelTaskRequest"
           },
           {
-            "$ref": "#/$defs/SetTaskPushNotificationRequest"
+            "$ref": "#/definitions/SetTaskPushNotificationRequest"
           },
           {
-            "$ref": "#/$defs/GetTaskPushNotificationRequest"
+            "$ref": "#/definitions/GetTaskPushNotificationRequest"
           },
           {
-            "$ref": "#/$defs/TaskResubscriptionRequest"
+            "$ref": "#/definitions/TaskResubscriptionRequest"
           }
         ],
         "title": "A2ARequest"
