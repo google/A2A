@@ -1,9 +1,5 @@
-import asyncio
-
-from collections.abc import AsyncGenerator
-from typing import Any
 from uuid import uuid4
-from agent import TalkAgent
+from agent import TravelPlannerAgent
 
 from typing_extensions import override
 
@@ -26,7 +22,7 @@ class HelloWorldAgentExecutor(BaseAgentExecutor):
     """Test AgentProxy Implementation."""
 
     def __init__(self):
-        self.agent = TalkAgent()
+        self.agent = TravelPlannerAgent()
 
     @override
     async def on_message_send(
@@ -54,13 +50,17 @@ class HelloWorldAgentExecutor(BaseAgentExecutor):
         event_queue: EventQueue,
         task: Task | None,
     ) -> None:
-        async for chunk in self.agent.stream():
+        params: MessageSendParams = request.params
+        query = self._get_user_query(params)
+
+        async for chunk in self.agent.stream(query):
             message: Message = Message(
                 role=Role.agent,
                 parts=[Part(TextPart(text=chunk['content']))],
                 messageId=str(uuid4()),
                 final=chunk['done'],
             )
+            print(chunk['content'])
             event_queue.enqueue_event(message)
 
     def _get_user_query(self, task_send_params: MessageSendParams) -> str:

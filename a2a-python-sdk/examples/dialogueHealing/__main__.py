@@ -17,16 +17,16 @@ from a2a.types import (
 @click.option('--port', 'port', default=9999)
 def main(host: str, port: int):
     skill = AgentSkill(
-        id='hello_world',
-        name='Returns hello world',
-        description='just returns hello world',
-        tags=['hello world'],
-        examples=['hi', 'hello world'],
+        id='dialogueHealing',
+        name='dialogueHealingAgent',
+        description='Dialogue Healing',
+        tags=['dialogueHealing'],
+        examples=['hello', 'nice to meet you!'],
     )
 
     agent_card = AgentCard(
-        name='Hello World Agent',
-        description='Just a hello world agent',
+        name='Dialogue Healing Agent',
+        description='Dialogue Healing',
         url='http://localhost:9999/',
         version='1.0.0',
         defaultInputModes=['text'],
