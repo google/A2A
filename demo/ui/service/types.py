@@ -107,6 +107,8 @@ class ListAgentRequest(JSONRPCRequest):
 class ListAgentResponse(JSONRPCResponse):
     result: list[AgentCard] | None = None
 
+class GetAgentCardResponse(JSONRPCResponse):
+    result: AgentCard | None = None
 
 AgentRequest = TypeAdapter(
     Annotated[

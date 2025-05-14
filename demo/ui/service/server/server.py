@@ -4,6 +4,7 @@ import os
 import threading
 import uuid
 
+from common.client import A2ACardResolver
 from common.types import FileContent, FilePart, Message
 from fastapi import APIRouter, Request, Response
 from service.types import (
@@ -17,6 +18,7 @@ from service.types import (
     PendingMessageResponse,
     RegisterAgentResponse,
     SendMessageResponse,
+    GetAgentCardResponse
 )
 
 from .adk_host_manager import ADKHostManager, get_message_id
@@ -71,6 +73,7 @@ class ConversationServer:
             '/agent/register', self._register_agent, methods=['POST']
         )
         router.add_api_route('/agent/list', self._list_agents, methods=['POST'])
+        router.add_api_route('/agent_card/get', self._get_agent_card, methods=['POST'])
         router.add_api_route(
             '/message/file/{file_id}', self._files, methods=['GET']
         )
@@ -169,6 +172,16 @@ class ConversationServer:
 
     async def _list_agents(self):
         return ListAgentResponse(result=self.manager.agents)
+    
+    async def _get_agent_card(self,request: Request):
+        message_data = await request.json()
+        address = message_data['address']
+        if not address.startswith('http'):
+            address = 'http://' + address
+        card_resolver = A2ACardResolver(address)
+        card = card_resolver.get_agent_card()
+        return GetAgentCardResponse(result=card)
+
 
     def _files(self, file_id):
         if file_id not in self._file_cache:
