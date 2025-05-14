@@ -21,8 +21,8 @@ from a2a.types import (
     MessageSendParams,
     SendMessageRequest,
     SendMessageResponse,
-    SendMessageStreamingRequest,
-    SendMessageStreamingResponse,
+    SendStreamingMessageRequest,
+    SendStreamingMessageResponse,
     SetTaskPushNotificationConfigRequest,
     SetTaskPushNotificationConfigResponse,
     TaskIdParams,
@@ -99,13 +99,13 @@ class A2AClient:
             id=request_id, params=MessageSendParams.model_validate(payload)
         )
         return SendMessageResponse(
-            **await self._send_request(A2ARequest(root=request))
+            **await self._send_request(A2ARequest(request))
         )
 
     async def send_message_streaming(
         self, payload: dict[str, Any], request_id: str | int = uuid4().hex
-    ) -> AsyncGenerator[SendMessageStreamingResponse, None]:
-        request = SendMessageStreamingRequest(
+    ) -> AsyncGenerator[SendStreamingMessageResponse, None]:
+        request = SendStreamingMessageRequest(
             id=request_id, params=MessageSendParams.model_validate(payload)
         )
         async with aconnect_sse(
@@ -117,7 +117,7 @@ class A2AClient:
         ) as event_source:
             try:
                 async for sse in event_source.aiter_sse():
-                    yield SendMessageStreamingResponse(**json.loads(sse.data))
+                    yield SendStreamingMessageResponse(**json.loads(sse.data))
             except SSEError as e:
                 raise A2AClientHTTPError(
                     400, f'Invalid SSE response or protocol error: {e}'
@@ -147,9 +147,7 @@ class A2AClient:
         request = GetTaskRequest(
             id=request_id, params=TaskQueryParams.model_validate(payload)
         )
-        return GetTaskResponse(
-            **await self._send_request(A2ARequest(root=request))
-        )
+        return GetTaskResponse(**await self._send_request(A2ARequest(request)))
 
     async def cancel_task(
         self, payload: dict[str, Any], request_id: str | int = uuid4().hex
@@ -158,7 +156,7 @@ class A2AClient:
             id=request_id, params=TaskIdParams.model_validate(payload)
         )
         return CancelTaskResponse(
-            **await self._send_request(A2ARequest(root=request))
+            **await self._send_request(A2ARequest(request))
         )
 
     async def set_task_callback(
@@ -169,7 +167,7 @@ class A2AClient:
             params=TaskPushNotificationConfig.model_validate(payload),
         )
         return SetTaskPushNotificationConfigResponse(
-            **await self._send_request(A2ARequest(root=request))
+            **await self._send_request(A2ARequest(request))
         )
 
     async def get_task_callback(
@@ -179,5 +177,5 @@ class A2AClient:
             id=request_id, params=TaskIdParams.model_validate(payload)
         )
         return GetTaskPushNotificationConfigResponse(
-            **await self._send_request(A2ARequest(root=request))
+            **await self._send_request(A2ARequest(request))
         )

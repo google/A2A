@@ -18,18 +18,15 @@ nav:
   - Specification: specification.md
   - Community: community.md
   - Partners: partners.md
-  # TODO: Re-add tutorial when A2A Python SDK is available
-  # - Tutorial (Python):
-  #   - Introduction: tutorials/python/1-introduction.md
-  #   - Setup: tutorials/python/2-setup.md
-  #   - Create Project: tutorials/python/3-create-project.md
-  #   - Agent Skills: tutorials/python/4-agent-skills.md
-  #   - Add Agent Card: tutorials/python/5-add-agent-card.md
-  #   - Start Server: tutorials/python/6-start-server.md
-  #   - Interact with Server: tutorials/python/7-interact-with-server.md
-  #   - Agent Capabilities: tutorials/python/8-agent-capabilities.md
-  #   - Ollama Agent: tutorials/python/9-ollama-agent.md
-  #   - Next Steps: tutorials/python/10-next-steps.md
+  - Tutorial (Python):
+    - Introduction: tutorials/python/1-introduction.md
+    - Setup: tutorials/python/2-setup.md
+    - Agent Skills & Agent Card: tutorials/python/3-agent-skills-and-card.md
+    - Agent Executor: tutorials/python/4-agent-executor.md
+    - Start Server: tutorials/python/5-start-server.md
+    - Interact with Server: tutorials/python/6-interact-with-server.md
+    - Streaming & Multiturn: tutorials/python/7-streaming-and-multiturn.md
+    - Next Steps: tutorials/python/8-next-steps.md
 
 # Repository
 repo_name: google/A2A
@@ -114,6 +111,7 @@ plugins:
   - search
   - redirects:
       redirect_maps:
+        "spec-json.md": https://raw.githubusercontent.com/google/A2A/refs/heads/main/specification/json/a2a.json
         "specification/overview.md": "specification.md"
         "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
         "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
@@ -127,14 +125,16 @@ plugins:
         "specification/topics/enterprise_ready.md": "topics/enterprise-ready.md"
         "specification/topics/push_notification.md": "topics/streaming-and-async.md"
         "specification/topics/push_notifications.md": "topics/streaming-and-async.md"
+        "topics/index.md": "topics/what-is-a2a.md"
         # Tutorial
+        "tutorials/index.md": "tutorials/python/1-introduction.md"
+        "tutorials/python/index.md": "tutorials/python/1-introduction.md"
         "tutorials/python/1_introduction.md": "tutorials/python/1-introduction.md"
-        "tutorials/python/2_setup.md": "tutorials/python/2-setup.md"
-        "tutorials/python/3_create_project.md": "tutorials/python/3-create-project.md"
-        "tutorials/python/4_agent_skills.md": "tutorials/python/4-agent-skills.md"
-        "tutorials/python/5_add_agent_card.md": "tutorials/python/5-add-agent-card.md"
-        "tutorials/python/6_start_server.md": "tutorials/python/6-start-server.md"
-        "tutorials/python/7_interact_with_server.md": "tutorials/python/7-interact-with-server.md"
-        "tutorials/python/8_agent_capabilities.md": "tutorials/python/8-agent-capabilities.md"
-        "tutorials/python/9_ollama_agent.md": "tutorials/python/9-ollama-agent.md"
-        "tutorials/python/10_next_steps.md": "tutorials/python/10-next-steps.md"
+        "tutorials/python/3-create-project.md": "tutorials/python/2-setup.md"
+        "tutorials/python/4-agent-skills.md": "tutorials/python/3-agent-skills-and-card.md"
+        "tutorials/python/5-add-agent-card.md": "tutorials/python/3-agent-skills-and-card.md"
+        "tutorials/python/6-start-server.md": "tutorials/python/5-start-server.md"
+        "tutorials/python/7-interact-with-server.md": "tutorials/python/6-interact-with-server.md"
+        "tutorials/python/8-agent-capabilities.md": "tutorials/python/7-streaming-and-multiturn.md"
+        "tutorials/python/9-ollama-agent.md": "tutorials/python/7-streaming-and-multiturn.md"
+        "tutorials/python/10-next-steps.md": "tutorials/python/8-next-steps.md"

@@ -1,20 +1,23 @@
-from a2a.client import A2AClient
 from typing import Any
 from uuid import uuid4
+
+import httpx
+
+from a2a.client import A2AClient
 from a2a.types import (
-    SendMessageResponse,
     GetTaskResponse,
+    SendMessageResponse,
     SendMessageSuccessResponse,
     Task,
     TaskState,
 )
-import httpx
+
 
 AGENT_URL = 'http://localhost:10000'
 
 
 def create_send_message_payload(
-    text: str, session_id: str | None = None
+    text: str, task_id: str | None = None, context_id: str | None = None
 ) -> dict[str, Any]:
     """Helper function to create the payload for sending a task."""
     payload: dict[str, Any] = {
@@ -24,8 +27,12 @@ def create_send_message_payload(
             'messageId': uuid4().hex,
         },
     }
-    if session_id:
-        payload['sessionId'] = session_id
+
+    if task_id:
+        payload['message']['taskId'] = task_id
+
+    if context_id:
+        payload['message']['contextId'] = context_id
     return payload
 
 
@@ -41,7 +48,9 @@ def print_json_response(response: Any, description: str) -> None:
 async def run_single_turn_test(client: A2AClient) -> None:
     """Runs a single-turn non-streaming test."""
 
-    send_payload = create_send_message_payload('how much is 10 USD in CAD?')
+    send_payload = create_send_message_payload(
+        text='how much is 100 USD in CAD?'
+    )
     # Send Message
     send_response: SendMessageResponse = await client.send_message(
         payload=send_payload
@@ -67,9 +76,9 @@ async def run_single_turn_test(client: A2AClient) -> None:
 
 async def run_streaming_test(client: A2AClient) -> None:
     """Runs a single-turn streaming test."""
-    task_id: str = uuid4().hex
+
     send_payload = create_send_message_payload(
-        task_id, 'how much is 50 EUR in JPY?'
+        text='how much is 50 EUR in JPY?'
     )
 
     print('--- Single Turn Streaming Request ---')
@@ -83,24 +92,26 @@ async def run_multi_turn_test(client: A2AClient) -> None:
     print('--- Multi-Turn Request ---')
     # --- First Turn ---
 
-    first_turn_payload = create_send_message_payload('how much is 100 USD?')
+    first_turn_payload = create_send_message_payload(
+        text='how much is 100 USD?'
+    )
     first_turn_response: SendMessageResponse = await client.send_message(
         payload=first_turn_payload
     )
     print_json_response(first_turn_response, 'Multi-Turn: First Turn Response')
 
-    session_id: str | None = None
+    context_id: str | None = None
     if isinstance(
         first_turn_response.root, SendMessageSuccessResponse
     ) and isinstance(first_turn_response.root.result, Task):
         task: Task = first_turn_response.root.result
-        context_id: str = task.contextId  # Capture session ID
+        context_id = task.contextId  # Capture context ID
 
         # --- Second Turn (if input required) ---
         if task.status.state == TaskState.input_required and context_id:
             print('--- Multi-Turn: Second Turn (Input Required) ---')
             second_turn_payload = create_send_message_payload(
-                'in GBP', session_id
+                'in GBP', task.id, context_id
             )
             second_turn_response = await client.send_message(
                 payload=second_turn_payload
@@ -108,8 +119,8 @@ async def run_multi_turn_test(client: A2AClient) -> None:
             print_json_response(
                 second_turn_response, 'Multi-Turn: Second Turn Response'
             )
-        elif not session_id:
-            print('Warning: Could not get session ID from first turn response.')
+        elif not context_id:
+            print('Warning: Could not get context ID from first turn response.')
         else:
             print(
                 'First turn completed, no further input required for this test case.'

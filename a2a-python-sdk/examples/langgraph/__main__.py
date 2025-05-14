@@ -7,7 +7,8 @@ from agent import CurrencyAgent
 from agent_executor import CurrencyAgentExecutor
 from dotenv import load_dotenv
 
-from a2a.server import A2AServer, DefaultA2ARequestHandler, InMemoryTaskStore
+from a2a.server import A2AServer
+from a2a.server.request_handlers import DefaultA2ARequestHandler
 from a2a.types import (
     AgentAuthentication,
     AgentCapabilities,
@@ -27,11 +28,8 @@ def main(host: str, port: int):
         print('GOOGLE_API_KEY environment variable not set.')
         sys.exit(1)
 
-    task_store = InMemoryTaskStore()
-
     request_handler = DefaultA2ARequestHandler(
-        agent_executor=CurrencyAgentExecutor(task_store=task_store),
-        task_store=task_store,
+        agent_executor=CurrencyAgentExecutor()
     )
 
     server = A2AServer(
