@@ -25,7 +25,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.workspace]
-members = ["examples/langgraph", "examples/helloworld"]
+members = ["examples/langgraph", "examples/helloworld","examples/travel_planner"]
 
 [dependency-groups]
 dev = [
