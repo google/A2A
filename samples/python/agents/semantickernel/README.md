@@ -86,7 +86,7 @@ or
 uv run . --host 0.0.0.0 --port 8080
 ```
 
-5. **In a separate terminal, run the A2A client:
+5. **In a separate terminal, run the A2A client**:
 
 > Make sure you run `uv run .` from the following directory: `samples/python/hosts/cli`
 

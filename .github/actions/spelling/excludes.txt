@@ -83,3 +83,8 @@
 ^\.github/actions/spelling/
 ^\Q.github/workflows/spelling.yaml\E$
 ^\Q.github/workflows/linter.yaml\E$
+^\Qdemo/ui/service/server/test_image.py\E$
+^\Qlychee.toml\E$
+\.gitignore\E$
+\.vscode/
+^\Qdocs/partners.md\E$

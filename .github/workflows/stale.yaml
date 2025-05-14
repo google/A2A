@@ -1,0 +1,49 @@
+# This workflow warns and then closes issues and PRs that have had no activity for a specified amount of time.
+#
+# You can adjust the behavior by modifying this file.
+# For more information, see:
+# https://github.com/actions/stale
+name: Mark stale issues and pull requests
+
+on:
+  schedule:
+    # Scheduled to run at 10.30PM UTC everyday (1530PDT/1430PST)
+    - cron: "30 22 * * *"
+  workflow_dispatch:
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+      actions: write
+
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          days-before-issue-stale: 14
+          days-before-issue-close: 13
+          stale-issue-label: "status:stale"
+          close-issue-reason: not_planned
+          any-of-labels: "status:awaiting response,status:more data needed"
+          stale-issue-message: >
+            Marking this issue as stale since it has been open for 14 days with no activity.
+            This issue will be closed if no further activity occurs.
+          close-issue-message: >
+            This issue was closed because it has been inactive for 27 days.
+            Please post a new issue if you need further assistance. Thanks!
+          days-before-pr-stale: 14
+          days-before-pr-close: 13
+          stale-pr-label: "status:stale"
+          stale-pr-message: >
+            Marking this pull request as stale since it has been open for 14 days with no activity.
+            This PR will be closed if no further activity occurs.
+          close-pr-message: >
+            This pull request was closed because it has been inactive for 27 days.
+            Please open a new pull request if you need further assistance. Thanks!
+          # Label that can be assigned to issues to exclude them from being marked as stale
+          exempt-issue-labels: "override-stale"
+          # Label that can be assigned to PRs to exclude them from being marked as stale
+          exempt-pr-labels: "override-stale"

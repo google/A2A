@@ -1,0 +1,12 @@
+{
+  "ignore": [
+      "**/.github/**",
+      "**/demo/**",
+      "**/images/**",
+      "**/samples/**",
+      "**/tests/**",
+      "**/.git/**"
+  ],
+  "threshold": 3,
+  "reporters": ["html", "markdown"]
+}

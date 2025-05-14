@@ -83,7 +83,10 @@ jobs:
     outputs:
       followup: ${{ steps.spelling.outputs.followup }}
     runs-on: ubuntu-latest
-    if: ${{ contains(github.event_name, 'pull_request') || github.event_name == 'push' }}
+    # if on repo to avoid failing runs on forks
+    if: |
+      github.repository == 'google/A2A' 
+        && (contains(github.event_name, 'pull_request') || github.event_name == 'push')
     concurrency:
       group: spelling-${{ github.event.pull_request.number || github.ref }}
       # note: If you use only_check_changed_files, you do not want cancel-in-progress
@@ -111,8 +114,10 @@ jobs:
             cspell:data-science/dict/data-science-models.txt
             cspell:data-science/dict/data-science.txt
             cspell:data-science/dict/data-science-tools.txt
-            cspell:en_US/src/aoo-mozilla-en-dict/en_US.dic
-            cspell:en_US/src/hunspell/en_US-large.dic
+            cspell:en_shared/dict/acronyms.txt
+            cspell:en_shared/dict/shared-additional-words.txt
+            cspell:en_GB/en_GB.trie
+            cspell:en_US/en_US.trie
             cspell:filetypes/src/filetypes.txt
             cspell:fonts/dict/fonts.txt
             cspell:fullstack/dict/fullstack.txt
