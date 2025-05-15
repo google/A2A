@@ -280,17 +280,16 @@ class SemanticKernelTravelAgent:
 
         return default_response
 
-    async def _ensure_thread_exists(self, session_id: str) -> None:
-        """Ensure the thread exists for the given session ID.
-
-        Args:
-            session_id (str): Unique identifier for the session.
-        """
+    async def _ensure_thread_exists(self, session_id: str) -> None:  
+        """Ensure the thread exists for the given session ID.  
+    
+        Args:  
+            session_id (str): Unique identifier for the session.  
+        """  
         # Replace check with self.thread.id when
         # https://github.com/microsoft/semantic-kernel/issues/11535 is fixed
-        if self.thread is None or self.thread._thread_id != session_id:
-            await self.thread.delete() if self.thread else None
+        if self.thread is None or self.thread.id != session_id:  # fixed _thread_id issue
+            await self.thread.delete() if self.thread else None  
             self.thread = ChatHistoryAgentThread(thread_id=session_id)
-
 
 # endregion
