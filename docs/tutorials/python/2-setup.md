@@ -43,7 +43,7 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
     The `a2a-python` repository contains the SDK source code. To make it and its dependencies available in your environment, run:
 
     ```bash
-    pip install -e .[dev]
+    pip install -e '.[dev]'
     ```
 
     This command installs the SDK in "editable" mode (`-e`), meaning changes to the SDK source code are immediately available. It also installs development dependencies specified in `pyproject.toml`.
