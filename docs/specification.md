@@ -908,11 +908,11 @@ interface TaskArtifactUpdateEvent {
 }
 ```
 
-| Field Name | Type                              | Required | Description                                                                                                                                                          |
-| :--------- | :-------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| `id`       | `string`                          | Yes      | Task ID that generated the artifact, matching the original request's task ID.                                                                                        |
-| `artifact` | [`Artifact`](#67-artifact-object) | Yes      | The `Artifact` data. Could be a complete artifact or an incremental chunk. Use `index`, `append`, and `lastChunk` fields within `Artifact` for client-side assembly. |
-| `metadata` | `Record<string, any>` \| `null`   | No       | `null`                                                                                                                                                               | Event-specific metadata. |
+| Field Name | Type                              | Required | Default |  Description                                                                                                                                                         |
+| :--------- | :-------------------------------- | :------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`       | `string`                          | Yes      |         | Task ID that generated the artifact, matching the original request's task ID.                                                                                        |
+| `artifact` | [`Artifact`](#67-artifact-object) | Yes      |         | The `Artifact` data. Could be a complete artifact or an incremental chunk. Use `index`, `append`, and `lastChunk` fields within `Artifact` for client-side assembly. |
+| `metadata` | `Record<string, any>` \| `null`   | No       | `null`  | Event-specific metadata.                                                                                                                                             |
 
 ### 7.3. `tasks/get`
 
