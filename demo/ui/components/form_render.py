@@ -6,7 +6,7 @@ from typing import Any, Literal, Tuple
 
 import mesop as me
 
-from common.types import DataPart, Message, TextPart
+from a2a.types import DataPart, Message, TextPart, Role, Part
 from state.host_agent_service import SendMessage
 from state.state import AppState, StateMessage
 
@@ -147,10 +147,10 @@ def generate_form_elements(
     # Get the message part with the form information.
     form_content = next(filter(lambda x: x[1] == 'form', message.content), None)
     if not form_content:
-        return []
+        return ('', [])
     form_info = form_content[0]
     if not isinstance(form_info, dict):
-        return []
+        return ('', [])
     return instructions_for_form(form_info), make_form_elements(form_info)
 
 
@@ -317,8 +317,8 @@ async def cancel_form(e: me.ClickEvent):
         messageId=message_id,
         taskId=task_id,
         contextId=app_state.current_conversation_id,
-        role='user',
-        parts=[TextPart(text='rejected form entry')],
+        role=Role.user,
+        parts=[Part(root=TextPart(text='rejected form entry'))],
     )
     response = await SendMessage(request)
 
@@ -330,12 +330,13 @@ async def send_response(
     app_state.background_tasks[message_id] = ''
     app_state.form_responses[message_id] = id
     form = FormState(**json.loads(state.forms[id]))
+    print("Sending form response", form)
     request = Message(
         messageId=message_id,
         taskId=task_id,
         contextId=app_state.current_conversation_id,
-        role='user',
-        parts=[DataPart(data=form.data)],
+        role=Role.user,
+        parts=[Part(root=DataPart(data=form.data))],
     )
     await SendMessage(request)
 

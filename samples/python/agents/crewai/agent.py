@@ -112,6 +112,7 @@ def generate_image_tool(
     for part in response.candidates[0].content.parts:
         if part.inline_data is not None:
             try:
+                print("Creating image data")
                 data = Imagedata(
                     bytes=base64.b64encode(part.inline_data.data).decode(
                         'utf-8'

@@ -2,10 +2,11 @@ import json
 import os
 import sys
 import traceback
+import uuid
 
 from typing import Any
 
-from common.types import Message, Part, Task
+from a2a.types import Message, Part, Task, Role, TaskState, FileWithBytes
 from service.client.client import ConversationClient
 from service.types import (
     Conversation,
@@ -19,6 +20,7 @@ from service.types import (
     PendingMessageRequest,
     RegisterAgentRequest,
     SendMessageRequest,
+    MessageInfo,
 )
 
 from .state import (
@@ -29,7 +31,6 @@ from .state import (
     StateMessage,
     StateTask,
 )
-from common.types import Message, Task, Part
 
 
 server_url = 'http://localhost:12000'
@@ -39,27 +40,33 @@ async def ListConversations() -> list[Conversation]:
     client = ConversationClient(server_url)
     try:
         response = await client.list_conversation(ListConversationRequest())
-        return response.result
+        return response.result if response.result else []
     except Exception as e:
         print('Failed to list conversations: ', e)
+    return []
 
 
-async def SendMessage(message: Message) -> str | None:
+async def SendMessage(message: Message) -> Message | MessageInfo | None:
     client = ConversationClient(server_url)
     try:
         response = await client.send_message(SendMessageRequest(params=message))
         return response.result
     except Exception as e:
+        traceback.print_exc()
         print('Failed to send message: ', e)
+    return None
 
 
 async def CreateConversation() -> Conversation:
     client = ConversationClient(server_url)
     try:
         response = await client.create_conversation(CreateConversationRequest())
-        return response.result
+        return (response.result
+                if response.result
+                else Conversation(conversation_id='', is_active=False))
     except Exception as e:
         print('Failed to create conversation', e)
+    return Conversation(conversation_id='', is_active=False)
 
 
 async def ListRemoteAgents():
@@ -83,9 +90,10 @@ async def GetEvents() -> list[Event]:
     client = ConversationClient(server_url)
     try:
         response = await client.get_events(GetEventRequest())
-        return response.result
+        return response.result if response.result else []
     except Exception as e:
         print('Failed to get events', e)
+    return []
 
 
 async def GetProcessingMessages():
@@ -116,9 +124,10 @@ async def ListMessages(conversation_id: str) -> list[Message]:
         response = await client.list_messages(
             ListMessageRequest(params=conversation_id)
         )
-        return response.result
+        return response.result if response.result else []
     except Exception as e:
         print('Failed to list messages ', e)
+    return []
 
 
 async def UpdateAppState(state: AppState, conversation_id: str):
@@ -182,20 +191,7 @@ def convert_message_to_state(message: Message) -> StateMessage:
         message_id=message.messageId,
         context_id=message.contextId if message.contextId else '',
         task_id=message.taskId if message.taskId else '',
-        role=message.role,
-        content=extract_content(message.parts),
-    )
-
-
-def convert_message_to_state(message: Message) -> StateMessage:
-    if not message:
-        return StateMessage()
-
-    return StateMessage(
-        message_id=message.messageId,
-        context_id=message.contextId if message.contextId else "",
-        task_id=message.taskId if message.taskId else "",
-        role=message.role,
+        role=message.role.name,
         content=extract_content(message.parts),
     )
 
@@ -213,15 +209,29 @@ def convert_conversation_to_state(
 
 def convert_task_to_state(task: Task) -> StateTask:
     # Get the first message as the description
-    message = task.history[0]
-    last_message = task.history[-1]
     output = (
         [extract_content(a.parts) for a in task.artifacts]
         if task.artifacts
         else []
     )
-    if last_message != message:
-        output = [extract_content(last_message.parts)] + output
+    if not task.history:
+        return StateTask(
+            task_id=task.id,
+            context_id=task.contextId,
+            state=TaskState.failed.name,
+            message=StateMessage(
+                message_id=str(uuid.uuid4()),
+                context_id=task.contextId,
+                task_id=task.id,
+                role=Role.agent.name,
+                content=[("No history", "text")],),
+            artifacts=output,
+        )
+    else:
+        message = task.history[0]
+        last_message = task.history[-1]
+        if last_message != message:
+            output = [extract_content(last_message.parts)] + output
     return StateTask(
         task_id=task.id,
         context_id=task.contextId,
@@ -235,7 +245,7 @@ def convert_event_to_state(event: Event) -> StateEvent:
     return StateEvent(
         context_id=extract_message_conversation(event.content),
         actor=event.actor,
-        role=event.content.role,
+        role=event.content.role.name,
         id=event.id,
         content=extract_content(event.content.parts),
     )
@@ -244,17 +254,18 @@ def convert_event_to_state(event: Event) -> StateEvent:
 def extract_content(
     message_parts: list[Part],
 ) -> list[tuple[str | dict[str, Any], str]]:
-    parts = []
+    parts: list[tuple[str | dict[str, Any], str]] = []
     if not message_parts:
         return []
-    for p in message_parts:
+    for part in message_parts:
+        p = part.root
         if p.type == 'text':
             parts.append((p.text, 'text/plain'))
         elif p.type == 'file':
-            if p.file.bytes:
-                parts.append((p.file.bytes, p.file.mimeType))
+            if isinstance(p.file, FileWithBytes):
+                parts.append((p.file.bytes, p.file.mimeType or ''))
             else:
-                parts.append((p.file.uri, p.file.mimeType))
+                parts.append((p.file.uri, p.file.mimeType or ''))
         elif p.type == 'data':
             try:
                 jsonData = json.dumps(p.data)
@@ -280,11 +291,6 @@ def extract_conversation_id(task: Task) -> str:
     if task.contextId:
         return task.contextId
     # Tries to find the first conversation id for the message in the task.
-    if task.status.message and task.status.message.contextId:
-        return task.status.message.contextId
-    if not task.artifacts:
-        return ''
-    for a in task.artifacts:
-        if a.contextId:
-            return a.contextId
+    if task.status.message:
+        return task.status.message.contextId or ''
     return ''

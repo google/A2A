@@ -1,12 +1,16 @@
 from typing import Callable
-from common.client import A2AClient
-from common.types import (
+import httpx
+from a2a.client import A2AClient
+from a2a.types import (
     AgentCard,
     Task,
     Message,
     MessageSendParams,
     TaskStatusUpdateEvent,
     TaskArtifactUpdateEvent,
+    SendMessageRequest,
+    SendStreamingMessageRequest,
+    JSONRPCErrorResponse,
 )
 
 
@@ -17,12 +21,9 @@ TaskUpdateCallback = Callable[[TaskCallbackArg, AgentCard], Task]
 class RemoteAgentConnections:
     """A class to hold the connections to the remote agents."""
 
-    def __init__(self, agent_card: AgentCard):
-        self.agent_client = A2AClient(agent_card)
+    def __init__(self, client: httpx.AsyncClient, agent_card: AgentCard):
+        self.agent_client = A2AClient(client, agent_card)
         self.card = agent_card
-
-        self.conversation_name = None
-        self.conversation = None
         self.pending_tasks = set()
 
     def get_agent(self) -> AgentCard:
@@ -35,28 +36,31 @@ class RemoteAgentConnections:
     ) -> Task | Message | None:
         if self.card.capabilities.streaming:
             task = None
-            async for response in self.agent_client.send_message_stream(
-                request.model_dump()
+            async for response in self.agent_client.send_message_streaming(
+                SendStreamingMessageRequest(params=request)
             ):
-                if not response.result:
-                    return response.error
+                if not response.root.result:
+                    return response.root.error
                 # In the case a message is returned, that is the end of the interaction.
-                if isinstance(response.result, Message):
-                    return response
+                event = response.root.result
+                if isinstance(event, Message):
+                    return event
 
                 # Otherwise we are in the Task + TaskUpdate cycle.
-                if task_callback and response.result:
-                    task = task_callback(response.result, self.card)
-                if hasattr(response.result, 'final') and response.result.final:
+                if task_callback and event:
+                    task = task_callback(event, self.card)
+                if hasattr(event, 'final') and event.final:
                     break
             return task
         else:  # Non-streaming
             response = await self.agent_client.send_message(
-                request.model_dump()
+                SendMessageRequest(params=request)
             )
-            if isinstance(response.result, Message):
-                return response.result
+            if isinstance(response.root, JSONRPCErrorResponse):
+                return response.root.error
+            if isinstance(response.root.result, Message):
+                return response.root.result
 
             if task_callback:
-                task_callback(response.result, self.card)
-            return response.result
+                task_callback(response.root.result, self.card)
+            return response.root.result

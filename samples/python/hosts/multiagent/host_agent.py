@@ -5,13 +5,15 @@ from typing import List
 from google.genai import types
 import base64
 
+import httpx
+
 from google.adk import Agent
 from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.tools.tool_context import ToolContext
 from .remote_agent_connection import RemoteAgentConnections, TaskUpdateCallback
-from common.client import A2ACardResolver
-from common.types import (
+from a2a.client import A2ACardResolver
+from a2a.types import (
     AgentCard,
     DataPart,
     Message,
@@ -42,15 +44,17 @@ class HostAgent:
     def __init__(
         self,
         remote_agent_addresses: list[str],
+        http_client: httpx.AsyncClient,
         task_callback: TaskUpdateCallback | None = None,
     ):
         self.task_callback = task_callback
+        self.httpx_client = http_client
         self.remote_agent_connections: dict[str, RemoteAgentConnections] = {}
         self.cards: dict[str, AgentCard] = {}
         for address in remote_agent_addresses:
-            card_resolver = A2ACardResolver(address)
+            card_resolver = A2ACardResolver(http_client, address)
             card = card_resolver.get_agent_card()
-            remote_connection = RemoteAgentConnections(card)
+            remote_connection = RemoteAgentConnections(http_client, card)
             self.remote_agent_connections[card.name] = remote_connection
             self.cards[card.name] = card
         agent_info = []
@@ -59,7 +63,7 @@ class HostAgent:
         self.agents = '\n'.join(agent_info)
 
     def register_agent_card(self, card: AgentCard):
-        remote_connection = RemoteAgentConnections(card)
+        remote_connection = RemoteAgentConnections(self.httpx_client, card)
         self.remote_agent_connections[card.name] = remote_connection
         self.cards[card.name] = card
         agent_info = []
@@ -179,63 +183,65 @@ Current agent: {current_agent['active_agent']}
         )
         response = await client.send_message(request, self.task_callback)
         if isinstance(response, Message):
-            return convert_parts(task.parts, tool_context)
+            return await convert_parts(task.parts, tool_context)
         task: Task = response
         # Assume completion unless a state returns that isn't complete
         state['session_active'] = task.status.state not in [
-            TaskState.COMPLETED,
-            TaskState.CANCELED,
-            TaskState.FAILED,
-            TaskState.UNKNOWN,
+            TaskState.completed,
+            TaskState.canceled,
+            TaskState.failed,
+            TaskState.unknown,
         ]
         if task.contextId:
             state['context_id'] = task.contextId
         state['task_id'] = task.id
-        if task.status.state == TaskState.INPUT_REQUIRED:
+        if task.status.state == TaskState.input_required:
             # Force user input back
             tool_context.actions.skip_summarization = True
             tool_context.actions.escalate = True
-        elif task.status.state == TaskState.CANCELED:
+        elif task.status.state == TaskState.canceled:
             # Open question, should we return some info for cancellation instead
             raise ValueError(f'Agent {agent_name} task {task.id} is cancelled')
-        elif task.status.state == TaskState.FAILED:
+        elif task.status.state == TaskState.failed:
             # Raise error for failure
             raise ValueError(f'Agent {agent_name} task {task.id} failed')
         response = []
         if task.status.message:
             # Assume the information is in the task message.
             response.extend(
-                convert_parts(task.status.message.parts, tool_context)
+                await convert_parts(task.status.message.parts, tool_context)
             )
         if task.artifacts:
             for artifact in task.artifacts:
-                response.extend(convert_parts(artifact.parts, tool_context))
+                response.extend(
+                    await convert_parts(artifact.parts, tool_context)
+                )
         return response
 
 
-def convert_parts(parts: list[Part], tool_context: ToolContext):
+async def convert_parts(parts: list[Part], tool_context: ToolContext):
     rval = []
     for p in parts:
-        rval.append(convert_part(p, tool_context))
+        rval.append(await convert_part(p, tool_context))
     return rval
 
 
-def convert_part(part: Part, tool_context: ToolContext):
-    if part.type == 'text':
-        return part.text
-    elif part.type == 'data':
-        return part.data
-    elif part.type == 'file':
+async def convert_part(part: Part, tool_context: ToolContext):
+    if part.root.type == 'text':
+        return part.root.text
+    elif part.root.type == 'data':
+        return part.root.data
+    elif part.root.type == 'file':
         # Repackage A2A FilePart to google.genai Blob
         # Currently not considering plain text as files
-        file_id = part.file.name
-        file_bytes = base64.b64decode(part.file.bytes)
+        file_id = part.root.file.name
+        file_bytes = base64.b64decode(part.root.file.bytes)
         file_part = types.Part(
             inline_data=types.Blob(
-                mime_type=part.file.mimeType, data=file_bytes
+                mime_type=part.root.file.mimeType, data=file_bytes
             )
         )
-        tool_context.save_artifact(file_id, file_part)
+        await tool_context.save_artifact(file_id, file_part)
         tool_context.actions.skip_summarization = True
         tool_context.actions.escalate = True
         return DataPart(data={'artifact-file-id': file_id})

@@ -2,18 +2,29 @@ import asyncio
 import base64
 import os
 import urllib
+import httpx
 
 from uuid import uuid4
 
 import asyncclick as click
 
-from common.client import A2AClient, A2ACardResolver
-from common.types import (
-    TaskState,
+from a2a.client import A2AClient, A2ACardResolver
+from a2a.types import (
+    Part,
+    TextPart,
+    FilePart,
+    FileWithBytes,
     Task,
+    TaskState,
     Message,
     TaskStatusUpdateEvent,
     TaskArtifactUpdateEvent,
+    MessageSendConfiguration,
+    SendMessageRequest,
+    SendStreamingMessageRequest,
+    MessageSendParams,
+    GetTaskRequest,
+    TaskQueryParams,
 )
 from common.utils.push_notification_auth import PushNotificationReceiverAuth
 
@@ -31,60 +42,62 @@ async def cli(
     use_push_notifications: bool,
     push_notification_receiver: str,
 ):
-    card_resolver = A2ACardResolver(agent)
-    card = card_resolver.get_agent_card()
+    async with httpx.AsyncClient(timeout=30) as httpx_client:
+        card_resolver = A2ACardResolver(httpx_client, agent)
+        card = await card_resolver.get_agent_card()
 
-    print('======= Agent Card ========')
-    print(card.model_dump_json(exclude_none=True))
+        print('======= Agent Card ========')
+        print(card.model_dump_json(exclude_none=True))
 
-    notif_receiver_parsed = urllib.parse.urlparse(push_notification_receiver)
-    notification_receiver_host = notif_receiver_parsed.hostname
-    notification_receiver_port = notif_receiver_parsed.port
+        notif_receiver_parsed = urllib.parse.urlparse(
+            push_notification_receiver)
+        notification_receiver_host = notif_receiver_parsed.hostname
+        notification_receiver_port = notif_receiver_parsed.port
 
-    if use_push_notifications:
-        from hosts.cli.push_notification_listener import (
-            PushNotificationListener,
-        )
-
-        notification_receiver_auth = PushNotificationReceiverAuth()
-        await notification_receiver_auth.load_jwks(
-            f'{agent}/.well-known/jwks.json'
-        )
-
-        push_notification_listener = PushNotificationListener(
-            host=notification_receiver_host,
-            port=notification_receiver_port,
-            notification_receiver_auth=notification_receiver_auth,
-        )
-        push_notification_listener.start()
-
-    client = A2AClient(agent_card=card)
-
-    continue_loop = True
-    streaming = card.capabilities.streaming
-
-    while continue_loop:
-        print('=========  starting a new task ======== ')
-        continue_loop, contextId, taskId = await completeTask(
-            client,
-            streaming,
-            use_push_notifications,
-            notification_receiver_host,
-            notification_receiver_port,
-            None,
-            None,
-        )
-
-        if history and continue_loop:
-            print('========= history ======== ')
-            task_response = await client.get_task(
-                {'id': taskId, 'historyLength': 10}
+        if use_push_notifications:
+            from hosts.cli.push_notification_listener import (
+                PushNotificationListener,
             )
-            print(
-                task_response.model_dump_json(
-                    include={'result': {'history': True}}
+
+            notification_receiver_auth = PushNotificationReceiverAuth()
+            await notification_receiver_auth.load_jwks(
+                f'{agent}/.well-known/jwks.json'
+            )
+
+            push_notification_listener = PushNotificationListener(
+                host=notification_receiver_host,
+                port=notification_receiver_port,
+                notification_receiver_auth=notification_receiver_auth,
+            )
+            push_notification_listener.start()
+
+        client = A2AClient(httpx_client, agent_card=card)
+
+        continue_loop = True
+        streaming = card.capabilities.streaming
+
+        while continue_loop:
+            print('=========  starting a new task ======== ')
+            continue_loop, contextId, taskId = await completeTask(
+                client,
+                streaming,
+                use_push_notifications,
+                notification_receiver_host,
+                notification_receiver_port,
+                None,
+                None,
+            )
+
+            if history and continue_loop:
+                print('========= history ======== ')
+                task_response = await client.get_task(
+                    {'id': taskId, 'historyLength': 10}
                 )
-            )
+                print(
+                    task_response.model_dump_json(
+                        include={'result': {'history': True}}
+                    )
+                )
 
 
 async def completeTask(
@@ -102,18 +115,13 @@ async def completeTask(
     if prompt == ':q' or prompt == 'quit':
         return False, None, None
 
-    message = {
-        'role': 'user',
-        'parts': [
-            {
-                'type': 'text',
-                'text': prompt,
-            }
-        ],
-        'messageId': str(uuid4()),
-        'taskId': taskId,
-        'contextId': contextId,
-    }
+    message = Message(
+        role='user',
+        parts=[TextPart(text=prompt)],
+        messageId=str(uuid4()),
+        taskId=taskId,
+        contextId=contextId,
+    )
 
     file_path = click.prompt(
         'Select a file path to attach? (press enter to skip)',
@@ -125,23 +133,23 @@ async def completeTask(
             file_content = base64.b64encode(f.read()).decode('utf-8')
             file_name = os.path.basename(file_path)
 
-        message['parts'].append(
-            {
-                'type': 'file',
-                'file': {
-                    'name': file_name,
-                    'bytes': file_content,
-                },
-            }
+        message.parts.append(
+            Part(
+                root=FilePart(
+                    file=FileWithBytes(
+                        name=file_name, bytes=file_content
+                    )
+                )
+            )
         )
 
-    payload = {
-        'id': str(uuid4()),
-        'message': message,
-        'configuration': {
-            'acceptedOutputModes': ['text'],
-        },
-    }
+    payload = MessageSendParams(
+        id=str(uuid4()),
+        message=message,
+        configuration=MessageSendConfiguration(
+            acceptedOutputModes=['text'],
+        ),
+    )
 
     if use_push_notifications:
         payload['pushNotification'] = {
@@ -154,53 +162,69 @@ async def completeTask(
     taskResult = None
     message = None
     if streaming:
-        response_stream = client.send_message_stream(payload)
+        print("Sending payload", payload)
+        response_stream = client.send_message_streaming(
+            SendStreamingMessageRequest(
+                id=str(uuid4()),
+                params=payload,
+            )
+        )
         async for result in response_stream:
-            if result.error:
-                print(
-                    f'\nError sending message {result.model_dump_json(exclude_none=True)}'
-                )
-                continue
-            event = result.result
+            print("Response ", result)
+            event = result.root.result
+            contextId = event.contextId
             if (
                 isinstance(event, Task)
-                or isinstance(event, TaskStatusUpdateEvent)
-                or isinstance(event, TaskArtifactUpdateEvent)
             ):
                 taskId = event.id
-                contextId = event.contextId
+            elif (isinstance(event, TaskStatusUpdateEvent)
+                  or isinstance(event, TaskArtifactUpdateEvent)
+            ):
+                taskId = event.taskId
             elif isinstance(event, Message):
-                contextId = event.contextId
                 message = event
             print(
-                f'stream event => {result.model_dump_json(exclude_none=True)}'
+                f'stream event => {event.model_dump_json(exclude_none=True)}'
             )
         # Upon completion of the stream. Retrieve the full task if one was made.
         if taskId:
-            taskResult = await client.get_task({'id': taskId})
-    else:
-        # For non-streaming, assume the response is a task or message.
-        result = await client.send_message(payload)
-        if result.error:
-            print(
-                f'\nError sending message {result.model_dump_json(exclude_none=True)}'
+            taskResult = await client.get_task(
+                GetTaskRequest(
+                    id=str(uuid4()),
+                    params=TaskQueryParams(id=taskId),
+                )
             )
-        if isinstance(result.result, Task):
-            taskId = result.id
-            contextId = result.contextId
-            taskResult = result
-        elif isinstance(result.result, Message):
-            contextId = result.result.contextId
-            message = result.result
+            taskResult = taskResult.root.result
+    else:
+        try:
+            # For non-streaming, assume the response is a task or message.
+            event = await client.send_message(
+                SendMessageRequest(
+                    id=str(uuid4()),
+                    params=payload,
+                )
+            )
+            event = event.root.result
+        except Exception as e:
+            print("Failed to complete the call", e)
+        if not contextId:
+            contextId = event.contextId
+        if isinstance(event, Task):
+            if not taskId:
+                taskId = event.id
+            taskResult = event
+        elif isinstance(event, Message):
+            message = event
 
+    print(f"Returning context id {contextId} and {taskId}")
     if message:
         print(f'\n{message.model_dump_json(exclude_none=True)}')
         return True, contextId, taskId
     if taskResult:
         print(f'\n{taskResult.model_dump_json(exclude_none=True)}')
         ## if the result is that more input is required, loop again.
-        state = TaskState(taskResult.result.status.state)
-        if state.name == TaskState.INPUT_REQUIRED.name:
+        state = TaskState(taskResult.status.state)
+        if state.name == TaskState.input_required.name:
             return (
                 await completeTask(
                     client,

@@ -10,7 +10,7 @@ from state.host_agent_service import (
 )
 from .chat_bubble import chat_bubble
 from .form_render import is_form, render_form, form_sent
-from common.types import Message, TextPart
+from a2a.types import Message, TextPart, Part, Role
 from state.host_agent_service import (
     ListConversations,
     SendMessage,
@@ -52,8 +52,8 @@ async def send_message(message: str, message_id: str = ''):
     request = Message(
         messageId=message_id,
         contextId=state.conversation_id,
-        role='user',
-        parts=[TextPart(text=message)],
+        role=Role.user,
+        parts=[Part(root=TextPart(text=message))],
     )
     # Add message to state until refresh replaces it.
     state_message = convert_message_to_state(request)
@@ -62,7 +62,7 @@ async def send_message(message: str, message_id: str = ''):
     app_state.messages.append(state_message)
     conversation = next(
         filter(
-            lambda x: x.conversation_id == c.conversation_id,
+            lambda x: c and x.conversation_id == c.conversation_id,
             app_state.conversations,
         ),
         None,

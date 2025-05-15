@@ -4,13 +4,12 @@ import json
 import os
 from typing import Tuple, Optional
 import uuid
+import httpx
 
-from common.types import (
+from a2a.types import (
     AgentCard,
-    DataPart,
-    FileContent,
-    FilePart,
-    TextPart,
+    Artifact,
+    FileWithBytes,
     Message,
     Part,
     Task,
@@ -19,11 +18,12 @@ from common.types import (
     TaskStatus,
     TaskStatusUpdateEvent,
     TaskArtifactUpdateEvent,
-    AgentCard,
     DataPart,
     FilePart,
-    FileContent,
     Part,
+    Role,
+    TextPart,
+    FileWithUri,
 )
 from google.adk import Runner
 from google.adk.artifacts import InMemoryArtifactService
@@ -49,19 +49,24 @@ class ADKHostManager(ApplicationManager):
     uses to send messages to the agent and provide information for the frontend.
     """
 
-    def __init__(self, api_key: str = '', uses_vertex_ai: bool = False):
-        self._conversations = []
-        self._messages = []
-        self._tasks = []
-        self._events = {}
-        self._pending_message_ids = []
-        self._agents = []
-        self._artifact_chunks = {}
+    def __init__(
+        self,
+        http_client: httpx.AsyncClient,
+        api_key: str = '',
+        uses_vertex_ai: bool = False
+    ):
+        self._conversations: list[Conversation] = []
+        self._messages: list[Message] = []
+        self._tasks: list[Task] = []
+        self._events: dict[str, Event] = {}
+        self._pending_message_ids: list[str] = []
+        self._agents: list[AgentCard] = []
+        self._artifact_chunks: dict[str, list[Artifact]] = {}
         self._session_service = InMemorySessionService()
         self._artifact_service = InMemoryArtifactService()
         self._memory_service = InMemoryMemoryService()
-        self._host_agent = HostAgent([], self.task_callback)
-        self._context_to_conversation = {}
+        self._host_agent = HostAgent([], http_client, self.task_callback)
+        self._context_to_conversation: dict[str, str] = {}
         self.user_id = 'test_user'
         self.app_name = 'A2A'
         self.api_key = api_key or os.environ.get('GOOGLE_API_KEY', '')
@@ -82,9 +87,9 @@ class ADKHostManager(ApplicationManager):
         self._initialize_host()
 
         # Map of message id to task id
-        self._task_map = {}
+        self._task_map: dict[str, str] = {}
         # Map to manage 'lost' message ids until protocol level id is introduced
-        self._next_id = {}  # dict[str, str]: previous message to next message
+        self._next_id: dict[str, str] = {}  # dict[str, str]: previous message to next message
 
     def _initialize_host(self):
         agent = self._host_agent.create_agent()
@@ -122,11 +127,15 @@ class ADKHostManager(ApplicationManager):
     def sanitize_message(self, message: Message) -> Message:
         if message.contextId:
             conversation = self.get_conversation(message.contextId)
+            if not conversation:
+                return message
             # Check if the last event in the conversation was tied to a task.
             if conversation.messages:
                 task_id = conversation.messages[-1].taskId
                 if task_id and task_still_open(
-                    next(filter(lambda x: x.id == task_id, self._tasks), None)
+                    next(filter(lambda x: x and x.id == task_id, self._tasks),
+                         None,
+                    )
                 ):
                     message.taskId = task_id
         return message
@@ -184,7 +193,7 @@ class ADKHostManager(ApplicationManager):
                 Event(
                     id=event.id,
                     actor=event.author,
-                    content=self.adk_content_to_message(
+                    content=await self.adk_content_to_message(
                         event.content, context_id, task_id
                     ),
                     timestamp=event.timestamp,
@@ -199,12 +208,12 @@ class ADKHostManager(ApplicationManager):
             ):
                 task_id = event.actions.state_delta['task_id']
             final_event.content.role = 'model'
-            response = self.adk_content_to_message(
+            response = await self.adk_content_to_message(
                 final_event.content, context_id, task_id
             )
             self._messages.append(response)
 
-        if conversation:
+        if conversation and response:
             conversation.messages.append(response)
         self._pending_message_ids.remove(message_id)
 
@@ -232,7 +241,7 @@ class ADKHostManager(ApplicationManager):
             self.update_task(current_task)
             return current_task
         # Otherwise this is a Task, either new or updated
-        elif not any(filter(lambda x: x.id == task.id, self._tasks)):
+        elif not any(filter(lambda x: x and x.id == task.id, self._tasks)):
             self.attach_message_to_task(task.status.message, task.id)
             self.add_task(task)
             return task
@@ -249,19 +258,19 @@ class ADKHostManager(ApplicationManager):
                 content = task.status.message
             else:
                 content = Message(
-                    parts=[TextPart(text=str(task.status.state))],
-                    role='agent',
+                    parts=[Part(root=TextPart(text=str(task.status.state)))],
+                    role=Role.agent,
                     messageId=str(uuid.uuid4()),
                     contextId=context_id,
-                    taskId=task.id,
+                    taskId=task.taskId,
                 )
         elif isinstance(task, TaskArtifactUpdateEvent):
             content = Message(
                 parts=task.artifact.parts,
-                role='agent',
+                role=Role.agent,
                 messageId=str(uuid.uuid4()),
                 contextId=context_id,
-                taskId=task.id,
+                taskId=task.taskId,
             )
         elif task.status and task.status.message:
             content = task.status.message
@@ -271,27 +280,28 @@ class ADKHostManager(ApplicationManager):
                 parts.extend(a.parts)
             content = Message(
                 parts=parts,
-                role='agent',
+                role=Role.agent,
                 messageId=str(uuid.uuid4()),
                 taskId=task.id,
                 contextId=context_id,
             )
         else:
             content = Message(
-                parts=[TextPart(text=str(task.status.state))],
-                role='agent',
+                parts=[Part(root=TextPart(text=str(task.status.state)))],
+                role=Role.agent,
                 messageId=str(uuid.uuid4()),
                 taskId=task.id,
                 contextId=context_id,
             )
-        self.add_event(
-            Event(
-                id=str(uuid.uuid4()),
-                actor=agent_card.name,
-                content=content,
-                timestamp=datetime.datetime.utcnow().timestamp(),
+        if content:
+            self.add_event(
+                Event(
+                    id=str(uuid.uuid4()),
+                    actor=agent_card.name,
+                    content=content,
+                    timestamp=datetime.datetime.utcnow().timestamp(),
+                )
             )
-        )
 
     def attach_message_to_task(self, message: Message | None, task_id: str):
         if message:
@@ -305,28 +315,40 @@ class ADKHostManager(ApplicationManager):
         message_id = message.messageId
         if not message_id:
             return
-        if task.status.message.messageId not in [
-            x.messageId for x in task.history
-        ]:
+        if task.history and (
+            task.status.message and
+            task.status.message.messageId not in [
+                x.messageId for x in task.history
+            ]):
             task.history.append(task.status.message)
+        elif not task.history and task.status.message:
+            task.history = [task.status.message]
         else:
             print(
                 'Message id already in history',
-                task.status.message.messageId,
+                task.status.message.messageId if task.status.message else '',
                 task.history,
             )
 
-    def add_or_get_task(self, task: TaskCallbackArg):
+    def add_or_get_task(self, event: TaskCallbackArg):
+        task_id = None
+        if isinstance(event, Message):
+            task_id = event.taskId
+        elif isinstance(event, Task):
+            task_id = event.id
+        else:
+            task_id = event.taskId
+        if not task_id:
+            task_id = str(uuid.uuid4())
         current_task = next(
-            filter(lambda x: x.id == task.id, self._tasks), None
+            filter(lambda x: x.id == task_id, self._tasks), None
         )
         if not current_task:
-            context_id = task.contextId
+            context_id = event.contextId
             current_task = Task(
-                id=task.id,
+                id=task_id,
                 # initialize with submitted
-                status=TaskStatus(state=TaskState.SUBMITTED),
-                metadata=task.metadata,
+                status=TaskStatus(state=TaskState.submitted),
                 artifacts=[],
                 contextId=context_id,
             )
@@ -339,9 +361,10 @@ class ADKHostManager(ApplicationManager):
         self, current_task: Task, task_update_event: TaskArtifactUpdateEvent
     ):
         artifact = task_update_event.artifact
-        if not artifact.append:
+        if not task_update_event.append:
             # received the first chunk or entire payload for an artifact
-            if artifact.lastChunk is None or artifact.lastChunk:
+            if (task_update_event.lastChunk is None
+                or task_update_event.lastChunk):
                 # lastChunk bit is missing or is set to true, so this is the entire payload
                 # add this to artifacts
                 if not current_task.artifacts:
@@ -349,21 +372,24 @@ class ADKHostManager(ApplicationManager):
                 current_task.artifacts.append(artifact)
             else:
                 # this is a chunk of an artifact, stash it in temp store for assemling
-                if task_update_event.id not in self._artifact_chunks:
-                    self._artifact_chunks[task_update_event.id] = {}
-                self._artifact_chunks[task_update_event.id][artifact.index] = (
+                if artifact.artifactId not in self._artifact_chunks:
+                    self._artifact_chunks[artifact.artifactId] = []
+                self._artifact_chunks[artifact.artifactId].append(
                     artifact
                 )
         else:
             # we received an append chunk, add to the existing temp artifact
-            current_temp_artifact = self._artifact_chunks[task_update_event.id][
-                artifact.index
+            current_temp_artifact = self._artifact_chunks[artifact.artifactId][
+                -1
             ]
             # TODO handle if current_temp_artifact is missing
             current_temp_artifact.parts.extend(artifact.parts)
-            if artifact.lastChunk:
-                current_task.artifacts.append(current_temp_artifact)
-                del self._artifact_chunks[task_update_event.id][artifact.index]
+            if task_update_event.lastChunk:
+                if current_task.artifacts:
+                    current_task.artifacts.append(current_temp_artifact)
+                else:
+                    current_task.artifacts = [current_temp_artifact]
+                del self._artifact_chunks[artifact.artifactId][-1]
 
     def add_event(self, event: Event):
         self._events[event.id] = event
@@ -375,13 +401,13 @@ class ADKHostManager(ApplicationManager):
             return None
         return next(
             filter(
-                lambda c: c.conversation_id == conversation_id,
+                lambda c: c and c.conversation_id == conversation_id,
                 self._conversations,
             ),
             None,
         )
 
-    def get_pending_messages(self) -> list[Tuple[str, str]]:
+    def get_pending_messages(self) -> list[tuple[str, str]]:
         rval = []
         for message_id in self._pending_message_ids:
             if message_id in self._task_map:
@@ -399,8 +425,8 @@ class ADKHostManager(ApplicationManager):
                         rval.append(
                             (
                                 message_id,
-                                part.text
-                                if part.type == 'text'
+                                part.root.text
+                                if part.root.type == 'text'
                                 else 'Working...',
                             )
                         )
@@ -435,38 +461,41 @@ class ADKHostManager(ApplicationManager):
 
     def adk_content_from_message(self, message: Message) -> types.Content:
         parts: list[types.Part] = []
-        for part in message.parts:
+        for p in message.parts:
+            part = p.root
             if part.type == 'text':
                 parts.append(types.Part.from_text(text=part.text))
             elif part.type == 'data':
                 json_string = json.dumps(part.data)
                 parts.append(types.Part.from_text(text=json_string))
             elif part.type == 'file':
-                if part.uri:
+                if isinstance(part.file, FileWithUri):
                     parts.append(
                         types.Part.from_uri(
-                            file_uri=part.uri, mime_type=part.mimeType
-                        )
-                    )
-                elif part.bytes:
-                    parts.append(
-                        types.Part.from_bytes(
-                            data=part.bytes.encode('utf-8'),
-                            mime_type=part.mimeType,
+                            file_uri=part.file.uri,
+                            mime_type=part.file.mimeType,
                         )
                     )
                 else:
-                    raise ValueError('Unsupported message type')
+                    parts.append(
+                        types.Part.from_bytes(
+                            data=part.file.bytes.encode('utf-8'),
+                            mime_type=part.file.mimeType,
+                        )
+                    )
         return types.Content(parts=parts, role=message.role)
 
-    def adk_content_to_message(
-        self, content: types.Content, context_id: str, task_id: str | None
+    async def adk_content_to_message(
+        self,
+        content: types.Content,
+        context_id: str | None,
+        task_id: str | None
     ) -> Message:
         parts: list[Part] = []
         if not content.parts:
             return Message(
                 parts=[],
-                role=content.role if content.role == 'user' else 'agent',
+                role=content.role if content.role == Role.user else Role.agent,
                 contextId=context_id,
                 taskId=task_id,
                 messageId=str(uuid.uuid4()),
@@ -476,63 +505,73 @@ class ADKHostManager(ApplicationManager):
                 # try parse as data
                 try:
                     data = json.loads(part.text)
-                    parts.append(DataPart(data=data))
+                    parts.append(Part(root=DataPart(data=data)))
                 except:
-                    parts.append(TextPart(text=part.text))
+                    parts.append(Part(root=TextPart(text=part.text)))
             elif part.inline_data:
                 parts.append(
-                    FilePart(
-                        data=part.inline_data.decode('utf-8'),
-                        mimeType=part.inline_data.mime_type,
+                    Part(root=
+                         FilePart(
+                             file=FileWithBytes(
+                                 bytes=part.inline_data.decode('utf-8'),
+                                 mimeType=part.file_data.mime_type,
+                             ),
+                         )
                     )
                 )
             elif part.file_data:
                 parts.append(
-                    FilePart(
-                        file=FileContent(
-                            uri=part.file_data.file_uri,
-                            mimeType=part.file_data.mime_type,
-                        )
+                    Part(root=
+                         FilePart(
+                             file=FileWithUri(
+                                 uri=part.file_data.file_uri,
+                                 mimeType=part.file_data.mime_type,
+                             )
+                         )
                     )
                 )
             # These aren't managed by the A2A message structure, these are internal
             # details of ADK, we will simply flatten these to json representations.
             elif part.video_metadata:
-                parts.append(DataPart(data=part.video_metadata.model_dump()))
+                parts.append(Part(root=DataPart(data=part.video_metadata.model_dump())))
             elif part.thought:
-                parts.append(TextPart(text='thought'))
+                parts.append(Part(root=TextPart(text='thought')))
             elif part.executable_code:
-                parts.append(DataPart(data=part.executable_code.model_dump()))
+                parts.append(Part(root=DataPart(data=part.executable_code.model_dump())))
             elif part.function_call:
-                parts.append(DataPart(data=part.function_call.model_dump()))
+                parts.append(Part(root=DataPart(data=part.function_call.model_dump())))
             elif part.function_response:
-                parts.extend(self._handle_function_response(part, context_id))
+                parts.extend(
+                    await self._handle_function_response(
+                        part, context_id, task_id
+                    )
+                )
             else:
                 raise ValueError('Unexpected content, unknown type')
         return Message(
-            role=content.role if content.role == 'user' else 'agent',
+            role=content.role if content.role == Role.user else Role.agent,
             parts=parts,
             contextId=context_id,
             taskId=task_id,
             messageId=str(uuid.uuid4()),
         )
 
-    def _handle_function_response(
-        self, part: types.Part, context_id: str
+    async def _handle_function_response(
+        self, part: types.Part, context_id: str | None, task_id: str | None
     ) -> list[Part]:
         parts = []
         try:
             for p in part.function_response.response['result']:
                 if isinstance(p, str):
-                    parts.append(TextPart(text=p))
+                    parts.append(Part(root=TextPart(text=p)))
                 elif isinstance(p, dict):
                     if 'type' in p and p['type'] == 'file':
-                        parts.append(FilePart(**p))
+                        parts.append(Part(root=FilePart(**p)))
                     else:
-                        parts.append(DataPart(data=p))
+                        parts.append(Part(root=DataPart(data=p)))
                 elif isinstance(p, DataPart):
                     if 'artifact-file-id' in p.data:
-                        file_part = self._artifact_service.load_artifact(
+                        file_part = await self._artifact_service.load_artifact(
                             user_id=self.user_id,
                             session_id=context_id,
                             app_name=self.app_name,
@@ -543,25 +582,27 @@ class ADKHostManager(ApplicationManager):
                             'utf-8'
                         )
                         parts.append(
-                            FilePart(
-                                file=FileContent(
+                            Part(root=FilePart(
+                                file=FileWithBytes(
                                     bytes=base64_data,
                                     mimeType=file_data.mime_type,
                                     name='artifact_file',
                                 )
-                            )
+                            ))
                         )
                     else:
-                        parts.append(DataPart(data=p.data))
+                        parts.append(Part(root=DataPart(data=p.data)))
                 else:
                     content = Message(
-                        parts=[TextPart(text=str(task.status.state))],
-                        role='agent',
-                        metadata=metadata,
+                        parts=[Part(root=TextPart(text='Unknown content'))],
+                        role=Role.agent,
+                        messageId=str(uuid.uuid4()),
+                        taskId=task_id,
+                        contextId=context_id,
                     )
         except Exception as e:
             print("Couldn't convert to messages:", e)
-            parts.append(DataPart(data=part.function_response.model_dump()))
+            parts.append(Part(root=DataPart(data=part.function_response.model_dump())))
         return parts
 
 
@@ -575,7 +616,7 @@ def task_still_open(task: Task | None) -> bool:
     if not task:
         return False
     return task.status.state in [
-        TaskState.SUBMITTED,
-        TaskState.WORKING,
-        TaskState.INPUT_REQUIRED,
+        TaskState.submitted,
+        TaskState.working,
+        TaskState.input_required,
     ]
