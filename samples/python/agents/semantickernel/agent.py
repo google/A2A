@@ -13,6 +13,7 @@ from semantic_kernel.connectors.ai.open_ai import (
     OpenAIChatCompletion,
     OpenAIChatPromptExecutionSettings,
 )
+from semantic_kernel.connectors.ai.open_ai import AzureChatCompletion
 from semantic_kernel.contents import (
     FunctionCallContent,
     FunctionResultContent,
@@ -93,18 +94,33 @@ class SemanticKernelTravelAgent:
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
 
     def __init__(self):
-        api_key = os.getenv('OPENAI_API_KEY', None)
-        if not api_key:
-            raise ValueError('OPENAI_API_KEY environment variable not set.')
-
-        model_id = os.getenv('OPENAI_CHAT_MODEL_ID', 'gpt-4.1')
+        # Determine which OpenAI service to use based on environment variables
+        azure_api_key = os.getenv('AZURE_OPENAI_API_KEY', None)
+        if azure_api_key:
+            azure_api_base = os.getenv('AZURE_OPENAI_API_BASE')            
+            azure_api_version = os.getenv('AZURE_OPENAI_API_VERSION')
+            azure_deployment = os.getenv('AZURE_OPENAI_CHAT_DEPLOYMENT')
+            ServiceClass = AzureChatCompletion
+            service_kwargs = {
+                'api_key': azure_api_key,
+                'endpoint': azure_api_base,
+                'api_version': azure_api_version,
+                'deployment_name': azure_deployment,
+            }
+        else:
+            openai_api_key = os.getenv('OPENAI_API_KEY', None)
+            if not openai_api_key:
+                raise ValueError('OPENAI_API_KEY environment variable not set.')
+            model_id = os.getenv('OPENAI_CHAT_MODEL_ID', 'gpt-4.1')
+            ServiceClass = OpenAIChatCompletion
+            service_kwargs = {
+                'api_key': openai_api_key,
+                'ai_model_id': model_id,
+            }
 
         # Define a CurrencyExchangeAgent to handle currency-related tasks
         currency_exchange_agent = ChatCompletionAgent(
-            service=OpenAIChatCompletion(
-                api_key=api_key,
-                ai_model_id=model_id,
-            ),
+            service=ServiceClass(**service_kwargs),
             name='CurrencyExchangeAgent',
             instructions=(
                 'You specialize in handling currency-related requests from travelers. '
@@ -117,10 +133,7 @@ class SemanticKernelTravelAgent:
 
         # Define an ActivityPlannerAgent to handle activity-related tasks
         activity_planner_agent = ChatCompletionAgent(
-            service=OpenAIChatCompletion(
-                api_key=api_key,
-                ai_model_id=model_id,
-            ),
+            service=ServiceClass(**service_kwargs),
             name='ActivityPlannerAgent',
             instructions=(
                 'You specialize in planning and recommending activities for travelers. '
@@ -133,10 +146,7 @@ class SemanticKernelTravelAgent:
 
         # Define the main TravelManagerAgent to delegate tasks to the appropriate agents
         self.agent = ChatCompletionAgent(
-            service=OpenAIChatCompletion(
-                api_key=api_key,
-                ai_model_id=model_id,
-            ),
+            service=ServiceClass(**service_kwargs),
             name='TravelManagerAgent',
             instructions=(
                 "Your role is to carefully analyze the traveler's request and forward it to the appropriate agent based on the "
