@@ -1,15 +1,15 @@
 # 4. The Agent Executor
 
-The core logic of how an A2A agent processes requests and generates responses is handled by an **Agent Executor**. The `a2a-python-sdk` provides an abstract base class `a2a.server.AgentExecutor` that you implement.
+The core logic of how an A2A agent processes requests and generates responses/events is handled by an **Agent Executor**. The A2A Python SDK provides an abstract base class `a2a.server.agent_execution.AgentExecutor` that you implement.
 
 ## `AgentExecutor` Interface
 
-The `AgentExecutor` class defines methods that correspond to different A2A RPC calls:
+The `AgentExecutor` class defines two primary methods:
 
-- `async def on_message_send(...)`: Handles standard request/response messages (`message/send`).
-- `async def on_message_stream(...)`: Handles requests that expect a streaming response (`message/sendStream`).
-- `async def on_cancel(...)`: Handles requests to cancel a task (`tasks/cancel`).
-- `async def on_resubscribe(...)`: Handles requests to resubscribe to a task's stream (`tasks/resubscribe`).
+- `async def execute(self, context: RequestContext, event_queue: EventQueue)`: Handles incoming requests that expect a response or a stream of events. It processes the user's input (available via `context`) and uses the `event_queue` to send back `Message`, `Task`, `TaskStatusUpdateEvent`, or `TaskArtifactUpdateEvent` objects.
+- `async def cancel(self, context: RequestContext, event_queue: EventQueue)`: Handles requests to cancel an ongoing task.
+
+The `RequestContext` provides information about the incoming request, such as the user's message and any existing task details. The `EventQueue` is used by the executor to send events back to the client.
 
 ## Helloworld Agent Executor
 
@@ -21,16 +21,13 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
     ```python { .no-copy }
     # examples/helloworld/agent.py
     class HelloWorldAgent:
-        async def invoke(self):
-            return 'Hello World'
+        """Hello World Agent."""
 
-        async def stream(self) -> AsyncGenerator[dict[str, Any], None]:
-            yield {'content': 'Hello ', 'done': False}
-            await asyncio.sleep(2) # Simulate work
-            yield {'content': 'World', 'done': True}
+        async def invoke(self) -> str:
+            return 'Hello World'
     ```
 
-    It has an `invoke` method for single responses and a `stream` method for generating multiple chunks.
+    It has a simple `invoke` method that returns the string "Hello World".
 
 2. **The Executor (`HelloWorldAgentExecutor`)**:
     This class implements the `AgentExecutor` interface.
@@ -39,82 +36,52 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
 
         ```python { .no-copy }
         # examples/helloworld/agent_executor.py
+        from typing_extensions import override
+
+        from a2a.server.agent_execution import AgentExecutor, RequestContext
+        from a2a.server.events import EventQueue
+        from a2a.utils import new_agent_text_message
+
+
         class HelloWorldAgentExecutor(AgentExecutor):
+            """Test AgentProxy Implementation."""
+
             def __init__(self):
                 self.agent = HelloWorldAgent()
         ```
 
         It instantiates the `HelloWorldAgent`.
 
-    - **`on_message_send`**:
+    - **`execute`**:
 
         ```python { .no-copy }
         # examples/helloworld/agent_executor.py
-        async def on_message_send(
-            self, request: SendMessageRequest, task: Task | None
-        ) -> SendMessageResponse:
-            result = await self.agent.invoke() # Calls the agent's logic
-
-            message: Message = Message( # Constructs the A2A Message
-                role=Role.agent,
-                parts=[Part(root=TextPart(text=result))],
-                messageId=str(uuid4()),
-            )
-            # Wraps it in a success response
-            return SendMessageResponse(
-                root=SendMessageSuccessResponse(id=request.id, result=message)
-            )
+            @override
+            async def execute(
+                self,
+                context: RequestContext,
+                event_queue: EventQueue,
+            ) -> None:
+                result = await self.agent.invoke()
+                event_queue.enqueue_event(new_agent_text_message(result))
         ```
 
-        When a non-streaming `message/send` request comes in:
+        When a `message/send` or `message/stream` request comes in (both are handled by `execute` in this simplified executor):
 
         1. It calls `self.agent.invoke()` to get the "Hello World" string.
-        2. It constructs an A2A `Message` object with the agent's role and the result as a `TextPart`.
-        3. It wraps this `Message` in a `SendMessageSuccessResponse`.
+        2. It creates an A2A `Message` object using the `new_agent_text_message` utility function.
+        3. It enqueues this message onto the `event_queue`. The underlying `DefaultRequestHandler` will then process this queue to send the response(s) to the client. For a single message like this, it will result in a single response for `message/send` or a single event for `message/stream` before the stream closes.
 
-    - **`on_message_stream`**:
-
-        ```python { .no-copy }
-        # examples/helloworld/agent_executor.py
-        async def on_message_stream( # type: ignore
-            self, request: SendStreamingMessageRequest, task: Task | None
-        ) -> AsyncGenerator[SendStreamingMessageResponse, None]:
-            async for chunk in self.agent.stream(): # Iterates over agent's stream
-                message: Message = Message(
-                    role=Role.agent,
-                    parts=[Part(root=TextPart(text=chunk['content']))],
-                    messageId=str(uuid4()),
-                    final=chunk['done'], # Indicates if this is the last chunk
-                )
-                # Yields each chunk as a streaming success response
-                yield SendStreamingMessageResponse(
-                    root=SendStreamingMessageSuccessResponse(
-                        id=request.id, result=message
-                    )
-                )
-        ```
-
-        When a streaming `message/sendStream` request is received:
-
-        1. It iterates through the chunks produced by `self.agent.stream()`.
-        2. For each chunk, it creates an A2A `Message`. The `final` attribute of the message is important for streaming; it tells the client if more chunks are coming.
-        3. Each message is `yield`ed, wrapped in a `SendStreamingMessageSuccessResponse`. This is how SSE (Server-Sent Events) are generated by the SDK.
-
-    - `on_cancel` and `on_resubscribe`:
-        The Helloworld example marks these as `UnsupportedOperationError` because it doesn't implement task cancellation or resubscription.
+    - **`cancel`**:
+        The Helloworld example's `cancel` method simply raises an exception, indicating that cancellation is not supported for this basic agent.
 
         ```python { .no-copy }
         # examples/helloworld/agent_executor.py
-        # ...
-        async def on_cancel(
-            self, request: CancelTaskRequest, task: Task
-        ) -> CancelTaskResponse:
-            return CancelTaskResponse(
-                root=JSONRPCErrorResponse(
-                    id=request.id, error=UnsupportedOperationError()
-                )
-            )
-        # ... similar for on_resubscribe
+            @override
+            async def cancel(
+                self, context: RequestContext, event_queue: EventQueue
+            ) -> None:
+                raise Exception('cancel not supported')
         ```
 
-The `AgentExecutor` acts as the bridge between the raw A2A protocol requests/responses and your agent's specific logic.
+The `AgentExecutor` acts as the bridge between the A2A protocol (managed by the request handler and server application) and your agent's specific logic. It receives context about the request and uses an event queue to communicate results or updates back.

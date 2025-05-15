@@ -35,6 +35,7 @@ collaborate effectively with each other and with users.
 - [Decagon.ai](https://decagon.ai)
 - [Deloitte](https://www.prnewswire.com/news-releases/deloitte-expands-alliances-with-google-cloud-and-servicenow-to-accelerate-agentic-ai-adoption-in-the-enterprise-302423941.html)
 - [Devnagri](https://devnagri.com)
+- [Deutsche Telekom](https://www.telekom.com/en)
 - [Distyl.ai](https://distyl.ai)
 - [Elastic](https://www.elastic.co)
 - [Ema.co](https://ema.co)
