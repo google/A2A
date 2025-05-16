@@ -1,0 +1,26 @@
+[project]
+name = "a2a-autogen-weather-agent"
+version = "0.1.0"
+description = "AutoGen-based Weather Agent with A2A Protocol" 
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "a2a-samples @ git+https://github.com/google/A2A.git#subdirectory=samples/python",
+    "click>=8.1.8",
+    "autogen-agentchat>=0.5.0",
+    "autogen-ext[openai]>=0.5.0",
+    "python-dotenv>=1.1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+# [tool.uv.sources]
+# a2a-samples = { workspace = true }
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
