@@ -198,9 +198,9 @@
             "type": "array"
           },
           "index": {
-            "type": "integer",
             "default": 0,
-            "title": "Index"
+            "title": "Index",
+            "type": "integer"
           },
           "append": {
             "type": "boolean",
@@ -247,7 +247,6 @@
         "properties": {
           "code": {
             "const": -32003,
-            "default": -32003,
             "description": "Error code",
             "examples": [
               -32003
@@ -257,7 +256,6 @@
           },
           "message": {
             "const": "Push Notification is not supported",
-            "default": "Push Notification is not supported",
             "description": "A short description of the error",
             "examples": [
               "Push Notification is not supported"
@@ -280,7 +278,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -297,7 +294,6 @@
           },
           "method": {
             "const": "tasks/cancel",
-            "default": "tasks/cancel",
             "title": "Method",
             "type": "string"
           },
@@ -306,6 +302,8 @@
           }
         },
         "required": [
+          "jsonrpc",
+          "id",
           "method",
           "params"
         ],
@@ -316,7 +314,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -338,6 +335,10 @@
             "$ref": "#/$defs/JSONRPCError"
           }
         },
+        "required": [
+          "jsonrpc",
+          "id"
+        ],
         "title": "CancelTaskResponse",
         "type": "object"
       },
@@ -345,7 +346,6 @@
         "properties": {
           "type": {
             "const": "data",
-            "default": "data",
             "description": "Type of the part",
             "examples": [
               "data"
@@ -372,6 +372,7 @@
         "type": "object"
       },
       "FileContent": {
+        "description": "Represents the content of a file, either as base64 encoded bytes or a URI.\n\nEnsures that either 'bytes' or 'uri' is provided, but not both.",
         "properties": {
           "name": {
             "type": "string",
@@ -391,14 +392,12 @@
           }
         },
         "title": "FileContent",
-        "type": "object",
-        "description": "Represents the content of a file, either as base64 encoded bytes or a URI.\n\nEnsures that either 'bytes' or 'uri' is provided, but not both."
+        "type": "object"
       },
       "FilePart": {
         "properties": {
           "type": {
             "const": "file",
-            "default": "file",
             "description": "Type of the part",
             "examples": [
               "file"
@@ -426,7 +425,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -443,7 +441,6 @@
           },
           "method": {
             "const": "tasks/pushNotification/get",
-            "default": "tasks/pushNotification/get",
             "title": "Method",
             "type": "string"
           },
@@ -452,6 +449,8 @@
           }
         },
         "required": [
+          "jsonrpc",
+          "id",
           "method",
           "params"
         ],
@@ -462,7 +461,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -484,6 +482,10 @@
             "$ref": "#/$defs/JSONRPCError"
           }
         },
+        "required": [
+          "jsonrpc",
+          "id"
+        ],
         "title": "GetTaskPushNotificationResponse",
         "type": "object"
       },
@@ -491,7 +493,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -508,7 +509,6 @@
           },
           "method": {
             "const": "tasks/get",
-            "default": "tasks/get",
             "title": "Method",
             "type": "string"
           },
@@ -517,6 +517,8 @@
           }
         },
         "required": [
+          "jsonrpc",
+          "id",
           "method",
           "params"
         ],
@@ -527,7 +529,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -549,6 +550,10 @@
             "$ref": "#/$defs/JSONRPCError"
           }
         },
+        "required": [
+          "jsonrpc",
+          "id"
+        ],
         "title": "GetTaskResponse",
         "type": "object"
       },
@@ -556,7 +561,6 @@
         "properties": {
           "code": {
             "const": -32603,
-            "default": -32603,
             "description": "Error code",
             "examples": [
               -32603
@@ -591,7 +595,6 @@
         "properties": {
           "code": {
             "const": -32602,
-            "default": -32602,
             "description": "Error code",
             "examples": [
               -32602
@@ -626,7 +629,6 @@
         "properties": {
           "code": {
             "const": -32600,
-            "default": -32600,
             "description": "Error code",
             "examples": [
               -32600
@@ -661,7 +663,6 @@
         "properties": {
           "code": {
             "const": -32700,
-            "default": -32700,
             "description": "Error code",
             "examples": [
               -32700
@@ -671,7 +672,6 @@
           },
           "message": {
             "const": "Invalid JSON payload",
-            "default": "Invalid JSON payload",
             "description": "A short description of the error",
             "examples": [
               "Invalid JSON payload"
@@ -719,7 +719,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -742,7 +741,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -777,7 +775,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -801,6 +798,10 @@
             "$ref": "#/$defs/JSONRPCError"
           }
         },
+        "required": [
+          "jsonrpc",
+          "id"
+        ],
         "title": "JSONRPCResponse",
         "type": "object"
       },
@@ -838,7 +839,6 @@
         "properties": {
           "code": {
             "const": -32601,
-            "default": -32601,
             "description": "Error code",
             "examples": [
               -32601
@@ -905,7 +905,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -922,7 +921,6 @@
           },
           "method": {
             "const": "tasks/send",
-            "default": "tasks/send",
             "title": "Method",
             "type": "string"
           },
@@ -931,6 +929,8 @@
           }
         },
         "required": [
+          "jsonrpc",
+          "id",
           "method",
           "params"
         ],
@@ -941,7 +941,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -963,6 +962,10 @@
             "$ref": "#/$defs/JSONRPCError"
           }
         },
+        "required": [
+          "jsonrpc",
+          "id"
+        ],
         "title": "SendTaskResponse",
         "type": "object"
       },
@@ -970,7 +973,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -987,7 +989,6 @@
           },
           "method": {
             "const": "tasks/sendSubscribe",
-            "default": "tasks/sendSubscribe",
             "title": "Method",
             "type": "string"
           },
@@ -996,6 +997,8 @@
           }
         },
         "required": [
+          "jsonrpc",
+          "id",
           "method",
           "params"
         ],
@@ -1006,7 +1009,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -1035,6 +1037,10 @@
             "$ref": "#/$defs/JSONRPCError"
           }
         },
+        "required": [
+          "jsonrpc",
+          "id"
+        ],
         "title": "SendTaskStreamingResponse",
         "type": "object"
       },
@@ -1042,7 +1048,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -1059,7 +1064,6 @@
           },
           "method": {
             "const": "tasks/pushNotification/set",
-            "default": "tasks/pushNotification/set",
             "title": "Method",
             "type": "string"
           },
@@ -1068,6 +1072,8 @@
           }
         },
         "required": [
+          "jsonrpc",
+          "id",
           "method",
           "params"
         ],
@@ -1078,7 +1084,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -1100,6 +1105,10 @@
             "$ref": "#/$defs/JSONRPCError"
           }
         },
+        "required": [
+          "jsonrpc",
+          "id"
+        ],
         "title": "SetTaskPushNotificationResponse",
         "type": "object"
       },
@@ -1164,7 +1173,6 @@
         "properties": {
           "code": {
             "const": -32002,
-            "default": -32002,
             "description": "Error code",
             "examples": [
               -32002
@@ -1197,7 +1205,6 @@
         "properties": {
           "code": {
             "const": -32001,
-            "default": -32001,
             "description": "Error code",
             "examples": [
               -32001
@@ -1279,6 +1286,13 @@
           "message": {
             "$ref": "#/$defs/Message"
           },
+          "acceptedOutputModes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "AcceptedOutputModes",
+            "type": "array"
+          },
           "pushNotification": {
             "$ref": "#/$defs/PushNotificationConfig"
           },
@@ -1337,7 +1351,6 @@
         "properties": {
           "jsonrpc": {
             "const": "2.0",
-            "default": "2.0",
             "title": "Jsonrpc",
             "type": "string"
           },
@@ -1354,7 +1367,6 @@
           },
           "method": {
             "const": "tasks/resubscribe",
-            "default": "tasks/resubscribe",
             "title": "Method",
             "type": "string"
           },
@@ -1363,6 +1375,8 @@
           }
         },
         "required": [
+          "jsonrpc",
+          "id",
           "method",
           "params"
         ],
@@ -1422,7 +1436,6 @@
         "properties": {
           "type": {
             "const": "text",
-            "default": "text",
             "description": "Type of the part",
             "examples": [
               "text"
@@ -1451,7 +1464,6 @@
         "properties": {
           "code": {
             "const": -32004,
-            "default": -32004,
             "description": "Error code",
             "examples": [
               -32004
