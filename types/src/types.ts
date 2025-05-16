@@ -304,17 +304,13 @@ export interface FilePart extends PartBase {
   file: FileWithBytes | FileWithUri;
 }
 
-type RecordStringAny = {
-  [key: string]: any;
-};
-
 /** Represents a structured data segment within a message part. */
 export interface DataPart extends PartBase {
   /** Part type - data for DataParts */
   itemType: "data";
   /** Structured data content 
   */
-  data: Record<string, any>;
+  data: object;
 }
 
 /** Represents a part of a message, which can be text, a file, or structured data. */
