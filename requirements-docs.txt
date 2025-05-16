@@ -1,2 +1,3 @@
 mkdocs-material==9.6.12
 mkdocs-redirects==1.2.2
+mkdocstrings[python]
