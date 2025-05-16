@@ -42,7 +42,6 @@ function generateTaskId(): string {
 // --- State ---
 let currentTaskId: string = generateTaskId();
 const serverUrl = process.argv[2] || "http://localhost:41241";
-const client = new A2AClient(serverUrl);
 let agentName = "Agent"; // Default, try to get from agent card later
 
 // --- Readline Setup ---
@@ -146,7 +145,7 @@ function printMessageContent(message: Message) {
 }
 
 // --- Agent Card Fetching ---
-async function fetchAndDisplayAgentCard() {
+async function fetchAndDisplayAgentCard(): Promise<AgentCard> {
   const wellKnownUrl = new URL("/.well-known/agent.json", serverUrl).toString();
   console.log(
     colorize("dim", `Attempting to fetch agent card from: ${wellKnownUrl}`)
@@ -164,6 +163,8 @@ async function fetchAndDisplayAgentCard() {
       console.log(`  Version:     ${card.version || "N/A"}`);
       // Update prompt prefix to use the fetched name
       rl.setPrompt(colorize("cyan", `${agentName} > You: `));
+
+      return card;
     } else {
       console.log(
         colorize(
@@ -185,7 +186,9 @@ async function main() {
   console.log(colorize("bright", `A2A Terminal Client`));
   console.log(colorize("dim", `Agent URL: ${serverUrl}`));
 
-  await fetchAndDisplayAgentCard(); // Fetch the card before starting the loop
+  const agentCard = await fetchAndDisplayAgentCard(); // Fetch the card before starting the loop
+
+  const client = new A2AClient(agentCard.url || serverUrl);
 
   console.log(colorize("dim", `Starting Task ID: ${currentTaskId}`));
   console.log(
