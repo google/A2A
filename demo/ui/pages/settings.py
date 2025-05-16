@@ -1,7 +1,6 @@
 import asyncio
 
 import mesop as me
-
 from components.header import header
 from components.page_scaffold import page_frame, page_scaffold
 from state.host_agent_service import UpdateApiKey
@@ -157,6 +156,7 @@ def settings_page_content():
                         me.SelectOption(
                             label='Text (Plain)', value='text/plain'
                         ),
+                        me.SelectOption(label='Video', value='video/mp4'),
                     ],
                     on_selection_change=on_selection_change_output_types,
                     style=me.Style(width=500),

@@ -1,0 +1,16 @@
+[project]
+name = "veo-videogen-google-adk"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "a2a-samples",
+    "click>=8.1.8",
+    "google-adk>=0.4.0",
+    "google-genai>=1.13.0",
+    "python-dotenv>=1.1.0",
+]
+
+[tool.uv.sources]
+a2a-samples = { workspace = true }

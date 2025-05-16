@@ -32,6 +32,7 @@ members = [
     "agents/semantickernel",
     "agents/mindsdb",
     "agents/ag2",
+    "agents/veo_videogen_google_adk",
     "agents/extended_agent_card_adk"
 ]
 

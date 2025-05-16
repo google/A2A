@@ -1,53 +1,43 @@
 import base64
 import datetime
 import json
+import logging
 import os
-from typing import Tuple, Optional
 import uuid
+from typing import Optional, Tuple
 
-from common.types import (
-    AgentCard,
-    DataPart,
-    FileContent,
-    FilePart,
-    TextPart,
-    Message,
-    Part,
-    Task,
-    TaskArtifactUpdateEvent,
-    TaskState,
-    TaskStatus,
-    TaskStatusUpdateEvent,
-    TaskArtifactUpdateEvent,
-    AgentCard,
-    DataPart,
-    FilePart,
-    FileContent,
-    Part,
-)
+from common.types import (AgentCard, DataPart, FileContent, FilePart, Message,
+                          Part, Task, TaskArtifactUpdateEvent, TaskState,
+                          TaskStatus, TaskStatusUpdateEvent, TextPart)
 from google.adk import Runner
 from google.adk.artifacts import InMemoryArtifactService
 from google.adk.events.event import Event as ADKEvent
 from google.adk.events.event_actions import EventActions as ADKEventActions
 from google.adk.memory.in_memory_memory_service import InMemoryMemoryService
-from google.adk.sessions.in_memory_session_service import InMemorySessionService
+from google.adk.sessions.in_memory_session_service import \
+    InMemorySessionService
 from google.genai import types
+# Ensure common.types.Part is imported if it's distinct from google.genai.types.Part in this context
+# from common.types import Part as CommonPart 
+# For clarity, google.genai.types.Part is 'types.Part', common.types.Part is 'Part'
 from hosts.multiagent.host_agent import HostAgent
-from hosts.multiagent.remote_agent_connection import (
-    TaskCallbackArg,
-)
+from hosts.multiagent.remote_agent_connection import TaskCallbackArg
 from service.server.application_manager import ApplicationManager
 from service.types import Conversation, Event
 from utils.agent_card import get_agent_card
 
 
 class ADKHostManager(ApplicationManager):
+
     """An implementation of memory based management with fake agent actions
 
     This implements the interface of the ApplicationManager to plug into
     the AgentServer. This acts as the service contract that the Mesop app
     uses to send messages to the agent and provide information for the frontend.
     """
+
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG) # For development
 
     def __init__(self, api_key: str = '', uses_vertex_ai: bool = False):
         self._conversations = []
@@ -518,51 +508,94 @@ class ADKHostManager(ApplicationManager):
         )
 
     def _handle_function_response(
-        self, part: types.Part, context_id: str
-    ) -> list[Part]:
-        parts = []
+        self, adk_part_func_resp: types.Part, context_id: str
+    ) -> list[Part]: # Returns list[common.types.Part]
+        common_parts_list = [] # This will be the list of common.types.Part
         try:
-            for p in part.function_response.response['result']:
-                if isinstance(p, str):
-                    parts.append(TextPart(text=p))
-                elif isinstance(p, dict):
-                    if 'type' in p and p['type'] == 'file':
-                        parts.append(FilePart(**p))
-                    else:
-                        parts.append(DataPart(data=p))
-                elif isinstance(p, DataPart):
-                    if 'artifact-file-id' in p.data:
-                        file_part = self._artifact_service.load_artifact(
-                            user_id=self.user_id,
-                            session_id=context_id,
-                            app_name=self.app_name,
-                            filename=p.data['artifact-file-id'],
-                        )
-                        file_data = file_part.inline_data
-                        base64_data = base64.b64encode(file_data.data).decode(
-                            'utf-8'
-                        )
-                        parts.append(
-                            FilePart(
-                                file=FileContent(
-                                    bytes=base64_data,
-                                    mimeType=file_data.mime_type,
-                                    name='artifact_file',
-                                )
+            # adk_part_func_resp.function_response.response['result'] is a list[google.genai.types.Part]
+            for p_adk_result_item in adk_part_func_resp.function_response.response['result']: # p_adk_result_item is a google.genai.types.Part
+                appended = False
+                if hasattr(p_adk_result_item, 'text') and p_adk_result_item.text:
+                    try:
+                        # Attempt to parse as JSON, could be an artifact-file-id
+                        data = json.loads(p_adk_result_item.text)
+                        if isinstance(data, dict) and 'artifact-file-id' in data:
+                            file_id = data['artifact-file-id']
+                            # Load artifact from ADK service (this part is for artifacts saved by HostAgent)
+                            artifact_from_service = self._artifact_service.load_artifact(
+                                user_id=self.user_id,
+                                session_id=context_id, # Use context_id from function params
+                                app_name=self.app_name,
+                                filename=file_id,
+                            )
+                            # artifact_from_service is a google.genai.types.Part
+                            if artifact_from_service.inline_data:
+                                # Convert inline_data (Blob) to common.types.FilePart with bytes
+                                base64_data = base64.b64encode(artifact_from_service.inline_data.data).decode('utf-8')
+                                common_parts_list.append(FilePart(file=FileContent(bytes=base64_data, mimeType=artifact_from_service.inline_data.mime_type, name=file_id)))
+                                appended = True
+                            elif artifact_from_service.file_data:
+                                # Convert file_data (FileData) to common.types.FilePart with URI
+                                common_parts_list.append(FilePart(file=FileContent(uri=artifact_from_service.file_data.file_uri, mimeType=artifact_from_service.file_data.mime_type, name=file_id)))
+                                appended = True
+                            else:
+                                self.logger.warning(f"ADKHostManager: Artifact {file_id} has no displayable content.")
+                                common_parts_list.append(TextPart(text=f"[Artifact {file_id} not renderable]"))
+                                appended = True
+                        elif isinstance(data, (dict, list)): # Other JSON data
+                            common_parts_list.append(DataPart(data=data))
+                            appended = True
+                        else:
+                            common_parts_list.append(TextPart(text=p_adk_result_item.text))
+                            appended = True
+                    except json.JSONDecodeError: # Not JSON, so plain text
+                        common_parts_list.append(TextPart(text=p_adk_result_item.text))
+                        appended = True
+                
+                elif hasattr(p_adk_result_item, 'inline_data') and p_adk_result_item.inline_data:
+                    # Directly from a tool that returned inline_data
+                    base64_data = base64.b64encode(p_adk_result_item.inline_data.data).decode('utf-8')
+                    common_parts_list.append(
+                        FilePart(
+                            file=FileContent(
+                                bytes=base64_data,
+                                mimeType=p_adk_result_item.inline_data.mime_type,
+                                name=f"inline_data_{uuid.uuid4()}" # Generate a name
                             )
                         )
-                    else:
-                        parts.append(DataPart(data=p.data))
-                else:
-                    content = Message(
-                        parts=[TextPart(text=str(task.status.state))],
-                        role='agent',
-                        metadata=metadata,
                     )
+                    appended = True
+
+                elif hasattr(p_adk_result_item, 'file_data') and p_adk_result_item.file_data:
+                    # This is the path for the VEO video URI if returned directly by the HostAgent's send_message tool
+                    common_parts_list.append(
+                        FilePart(
+                            file=FileContent(
+                                uri=p_adk_result_item.file_data.file_uri,
+                                mimeType=p_adk_result_item.file_data.mime_type
+                            )
+                        )
+                    )
+                    appended = True
+
+                if not appended:
+                    self.logger.warning(f"ADKHostManager: Unhandled ADK Part type in function response result: {p_adk_result_item}")
+                    # Fallback: try to convert to a string representation if possible
+                    try:
+                        dumped_content = p_adk_result_item.model_dump_json() if hasattr(p_adk_result_item, 'model_dump_json') else str(p_adk_result_item)
+                        common_parts_list.append(TextPart(text=f"[Unhandled ADK Part: {dumped_content}]"))
+                    except Exception as e_dump:
+                        self.logger.error(f"ADKHostManager: Could not dump unhandled ADK part: {e_dump}")
+                        common_parts_list.append(TextPart(text="[Unrenderable ADK Part]"))
+
         except Exception as e:
-            print("Couldn't convert to messages:", e)
-            parts.append(DataPart(data=part.function_response.model_dump()))
-        return parts
+            self.logger.error(f"ADKHostManager: Error in _handle_function_response: {e}", exc_info=True)
+            # Fallback for global error in processing the function response
+            if hasattr(adk_part_func_resp, 'function_response') and hasattr(adk_part_func_resp.function_response, 'model_dump'):
+                common_parts_list.append(DataPart(data=adk_part_func_resp.function_response.model_dump()))
+            else:
+                common_parts_list.append(TextPart(text="[Error processing function response]"))
+        return common_parts_list
 
 
 def get_message_id(m: Message | None) -> str | None:

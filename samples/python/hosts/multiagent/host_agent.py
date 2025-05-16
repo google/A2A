@@ -1,28 +1,13 @@
+import base64
 import json
+import logging  # Added for logging
 import uuid
 from typing import List
 
-from google.genai import types
-import base64
-
-from google.adk import Agent
-from google.adk.agents.readonly_context import ReadonlyContext
-from google.adk.agents.callback_context import CallbackContext
-from google.adk.tools.tool_context import ToolContext
-from .remote_agent_connection import RemoteAgentConnections, TaskUpdateCallback
 from common.client import A2ACardResolver
-from common.types import (
-    AgentCard,
-    DataPart,
-    Message,
-    MessageSendConfiguration,
-    TaskState,
-    Task,
-    TextPart,
-    DataPart,
-    Part,
-    MessageSendParams,
-)
+from common.types import (AgentCard, DataPart, Message,
+                          MessageSendConfiguration, MessageSendParams, Part,
+                          Task, TaskState, TextPart)
 from google.adk import Agent
 from google.adk.agents.callback_context import CallbackContext
 from google.adk.agents.readonly_context import ReadonlyContext
@@ -199,44 +184,75 @@ Current agent: {current_agent['active_agent']}
             # Open question, should we return some info for cancellation instead
             raise ValueError(f'Agent {agent_name} task {task.id} is cancelled')
         elif task.status.state == TaskState.FAILED:
-            # Raise error for failure
-            raise ValueError(f'Agent {agent_name} task {task.id} failed')
-        response = []
-        if task.status.message:
+            error_message_text = "Task failed with an unknown error."
+            if task.status.message and task.status.message.parts:
+                # Try to extract text from the first part if it's a TextPart
+                first_part = task.status.message.parts[0]
+                if first_part.type == 'text':
+                    error_message_text = first_part.text
+                else:
+                    # Fallback for non-text parts, dump the part model
+                    error_message_text = json.dumps(first_part.model_dump())
+            logging.error(f"Host Agent: Task {task.id} for agent {agent_name} failed with message: {error_message_text}")
+            return [types.Part(text=f"Error from {agent_name}: {error_message_text}")] # Return the error as a text part
+        
+        # If task completed successfully, return its artifacts' parts directly
+        if task.artifacts:
+            response_parts = []
+            for artifact in task.artifacts:
+                response_parts.extend(convert_parts(artifact.parts, tool_context))
+            if response_parts:
+                return response_parts
+
+        # Fallback to task status message if no artifacts with parts were returned
+        # or if the task completed without specific artifacts but has a message.
+        response_parts_from_message = []
+        if task.status.message and task.status.message.parts:
             # Assume the information is in the task message.
-            response.extend(
+            response_parts_from_message.extend(
                 convert_parts(task.status.message.parts, tool_context)
             )
-        if task.artifacts:
-            for artifact in task.artifacts:
-                response.extend(convert_parts(artifact.parts, tool_context))
-        return response
+        return response_parts_from_message if response_parts_from_message else [types.Part(text="Task completed.")]
 
 
-def convert_parts(parts: list[Part], tool_context: ToolContext):
+def convert_parts(parts: list[Part], tool_context: ToolContext) -> list[types.Part]:
     rval = []
     for p in parts:
         rval.append(convert_part(p, tool_context))
     return rval
 
 
-def convert_part(part: Part, tool_context: ToolContext):
+def convert_part(part: Part, tool_context: ToolContext) -> types.Part:
     if part.type == 'text':
-        return part.text
+        return types.Part(text=part.text)
     elif part.type == 'data':
-        return part.data
+        return types.Part(text=json.dumps(part.data))
     elif part.type == 'file':
-        # Repackage A2A FilePart to google.genai Blob
-        # Currently not considering plain text as files
-        file_id = part.file.name
-        file_bytes = base64.b64decode(part.file.bytes)
-        file_part = types.Part(
-            inline_data=types.Blob(
-                mime_type=part.file.mimeType, data=file_bytes
+        file_id = part.file.name or str(uuid.uuid4()) 
+        file_part_for_saving: types.Part
+        effective_mime_type = part.file.mimeType or "application/octet-stream" # Default mimeType
+
+        if part.file.uri:
+            # If URI is present, create a Part with FileData for saving
+            file_part_for_saving = types.Part(
+                file_data=types.FileData(
+                    mime_type=effective_mime_type,
+                    file_uri=part.file.uri
+                )
             )
-        )
-        tool_context.save_artifact(file_id, file_part)
+        elif part.file.bytes is not None:
+            file_part_for_saving = types.Part(
+                inline_data=types.Blob( # types.Blob is an alias for InlineData
+                    mime_type=effective_mime_type,
+                    data=part.file.bytes
+                )
+            )
+        else:
+            logging.warning(f"Host Agent: FilePart has no URI and no bytes, cannot save as artifact: {part.model_dump_json()}")
+            return types.Part(text=f"[Host Agent Error: Cannot process empty FilePart '{file_id}']")
+
+        tool_context.save_artifact(file_id, file_part_for_saving)
         tool_context.actions.skip_summarization = True
         tool_context.actions.escalate = True
-        return DataPart(data={'artifact-file-id': file_id})
-    return f'Unknown type: {part.type}'
+        return file_part_for_saving
+    return types.Part(text=f'Unknown type: {part.type}')

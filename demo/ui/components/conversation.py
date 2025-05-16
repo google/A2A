@@ -1,21 +1,9 @@
-import mesop as me
-
 import uuid
 
-from state.state import AppState, SettingsState, StateMessage
-from state.host_agent_service import (
-    SendMessage,
-    ListConversations,
-    convert_message_to_state,
-)
-from .chat_bubble import chat_bubble
-from .form_render import is_form, render_form, form_sent
+import mesop as me
 from common.types import Message, TextPart
-from state.host_agent_service import (
-    ListConversations,
-    SendMessage,
-    convert_message_to_state,
-)
+from state.host_agent_service import (ListConversations, SendMessage,
+                                      convert_message_to_state)
 from state.state import AppState, SettingsState, StateMessage
 
 from .chat_bubble import chat_bubble
@@ -125,6 +113,20 @@ def conversation():
                 )
             else:
                 chat_bubble(message, message.message_id)
+
+        # After rendering messages, check for completed tasks associated with the current conversation
+        # and render their artifacts if they haven't been implicitly shown as a message.
+        for session_task in app_state.task_list:
+            if session_task.context_id == page_state.conversation_id and session_task.task.state == "TaskState.COMPLETED":
+                # Check if this task's result is already part of a message to avoid duplication
+                # This is a simple check; a more robust way might involve linking task artifacts to specific messages.
+                task_already_in_message = any(msg.task_id == session_task.task.task_id and msg.content for msg in app_state.messages)
+
+                if not task_already_in_message and session_task.task.artifacts:
+                    for artifact_list in session_task.task.artifacts: # artifacts is list[list[Tuple[ContentPart, str]]]
+                        # Create a temporary StateMessage to render the artifact via chat_bubble
+                        artifact_message = StateMessage(message_id=f"task_artifact_{session_task.task.task_id}", role="agent", content=artifact_list)
+                        chat_bubble(artifact_message, artifact_message.message_id)
 
         with me.box(
             style=me.Style(

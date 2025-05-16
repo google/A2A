@@ -1,37 +1,26 @@
 import json
 import logging
-
+import re  # Import regex
+import uuid
 from abc import ABC, abstractmethod
 from collections.abc import AsyncIterable
-from typing import Any
+from typing import Any, Union
 
 from common.server import utils
 from common.server.task_manager import InMemoryTaskManager
-from common.types import (
-    Message,
-    TaskStatus,
-    Artifact,
-    TaskStatusUpdateEvent,
-    TaskArtifactUpdateEvent,
-    TaskState,
-    Task,
-    InternalError,
-    JSONRPCResponse,
-    SendMessageRequest,
-    SendMessageResponse,
-    SendMessageStreamRequest,
-    SendMessageStreamResponse,
-    MessageSendParams,
-)
-from google.genai import types
-from typing import Union
-import logging
-import uuid
+from common.types import FileContent  # Import FileContent
+from common.types import TextPart  # Import TextPart
+from common.types import (Artifact, FilePart, InternalError, JSONRPCResponse,
+                          Message, MessageSendParams, Part, SendMessageRequest,
+                          SendMessageResponse, SendMessageStreamRequest,
+                          SendMessageStreamResponse, Task,
+                          TaskArtifactUpdateEvent, TaskState, TaskStatus,
+                          TaskStatusUpdateEvent)
+from google.genai import types as genai_types  # Renamed to avoid conflict
 
 logger = logging.getLogger(__name__)
 
 
-# TODO: Move this class (or these classes) to a common directory
 class AgentWithTaskManager(ABC):
     @abstractmethod
     def get_processing_message(self) -> str:
@@ -68,10 +57,10 @@ class AgentWithTaskManager(ABC):
         session = self._runner.session_service.get_session(
             app_name=self._agent.name,
             user_id=self._user_id,
-            session_id=session_id,
+            session_id=session_id
         )
-        content = types.Content(
-            role='user', parts=[types.Part.from_text(text=query)]
+        content = genai_types.Content(
+            role='user', parts=[genai_types.Part.from_text(text=query)]
         )
         if session is None:
             session = self._runner.session_service.create_session(
@@ -143,7 +132,6 @@ class AgentTaskManager(InMemoryTaskManager):
         query = self._get_user_query(send_params)
         taskId, contextId = self._extract_task_and_context(send_params)
         try:
-            # If this is a new task, emit it first
             if send_params.message.taskId is None:
                 send_params.message.taskId = taskId
                 send_params.message.contextId = contextId
@@ -158,70 +146,118 @@ class AgentTaskManager(InMemoryTaskManager):
                 )
                 self.tasks[taskId] = task
                 yield SendMessageStreamRequest(id=request.id, result=task)
+
+            last_processed_task_state = None
             async for item in self.agent.stream(query, contextId):
                 is_task_complete = item['is_task_complete']
                 artifacts = None
+                current_event_message_parts: list[Part] 
+                current_progress_percent: Optional[int] = item.get('progress_percent')
+
                 if not is_task_complete:
                     task_state = TaskState.WORKING
-                    parts = [{'type': 'text', 'text': item['updates']}]
+                    current_event_message_parts = [TextPart(type='text', text=item['updates'])]
                 else:
-                    if isinstance(item['content'], dict):
-                        if (
-                            'response' in item['content']
-                            and 'result' in item['content']['response']
-                        ):
-                            data = json.loads(
-                                item['content']['response']['result']
-                            )
-                            task_state = TaskState.INPUT_REQUIRED
-                        else:
-                            data = item['content']
+                    # For video agent, 'content' is the GCS URL string.
+                    # 'artifact_name', 'artifact_description', 'final_message_text' are also expected.
+                    final_message_text = item.get('final_message_text', "Video generation complete.")
+                    file_part_data = item.get('file_part_data') # Check for file part data
+
+                    current_event_message_parts = [TextPart(type='text', text=final_message_text)] 
+                    
+                    artifacts = []
+                    if file_part_data:
+                        # Create a File Part for the artifact using the structured data from the agent
+                        try:
+                            file_content_obj = FileContent(**file_part_data) # Create FileContent from data
+                            # Log the created FileContent object to verify its attributes
+                            logger.debug(f"Created FileContent object: uri='{file_content_obj.uri}', mimeType='{getattr(file_content_obj, 'mimeType', 'N/A')}', bytes_present={file_content_obj.bytes is not None}")
+                            file_part_obj = FilePart(type='file', file=file_content_obj) # Create FilePart
+                            artifacts.append(Artifact(
+                                name=item.get('artifact_name', 'generated_video.mp4'), # Use .mp4 extension
+                                description=item.get('artifact_description', 'Generated video'),
+                                parts=[file_part_obj], # Artifact contains the file part
+                                index=0,
+                                append=False
+                            ))
                             task_state = TaskState.COMPLETED
-                        parts = [{'type': 'data', 'data': data}]
-                    else:
-                        task_state = TaskState.COMPLETED
-                        parts = [{'type': 'text', 'text': item['content']}]
-                    artifacts = [Artifact(parts=parts, index=0, append=False)]
-            message = Message(
-                role='agent',
-                parts=parts,
-                messageId=str(uuid.uuid4()),
-                taskId=taskId,
-                contextId=contextId,
-            )
-            task_status = TaskStatus(state=task_state, message=message)
-            await self._update_store(taskId, task_status, artifacts)
-            task_update_event = TaskStatusUpdateEvent(
-                id=taskId,
-                contextId=contextId,
-                status=task_status,
-                final=False,
-            )
-            yield SendMessageStreamResponse(
-                id=request.id, result=task_update_event
-            )
-            # Now yield Artifacts too
-            if artifacts:
-                for artifact in artifacts:
-                    yield SendMessageStreamResponse(
-                        id=request.id,
-                        result=TaskArtifactUpdateEvent(
-                            id=taskId,
-                            contextId=contextId,
-                            artifact=artifact,
-                        ),
-                    )
-            if is_task_complete:
-                yield SendMessageStreamResponse(
-                    id=request.id,
-                    result=TaskStatusUpdateEvent(
+                        except Exception as artifact_e:
+                             logger.error(f"Failed to create file artifact part from data {file_part_data}: {artifact_e}")
+                             # Fallback to text artifact with URL if video part creation fails
+                             artifacts.append(Artifact(
+                                name=item.get('artifact_name', 'generated_video_link.txt'), 
+                                description=item.get('artifact_description', 'Link to generated video (error creating video part)'),
+                                parts=[TextPart(type='text', text=file_part_data.get('uri', 'URI not available'))],
+                                index=0, append=False
+                             ))
+                             task_state = TaskState.COMPLETED 
+                    else: 
+                        task_state = TaskState.FAILED
+                        if 'content' in item and isinstance(item['content'], str):
+                            current_event_message_parts = [TextPart(type='text', text=item['content'])]
+
+                
+                # Create message and task status for the current update
+                current_message = Message(
+                    role='agent',
+                    parts=current_event_message_parts, 
+                    messageId=str(uuid.uuid4()),
+                    taskId=taskId,
+                    contextId=contextId,
+                )
+                current_task_status = TaskStatus(
+                    state=task_state,
+                    message=current_message,
+                    progress=current_progress_percent 
+                )
+                
+                await self._update_store(taskId, current_task_status, artifacts if is_task_complete else None)
+
+                last_processed_task_state = task_state # Keep track of the latest state
+
+                status_update_to_yield = TaskStatusUpdateEvent(
+                    id=taskId,
+                    contextId=contextId,
+                    status=current_task_status, # Send the full status including the message
+                    final=False, 
+                )
+                logger.info(f"TASK_MANAGER SENDING TO CLIENT (TaskStatusUpdateEvent, final=False): {status_update_to_yield.model_dump_json(indent=2)}")
+                yield SendMessageStreamResponse(id=request.id, result=status_update_to_yield)
+
+                # If there are artifacts with this update (typically on completion), yield them
+                if artifacts:
+                    for artifact_item in artifacts:
+                        yield SendMessageStreamResponse(
+                            id=request.id,
+                            result=TaskArtifactUpdateEvent(
+                                id=taskId,
+                                contextId=contextId,
+                                artifact=artifact_item,
+                            ),
+                        )
+                        # Log the TaskArtifactUpdateEvent without the raw bytes from FileContent
+                        event_for_logging = TaskArtifactUpdateEvent(id=taskId, contextId=contextId, artifact=artifact_item)
+                        json_to_log = event_for_logging.model_dump_json(
+                            indent=2,
+                            exclude={'artifact': {'parts': {
+                                '__all__': {'file': {'bytes': True}}}}}
+                        )
+                        logger.debug(f"TASK_MANAGER SENDING TO CLIENT (TaskArtifactUpdateEvent): {json_to_log}")
+                
+                if is_task_complete:
+                    break
+            
+            if last_processed_task_state is not None:
+                final_status_update = TaskStatusUpdateEvent(
                         id=taskId,
                         contextId=contextId,
-                        status=TaskStatus(
-                            state=task_status.state,
-                        ),
+                        status=TaskStatus(state=last_processed_task_state), # Minimal status for final event
                         final=True,
-                    ),
+                    )
+                logger.info(f"TASK_MANAGER SENDING TO CLIENT (TaskStatusUpdateEvent, final=True): {final_status_update.model_dump_json(indent=2)}")
+                yield SendMessageStreamResponse(
+                    id=request.id,
+                    result=final_status_update,
                 )
         except Exception as e:
             logger.error(f'An error occurred while streaming the response: {e}')
@@ -276,7 +312,7 @@ class AgentTaskManager(InMemoryTaskManager):
             logger.error(f'Error invoking agent: {e}')
             raise ValueError(f'Error invoking agent: {e}') from e
 
-        parts = [{'type': 'text', 'text': result}]
+        message_parts_for_invoke = [TextPart(type='text', text=result)]
         task_state = (
             TaskState.INPUT_REQUIRED
             if 'MISSING_INFO:' in result
@@ -288,7 +324,7 @@ class AgentTaskManager(InMemoryTaskManager):
                 state=task_state,
                 message=Message(
                     role='agent',
-                    parts=parts,
+                    parts=message_parts_for_invoke,
                     contextId=contextId,
                     messageId=str(uuid.uuid4()),
                     taskId=taskId,
@@ -296,7 +332,7 @@ class AgentTaskManager(InMemoryTaskManager):
                 if task_state == TaskState.INPUT_REQUIRED
                 else None,
             ),
-            [Artifact(parts=parts)]
+            [Artifact(parts=message_parts_for_invoke)]
             if task_state == TaskState.COMPLETED
             else [],
         )

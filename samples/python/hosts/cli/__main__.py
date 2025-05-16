@@ -2,19 +2,12 @@ import asyncio
 import base64
 import os
 import urllib
-
 from uuid import uuid4
 
 import asyncclick as click
-
-from common.client import A2AClient, A2ACardResolver
-from common.types import (
-    TaskState,
-    Task,
-    Message,
-    TaskStatusUpdateEvent,
-    TaskArtifactUpdateEvent,
-)
+from common.client import A2ACardResolver, A2AClient
+from common.types import (Message, Task, TaskArtifactUpdateEvent, TaskState,
+                          TaskStatusUpdateEvent)
 from common.utils.push_notification_auth import PushNotificationReceiverAuth
 
 
@@ -42,9 +35,8 @@ async def cli(
     notification_receiver_port = notif_receiver_parsed.port
 
     if use_push_notifications:
-        from hosts.cli.push_notification_listener import (
-            PushNotificationListener,
-        )
+        from hosts.cli.push_notification_listener import \
+            PushNotificationListener
 
         notification_receiver_auth = PushNotificationReceiverAuth()
         await notification_receiver_auth.load_jwks(
@@ -173,7 +165,8 @@ async def completeTask(
                 contextId = event.contextId
                 message = event
             print(
-                f'stream event => {result.model_dump_json(exclude_none=True)}'
+                #f'\nstream event => {result.model_dump_json(exclude_none=True)}'
+                print(f'\nstream event => {result.model_dump_json(exclude_none=True, by_alias=True)}')
             )
         # Upon completion of the stream. Retrieve the full task if one was made.
         if taskId:

@@ -1,36 +1,23 @@
 import json
+import logging  # Add logging
 import os
 import sys
 import traceback
-
 from typing import Any
 
 from common.types import Message, Part, Task
 from service.client.client import ConversationClient
-from service.types import (
-    Conversation,
-    CreateConversationRequest,
-    Event,
-    GetEventRequest,
-    ListAgentRequest,
-    ListConversationRequest,
-    ListMessageRequest,
-    ListTaskRequest,
-    PendingMessageRequest,
-    RegisterAgentRequest,
-    SendMessageRequest,
-)
+from service.types import (Conversation, CreateConversationRequest, Event,
+                           GetEventRequest, ListAgentRequest,
+                           ListConversationRequest, ListMessageRequest,
+                           ListTaskRequest, PendingMessageRequest,
+                           RegisterAgentRequest, SendMessageRequest)
 
-from .state import (
-    AppState,
-    SessionTask,
-    StateConversation,
-    StateEvent,
-    StateMessage,
-    StateTask,
-)
-from common.types import Message, Task, Part
+from .state import (AppState, SessionTask, StateConversation, StateEvent,
+                    StateMessage, StateTask)
 
+logger = logging.getLogger(__name__) # Add logger
+logger.setLevel(logging.DEBUG)
 
 server_url = 'http://localhost:12000'
 
@@ -212,21 +199,31 @@ def convert_conversation_to_state(
 
 
 def convert_task_to_state(task: Task) -> StateTask:
+    logger.debug(f"UI: Converting Task to StateTask. Task ID: {task.id}, Task Status: {task.status.state}, Number of artifacts: {len(task.artifacts) if task.artifacts else 0}")
+    if task.artifacts:
+        for i, art in enumerate(task.artifacts):
+            logger.debug(f"UI: Task {task.id}, Artifact {i}: Name='{art.name}', NumParts={len(art.parts)}")
+            if art.parts: # Add check if art.parts is not None
+                for j, p_part in enumerate(art.parts): # Renamed p to p_part to avoid conflict with outer scope if any
+                    mime_type_info = 'N/A'
+                    if p_part.type == 'file' and p_part.file:
+                        mime_type_info = p_part.file.mimeType
+                    logger.debug(f"UI: Task {task.id}, Artifact {i}, Part {j}: Type='{p_part.type}', MimeType (if file)='{mime_type_info}'")
+
     # Get the first message as the description
-    message = task.history[0]
-    last_message = task.history[-1]
+    message = task.history[0] if task.history else None
+    # last_message = task.history[-1] # This logic was removed as it might prepend unrelated content to artifacts
     output = (
         [extract_content(a.parts) for a in task.artifacts]
         if task.artifacts
         else []
     )
-    if last_message != message:
-        output = [extract_content(last_message.parts)] + output
+    logger.debug(f"UI: 'output' for StateTask (ID: {task.id}) before creating StateTask: {output}")
     return StateTask(
         task_id=task.id,
         context_id=task.contextId,
         state=str(task.status.state),
-        message=convert_message_to_state(message),
+        message=convert_message_to_state(message) if message else StateMessage(),
         artifacts=output,
     )
 
@@ -248,23 +245,47 @@ def extract_content(
     if not message_parts:
         return []
     for p in message_parts:
+        content_val = None
+        mime_val = None
         if p.type == 'text':
-            parts.append((p.text, 'text/plain'))
+            content_val = p.text
+            mime_val = 'text/plain'
         elif p.type == 'file':
-            if p.file.bytes:
-                parts.append((p.file.bytes, p.file.mimeType))
+            if p.file.uri: # Prioritize URI
+                content_val = p.file.uri
+                mime_val = p.file.mimeType 
+            elif p.file.bytes: 
+                content_val = p.file.bytes 
+                mime_val = p.file.mimeType 
             else:
-                parts.append((p.file.uri, p.file.mimeType))
+                # This case means a FilePart has no URI and no Bytes.
+                logger.warning(f"UI: FilePart has no URI and no Bytes. Part: {p.model_dump_json()}")
+                content_val = "<empty_file_part>" 
+                mime_val = p.file.mimeType # Still try to get mimeType if available, might be None
+
         elif p.type == 'data':
             try:
                 jsonData = json.dumps(p.data)
                 if 'type' in p.data and p.data['type'] == 'form':
-                    parts.append((p.data, 'form'))
+                    content_val = p.data
+                    mime_val = 'form'
                 else:
-                    parts.append((jsonData, 'application/json'))
+                    content_val = jsonData
+                    mime_val = 'application/json'
             except Exception as e:
                 print('Failed to dump data', e)
-                parts.append(('<data>', 'text/plain'))
+                content_val = '<data_serialization_error>'
+                mime_val = 'text/plain'
+        
+        if mime_val is None: 
+            logger.warning(f"UI: Mime type was None for part type '{p.type}'. Part content snippet: {str(content_val)[:50]}. Defaulting to 'text/plain'. Full part: {p.model_dump_json()}")
+            mime_val = 'text/plain'
+        
+        if content_val is None: 
+            logger.warning(f"UI: Content value was None for part type '{p.type}' (mime: {mime_val}). Defaulting content to '<empty_content>'. Full part: {p.model_dump_json()}")
+            content_val = "<empty_content>"
+            
+        parts.append((content_val, mime_val))
     return parts
 
 

@@ -3,7 +3,8 @@ from enum import Enum
 from typing import Annotated, Any, List, Literal, Optional, Self, Union
 from uuid import uuid4
 
-from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, field_serializer, model_validator
+from pydantic import (BaseModel, ConfigDict, Field, TypeAdapter,
+                      field_serializer, model_validator)
 
 
 class ImplicitOAuthFlow(BaseModel):
@@ -131,6 +132,7 @@ class TaskStatus(BaseModel):
     state: TaskState
     message: Message | None = None
     timestamp: datetime = Field(default_factory=datetime.now)
+    progress: Optional[int] = None
 
     @field_serializer('timestamp')
     def serialize_dt(self, dt: datetime, _info):
