@@ -17,9 +17,14 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+      - name: Checkout a2a-python repo
+        uses: actions/checkout@v4
+        with:
+          repository: google/a2a-python
+          path: a2a-python-repo
       - uses: actions/setup-python@v5
         with:
-          python-version: 3.x
+          python-version: 3.13
       - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - uses: actions/cache@v4
         with:
