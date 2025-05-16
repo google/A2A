@@ -2,7 +2,10 @@
 
 ![A2A Banner](docs/assets/a2a-banner.png)
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-
+<p>
+    <a href="/README.md">English</a> | <a href="/i18n/README_zh.md">简体中文</a> | <a href="/i18n/README_ja.md">日本語</a> | <a href="/i18n/README_es.md">Español</a> | <a href="/i18n/README_de.md">Deutsch</a> | <a href="/i18n/README_fr.md">Français</a>
+    <!-- Add other languages here like: | <a href="/i18n/README_de.md">Deutsch</a> -->
+</p>
 **An open protocol enabling communication and interoperability between opaque agentic applications.**
 
 The Agent2Agent (A2A) protocol addresses a critical challenge in the AI landscape: enabling gen AI agents, built on diverse frameworks by different companies running on separate servers, to communicate and collaborate effectively - as agents, not just as tools. A2A aims to provide a common language for agents, fostering a more interconnected, powerful, and innovative AI ecosystem.
