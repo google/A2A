@@ -138,6 +138,17 @@ dmypy.json
 # macOS
 .DS_Store
 
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+
 # PyCharm
 .idea
 
@@ -177,5 +188,4 @@ testem.log
 /typings
 
 # System files
-.DS_Store
 Thumbs.db
