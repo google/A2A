@@ -128,7 +128,7 @@ export interface Task {
   /** collection of artifacts created by the agent. */
   artifacts?: Artifact[];
   /** extension metadata */
-  metadata?: object;
+  metadata?: Record<string, any>;
   /** event type */
   itemType: "task";
 }
@@ -149,7 +149,7 @@ export interface TaskStatus {
 export interface TaskStatusUpdateEvent {
   /** Task id */
   taskId: string;
-  /** the context the task is associated with */ 
+  /** the context the task is associated with */
   contextId: string;
   /** event type */
   itemType: "status-update";
@@ -158,14 +158,14 @@ export interface TaskStatusUpdateEvent {
   /** indicates the end of the event stream */
   final: boolean;
   /** extension metadata */
-  metadata?: object;
+  metadata?: Record<string, any>;
 }
 
 /** sent by server during sendStream or subscribe requests */
 export interface TaskArtifactUpdateEvent {
   /** Task id */
   taskId: string;
-  /** the context the task is associated with */ 
+  /** the context the task is associated with */
   contextId: string;
   /** event type */
   itemType: "artifact-update";
@@ -176,14 +176,14 @@ export interface TaskArtifactUpdateEvent {
   /** Indicates if this is the last chunk of the artifact */
   lastChunk?: boolean;
   /** extension metadata */
-  metadata?: object;
+  metadata?: Record<string, any>;
 }
 
 /** Parameters containing only a task ID, used for simple task operations. */
 export interface TaskIdParams {
   /** task id */
   id: string;
-  metadata?: object;
+  metadata?: Record<string, any>;
 }
 
 /** Parameters for querying a task, including optional history length. */
@@ -201,7 +201,7 @@ export interface MessageSendConfiguration {
   /** where the server should send notifications when disconnected. */
   pushNotificationConfig?: PushNotificationConfig;
   /** If the server should treat the client as a blocking request */
-  blocking?:boolean;
+  blocking?: boolean;
 }
 
 /** Sent by the client to the agent as a request. May create, continue or restart a task. */
@@ -211,7 +211,7 @@ export interface MessageSendParams {
   /** Send message configuration */
   configuration?: MessageSendConfiguration;
   /** extension metadata */
-  metadata?: object;
+  metadata?: Record<string, any>;
 }
 
 /** Represents the possible states of a Task. */
@@ -221,7 +221,7 @@ export enum TaskState {
   InputRequired = "input-required",
   Completed = "completed",
   Canceled = "canceled",
-  Failed = "failed",  
+  Failed = "failed",
   Rejected = "rejected",
   AuthRequired = "auth-required",
   Unknown = "unknown",
@@ -238,7 +238,7 @@ export interface Artifact {
   /** artifact parts */
   parts: Part[];
   /** extension metadata */
-  metadata?: object;
+  metadata?: Record<string, any>;
 }
 
 /** Represents a single message exchanged between user and agent. */
@@ -248,15 +248,15 @@ export interface Message {
   /** message content */
   parts: Part[];
   /** extension metadata */
-  metadata?: object;
+  metadata?: Record<string, any>;
   /** identifier created by the message creator*/
   messageId: string;
   /** identifier of task the message is related to */
   taskId?: string;
-  /** the context the message is associated with */ 
+  /** the context the message is associated with */
   contextId?: string;
   /** indicates the end of the event stream */
-  final?:boolean;
+  final?: boolean;
   /** event type */
   itemType: "message";
 }
@@ -264,7 +264,7 @@ export interface Message {
 /** Base properties common to all message parts. */
 export interface PartBase {
   /** Optional metadata associated with the part. */
-  metadata?: object;
+  metadata?: Record<string, any>;
 }
 
 /** Represents a text segment within parts.*/
@@ -397,7 +397,7 @@ export interface JSONRPCError {
 /**
  * Represents a JSON-RPC 2.0 Result object.
  */
-interface JSONRPCResult extends JSONRPCMessage{
+interface JSONRPCResult extends JSONRPCMessage {
   /**
    * The result object on success
    */

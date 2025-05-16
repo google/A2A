@@ -80,7 +80,6 @@ Allows a client to send content to a remote agent to interact, start a new Task,
   "id": 1,
   "method": "message/send",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "message": {
       "role": "user",
       "parts": [
@@ -133,6 +132,7 @@ Allows a client to send content to a remote agent to interact, start a new Task,
       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
     }
     ],
+    "itemType": "task",
     "metadata": {}
   }
 }
@@ -153,6 +153,7 @@ Allows a client to send content to a remote agent to interact, start a new Task,
         "text": "Why did the chicken cross the road? To get to the other side!"
       }
     ],
+    "itemType": "message",
     "metadata": {}
   }
 }
@@ -215,6 +216,7 @@ The client may also request the last N items of history for the Task, which will
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
+    "itemType": "task",
     "metadata": {}
   }
 }
@@ -250,6 +252,7 @@ A client may choose to cancel previously submitted Tasks.
     "status": {
       "state": "canceled"
     },
+    "itemType": "task",
     "metadata": {}
   }
 }
@@ -265,9 +268,9 @@ Clients may configure a push notification URL for receiving an update on Task st
     {
      "jsonrpc": "2.0",
      "id": 1,
-     "method": "tasks/pushNotification/set",
+     "method": "tasks/pushNotificationConfig/set",
      "params": {
-      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64",
       "pushNotificationConfig": {
        "url": "https://example.com/callback",
        "authentication": {
@@ -285,7 +288,7 @@ Clients may configure a push notification URL for receiving an update on Task st
      "jsonrpc": "2.0",
      "id": 1,
      "result": {
-      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64",
       "pushNotificationConfig": {
        "url": "https://example.com/callback",
        "authentication": {
@@ -306,7 +309,7 @@ Clients may retrieve the currently configured push notification configuration fo
     {
      "jsonrpc": "2.0",
      "id": 1,
-     "method": "tasks/pushNotification/get",
+     "method": "tasks/pushNotificationConfig/get",
      "params": {
       "id": "de38c76d-d54c-436c-8b9f-4c2703648d64"
      }
@@ -320,7 +323,7 @@ Clients may retrieve the currently configured push notification configuration fo
      "jsonrpc": "2.0",
      "id": 1,
      "result": {
-      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
+      "taskId": "de38c76d-d54c-436c-8b9f-4c2703648d64",
       "pushNotificationConfig": {
        "url": "https://example.com/callback",
        "authentication": {
@@ -345,7 +348,6 @@ The Message included in the `input-required` state must include details indicati
   "id": 1,
   "method": "message/send",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "message": {
       "role": "user",
       "parts": [
@@ -357,7 +359,7 @@ The Message included in the `input-required` state must include details indicati
       "messageId": "c53ba666-3f97-433c-a87b-6084276babe2"
     },
     "configuration": {
-      "blocking": True,
+      "blocking": true,
     },
     "metadata": {}
   }
@@ -402,34 +404,12 @@ The Message included in the `input-required` state must include details indicati
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
+    "itemType": "task",
     "metadata": {}
   }
 }
 ```
-
-    ```json
-    {
-     "jsonrpc": "2.0",
-     "id": 1,
-     "result": {
-      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-      "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-      "status": {
-       "state": "input-required",
-       "message": {
-        "role": "agent",
-        "parts": [
-         {
-          "type": "text",
-          "text": "Select a phone type (iPhone/Android)"
-         }
-        ]
-       }
-      },
-      "metadata": {}
-     }
-    }
-    ```
+**Response (Sequence 3 - User Input):**
 
 ```json
 {
@@ -437,7 +417,6 @@ The Message included in the `input-required` state must include details indicati
   "id": 2,
   "method": "message/send",
   "params": {
-    "id": "a6d3deb2-e75c-4155-ac21-1f7504d71483",
     "message": {
       "role": "user",
       "parts": [
@@ -451,7 +430,7 @@ The Message included in the `input-required` state must include details indicati
       "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
     },
     "configuration": {
-      "blocking": True,
+      "blocking": true,
     },
     "metadata": {}
   }
@@ -520,6 +499,7 @@ The Message included in the `input-required` state must include details indicati
         "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
       }
     ],
+    "itemType": "task",
     "metadata": {}
   }
 }
@@ -538,7 +518,6 @@ Note that `TaskArtifactUpdateEvents` can append new parts to existing Artifacts.
 {
   "method": "message/stream",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "message": {
       "role": "user",
       "parts": [
@@ -594,7 +573,9 @@ data: {
         "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
         "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1"
       }
-    ]
+    ],
+    "itemType": "task",
+    "metadata": {}
   }
 }
 
@@ -602,59 +583,69 @@ data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
     "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
     "artifact": {
+      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
       "parts": [
         {"type":"text", "text": "<section 1...>"}
-      ],
-      "index": 0,
-      "append": false,
-      "lastChunk": false
-    }
-    ```
+      ]
+    },
+    "append": false,
+    "lastChunk": false,
+    "itemType":"artifact-update"
+  }
+}
 
 data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
     "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
     "artifact": {
+      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
       "parts": [
         {"type":"text", "text": "<section 2...>"}
       ],
-      "index": 0,
-      "append": true,
-      "lastChunk": false
-    }
+    },
+    "append": true,
+    "lastChunk": false,
+    "itemType":"artifact-update"
+  }
+}
+
 
 data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
     "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
     "artifact": {
+      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
       "parts": [
         {"type":"text", "text": "<section 3...>"}
-      ],
-      "index": 0,
-      "append": true,
-      "lastChunk": true
-    }
+      ]
+    },
+    "append": true,
+    "lastChunk": true,
+    "itemType":"artifact-update"
+  }
+}
 
 data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
     "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
     "status": {
       "state": "completed",
       "timestamp":"2025-04-02T16:59:35.331844"
     },
-    "final": true
+    "final": true,
+    "itemType":"status-update"
   }
 }
 ```
@@ -682,44 +673,52 @@ data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
     "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
     "artifact": {
+      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
       "parts": [
         {"type":"text", "text": "<section 2...>"}
-      ],
-      "index": 0,
-      "append": true,
-      "lastChunk":false
-    }
+      ]
+    },
+    "append": true,
+    "lastChunk":false,
+    "itemType":"artifact-update"  
+  }
+}
     ```
 
 data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
     "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
     "artifact": {
+      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
       "parts": [
         {"type":"text", "text": "<section 3...>"}
-      ],
-      "index": 0,
-      "append": true,
-      "lastChunk": true
-    }
+      ]
+    },
+    "append": true,
+    "lastChunk": true,
+    "itemType":"artifact-update"
+  }
+}
+
 
 data: {
   "jsonrpc": "2.0",
   "id": 1,
   "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
     "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
     "status": {
       "state": "completed",
       "timestamp":"2025-04-02T16:59:35.331844"
     },
-    "final": true
+    "final": true,
+    "itemType":"status-update"
   }
 }
 ```
@@ -736,7 +735,6 @@ The following example demonstrates an interaction between a client and an agent 
   "id": 9,
   "method": "message/send",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "message": {
       "role": "user",
       "parts": [
@@ -755,41 +753,12 @@ The following example demonstrates an interaction between a client and an agent 
       "messageId": "6dbc13b5-bd57-4c2b-b503-24e381b6c8d6"
     },
     "configuration": {
-      "blocking": False
+      "blocking": false
     },
     "metadata": {}
   }
 }
 ```
-
-    ```json
-    {
-     "jsonrpc": "2.0",
-     "id": 9,
-     "method": "tasks/send",
-     "params": {
-      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-      "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-      "message": {
-       "role": "user",
-       "parts": [
-        {
-         "type": "text",
-         "text": "Analyze the attached report and generate high level overview"
-        },
-        {
-         "type": "file",
-         "file": {
-          "mimeType": "application/pdf",
-          "data": "<base64-encoded-content>"
-         }
-        }
-       ]
-      },
-      "metadata": {}
-     }
-    }
-    ```
 
 ```json
 {
@@ -835,36 +804,14 @@ The following example demonstrates an interaction between a client and an agent 
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
+    "itemType": "task",
     "metadata": {}
   }
 }
 ```
+**Interaction 2: Get Task to check the status**
 
-    ```json
-    {
-     "jsonrpc": "2.0",
-     "id": 9,
-     "result": {
-      "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
-      "sessionId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-      "status": {
-       "state": "working",
-       "message": {
-        "role": "agent",
-        "parts": [
-         {
-          "type": "text",
-          "text": "analysis in progress, please wait"
-         }
-        ],
-        "metadata": {}
-       }
-      },
-      "metadata": {}
-     }
-    }
-    ```
-
+**
 ```json
 {
   "jsonrpc": "2.0",
@@ -877,8 +824,6 @@ The following example demonstrates an interaction between a client and an agent 
 }
 ```
 
-=== "Request (Sequence 3 - Get Result)"
-
 ```json
 {
   "jsonrpc": "2.0",
@@ -889,8 +834,9 @@ The following example demonstrates an interaction between a client and an agent 
     "status": {
       "state": "completed"
     },
-    "artifacts": [
+    "artifacts": [      
       {
+        "artifactId":"9b6934dd-37e3-4eb1-8766-962efaab63a1",
         "parts": [
           {
             "type": "text",
@@ -933,6 +879,7 @@ The following example demonstrates an interaction between a client and an agent 
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
+    "itemType": "task",
     "metadata": {}
   }
 }
@@ -950,7 +897,6 @@ Both the client and the agent can request structured output from the other party
   "id": 9,
   "method": "message/send",
   "params": {
-    "id": "de38c76d-d54c-436c-8b9f-4c2703648d64",
     "message": {
       "role": "user",
       "parts": [
@@ -994,6 +940,7 @@ Both the client and the agent can request structured output from the other party
     },
     "artifacts": [
       {
+        "artifactId":"c5e0382f-b57f-4da7-87d8-b85171fad17c",
         "parts": [
           {
             "type": "text",
@@ -1002,7 +949,8 @@ Both the client and the agent can request structured output from the other party
         ],
         "index": 0
       }
-    ]
+    ],
+    "itemType": "task"
   }
 }
 ```
@@ -1034,3 +982,4 @@ The following are the standard JSON-RPC error codes that the server can respond 
 | `-32003`             | Push notifications not supported | Push Notification is not supported by the agent        |
 | `-32004`             | Unsupported operation            | Operation is not supported                             |
 | `-32005`             | Incompatible content types       | Incompatible content types between client and an agent |
+| `-32006`             | Invalid agent response       | Agent returned invalid response for the current method |

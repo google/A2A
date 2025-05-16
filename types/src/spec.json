@@ -254,10 +254,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "extension metadata",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "extension metadata"
                 },
                 "name": {
                     "description": "Optional name for the artifact",
@@ -384,10 +382,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "Optional metadata associated with the part.",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "Optional metadata associated with the part."
                 }
             },
             "required": [
@@ -430,10 +426,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "Optional metadata associated with the part.",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "Optional metadata associated with the part."
                 }
             },
             "required": [
@@ -943,10 +937,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "extension metadata",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "extension metadata"
                 },
                 "parts": {
                     "description": "message content",
@@ -1016,10 +1008,8 @@
                     "description": "The message being sent to the server"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "extension metadata",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "extension metadata"
                 }
             },
             "required": [
@@ -1068,10 +1058,8 @@
             "description": "Base properties common to all message parts.",
             "properties": {
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "Optional metadata associated with the part.",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "Optional metadata associated with the part."
                 }
             },
             "type": "object"
@@ -1137,6 +1125,9 @@
                 "code",
                 "message"
             ],
+            "type": "object"
+        },
+        "Record<string,any>": {
             "type": "object"
         },
         "SendMessageRequest": {
@@ -1395,10 +1386,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "extension metadata",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "extension metadata"
                 },
                 "status": {
                     "$ref": "#/definitions/TaskStatus",
@@ -1438,10 +1427,8 @@
                     "type": "boolean"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "extension metadata",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "extension metadata"
                 },
                 "taskId": {
                     "description": "Task id",
@@ -1464,9 +1451,7 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>"
                 }
             },
             "required": [
@@ -1549,9 +1534,7 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>"
                 }
             },
             "required": [
@@ -1643,10 +1626,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "extension metadata",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "extension metadata"
                 },
                 "status": {
                     "$ref": "#/definitions/TaskStatus",
@@ -1675,10 +1656,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "description": "Optional metadata associated with the part.",
-                    "properties": {},
-                    "type": "object"
+                    "$ref": "#/definitions/Record<string,any>",
+                    "description": "Optional metadata associated with the part."
                 },
                 "text": {
                     "description": "Text content",
