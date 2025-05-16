@@ -32,7 +32,7 @@ interface Task {
   status: TaskStatus; // current status of the task
   history?: Message[];
   artifacts?: Artifact[]; // collection of artifacts created by the agent.
-  metadata?: Record<string, any>; // extension metadata
+  metadata?: object; // extension metadata
   itemType: "task";
 }
 // TaskState and accompanying message.
@@ -48,7 +48,7 @@ interface TaskStatusUpdateEvent {
   itemType: "status-update";
   status: TaskStatus;
   final: boolean; //indicates the end of the event stream
-  metadata?: Record<string, any>;
+  metadata?: object;
 }
 // sent by server during sendSubscribe or subscribe requests
 interface TaskArtifactUpdateEvent {
@@ -58,7 +58,7 @@ interface TaskArtifactUpdateEvent {
   artifact: Artifact;
   append?: boolean;
   lastChunk?: boolean;
-  metadata?: Record<string, any>;
+  metadata?: object;
 }
 // Configuration of the send message request.
 interface MessageSendConfiguration {
@@ -71,7 +71,7 @@ interface MessageSendConfiguration {
 interface MessageSendParams {
   message: Message;
   configuration?: MessageSendConfiguration;
-  metadata?: Record<string, any>;  // extension metadata
+  metadata?: object;  // extension metadata
 }
 type TaskState =
   | "submitted"
@@ -97,7 +97,7 @@ interface Artifact {
   name?: string;
   description?: string;
   parts: Part[];
-  metadata?: Record<string, any>;
+  metadata?: object;
 }
 ```
 
@@ -113,7 +113,7 @@ A Message can have multiple parts to denote different pieces of content. For exa
 interface Message {
   role: "user" | "agent";
   parts: Part[];
-  metadata?: Record<string, any>;
+  metadata?: object;
   messageId: string; // identifier created by the message creator.
   taskId?: string; // identifier of task the message is related to, optional.
   contextId?: string; // the context the message is associated with, optional.
@@ -144,10 +144,10 @@ interface FilePart {
 }
 interface DataPart {
   type: "data";
-  data: Record<string, any>;
+  data: object;
 }
 type Part = (TextPart | FilePart | DataPart) & {
-  metadata: Record<string, any>;
+  metadata: object;
 };
 ```
 
