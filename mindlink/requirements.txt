@@ -1,0 +1,3 @@
+pydantic
+pydantic_ai
+a2a
