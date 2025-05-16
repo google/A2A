@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "generate": "./node_modules/.bin/typescript-json-schema \"src/types.ts\" \"*\" --defaultNumberType integer --required > src/spec.json"
+    "generate": "./node_modules/.bin/typescript-json-schema \"src/types.ts\" \"*\" --defaultNumberType integer --required > ../specification/json/a2a.json"
   },
   "author": "",
   "description": "A2A Types",
