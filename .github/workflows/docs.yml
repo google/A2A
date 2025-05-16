@@ -33,4 +33,5 @@ jobs:
           restore-keys: |
             mkdocs-material-
       - run: pip install -r requirements-docs.txt
+      - run: pip install -e ./a2a-python-repo[dev]
       - run: mkdocs gh-deploy --force
