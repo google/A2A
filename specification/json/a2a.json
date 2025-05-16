@@ -37,7 +37,7 @@
           },
           "stateTransitionHistory": {
             "default": false,
-            "title": "Statetransitionhistory",
+            "title": "StateTransitionHistory",
             "type": "boolean"
           }
         },
@@ -67,7 +67,7 @@
           },
           "documentationUrl": {
             "type": "string",
-            "title": "Documentationurl"
+            "title": "DocumentationUrl"
           },
           "capabilities": {
             "$ref": "#/$defs/AgentCapabilities"
@@ -82,7 +82,7 @@
             "items": {
               "type": "string"
             },
-            "title": "Defaultinputmodes",
+            "title": "DefaultInputModes",
             "type": "array"
           },
           "defaultOutputModes": {
@@ -92,7 +92,7 @@
             "items": {
               "type": "string"
             },
-            "title": "Defaultoutputmodes",
+            "title": "DefaultOutputModes",
             "type": "array"
           },
           "skills": {
@@ -163,14 +163,14 @@
               "type": "string"
             },
             "type": "array",
-            "title": "Inputmodes"
+            "title": "InputModes"
           },
           "outputModes": {
             "items": {
               "type": "string"
             },
             "type": "array",
-            "title": "Outputmodes"
+            "title": "OutputModes"
           }
         },
         "required": [
@@ -294,7 +294,6 @@
           },
           "method": {
             "const": "tasks/cancel",
-            "default": "tasks/cancel",
             "title": "Method",
             "type": "string"
           },
@@ -510,7 +509,6 @@
           },
           "method": {
             "const": "tasks/get",
-            "default": "tasks/get",
             "title": "Method",
             "type": "string"
           },
@@ -563,7 +561,6 @@
         "properties": {
           "code": {
             "const": -32603,
-            "default": -32603,
             "description": "Error code",
             "examples": [
               -32603
@@ -598,7 +595,6 @@
         "properties": {
           "code": {
             "const": -32602,
-            "default": -32602,
             "description": "Error code",
             "examples": [
               -32602
@@ -843,7 +839,6 @@
         "properties": {
           "code": {
             "const": -32601,
-            "default": -32601,
             "description": "Error code",
             "examples": [
               -32601
@@ -994,7 +989,6 @@
           },
           "method": {
             "const": "tasks/sendSubscribe",
-            "default": "tasks/sendSubscribe",
             "title": "Method",
             "type": "string"
           },
@@ -1126,7 +1120,7 @@
           },
           "sessionId": {
             "type": "string",
-            "title": "Sessionid"
+            "title": "SessionId"
           },
           "status": {
             "$ref": "#/$defs/TaskStatus"
@@ -1188,6 +1182,7 @@
           },
           "message": {
             "const": "Task cannot be canceled",
+            "default": "Task cannot be canceled",
             "description": "A short description of the error",
             "examples": [
               "Task cannot be canceled"
@@ -1210,7 +1205,6 @@
         "properties": {
           "code": {
             "const": -32001,
-            "default": -32001,
             "description": "Error code",
             "examples": [
               -32001
@@ -1220,6 +1214,7 @@
           },
           "message": {
             "const": "Task not found",
+            "default": "Task not found",
             "description": "A short description of the error",
             "examples": [
               "Task not found"
@@ -1285,7 +1280,7 @@
             "type": "string"
           },
           "sessionId": {
-            "title": "Sessionid",
+            "title": "SessionId",
             "type": "string"
           },
           "message": {
@@ -1441,7 +1436,6 @@
         "properties": {
           "type": {
             "const": "text",
-            "default": "text",
             "description": "Type of the part",
             "examples": [
               "text"
@@ -1470,7 +1464,6 @@
         "properties": {
           "code": {
             "const": -32004,
-            "default": -32004,
             "description": "Error code",
             "examples": [
               -32004

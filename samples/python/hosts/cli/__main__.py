@@ -111,25 +111,37 @@ async def completeTask(
         ],
     }
 
-    file_path = click.prompt(
-        'Select a file path to attach? (press enter to skip)',
-        default='',
-        show_default=False,
-    )
-    if file_path and file_path.strip() != '':
-        with open(file_path, 'rb') as f:
-            file_content = base64.b64encode(f.read()).decode('utf-8')
-            file_name = os.path.basename(file_path)
-
-        message['parts'].append(
-            {
-                'type': 'file',
-                'file': {
-                    'name': file_name,
-                    'bytes': file_content,
-                },
-            }
+    file_paths = []
+    while True:
+        file_path = click.prompt(
+            'Select a file path to attach (or press enter to finish adding files)',
+            default='',
+            show_default=False,
         )
+        if not file_path or file_path.strip() == '':
+            break
+        file_paths.append(file_path.strip())
+
+    for file_path in file_paths:
+        try:
+            with open(file_path, 'rb') as f:
+                file_content = base64.b64encode(f.read()).decode('utf-8')
+                file_name = os.path.basename(file_path)
+
+            message['parts'].append(
+                {
+                    'type': 'file',
+                    'file': {
+                        'name': file_name,
+                        'bytes': file_content,
+                    },
+                }
+            )
+            print(f'Attached file: {file_name}')
+        except FileNotFoundError:
+            print(f'Error: File not found at {file_path}. Skipping.')
+        except Exception as e:
+            print(f'Error reading file {file_path}: {e}. Skipping.')
 
     payload = {
         'id': taskId,
