@@ -1,7 +1,7 @@
 import mesop as me
 import pandas as pd
 
-from common.types import AgentCard
+from a2a.types import AgentCard
 from state.agent_state import AgentState
 
 

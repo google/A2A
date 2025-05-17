@@ -4,7 +4,7 @@ import json
 import os
 import uuid
 
-from common.types import (
+from a2a.types import (
     AgentCard,
     DataPart,
     FileContent,

@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 import mesop as me
 
-from common.types import DataPart, Message, TextPart
+from a2a.types import DataPart, Message, TextPart
 from state.host_agent_service import SendMessage
 from state.state import AppState, StateMessage
 

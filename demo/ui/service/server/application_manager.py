@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from common.types import AgentCard, Message, Task
+from a2a.types import AgentCard, Message, Task
 from service.types import Conversation, Event
 
 

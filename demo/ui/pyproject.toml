@@ -12,7 +12,7 @@ dependencies = [
     "fastapi>=0.115.0",
     "uvicorn>=0.34.0",
     "mesop>=1.0.0",
-    "a2a-samples",
+    "a2a",
     "pandas>=2.2.0",
     "google-genai>=1.9.0",
     "google-adk>=0.0.3",
@@ -23,7 +23,7 @@ packages = ["a2a_ui"]
 
 [tool.uv.sources]
 a2a_ui = { workspace = true }
-a2a_samples = { path = "../../samples/python", editable = true }
+a2a = { path = "../../a2a-python-sdk", editable = true }
 
 [build-system]
 requires = ["hatchling"]

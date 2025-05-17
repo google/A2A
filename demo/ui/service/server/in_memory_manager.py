@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import uuid
 
-from common.types import (
+from a2a.types import (
     AgentCard,
     Artifact,
     DataPart,

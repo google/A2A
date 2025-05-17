@@ -1,6 +1,6 @@
 import unittest
 
-from common.types import DataPart, FilePart, TextPart
+from a2a.types import DataPart, FilePart, TextPart
 from google.genai import types
 from service.server.adk_host_manager import ADKHostManager
 

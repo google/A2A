@@ -5,7 +5,7 @@ import traceback
 
 from typing import Any
 
-from common.types import Message, Part, Task
+from a2a.types import Message, Part, Task
 from service.client.client import ConversationClient
 from service.types import (
     Conversation,
