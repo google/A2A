@@ -29,7 +29,7 @@ load_dotenv()
 access_token = None
 
 class AgentAuth(httpx.Auth):
-    '''Custom httpx's authentication class to inject access token required by agent.'''
+    """Custom httpx's authentication class to inject access token required by agent."""
     def __init__(self, agent_card: AgentCard):
         self.agent_card = agent_card
 
@@ -111,7 +111,7 @@ async def cli(agent: str, context_id: str | None, history: bool, debug: bool):
 def create_send_params(
     text: str, task_id: str | None = None, context_id: str | None = None
 ) -> MessageSendParams:
-    '''Helper function to create the payload for sending a task.'''
+    """Helper function to create the payload for sending a task."""
     send_params: dict[str, Any] = {
         'message': {
             'role': 'user',

@@ -16,7 +16,7 @@ api_client = ApiClient(ApiClientOptions(
 
 
 class OAuth2Middleware(BaseHTTPMiddleware):
-    '''Starlette middleware that authenticates A2A access using an OAuth2 bearer token.'''
+    """Starlette middleware that authenticates A2A access using an OAuth2 bearer token."""
     def __init__(self, app: Starlette, agent_card: AgentCard = None, public_paths: list[str] = None):
         super().__init__(app)
         self.agent_card = agent_card
