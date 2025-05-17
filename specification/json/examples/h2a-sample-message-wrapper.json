@@ -1,0 +1,33 @@
+{
+  "messages": [
+    {
+      "role": "user",
+      "parts": [
+        {
+          "type": "data",
+          "data": {
+            "h2a": {
+              "user_input": {
+                "type": "text",
+                "value": "I'd like to find a new doctor in my area"
+              },
+              "interaction_goals": [
+                "provider_search"
+              ],
+              "_acl": {
+                "user_input": [
+                  "agent-finder"
+                ],
+                "user_location": [
+                  "agent-maps"
+                ],
+                "user_email": "public"
+              },
+              "_sig": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9..."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
