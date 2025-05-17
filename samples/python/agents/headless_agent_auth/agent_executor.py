@@ -14,7 +14,7 @@ from a2a.utils import new_agent_text_message, new_task, new_text_artifact
 
 
 class HRAgentExecutor(AgentExecutor):
-    '''HR AgentExecutor Example.'''
+    """HR AgentExecutor Example."""
 
     def __init__(self):
         self.agent = HRAgent()
@@ -33,6 +33,7 @@ class HRAgentExecutor(AgentExecutor):
             event_queue.enqueue_event(task)
         # invoke the underlying agent, using streaming results
         async for event in self.agent.stream(query, task.contextId):
+            task_state = TaskState(event['task_state'])
             if event['is_task_complete']:
                 event_queue.enqueue_event(
                     TaskArtifactUpdateEvent(
@@ -49,23 +50,7 @@ class HRAgentExecutor(AgentExecutor):
                 )
                 event_queue.enqueue_event(
                     TaskStatusUpdateEvent(
-                        status=TaskStatus(state=TaskState.completed),
-                        final=True,
-                        contextId=task.contextId,
-                        taskId=task.id,
-                    )
-                )
-            elif event['require_user_input']:
-                event_queue.enqueue_event(
-                    TaskStatusUpdateEvent(
-                        status=TaskStatus(
-                            state=TaskState.input_required,
-                            message=new_agent_text_message(
-                                event['content'],
-                                task.contextId,
-                                task.id,
-                            ),
-                        ),
+                        status=TaskStatus(state=task_state),
                         final=True,
                         contextId=task.contextId,
                         taskId=task.id,
@@ -75,14 +60,18 @@ class HRAgentExecutor(AgentExecutor):
                 event_queue.enqueue_event(
                     TaskStatusUpdateEvent(
                         status=TaskStatus(
-                            state=TaskState.working,
+                            state=task_state,
                             message=new_agent_text_message(
                                 event['content'],
                                 task.contextId,
                                 task.id,
                             ),
                         ),
-                        final=False,
+                        final=task_state in {
+                            TaskState.input_required,
+                            TaskState.failed,
+                            TaskState.unknown,
+                        },
                         contextId=task.contextId,
                         taskId=task.id,
                     )

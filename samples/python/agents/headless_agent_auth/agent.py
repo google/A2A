@@ -29,7 +29,7 @@ auth0_ai = Auth0AI(auth0={
 
 with_async_user_confirmation = auth0_ai.with_async_user_confirmation(
     binding_message='Approve sharing your employment details with an external party.',
-    scope='read:employee',
+    scopes=['read:employee'],
     user_id=lambda employee_id, **__: employee_id,
     audience=os.getenv('HR_API_AUTH0_AUDIENCE'),
     on_authorization_request='block', # TODO: this is just for demo purposes
@@ -45,14 +45,14 @@ get_token = GetToken(
 
 @tool
 async def is_active_employee(employee_id: str) -> dict[str, Any]:
-    '''Confirm whether a person is an active employee of the company.
+    """Confirm whether a person is an active employee of the company.
 
     Args:
         employee_id (str): The employee's identification.
 
     Returns:
         dict: A dictionary containing the employment status, or an error message if the request fails.
-    '''
+    """
     try:
         credentials = get_ciba_credentials()
         response = await httpx.AsyncClient().get(
@@ -77,14 +77,14 @@ async def is_active_employee(employee_id: str) -> dict[str, Any]:
 
 @tool
 def get_employee_id_by_email(work_email: str) -> dict[str, Any] | None:
-    '''Return the employee ID by email.
+    """Return the employee ID by email.
 
     Args:
         work_email (str): The employee's work email.
 
     Returns:
         dict: A dictionary containing the employee ID if it exists, otherwise None.
-    '''
+    """
     try:
         user = Auth0(
             domain=get_token.domain,
@@ -99,29 +99,27 @@ def get_employee_id_by_email(work_email: str) -> dict[str, Any] | None:
 
 
 class ResponseFormat(BaseModel):
-    '''Respond to the user in this format.'''
-
-    status: Literal['input_required', 'completed', 'error'] = 'input_required'
+    """Respond to the user in this format."""
+    status: Literal['completed', 'input-required', 'rejected', 'failed'] = 'failed'
     message: str
 
 
 class HRAgent:
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
 
-    SYSTEM_INSTRUCTION: str = '''
-    You are an agent who handles external verification requests about Staff0 employees made by third parties.
+    SYSTEM_INSTRUCTION: str = (
+        'You are an agent who handles external verification requests about Staff0 employees made by third parties.'
+        'Do not attempt to answer unrelated questions or use tools for other purposes.'
+        'If you are asked about a person\'s employee status using their employee ID, use the `is_active_employee` tool.'
+        'If they provide a work email instead, first call the `get_employee_id_by_email` tool to get the employee ID, and then use `is_active_employee`.'
+    )
 
-    Do not attempt to answer unrelated questions or use tools for other purposes.
-
-    If you are asked about a person's employee status using their employee ID, use the `is_active_employee` tool.
-    If they provide a work email instead, first call the `get_employee_id_by_email` tool to get the employee ID, and then use `is_active_employee`.
-    '''
-
-    RESPONSE_FORMAT_INSTRUCTION: str = '''
-    Select status as completed if the request is complete
-    Select status as input_required if the input is a pending action from user
-    Set response status to error if the input indicates an error
-    '''
+    RESPONSE_FORMAT_INSTRUCTION: str = (
+        'Set the status to "completed" if the request has been fully processed.'
+        'Set the status to "input-required" if the tool response indicates that user input is needed to proceed.'
+        'If the tool response contains an AccessDeniedInterrupt error, set the message to "The user denied the authorization request", and set the status to "rejected".'
+        'For any other tool error, set the status to "failed".'
+    )
 
     def __init__(self):
         self.model = ChatGoogleGenerativeAI(model='gemini-2.0-flash')
@@ -138,14 +136,14 @@ class HRAgent:
             response_format=(self.RESPONSE_FORMAT_INSTRUCTION, ResponseFormat),
         )
 
-    async def invoke(self, query: str, sessionId: str) -> dict[str, Any]:
-        config: RunnableConfig = {'configurable': {'thread_id': sessionId}}
+    async def invoke(self, query: str, context_id: str) -> dict[str, Any]:
+        config: RunnableConfig = {'configurable': {'thread_id': context_id}}
         await self.graph.ainvoke({'messages': [('user', query)]}, config)
         return self.get_agent_response(config)
 
-    async def stream(self, query: str, sessionId: str) -> AsyncIterable[dict[str, Any]]:
+    async def stream(self, query: str, context_id: str) -> AsyncIterable[dict[str, Any]]:
         inputs: dict[str, Any] = {'messages': [('user', query)]}
-        config: RunnableConfig = {'configurable': {'thread_id': sessionId}}
+        config: RunnableConfig = {'configurable': {'thread_id': context_id}}
 
         async for item in self.graph.astream(inputs, config, stream_mode='values'):
             message = item['messages'][-1] if 'messages' in item else None
@@ -157,13 +155,13 @@ class HRAgent:
                 ):
                     yield {
                         'is_task_complete': False,
-                        'require_user_input': False,
+                        'task_state': 'working',
                         'content': 'Looking up the employment status...',
                     }
                 elif isinstance(message, ToolMessage):
                     yield {
                         'is_task_complete': False,
-                        'require_user_input': False,
+                        'task_state': 'working',
                         'content': 'Processing the employment status...',
                     }
 
@@ -171,36 +169,19 @@ class HRAgent:
 
     def get_agent_response(self, config: RunnableConfig) -> dict[str, Any]:
         current_state = self.graph.get_state(config)
-        
-        interrupts = current_state.interrupts
-        if len(interrupts) > 0:
-            # TODO: `is_task_complete`` and `require_user_input`` should be set based on the interrupt type
-            return {
-                'is_task_complete': False,
-                'require_user_input': True,
-                'content': interrupts[0].value['message'],
-            }
-
         structured_response = current_state.values.get('structured_response')
+        
         if structured_response and isinstance(
             structured_response, ResponseFormat
         ):
-            if structured_response.status in {'input_required', 'error'}:
-                return {
-                    'is_task_complete': False,
-                    'require_user_input': True,
-                    'content': structured_response.message,
-                }
-            
-            if structured_response.status == 'completed':
-                return {
-                    'is_task_complete': True,
-                    'require_user_input': False,
-                    'content': structured_response.message,
-                }
+            return {
+                'is_task_complete': structured_response.status == 'completed',
+                'task_state': structured_response.status,
+                'content': structured_response.message,
+            }
 
         return {
             'is_task_complete': False,
-            'require_user_input': True,
+            'task_state': 'unknown',
             'content': 'We are unable to process your request at the moment. Please try again.',
         }
