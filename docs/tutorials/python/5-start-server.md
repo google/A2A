@@ -2,7 +2,7 @@
 
 Now that we have an Agent Card and an Agent Executor, we can set up and start the A2A server.
 
-The `a2a-python-sdk` provides an `A2AServer` class that simplifies running an A2A-compliant HTTP server. It uses [Starlette](https://www.starlette.io/) and [Uvicorn](https://www.uvicorn.org/) under the hood.
+The A2A Python SDK provides an `A2AStarletteApplication` class that simplifies running an A2A-compliant HTTP server. It uses [Starlette](https://www.starlette.io/) for the web framework and is typically run with an ASGI server like [Uvicorn](https://www.uvicorn.org/).
 
 ## Server Setup in Helloworld
 
@@ -12,56 +12,82 @@ Let's look at `examples/helloworld/__main__.py` again to see how the server is i
 # examples/helloworld/__main__.py
 from agent_executor import HelloWorldAgentExecutor
 
-from a2a.server import A2AServer, DefaultA2ARequestHandler
+from a2a.server.apps import A2AStarletteApplication
+from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.tasks import InMemoryTaskStore # For task state management
 from a2a.types import (
     # ... other imports ...
     AgentCard,
+    AgentSkill,
+    AgentCapabilities,
+    AgentAuthentication,
     # ...
 )
+import uvicorn
 
 if __name__ == '__main__':
     # ... AgentSkill and AgentCard definition from previous steps ...
-    skill = AgentSkill(...)
-    agent_card = AgentCard(...)
-
-    # 1. Request Handler
-    request_handler = DefaultA2ARequestHandler(
-        agent_executor=HelloWorldAgentExecutor()
+    skill = AgentSkill(
+        id='hello_world',
+        name='Returns hello world',
+        description='just returns hello world',
+        tags=['hello world'],
+        examples=['hi', 'hello world'],
     )
 
-    # 2. A2A Server
-    server = A2AServer(agent_card=agent_card, request_handler=request_handler)
+    agent_card = AgentCard(
+        name='Hello World Agent',
+        description='Just a hello world agent',
+        url='http://localhost:9999/',
+        version='1.0.0',
+        defaultInputModes=['text'],
+        defaultOutputModes=['text'],
+        capabilities=AgentCapabilities(),
+        skills=[skill],
+        authentication=AgentAuthentication(schemes=['public']),
+    )
 
-    # 3. Start Server
-    server.start(host='0.0.0.0', port=9999)
+    # 1. Request Handler
+    request_handler = DefaultRequestHandler(
+        agent_executor=HelloWorldAgentExecutor(),
+        task_store=InMemoryTaskStore(), # Provide a task store
+    )
+
+    # 2. A2A Starlette Application
+    server_app_builder = A2AStarletteApplication(
+        agent_card=agent_card, http_handler=request_handler
+    )
+
+    # 3. Start Server using Uvicorn
+    uvicorn.run(server_app_builder.build(), host='0.0.0.0', port=9999)
 ```
 
 Let's break this down:
 
-1. **`DefaultA2ARequestHandler`**:
+1. **`DefaultRequestHandler`**:
+    - The SDK provides `DefaultRequestHandler`. This handler takes your `AgentExecutor` implementation (here, `HelloWorldAgentExecutor`) and a `TaskStore` (here, `InMemoryTaskStore`).
+    - It routes incoming A2A RPC calls to the appropriate methods on your executor (like `execute` or `cancel`).
+    - The `TaskStore` is used by the `DefaultRequestHandler` to manage the lifecycle of tasks, especially for stateful interactions, streaming, and resubscription. Even if your agent executor is simple, the handler needs a task store.
 
-    - The SDK provides `DefaultA2ARequestHandler`. This handler takes your `AgentExecutor` implementation (here, `HelloWorldAgentExecutor`) and routes incoming A2A RPC calls to the appropriate methods (`on_message_send`, `on_message_stream`, etc.) on your executor.
-    - It also manages task persistence if a `TaskStore` is provided (which Helloworld doesn't use explicitly, so an in-memory one is used by default within the handler for streaming contexts).
+2. **`A2AStarletteApplication`**:
+    - The `A2AStarletteApplication` class is instantiated with the `agent_card` and the `request_handler` (referred to as `http_handler` in its constructor).
+    - The `agent_card` is crucial because the server will expose it at the `/.well-known/agent.json` endpoint (by default).
+    - The `request_handler` is responsible for processing all incoming A2A method calls by interacting with your `AgentExecutor`.
 
-2. **`A2AServer`**:
-
-    - The `A2AServer` class is instantiated with the `agent_card` and the `request_handler`.
-    - The `agent_card` is crucial because the server will expose it at the `/.well-known/agent.json` endpoint.
-    - The `request_handler` is responsible for processing all incoming A2A method calls.
-
-3. **`server.start()`**:
-
-    - This method starts the Uvicorn server, making your agent accessible over HTTP.
+3. **`uvicorn.run(server_app_builder.build(), ...)`**:
+    - The `A2AStarletteApplication` has a `build()` method that constructs the actual Starlette application.
+    - This application is then run using `uvicorn.run()`, making your agent accessible over HTTP.
     - `host='0.0.0.0'` makes the server accessible on all network interfaces on your machine.
     - `port=9999` specifies the port to listen on. This matches the `url` in the `AgentCard`.
 
 ## Running the Helloworld Server
 
-Navigate to the `a2a-python-sdk` directory in your terminal (if you're not already there) and ensure your virtual environment is activated.
+Navigate to the `a2a-python` directory in your terminal (if you're not already there) and ensure your virtual environment is activated.
 
 To run the Helloworld server:
 
 ```bash
+# from the a2a-python directory
 python examples/helloworld/__main__.py
 ```
 
