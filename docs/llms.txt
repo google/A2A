@@ -1,0 +1,257 @@
+# A2A (Agent2Agent) Protocol High-Level Summary
+
+This project defines and demonstrates the **Agent2Agent (A2A) protocol**, an open standard initiated by Google designed to enable communication and interoperability between disparate AI agent systems. The core goal is to allow agents built on different frameworks (e.g., LangGraph, CrewAI, Google ADK, Genkit) or by different vendors to discover each other's capabilities, negotiate interaction modes (text, forms, files, potentially audio/video later), and collaborate on tasks.
+
+The repository provides:
+
+1.  **Formal Specification:** A detailed JSON Schema (`specification/json/a2a.json`) defining the structure of A2A messages, including requests, responses, task states, artifacts, and agent metadata (Agent Cards).
+2.  **Core Concepts Documentation (Implied):** Links in the main README suggest documentation covering agent discovery, task lifecycle, artifact exchange, streaming updates, push notifications, and enterprise readiness.
+3.  **Sample Implementations:**
+    *   **Common Libraries:** Reusable Python (`samples/python/common`) and JavaScript/TypeScript (`samples/js/src`) code for building A2A clients and servers, handling JSON-RPC communication, task management, and potentially authentication.
+    *   **Example Agents:** Demonstrations of integrating A2A into various agent frameworks:
+        *   **Python:** LangGraph (currency conversion, streaming), CrewAI (image generation, file artifacts), Google ADK (expense reports, form handling).
+        *   **JavaScript/TypeScript:** Genkit (movie info via API, code generation with file artifacts).
+    *   **Example Hosts:** Applications that *consume* A2A services:
+        *   CLIs in both Python and JS for direct interaction.
+        *   A Python-based multi-agent orchestrator (using Google ADK) that delegates tasks to other A2A agents.
+4.  **Demo Web Application:** A web UI (`demo/ui`, likely using Mesop) demonstrating multi-agent interactions facilitated by the A2A protocol, including visualization of conversations, tasks, events, and agent discovery. It features a backend service coordinating with the host agent.
+
+Key features of the A2A protocol highlighted by the specification and samples include: agent discovery via Agent Cards, standardized task management (send, get, cancel), support for different content types (text, files, structured data) via `Parts` and `Artifacts`, streaming updates for long-running tasks, and mechanisms for push notifications. The project is open source and encourages community contribution.
+
+# A2A (Agent2Agent) Protocol 
+
+## 1. Overview
+
+*   **Project Name:** Agent2Agent (A2A) Protocol
+*   **Purpose:** An open protocol by Google enabling communication and interoperability between AI agents built on different frameworks or by different vendors.
+*   **Core Goal:** Allow agents to discover capabilities, negotiate interaction, and collaborate securely on tasks.
+*   **Communication:** Uses JSON-RPC 2.0 over HTTP(S). Supports standard request/response and Server-Sent Events (SSE) for streaming.
+*   **Key Components:** Specification (JSON Schema), Common Libraries (Python, JS/TS), Sample Agents (LangGraph, CrewAI, ADK, Genkit), Sample Hosts (CLI, Orchestrator), Demo Web App (Mesop).
+
+## 2. Protocol Specification (`specification/json/a2a.json`)
+
+### 2.1. Core JSON-RPC Structures
+
+*   **`JSONRPCMessage`:** Base for requests/responses. Contains `jsonrpc: "2.0"` and optional `id`.
+*   **`JSONRPCRequest`:** Represents a request.
+    *   `method`: String identifying the operation (e.g., "tasks/send").
+    *   `params`: Object or Array containing parameters for the method.
+    *   `id`: Unique identifier (string/number) for request/response correlation. Omitted/null for notifications.
+*   **`JSONRPCResponse`:** Represents a response.
+    *   `result`: Contains the successful result data (can be `null`). Mutually exclusive with `error`.
+    *   `error`: Contains an error object if the request failed. Mutually exclusive with `result`.
+    *   `id`: Must match the corresponding request `id`.
+*   **`JSONRPCError`:** Represents an error.
+    *   `code`: Integer error code.
+    *   `message`: String description of the error.
+    *   `data`: Optional additional error details.
+
+### 2.2. Key A2A Data Objects
+
+*   **`AgentCard`:** Metadata describing an agent. Found typically at `/.well-known/agent.json`.
+    *   `name`: (string) Human-readable name.
+    *   `description`: (string | null) Agent description.
+    *   `url`: (string) Base URL endpoint for the agent's A2A service.
+    *   `provider`: (`AgentProvider` | null) Organization details.
+    *   `version`: (string) Agent/API version.
+    *   `documentationUrl`: (string | null) Link to documentation.
+    *   `capabilities`: (`AgentCapabilities`) Features supported (streaming, push).
+    *   `authentication`: (`AgentAuthentication` | null) Auth schemes/credentials needed.
+    *   `defaultInputModes`: (string[]) Default supported input types (e.g., "text", "file").
+    *   `defaultOutputModes`: (string[]) Default supported output types.
+    *   `skills`: (`AgentSkill[]`) List of specific capabilities.
+*   **`AgentCapabilities`:**
+    *   `streaming`: (boolean) Supports `tasks/sendSubscribe`.
+    *   `pushNotifications`: (boolean) Supports `tasks/pushNotification/set|get`.
+    *   `stateTransitionHistory`: (boolean) Supports providing detailed history.
+*   **`AgentSkill`:**
+    *   `id`: (string) Unique skill ID.
+    *   `name`: (string) Skill name.
+    *   `description`: (string | null) Skill description.
+    *   `tags`: (string[] | null) Keywords.
+    *   `examples`: (string[] | null) Usage examples.
+    *   `inputModes`: (string[] | null) Overrides default inputs for this skill.
+    *   `outputModes`: (string[] | null) Overrides default outputs for this skill.
+*   **`Task`:** Represents a unit of work processed by an agent.
+    *   `id`: (string) Unique task identifier.
+    *   `sessionId`: (string | null) Groups related tasks.
+    *   `status`: (`TaskStatus`) Current state and associated message.
+    *   `artifacts`: (`Artifact[]` | null) Outputs generated by the task.
+    *   `history`: (`Message[]` | null) (Optional) History of messages exchanged for this task (if requested via `historyLength`).
+    *   `metadata`: (object | null) Additional task metadata.
+*   **`TaskStatus`:**
+    *   `state`: (`TaskState`) Current lifecycle state (enum).
+    *   `message`: (`Message` | null) Message associated with this status (e.g., progress update, final response text, input prompt).
+    *   `timestamp`: (string) ISO 8601 timestamp of the status update.
+*   **`TaskState` (Enum):**
+    *   `submitted`: Task received, not yet started.
+    *   `working`: Task is actively being processed.
+    *   `input-required`: Agent requires further input from the user/client.
+    *   `completed`: Task finished successfully.
+    *   `canceled`: Task was canceled.
+    *   `failed`: Task failed due to an error.
+    *   `unknown`: State cannot be determined.
+*   **`Message`:** Communication unit between user and agent.
+    *   `role`: ("user" | "agent") Sender role.
+    *   `parts`: (`Part[]`) Content parts (text, file, data).
+    *   `metadata`: (object | null) Message-specific metadata.
+*   **`Part` (Union Type):** Represents a piece of content within a Message or Artifact.
+    *   **`TextPart`:**
+        *   `type`: "text"
+        *   `text`: (string) The textual content.
+    *   **`FilePart`:**
+        *   `type`: "file"
+        *   `file`: (`FileContent`) File details (bytes or URI).
+    *   **`DataPart`:**
+        *   `type`: "data"
+        *   `data`: (object) Structured JSON data (e.g., for forms).
+    *   `metadata`: (object | null) Optional metadata for the specific part.
+*   **`FileContent`:** Represents file data.
+    *   `name`: (string | null) Filename.
+    *   `mimeType`: (string | null) MIME type.
+    *   `bytes`: (string | null) Base64 encoded file content. *Mutually exclusive with `uri`.*
+    *   `uri`: (string | null) URI pointing to the file content. *Mutually exclusive with `bytes`.*
+*   **`Artifact`:** Output generated by a task.
+    *   `name`: (string | null) Artifact name.
+    *   `description`: (string | null) Artifact description.
+    *   `parts`: (`Part[]`) Content parts.
+    *   `index`: (integer, default 0) Order index, useful for streaming/updates.
+    *   `append`: (boolean | null) For streaming, indicates if content should append to artifact at the same index.
+    *   `lastChunk`: (boolean | null) For streaming, indicates the final chunk for this artifact.
+    *   `metadata`: (object | null) Artifact metadata.
+*   **`PushNotificationConfig`:** Configuration for push notifications.
+    *   `url`: (string) Endpoint URL for the agent to POST notifications to.
+    *   `token`: (string | null) Optional token for the agent to include.
+    *   `authentication`: (`AuthenticationInfo` | null) Auth details the agent needs to call the URL.
+*   **`TaskPushNotificationConfig`:** Associates a `PushNotificationConfig` with a task ID.
+
+### 2.3. A2A RPC Methods
+
+*   **`tasks/send`:** (Request/Response)
+    *   Sends a message to initiate or continue a task.
+    *   `params`: `TaskSendParams` (includes `id`, `sessionId`, `message`, optionally `pushNotification`, `historyLength`, `metadata`).
+    *   `result`: `Task` (final state after synchronous processing).
+*   **`tasks/sendSubscribe`:** (Request/Stream)
+    *   Sends a message and subscribes to real-time updates via SSE.
+    *   `params`: `TaskSendParams`.
+    *   `result` (stream events): `TaskStatusUpdateEvent` or `TaskArtifactUpdateEvent`. Final event has `final: true`.
+*   **`tasks/get`:** (Request/Response)
+    *   Retrieves the current state of a task.
+    *   `params`: `TaskQueryParams` (includes `id`, optionally `historyLength`).
+    *   `result`: `Task`.
+*   **`tasks/cancel`:** (Request/Response)
+    *   Requests cancellation of a running task.
+    *   `params`: `TaskIdParams` (includes `id`).
+    *   `result`: `Task` (updated state, likely 'canceled') or error if not cancelable.
+*   **`tasks/pushNotification/set`:** (Request/Response)
+    *   Sets or updates the push notification configuration for a task.
+    *   `params`: `TaskPushNotificationConfig`.
+    *   `result`: `TaskPushNotificationConfig` (confirmed config).
+*   **`tasks/pushNotification/get`:** (Request/Response)
+    *   Retrieves the current push notification configuration for a task.
+    *   `params`: `TaskIdParams`.
+    *   `result`: `TaskPushNotificationConfig`.
+*   **`tasks/resubscribe`:** (Request/Stream)
+    *   Resubscribes to task updates after a connection interruption (SSE).
+    *   `params`: `TaskQueryParams`.
+    *   `result` (stream events): `TaskStatusUpdateEvent` or `TaskArtifactUpdateEvent`.
+
+### 2.4. Streaming Update Events (Result of `tasks/sendSubscribe` or `tasks/resubscribe`)
+
+*   **`TaskStatusUpdateEvent`:** Signals a change in task status.
+    *   `id`: (string) Task ID.
+    *   `status`: (`TaskStatus`) The new status object.
+    *   `final`: (boolean) True if this is the terminal update for the task.
+    *   `metadata`: (object | null) Event metadata.
+*   **`TaskArtifactUpdateEvent`:** Signals a new or updated artifact.
+    *   `id`: (string) Task ID.
+    *   `artifact`: (`Artifact`) The artifact data.
+    *   `final`: (boolean, usually false for artifacts) Can signal end concurrently with status.
+    *   `metadata`: (object | null) Event metadata.
+
+### 2.5. Standard Error Codes
+
+*   `-32700`: `JSONParseError` - Invalid JSON payload.
+*   `-32600`: `InvalidRequestError` - Invalid JSON-RPC request object.
+*   `-32601`: `MethodNotFoundError` - Method does not exist.
+*   `-32602`: `InvalidParamsError` - Invalid method parameters.
+*   `-32603`: `InternalError` - Internal server error.
+
+### 2.6. A2A Specific Error Codes
+
+*   `-32001`: `TaskNotFoundError` - Specified task ID not found.
+*   `-32002`: `TaskNotCancelableError` - Task is in a final state and cannot be canceled.
+*   `-32003`: `PushNotificationNotSupportedError` - Agent does not support push notifications.
+*   `-32004`: `UnsupportedOperationError` - The requested operation is not supported.
+*   `-32005`: `ContentTypeNotSupportedError` - Mismatch in supported content types.
+
+## 3. Core Concepts
+
+*   **Agent Discovery:** Clients find agents and their capabilities by fetching the `AgentCard` JSON, typically from `/.well-known/agent.json`.
+*   **Task Lifecycle:** Tasks progress through states defined in `TaskState` (submitted -> working -> [input-required] -> completed/canceled/failed).
+*   **Communication:** Uses `Message` objects containing `Part`s (text, file, data). Task outputs are represented as `Artifact`s, also containing `Part`s.
+*   **Streaming:** Long-running tasks can provide real-time updates using SSE via `tasks/sendSubscribe`. Updates are sent as `TaskStatusUpdateEvent` and `TaskArtifactUpdateEvent`.
+*   **Push Notifications:** Agents can proactively notify clients about task updates using webhook URLs provided via `tasks/pushNotification/set`. Authentication mechanisms (e.g., Bearer tokens via JWT signed with keys from agent's JWKS endpoint) are supported.
+*   **Authentication:** Defined in `AgentCard` and `PushNotificationConfig`. Can involve various schemes (e.g., API keys, OAuth, JWT). Samples use JWT for push notifications.
+*   **Forms:** Structured data can be requested and submitted using `DataPart` within Messages/Artifacts (demonstrated in ADK sample).
+
+## 4. Implementations & Samples
+
+### 4.1. Common Libraries
+
+*   **Python (`samples/python/common`)**:
+    *   `client/`: `A2AClient` for making requests, `A2ACardResolver` for discovery.
+    *   `server/`: `A2AServer` (Starlette-based), `TaskManager` base class, `InMemoryTaskManager`.
+    *   `types.py`: Pydantic models mirroring the JSON schema.
+    *   `utils/`: Helpers for push notification auth (JWT signing/verification, JWKS endpoint).
+*   **JavaScript/TypeScript (`samples/js/src`)**:
+    *   `client/`: `A2AClient` implementation using `fetch`.
+    *   `server/`: `A2AServer` (Express-based), `TaskStore` interface, `InMemoryTaskStore`, `FileStore`.
+    *   `schema.ts`: TypeScript interfaces matching the JSON schema.
+    *   `handler.ts`, `error.ts`, `utils.ts`: Support code for the server.
+
+### 4.2. Python Samples
+
+*   **Location:** `samples/python/agents/` & `samples/python/hosts/`
+*   **Setup:** Uses `uv` and `pyproject.toml`. Requires Python >= 3.12/3.13. API keys via `.env`.
+*   **Agents:**
+    *   **LangGraph (`agents/langgraph`)**: Currency conversion agent. Demonstrates tool use, multi-turn (`input-required`), and **streaming** (`tasks/sendSubscribe`).
+    *   **CrewAI (`agents/crewai`)**: Image generation agent. Demonstrates multi-turn and handling **file artifacts** (images).
+    *   **Google ADK (`agents/google_adk`)**: Expense reimbursement agent. Demonstrates multi-turn and handling **forms** using `DataPart`.
+*   **Hosts:**
+    *   **CLI (`hosts/cli`)**: Simple command-line client to interact with any A2A agent. Supports streaming and optional push notification listening.
+    *   **Multi-Agent Orchestrator (`hosts/multiagent`)**: An ADK-based "Host Agent" that manages connections (`RemoteAgentConnections`) to other A2A agents and delegates tasks based on instructions.
+
+### 4.3. JavaScript/TypeScript Samples
+
+*   **Location:** `samples/js/`
+*   **Setup:** Uses `npm`/`pnpm`, `tsx`, `tsconfig.json`. Requires Node.js >= 18. API keys via environment variables. Framework: **Genkit**.
+*   **Agents (`src/agents/`)**:
+    *   **Movie Agent (`movie-agent`)**: Uses TMDB API via Genkit tools to answer movie questions. Demonstrates tool use and multi-turn (`AWAITING_USER_INPUT` mapped to `input-required`).
+    *   **Coder Agent (`coder`)**: Generates code files. Demonstrates producing multiple **file artifacts** via streaming updates. Uses custom Genkit format (`code-format.ts`).
+*   **Hosts:**
+    *   **CLI (`src/cli.ts`)**: Command-line client for interacting with JS agents.
+
+### 4.4. Demo Application (`demo/`)
+
+*   **UI (`demo/ui`)**: Web application built with **Mesop**.
+    *   Visualizes conversations with multiple agents via the host orchestrator.
+    *   Renders text, images, forms.
+    *   Allows dynamic agent registration via URL.
+    *   Provides views for task list and event logs.
+*   **Service (`demo/ui/service`)**: Backend service for the Mesop UI.
+    *   `server/`: Manages conversations, routes messages, interfaces with the host agent (`ADKHostManager` or `InMemoryFakeAgentManager`).
+    *   `client/`: Client used by the UI to talk to its *own* backend service.
+
+## 5. Development & Setup
+
+*   **Prerequisites:** Python (>=3.12 or 3.13), Node.js (>=18), `uv` (for Python), `npm`/`pnpm` (for JS).
+*   **API Keys:** Required for LLM access (e.g., `GOOGLE_API_KEY`, `TMDB_API_KEY`), typically set via `.env` files or environment variables.
+*   **Running Samples:** Generally involves running an agent server (`uv run ...` or `npm run ...`) and then a host client/app (e.g., `uv run hosts/cli --agent <agent_url>`).
+
+## 6. Contribution
+
+*   See `CONTRIBUTING.md`.
+*   GitHub discussion available as the primary means of communication.
+*   GitHub issues for bugs and feature requests.
+*   Google Form for private feedback.

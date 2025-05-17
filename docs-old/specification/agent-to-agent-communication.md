@@ -32,40 +32,46 @@ interface Task {
   status: TaskStatus; // current status of the task
   history?: Message[];
   artifacts?: Artifact[]; // collection of artifacts created by the agent.
-  metadata?: Record<string, any>; // extension metadata
+  metadata?: object; // extension metadata
+  itemType: "task";
 }
 // TaskState and accompanying message.
 interface TaskStatus {
   state: TaskState;
   message?: Message; //additional status updates for client
-  timestamp?: string; // ISO datetime value
+  timestamp?: string; // ISO 8601 datetime value
 }
 // sent by server during sendSubscribe or subscribe requests
 interface TaskStatusUpdateEvent {
-  id: string; //Task id
+  taskId: string; //Task id
+  contextId: string;
+  itemType: "status-update";
   status: TaskStatus;
   final: boolean; //indicates the end of the event stream
-  metadata?: Record<string, any>;
+  metadata?: object;
 }
 // sent by server during sendSubscribe or subscribe requests
 interface TaskArtifactUpdateEvent {
-  id: string; //Task id
+  taskId: string; //Task id
+  contextId: string;
+  itemType: "artifact-update";
   artifact: Artifact;
-  metadata?: Record<string, any>;
+  append?: boolean;
+  lastChunk?: boolean;
+  metadata?: object;
 }
 // Configuration of the send message request.
 interface MessageSendConfiguration {
   acceptedOutputModes: string[];
   historyLength?: number;
-  pushNotification?: PushNotificationConfig;
+  pushNotificationConfig?: PushNotificationConfig;
   blocking?: boolean;
 }
 // Send by the client to the agent as a request. May create, continue or restart a task.
 interface MessageSendParams {
-  id: string;  // identifier of request. Client generated.
   message: Message;
   configuration?: MessageSendConfiguration;
-  metadata?: Record<string, any>;  // extension metadata
+  metadata?: object;  // extension metadata
 }
 type TaskState =
   | "submitted"
@@ -74,6 +80,8 @@ type TaskState =
   | "completed"
   | "canceled"
   | "failed"
+  | "rejected"
+  | "auth-required"
   | "unknown";
 ```
 
@@ -85,13 +93,11 @@ A single Task can generate many Artifacts. For example, "create a webpage" could
 
 ```typescript
 interface Artifact {
+  artifactId: string; // unique identifier for the artifact
   name?: string;
   description?: string;
   parts: Part[];
-  metadata?: Record<string, any>;
-  index: number;
-  append?: boolean;
-  lastChunk?: boolean;
+  metadata?: object;
 }
 ```
 
@@ -107,10 +113,12 @@ A Message can have multiple parts to denote different pieces of content. For exa
 interface Message {
   role: "user" | "agent";
   parts: Part[];
-  metadata?: Record<string, any>;
+  metadata?: object;
   messageId: string; // identifier created by the message creator.
   taskId?: string; // identifier of task the message is related to, optional.
   contextId?: string; // the context the message is associated with, optional.
+  final?: boolean;
+  itemType: "message";
 }
 ```
 
@@ -136,10 +144,10 @@ interface FilePart {
 }
 interface DataPart {
   type: "data";
-  data: Record<string, any>;
+  data: object;
 }
 type Part = (TextPart | FilePart | DataPart) & {
-  metadata: Record<string, any>;
+  metadata: object;
 };
 ```
 
@@ -161,7 +169,7 @@ interface PushNotificationConfig {
   };
 }
 interface TaskPushNotificationConfig {
-  id: string; //task id
+  taskId: string; //task id
   pushNotificationConfig: PushNotificationConfig;
 }
 ```

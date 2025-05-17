@@ -1,59 +1,68 @@
-# Enterprise Readiness
+# Enterprise-Ready Features for A2A Agents
 
-<!-- TOC -->
+The Agent2Agent (A2A) protocol is designed with enterprise requirements at its core. Instead of inventing new, proprietary standards for security and operations, A2A aims to integrate seamlessly with existing enterprise infrastructure and widely adopted best practices. A2A treats remote agents as standard, HTTP-based enterprise applications. This approach allows organizations to leverage their existing investments and expertise in security, monitoring, governance, and identity management.
 
-- [Enterprise Readiness](#enterprise-readiness)
-  - [Transport Level Security](#transport-level-security)
-  - [Server Identity](#server-identity)
-  - [Client and User Identity](#client-and-user-identity)
-  - [Authenticating Clients](#authenticating-clients)
-  - [Authorization and Data Privacy](#authorization-and-data-privacy)
-  - [Tracing and Observability](#tracing-and-observability)
+A key principle of A2A is that agents are typically "opaque" – they do not share internal memory, tools, or direct resource access with each other. This opacity naturally aligns with standard client/server security paradigms.
 
-<!-- /TOC -->
+## 1. Transport Level Security (TLS)
 
-A2A **does not** want to invent any new standards for enterprise security and instead seamlessly integrate with existing infrastructure.
+Ensuring the confidentiality and integrity of data in transit is fundamental.
 
-A2A models Enterprise Agents as standard, HTTP-based, enterprise applications and therefore relies on enterprise-standard auth, security, privacy, tracing, and monitoring. This is possible because A2A agents are opaque and do not share tools or resources (and therefore "single application" client/server best practices apply).
+- **HTTPS Mandate:** All A2A communication in production environments **MUST** occur over HTTPS.
+- **Modern TLS Standards:** Implementations **SHOULD** use modern TLS versions (TLS 1.2 or higher is recommended) with strong, industry-standard cipher suites to protect data from eavesdropping and tampering.
+- **Server Identity Verification:** A2A Clients **SHOULD** verify the A2A Server's identity by validating its TLS certificate against trusted certificate authorities (CAs) during the TLS handshake. This prevents man-in-the-middle attacks.
 
-In fact, A2A keeps most enterprise concerns out of the protocol and instead require enterprise-grade HTTP with Open Authentication and Open Tracing support. Implementers should follow all enterprise best practices as it relates to application and user-level security.
+## 2. Authentication
 
-## Transport Level Security
+A2A delegates authentication to standard web mechanisms, primarily relying on HTTP headers. Authentication requirements are advertised by the A2A Server in its [Agent Card](../specification.md#5-agent-discovery-the-agent-card).
 
-A2A is built on HTTP and any production installation should require HTTPS using modern TLS ciphers.
+- **No In-Payload Identity:** A2A protocol payloads (JSON-RPC messages) do **not** carry user or client identity information. Identity is established at the transport/HTTP layer.
+- **Agent Card Declaration:** The A2A Server's `AgentCard` specifies the required authentication `schemes` (e.g., "Bearer", "OAuth2", "ApiKey", "Basic") in its `authentication` object. These scheme names often align with those defined in the [OpenAPI Specification for authentication](https://swagger.io/docs/specification/authentication/).
+- **Out-of-Band Credential Acquisition:** The A2A Client is responsible for obtaining the necessary credential materials (e.g., OAuth 2.0 tokens, API keys, JWTs) through processes external to the A2A protocol itself. This could involve OAuth flows (authorization code, client credentials), secure key distribution, etc.
+- **HTTP Header Transmission:** Credentials **MUST** be transmitted in standard HTTP headers as per the requirements of the chosen authentication scheme (e.g., `Authorization: Bearer <token>`, `X-API-Key: <key_value>`).
+- **Server-Side Validation:** The A2A Server **MUST** authenticate **every** incoming request based on the credentials provided in the HTTP headers and its declared requirements.
+    - If authentication fails or is missing, the server **SHOULD** respond with standard HTTP status codes such as `401 Unauthorized` or `403 Forbidden`.
+    - A `401 Unauthorized` response **SHOULD** include a `WWW-Authenticate` header indicating the required scheme(s), guiding the client on how to authenticate correctly.
+- **In-Task Authentication (Secondary Credentials):** If an agent, during a task, requires additional credentials for a *different* system (e.g., to access a specific tool on behalf of the user), A2A recommends:
+    1. The A2A Server transitions the A2A task to the `input-required` state.
+    2. The `TaskStatus.message` (often using a `DataPart`) should provide details about the required authentication for the secondary system, potentially using an `AuthenticationInfo`-like structure.
+    3. The A2A Client then obtains these new credentials out-of-band for the secondary system. These credentials might be provided back to the A2A Server (if it's proxying the request) or used by the client to interact directly with the secondary system.
 
-## Server Identity
+## 3. Authorization
 
-A2A Servers present their identity in the form of digital certificates signed by well-known certificate authorities as part of the TLS negotiation. A2A Clients should verify server identity during connection establishment.
+Once a client is authenticated, the A2A Server is responsible for authorizing the request. Authorization logic is specific to the agent's implementation, the data it handles, and applicable enterprise policies.
 
-## Client and User Identity
+- **Granular Control:** Authorization **SHOULD** be applied based on the authenticated identity (which could represent an end-user, a client application, or both).
+- **Skill-Based Authorization:** Access can be controlled on a per-skill basis, as advertised in the Agent Card. For example, specific OAuth scopes might grant an authenticated client access to invoke certain skills but not others.
+- **Data and Action-Level Authorization:** Agents that interact with backend systems, databases, or tools **MUST** enforce appropriate authorization before performing sensitive actions or accessing sensitive data through those underlying resources. The agent acts as a gatekeeper.
+- **Principle of Least Privilege:** Grant only the necessary permissions required for a client or user to perform their intended operations via the A2A interface.
 
-There is no concept of a user or client identifier in A2A schemas. Instead, A2A conveys authentication requirements (scheme and materials) through the protocol. The client is responsible for negotiating with the appropriate authentication authority (out of band to A2A) and retrieving/storing credential materials (such as OAuth tokens). Those credential materials will be transmitted in HTTP headers and not in any A2A payload.
+## 4. Data Privacy and Confidentiality
 
-Different authentication protocols and service providers have different requirements and individual requests may require multiple identifiers and identities in scheme specific headers. It is recommended that clients always present a client identity (representing the client agent) and user identity (representing their user) in requests to A2A servers.
+- **Sensitivity Awareness:** Implementers must be acutely aware of the sensitivity of data exchanged in `Message` and `Artifact` parts of A2A interactions.
+- **Compliance:** Ensure compliance with relevant data privacy regulations (e.g., GDPR, CCPA, HIPAA, depending on the domain and data).
+- **Data Minimization:** Avoid including or requesting unnecessarily sensitive information in A2A exchanges.
+- **Secure Handling:** Protect data both in transit (via TLS, as mandated) and at rest (if persisted by agents) according to enterprise data security policies and regulatory requirements.
 
-**Note**: Multi-identity federation is an open topic for discussion. For example, User U is working with Agent A requiring A-system's identifier. If Agent A then depends on Tool B or Agent B which requires B-system identifier, the user may need to provide identities for both A-system and B-system in a single request. (Assume A-system is an enterprise LDAP identity and B-system is a SaaS-provider identity).
+## 5. Tracing, Observability, and Monitoring
 
-It is currently recommended that if Agent A requires the user/client to provide an alternate identity for part of a task, it sends an update in the `INPUT-REQUIRED` state with the specific authentication requirements (in the same structure as an AgentCard's authentication requirements) to the client. The client then, out of band to A2A and also out of band to A-system, negotiates with B-system's authority to obtain credential material. Those materials (such as tokens) can be passed through Agent A to Agent B. Agent B will exchange when speaking to its upstream systems.
+A2A's reliance on HTTP allows for straightforward integration with standard enterprise tracing, logging, and monitoring tools.
 
-## Authenticating Clients
+- **Distributed Tracing:**
+    - A2A Clients and Servers **SHOULD** participate in distributed tracing systems (e.g., OpenTelemetry, Jaeger, Zipkin).
+    - Trace context (trace IDs, span IDs) **SHOULD** be propagated via standard HTTP headers (e.g., W3C Trace Context headers like `traceparent` and `tracestate`).
+    - This enables end-to-end visibility of requests as they flow across multiple agents and underlying services, which is invaluable for debugging and performance analysis.
+- **Comprehensive Logging:** Implement detailed logging on both client and server sides. Logs should include relevant identifiers such as `taskId`, `sessionId`, correlation IDs, and trace context to facilitate troubleshooting and auditing.
+- **Metrics:** A2A Servers should expose key operational metrics (e.g., request rates, error rates, task processing latency, resource utilization) to enable performance monitoring, alerting, and capacity planning. These can be integrated with systems like Prometheus or Google Cloud Monitoring.
+- **Auditing:** Maintain audit trails for significant events, such as task creation, critical state changes, and actions performed by agents, especially those involving sensitive data access, modifications, or high-impact operations.
 
-A2A servers are expected to publish supported and required authentication protocol(s) in its [Agent Card](../specification/agent-card.md). These protocols should be one of the standard [OpenAPI Authentication formats](https://swagger.io/docs/specification/v3_0/authentication/) (such as API Keys, OAuth, OIDC, etc) but can be extended to another protocol supported by both client and server.
+## 6. API Management and Governance
 
-Individual authentication protocols have their own mechanisms for acquiring, refreshing, and challenging credential material (such as bearer or session tokens). The credential acquisition and maintenance process is considered external to A2A.
+For A2A Servers exposed externally, across organizational boundaries, or even within large enterprises, integration with API Management solutions is highly recommended. This can provide:
 
-A2A servers are expected to authenticate **every** request and reject or challenge requests with standard HTTP response codes (401, 403), and authentication-protocol-specific headers and bodies (such as a HTTP 401 response with a [WWW-Authenticate](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/WWW-Authenticate) header indicating the required authentication schema, or OIDC discovery document at a well-known path).
+- **Centralized Policy Enforcement:** Consistent application of security policies (authentication, authorization), rate limiting, and quotas.
+- **Traffic Management:** Load balancing, routing, and mediation.
+- **Analytics and Reporting:** Insights into agent usage, performance, and trends.
+- **Developer Portals:** Facilitate discovery of A2A-enabled agents, provide documentation (including Agent Cards), and streamline onboarding for client developers.
 
-## Authorization and Data Privacy
-
-A2A servers are expected to authorize requests based on both the user and application identity. We recommend that individual agents manage access on at least two axes:
-
-- **Skills**  
-  Agents are expected to advertise (via an [Agent Card](../specification/agent-card.md)) their capabilities in the form of skills. It is recommended that agents authorize on a per-skill basis (for example, OAuthScope 'foo-read-only' could limit access only to 'generateRecipe' skills).
-
-- **Tools (Actions and Data)**  
-  It is recommended that Agents restrict access to sensitive data or actions by placing them behind Tools. When an agentic flow or model needs to access this data, the agent should authorize access to a tool based on the application+user priviledge. We highly recommend utilizing API Management with Tool access.
-
-## Tracing and Observability
-
-As all A2A requests are 'standard' HTTP requests, both client and server should use their enterprise standard tooling and infrastructure which ideally adds appropriate instrumentation headers and writes events to standard logs and event queues.
+By adhering to these enterprise-grade practices, A2A implementations can be deployed securely, reliably, and manageably within complex organizational environments, fostering trust and enabling scalable inter-agent collaboration.
