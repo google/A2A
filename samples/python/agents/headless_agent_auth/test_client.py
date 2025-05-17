@@ -44,7 +44,7 @@ class AgentAuth(httpx.Auth):
         
         if not access_token:
             token_url = json.loads(auth.credentials)['tokenUrl']
-            print(f'\nFetching access token from {token_url}...')
+            print(f'\nFetching agent access token from {token_url}...')
             get_token = GetToken(
                 domain=urlparse(token_url).hostname,
                 client_id=os.getenv('A2A_CLIENT_AUTH0_CLIENT_ID'),
@@ -120,9 +120,6 @@ def create_send_params(
         },
         'configuration': {
             'acceptedOutputModes': ['text'],
-            # 'pushNotificationConfig': {
-            #     'url': ''
-            # },
         }
     }
 
