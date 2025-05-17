@@ -354,7 +354,7 @@ export interface JSONRPCMessage {
    * An identifier established by the Client that MUST contain a String, Number
    * Numbers SHOULD NOT contain fractional parts.   
    */
-  id?: number | string;
+  id?: number | string | null;
 }
 
 /**

@@ -373,8 +373,10 @@
             "description": "Represents a structured data segment within a message part.",
             "properties": {
                 "data": {
-                    "$ref": "#/definitions/Record<string,any>",
-                    "description": "Structured data content"
+                    "additionalProperties": true,
+                    "description": "Structured data content",
+                    "properties": {},
+                    "type": "object"
                 },
                 "itemType": {
                     "const": "data",
@@ -1135,13 +1137,6 @@
                 "code",
                 "message"
             ],
-            "type": "object"
-        },
-        "Record<string,any>": {
-            "type": "object"
-        },
-        "RecordStringAny": {
-            "additionalProperties": {},
             "type": "object"
         },
         "SendMessageRequest": {
