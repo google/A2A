@@ -26,7 +26,7 @@ from a2a.types import (
 
 
 load_dotenv()
-
+access_token = None
 
 class AgentAuth(httpx.Auth):
     '''Custom httpx's authentication class to inject access token required by agent.'''
@@ -34,6 +34,7 @@ class AgentAuth(httpx.Auth):
         self.agent_card = agent_card
 
     def auth_flow(self, request):
+        global access_token
         auth = self.agent_card.authentication
 
         # skip if not using oauth2 or credentials details are missing
@@ -41,13 +42,17 @@ class AgentAuth(httpx.Auth):
             yield request
             return
         
-        token_url = json.loads(auth.credentials)['tokenUrl']
-        get_token = GetToken(
-            domain=urlparse(token_url).hostname,
-            client_id=os.getenv('A2A_CLIENT_AUTH0_CLIENT_ID'),
-            client_secret=os.getenv('A2A_CLIENT_AUTH0_CLIENT_SECRET')
-        )
-        access_token = get_token.client_credentials(os.getenv('HR_AGENT_AUTH0_AUDIENCE'))['access_token']
+        if not access_token:
+            token_url = json.loads(auth.credentials)['tokenUrl']
+            print(f'\nFetching access token from {token_url}...')
+            get_token = GetToken(
+                domain=urlparse(token_url).hostname,
+                client_id=os.getenv('A2A_CLIENT_AUTH0_CLIENT_ID'),
+                client_secret=os.getenv('A2A_CLIENT_AUTH0_CLIENT_SECRET')
+            )
+            access_token = get_token.client_credentials(os.getenv('HR_AGENT_AUTH0_AUDIENCE'))['access_token']
+            print('Done.\n')
+        
         request.headers['Authorization'] = f'Bearer {access_token}'
         yield request
 
