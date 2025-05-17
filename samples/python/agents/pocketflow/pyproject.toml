@@ -1,0 +1,44 @@
+[project]
+name = "pocketflow-a2a"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "anyio>=3.0.0,<5.0.0",
+    "click>=8.0.0,<9.0.0",
+    "duckduckgo-search>=7.5.2",
+    "httpx-sse>=0.4.0",
+    "httpx>=0.27.0,<0.28.0",
+    "openai>=1.0.0",
+    "pydantic>=2.0.0,<3.0.0",
+    "pyyaml>=5.1",
+    "sse-starlette>=1.8.2,<2.0.0",
+    "starlette>=0.37.2,<0.38.0",
+    "uvicorn[standard]>=0.29.0,<0.30.0",
+    "asyncclick>=8.1.8",
+    "pocketflow>=0.0.2",
+    "google-genai>=1.2.0",
+    "google-generativeai>=0.8.5",
+    "colorama>=0.4.6",
+    "jwcrypto>=1.5.6",
+    "jwt>=1.3.1",
+    "loguru>=0.7.3",
+]
+
+[dependency-groups]
+dev = [
+    "jinja2>=3.1.6",
+    "jupyter>=1.1.1",
+    "nest-asyncio>=1.6.0",
+    "notebook>=7.4.1",
+    "ruff>=0.11.8",
+]
+
+[build-system]
+build-backend  = 'hatchling.build'
+requires       = ['hatchling']
+
+
+[tool.flake8]
+ignore = ["E501", "E203"]

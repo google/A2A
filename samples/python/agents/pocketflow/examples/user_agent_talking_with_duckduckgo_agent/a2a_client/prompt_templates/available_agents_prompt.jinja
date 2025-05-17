@@ -1,0 +1,20 @@
+These are agents who can you ask for consult:
+
+Available agents:
+{% for agent in agents %}{% set name = agent.name %}{% set description = agent.description %}{% set skills = agent.skills%}
+Agent number {{loop.index}}:
+{% include "agent_card.jinja" %}
+--------------------------------
+{% endfor %}
+
+You may select one of them to help answer by return the array of selected agent number or if you find no one could help you, you may return empty array.
+Your answer will be passed directly to JSON so You must return your selected agent(s) with the following JSON fiedls
+[
+    {
+        "selected_agent: <int, the number of agent that you choose to answer this question>,
+        "question_to_answer": <str, the question to ask the agent>
+    },
+    {/*...other agent you can select as much as you want*/}
+]
+
+Remember: Your answer will be passed directly to JSON parsing function, therefore return only the array of json and not include PREFIX, SUFFIX or Prologue
