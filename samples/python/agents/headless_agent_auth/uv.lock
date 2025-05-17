@@ -29,7 +29,7 @@ dependencies = [
 requires-dist = [
     { name = "a2a-sdk", git = "https://github.com/google/a2a-python.git?rev=main" },
     { name = "asyncclick", specifier = ">=8.1.8" },
-    { name = "auth0-ai-langchain", specifier = "==1.0.0b1" },
+    { name = "auth0-ai-langchain", specifier = "==1.0.0b2" },
     { name = "auth0-api-python", specifier = "==1.0.0b3" },
     { name = "auth0-fastapi-api", specifier = ">=1.0.0b3" },
     { name = "auth0-python", specifier = ">=4.9.0" },
@@ -171,7 +171,7 @@ wheels = [
 
 [[package]]
 name = "auth0-ai-langchain"
-version = "1.0.0b1"
+version = "1.0.0b2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "auth0-ai" },
@@ -181,9 +181,9 @@ dependencies = [
     { name = "langgraph-sdk" },
     { name = "openfga-sdk" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/d2/e1/69f46a4c007b1b9e0d96cf1b4d9f4beab92cf7feea7df3b8ae0cd07fb678/auth0_ai_langchain-1.0.0b1.tar.gz", hash = "sha256:6e5792361ab8cce91ffeb6f6e30db0c1954f6eed7c0aedfde1633e6ef9e67455", size = 15569, upload-time = "2025-05-08T10:39:35.185Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/52/91/b1c5494cc9f3ee50acf48cd97e63368fa97ad464355b09f61f4c6d5b4a28/auth0_ai_langchain-1.0.0b2.tar.gz", hash = "sha256:25c94a730af223aa3e33cf3883fd03e87d30ea74bbe928bbfb9ebcea3ea2eeba", size = 16402, upload-time = "2025-05-16T11:57:02.53Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f5/bc/e18ff1d1467447a3752bb33800bb2bff7280f1b887518d756d7bc5759ff1/auth0_ai_langchain-1.0.0b1-py3-none-any.whl", hash = "sha256:c1f40c212b55e82515fda4e7208177d475283c4d061a18ecdc95d4e5d42af45d", size = 17108, upload-time = "2025-05-08T10:39:33.714Z" },
+    { url = "https://files.pythonhosted.org/packages/55/15/48b3b3b1881def113cfb894f8f8dffbeb645c5717bcbda7ce0049aee64da/auth0_ai_langchain-1.0.0b2-py3-none-any.whl", hash = "sha256:d67c0bf422cd3520bc9c4701a4df94e4e13c6aa70abc36f721f8bcb10a7e68a5", size = 17553, upload-time = "2025-05-16T11:57:01.149Z" },
 ]
 
 [[package]]

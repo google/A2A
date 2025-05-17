@@ -7,7 +7,7 @@ requires-python = ">=3.13"
 dependencies = [
     "a2a-sdk @ git+https://github.com/google/a2a-python.git@main",
     "asyncclick>=8.1.8",
-    "auth0-ai-langchain==1.0.0b1",
+    "auth0-ai-langchain==1.0.0b2",
     "auth0-api-python==1.0.0b3",
     "auth0-fastapi-api>=1.0.0b3",
     "auth0-python>=4.9.0",
