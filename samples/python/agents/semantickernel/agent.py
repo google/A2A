@@ -11,8 +11,10 @@ from pydantic import BaseModel
 from semantic_kernel.agents import ChatCompletionAgent, ChatHistoryAgentThread
 from semantic_kernel.connectors.ai.open_ai import (
     OpenAIChatCompletion,
+    # AzureChatCompletion, #  Comment the line above and uncomment this one for Azure OpenAI Support
     OpenAIChatPromptExecutionSettings,
 )
+
 from semantic_kernel.contents import (
     FunctionCallContent,
     FunctionResultContent,
@@ -97,6 +99,19 @@ class SemanticKernelTravelAgent:
         if not api_key:
             raise ValueError('OPENAI_API_KEY environment variable not set.')
 
+        ## Azure OpenAI credentials - comment all 3 lines above and uncomment these lines for Azure OpenAI support
+        # api_key = os.getenv('AZURE_OPENAI_API_KEY', None)
+        # if not api_key:
+        #     raise ValueError('AZURE_OPENAI_API_KEY environment variable not set.')
+
+        # endpoint = os.getenv('AZURE_OPENAI_ENDPOINT', None)
+        # if not endpoint:
+        #     raise ValueError('AZURE_OPENAI_ENDPOINT environment variable not set.')
+
+        # deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME', None)
+        # if not deployment_name:
+        #     raise ValueError('AZURE_OPENAI_DEPLOYMENT_NAME environment variable not set.')
+
         model_id = os.getenv('OPENAI_CHAT_MODEL_ID', 'gpt-4.1')
 
         # Define a CurrencyExchangeAgent to handle currency-related tasks
@@ -104,6 +119,7 @@ class SemanticKernelTravelAgent:
             service=OpenAIChatCompletion(
                 api_key=api_key,
                 ai_model_id=model_id,
+                # endpoint=endpoint, # comment the line above and uncomment this lines for Azure OpenAI support
             ),
             name='CurrencyExchangeAgent',
             instructions=(
@@ -118,8 +134,10 @@ class SemanticKernelTravelAgent:
         # Define an ActivityPlannerAgent to handle activity-related tasks
         activity_planner_agent = ChatCompletionAgent(
             service=OpenAIChatCompletion(
+            # service=AzureChatCompletion( # comment the line above and uncomment this lines for Azure OpenAI support
                 api_key=api_key,
                 ai_model_id=model_id,
+                # endpoint=endpoint, # comment the line above and uncomment this lines for Azure OpenAI support
             ),
             name='ActivityPlannerAgent',
             instructions=(
@@ -134,8 +152,10 @@ class SemanticKernelTravelAgent:
         # Define the main TravelManagerAgent to delegate tasks to the appropriate agents
         self.agent = ChatCompletionAgent(
             service=OpenAIChatCompletion(
+            # service=AzureChatCompletion( # comment the line above and uncomment this lines for Azure OpenAI support
                 api_key=api_key,
                 ai_model_id=model_id,
+                # endpoint=endpoint, # comment the line above and uncomment this lines for Azure OpenAI support
             ),
             name='TravelManagerAgent',
             instructions=(

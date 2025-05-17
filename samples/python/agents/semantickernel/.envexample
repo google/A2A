@@ -1,0 +1,9 @@
+## OpenAI configurations - uncomment if using OpenAI
+# OPENAI_API_KEY="<example>"
+# OPENAI_CHAT_MODEL_ID="gpt-4.1"
+#
+#
+## Azure OpenAI configuration - uncomment if using Azure OpenAI
+# AZURE_OPENAI_ENDPOINT=""
+# AZURE_OPENAI_API_KEY=""
+# AZURE_OPENAI_API_VERSION=""
