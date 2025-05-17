@@ -480,7 +480,7 @@ class ADKHostManager(ApplicationManager):
                             file_uri=part.uri, mime_type=part.mimeType
                         )
                     )
-                elif content_part.bytes:
+                elif part.bytes:
                     parts.append(
                         types.Part.from_bytes(
                             data=part.bytes.encode('utf-8'),
