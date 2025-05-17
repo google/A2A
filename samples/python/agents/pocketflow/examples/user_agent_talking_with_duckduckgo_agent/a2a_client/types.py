@@ -18,19 +18,23 @@ class AgentSkill(TypedDict):
     inputModes: list[str]
     outputModes: list[str]
 
+
 class AgentContext(TypedDict):
     agent_name: str
     agent_skills: list[AgentSkill]
     question: str
     answer: str
 
+
 class AnswerMetadata(TypedDict):
     is_information_enough_to_answer: bool
     reason: str
 
+
 class Answer(TypedDict):
     metadata: AnswerMetadata
     answer: str
+
 
 class Shared(TypedDict):
     a2a_clients: list[A2AClient]
@@ -43,8 +47,9 @@ class Shared(TypedDict):
     answer: Answer
     answer_metadata: AnswerMetadata
 
+
 class TextPart(TypedDict):
-    type: Literal["user", "assistant", "system"]
+    type: Literal['user', 'assistant', 'system']
     text: str
 
 

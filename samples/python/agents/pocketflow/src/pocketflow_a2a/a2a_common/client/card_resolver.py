@@ -1,19 +1,23 @@
-import httpx
-from pocketflow_a2a.a2a_common.types import (
-    AgentCard,
-    A2AClientJSONError,
-)
 import json
+
+import httpx
+
+from pocketflow_a2a.a2a_common.types import (
+    A2AClientJSONError,
+    AgentCard,
+)
 
 
 class A2ACardResolver:
-    def __init__(self, base_url: str, agent_card_path: str = "/.well-known/agent.json"):
-        self.base_url = base_url.rstrip("/")
-        self.agent_card_path = agent_card_path.lstrip("/")
+    def __init__(
+        self, base_url: str, agent_card_path: str = '/.well-known/agent.json'
+    ):
+        self.base_url = base_url.rstrip('/')
+        self.agent_card_path = agent_card_path.lstrip('/')
 
     def get_agent_card(self) -> AgentCard:
         with httpx.Client() as client:
-            response = client.get(self.base_url + "/" + self.agent_card_path)
+            response = client.get(self.base_url + '/' + self.agent_card_path)
             response.raise_for_status()
             try:
                 return AgentCard(**response.json())

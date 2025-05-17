@@ -1,26 +1,30 @@
+import json
+
+from collections.abc import AsyncIterable
+from typing import Any
+
 import httpx
+import pydantic
+
 from httpx_sse import connect_sse
-from typing import Any, AsyncIterable
 from pocketflow_a2a.a2a_common.types import (
-    AgentCard,
-    GetTaskRequest,
-    SendTaskRequest,
-    SendTaskResponse,
-    JSONRPCRequest,
-    GetTaskResponse,
-    CancelTaskResponse,
-    CancelTaskRequest,
-    SetTaskPushNotificationRequest,
-    SetTaskPushNotificationResponse,
-    GetTaskPushNotificationRequest,
-    GetTaskPushNotificationResponse,
     A2AClientHTTPError,
     A2AClientJSONError,
+    AgentCard,
+    CancelTaskRequest,
+    CancelTaskResponse,
+    GetTaskPushNotificationRequest,
+    GetTaskPushNotificationResponse,
+    GetTaskRequest,
+    GetTaskResponse,
+    JSONRPCRequest,
+    SendTaskRequest,
+    SendTaskResponse,
     SendTaskStreamingRequest,
     SendTaskStreamingResponse,
+    SetTaskPushNotificationRequest,
+    SetTaskPushNotificationResponse,
 )
-import json
-import pydantic
 
 
 class A2AClient:
@@ -30,9 +34,11 @@ class A2AClient:
         elif url:
             self.url = url
         else:
-            raise ValueError("Must provide either agent_card or url")
+            raise ValueError('Must provide either agent_card or url')
 
-    async def send_task(self, payload: dict[str, Any], timeout: int = 30) -> SendTaskResponse:
+    async def send_task(
+        self, payload: dict[str, Any], timeout: int = 30
+    ) -> SendTaskResponse:
         request = SendTaskRequest(params=payload)
         return SendTaskResponse(**await self._send_request(request, timeout))
 
@@ -42,7 +48,7 @@ class A2AClient:
         request = SendTaskStreamingRequest(params=payload)
         with httpx.Client(timeout=None) as client:
             with connect_sse(
-                client, "POST", self.url, json=request.model_dump()
+                client, 'POST', self.url, json=request.model_dump()
             ) as event_source:
                 try:
                     for sse in event_source.iter_sse():
@@ -52,7 +58,9 @@ class A2AClient:
                 except httpx.RequestError as e:
                     raise A2AClientHTTPError(400, str(e)) from e
 
-    async def _send_request(self, request: JSONRPCRequest, timeout: int = 30) -> dict[str, Any]:
+    async def _send_request(
+        self, request: JSONRPCRequest, timeout: int = 30
+    ) -> dict[str, Any]:
         async with httpx.AsyncClient() as client:
             try:
                 # Image generation could take time, adding timeout
@@ -67,13 +75,13 @@ class A2AClient:
                 raise A2AClientJSONError(str(e)) from e
 
     async def get_agent_card(
-        self, agent_card_endpoint: str = ".well-known/agent.json"
+        self, agent_card_endpoint: str = '.well-known/agent.json'
     ) -> AgentCard:
         async with httpx.AsyncClient() as client:
             try:
                 # Image generation could take time, adding timeout
                 response = await client.get(
-                    f"{self.url}/{agent_card_endpoint}", timeout=30
+                    f'{self.url}/{agent_card_endpoint}', timeout=30
                 )
                 response.raise_for_status()
                 return AgentCard(**response.json())
@@ -94,10 +102,14 @@ class A2AClient:
         self, payload: dict[str, Any]
     ) -> SetTaskPushNotificationResponse:
         request = SetTaskPushNotificationRequest(params=payload)
-        return SetTaskPushNotificationResponse(**await self._send_request(request))
+        return SetTaskPushNotificationResponse(
+            **await self._send_request(request)
+        )
 
     async def get_task_callback(
         self, payload: dict[str, Any]
     ) -> GetTaskPushNotificationResponse:
         request = GetTaskPushNotificationRequest(params=payload)
-        return GetTaskPushNotificationResponse(**await self._send_request(request))
+        return GetTaskPushNotificationResponse(
+            **await self._send_request(request)
+        )

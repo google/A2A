@@ -1,10 +1,13 @@
-import colorama
-from colorama import Fore, Style
 import logging
+
+import colorama
+
+from colorama import Fore, Style
 
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
 )
 
 colorama.init(autoreset=True)
@@ -24,5 +27,5 @@ COLOR_MAP = {
 
 
 def colorize(color, text):
-    color_code = COLOR_MAP.get(color, "")
-    return f"{color_code}{text}{Style.RESET_ALL}"
+    color_code = COLOR_MAP.get(color, '')
+    return f'{color_code}{text}{Style.RESET_ALL}'

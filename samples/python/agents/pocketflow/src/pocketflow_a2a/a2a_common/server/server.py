@@ -1,28 +1,31 @@
-from starlette.applications import Starlette
-from starlette.responses import JSONResponse
-from sse_starlette.sse import EventSourceResponse
-from starlette.requests import Request
+import json
+import logging
+
+from collections.abc import AsyncIterable
+from typing import Any
+
+from pocketflow_a2a.a2a_common.server.task_manager import TaskManager
 from pocketflow_a2a.a2a_common.types import (
     A2ARequest,
-    JSONRPCResponse,
+    AgentCard,
+    CancelTaskRequest,
+    GetTaskPushNotificationRequest,
+    GetTaskRequest,
+    InternalError,
     InvalidRequestError,
     JSONParseError,
-    GetTaskRequest,
-    CancelTaskRequest,
+    JSONRPCResponse,
     SendTaskRequest,
-    SetTaskPushNotificationRequest,
-    GetTaskPushNotificationRequest,
-    InternalError,
-    AgentCard,
-    TaskResubscriptionRequest,
     SendTaskStreamingRequest,
+    SetTaskPushNotificationRequest,
+    TaskResubscriptionRequest,
 )
 from pydantic import ValidationError
-import json
-from typing import AsyncIterable, Any
-from pocketflow_a2a.a2a_common.server.task_manager import TaskManager
+from sse_starlette.sse import EventSourceResponse
+from starlette.applications import Starlette
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +33,9 @@ logger = logging.getLogger(__name__)
 class A2AServer:
     def __init__(
         self,
-        host="0.0.0.0",
+        host='0.0.0.0',
         port=5000,
-        endpoint="/",
+        endpoint='/',
         agent_card: AgentCard = None,
         task_manager: TaskManager = None,
     ):
@@ -42,17 +45,19 @@ class A2AServer:
         self.task_manager = task_manager
         self.agent_card = agent_card
         self.app = Starlette()
-        self.app.add_route(self.endpoint, self._process_request, methods=["POST"])
         self.app.add_route(
-            "/.well-known/agent.json", self._get_agent_card, methods=["GET"]
+            self.endpoint, self._process_request, methods=['POST']
+        )
+        self.app.add_route(
+            '/.well-known/agent.json', self._get_agent_card, methods=['GET']
         )
 
     def start(self):
         if self.agent_card is None:
-            raise ValueError("agent_card is not defined")
+            raise ValueError('agent_card is not defined')
 
         if self.task_manager is None:
-            raise ValueError("request_handler is not defined")
+            raise ValueError('request_handler is not defined')
 
         import uvicorn
 
@@ -75,7 +80,9 @@ class A2AServer:
                     json_rpc_request
                 )
             elif isinstance(json_rpc_request, CancelTaskRequest):
-                result = await self.task_manager.on_cancel_task(json_rpc_request)
+                result = await self.task_manager.on_cancel_task(
+                    json_rpc_request
+                )
             elif isinstance(json_rpc_request, SetTaskPushNotificationRequest):
                 result = await self.task_manager.on_set_task_push_notification(
                     json_rpc_request
@@ -89,8 +96,10 @@ class A2AServer:
                     json_rpc_request
                 )
             else:
-                logger.warning(f"Unexpected request type: {type(json_rpc_request)}")
-                raise ValueError(f"Unexpected request type: {type(request)}")
+                logger.warning(
+                    f'Unexpected request type: {type(json_rpc_request)}'
+                )
+                raise ValueError(f'Unexpected request type: {type(request)}')
 
             return self._create_response(result)
 
@@ -103,22 +112,25 @@ class A2AServer:
         elif isinstance(e, ValidationError):
             json_rpc_error = InvalidRequestError(data=json.loads(e.json()))
         else:
-            logger.error(f"Unhandled exception: {e}")
+            logger.error(f'Unhandled exception: {e}')
             json_rpc_error = InternalError()
 
         response = JSONRPCResponse(id=None, error=json_rpc_error)
-        return JSONResponse(response.model_dump(exclude_none=True), status_code=400)
+        return JSONResponse(
+            response.model_dump(exclude_none=True), status_code=400
+        )
 
-    def _create_response(self, result: Any) -> JSONResponse | EventSourceResponse:
+    def _create_response(
+        self, result: Any
+    ) -> JSONResponse | EventSourceResponse:
         if isinstance(result, AsyncIterable):
 
             async def event_generator(result) -> AsyncIterable[dict[str, str]]:
                 async for item in result:
-                    yield {"data": item.model_dump_json(exclude_none=True)}
+                    yield {'data': item.model_dump_json(exclude_none=True)}
 
             return EventSourceResponse(event_generator(result))
-        elif isinstance(result, JSONRPCResponse):
+        if isinstance(result, JSONRPCResponse):
             return JSONResponse(result.model_dump(exclude_none=True))
-        else:
-            logger.error(f"Unexpected result type: {type(result)}")
-            raise ValueError(f"Unexpected result type: {type(result)}")
+        logger.error(f'Unexpected result type: {type(result)}')
+        raise ValueError(f'Unexpected result type: {type(result)}')
