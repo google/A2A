@@ -29,3 +29,6 @@ Sample agent which can answer questions from any database, datawarehouse, app. -
 
 * [**Semantic Kernel Agent**](/samples/python/agents/semantickernel/README.md)  
 Demonstrates how to implement a travel agent built on [Semantic Kernel](https://github.com/microsoft/semantic-kernel/) and exposed through the A2A protocol.
+
+* [**Pocketflow] (/samples/python/agents/pocketflow/README.md)
+Demonstrates how to implement a DuckDuckGo Agent using [Pocketflow](https://github.com/The-Pocket/PocketFlow) and A2A. A sample chat client is also available
