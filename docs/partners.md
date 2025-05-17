@@ -99,7 +99,7 @@ collaborate effectively with each other and with users.
 - [Oracle / NetSuite](https://www.oracle.com/netsuite)
 - [PancakeAI ](https://www.pancakeai.tech/)
 - [Pendo](https://www.pendo.io)
-- [Personal AI](https://personal.ai
+- [Personal AI](https://personal.ai)
 - [Productive Edge](https://www.productiveedge.com/)
 - [Proofs](https://proofs.io)
 - [Publicis Sapient](https://www.publicissapient.com/)
