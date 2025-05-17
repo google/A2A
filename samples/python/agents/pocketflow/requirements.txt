@@ -1,0 +1,22 @@
+# For PocketFlow Agent Logic
+# pocketflow>=0.0.1
+openai>=1.0.0
+duckduckgo-search>=7.5.2
+pyyaml>=5.1
+
+# For A2A Server Infrastructure (from common)
+starlette>=0.37.2,<0.38.0
+uvicorn[standard]>=0.29.0,<0.30.0
+sse-starlette>=1.8.2,<2.0.0
+pydantic>=2.0.0,<3.0.0
+httpx>=0.27.0,<0.28.0
+anyio>=3.0.0,<5.0.0 # Dependency of starlette/httpx
+
+# For running __main__.py
+click>=8.0.0,<9.0.0
+
+# For A2A Client
+httpx>=0.27.0,<0.28.0
+httpx-sse>=0.4.0
+asyncclick>=8.1.8 # Or just 'click' if you prefer asyncio.run
+pydantic>=2.0.0,<3.0.0 # For common.types
