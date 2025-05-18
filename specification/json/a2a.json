@@ -929,10 +929,6 @@
                     "description": "the context the message is associated with",
                     "type": "string"
                 },
-                "final": {
-                    "description": "indicates the end of the event stream",
-                    "type": "boolean"
-                },
                 "itemType": {
                     "const": "message",
                     "description": "event type",
