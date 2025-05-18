@@ -255,8 +255,6 @@ export interface Message {
   taskId?: string;
   /** the context the message is associated with */
   contextId?: string;
-  /** indicates the end of the event stream */
-  final?: boolean;
   /** event type */
   itemType: "message";
 }
