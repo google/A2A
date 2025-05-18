@@ -35,6 +35,7 @@ The launch of A2A has sparked lively discussions and positive reactions on vario
 ## Community Contributions to A2A
 
 - Python Quickstart Tutorial [PR\#202](https://github.com/google/A2A/pull/202)
+- Server documentation example and quickstart template
 - LlamaIndex submitted a sample implementation [PR\#179](https://github.com/google/A2A/pull/179)
 - Autogen sample server [PR\#232](https://github.com/google/A2A/pull/232)
 - AG2 \+ MCP example [PR\#230](https://github.com/google/A2A/pull/230)
