@@ -72,7 +72,7 @@ When streaming is used for methods like `message/stream` or `tasks/resubscribe`:
 
 - The server responds with an HTTP `200 OK` status and a `Content-Type` header of `text/event-stream`.
 - The body of this HTTP response contains a stream of **[Server-Sent Events (SSE)](https://html.spec.whatwg.org/multipage/server-sent-events.html#server-sent-events)** as defined by the W3C.
-- Each SSE `data` field contains a complete JSON-RPC 2.0 Response object (specifically, a [`SendStreamingMessageResponse`](#721-sendtaskstreamingresponse-object)).
+- Each SSE `data` field contains a complete JSON-RPC 2.0 Response object (specifically, a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object)).
 
 ## 4. Authentication and Authorization
 
@@ -107,8 +107,8 @@ The A2A Server:
 If an agent, during the execution of a task, requires _additional_ credentials for a _different_ system or resource (e.g., to access a specific tool on behalf of the user that requires its own auth):
 
 1. It **SHOULD** transition the A2A task to the `auth-required` state (see [`TaskState`](#63-taskstate-enum)).
-2. The accompanying `TaskStatus.message` (often a [`DataPart`](#653-datapart-object)) **SHOULD** provide details about the required secondary authentication, potentially using an [`AuthenticationInfo`](#69-authenticationinfo-object-for-push-notifications)-like structure to describe the need.
-3. The A2A Client then obtains these new credentials out-of-band and provides them in a subsequent [`message/send`](#71-taskssend) or [`message/stream`](#72-taskssendsubscribe) request. How these credentials are used (e.g., passed as data within the A2A message if the agent is proxying, or used by the client to interact directly with the secondary system) depends on the specific scenario.
+2. The accompanying `TaskStatus.message` (often a [`DataPart`](#653-datapart-object)) **SHOULD** provide details about the required secondary authentication, potentially using an [`AuthenticationInfo`](#69-pushnotificationauthenticationinfo-object)-like structure to describe the need.
+3. The A2A Client then obtains these new credentials out-of-band and provides them in a subsequent [`message/send`](#71-messagesend) or [`message/stream`](#72-messagestream) request. How these credentials are used (e.g., passed as data within the A2A message if the agent is proxying, or used by the client to interact directly with the secondary system) depends on the specific scenario.
 
 ### 4.6. Authorization
 
@@ -233,10 +233,10 @@ Specifies optional A2A protocol features supported by the agent.
 
 ```typescript
 interface AgentCapabilities {
-  // If `true`, the agent supports `tasks/sendSubscribe` and `tasks/resubscribe` for real-time
+  // If `true`, the agent supports `message/stream` and `tasks/resubscribe` for real-time
   // updates via Server-Sent Events (SSE). Default: `false`.
   streaming?: boolean;
-  // If `true`, the agent supports `tasks/pushNotification/set` and `tasks/pushNotification/get`
+  // If `true`, the agent supports `tasks/pushNotificationConfig/set` and `tasks/pushNotificationConfig/get`
   // for asynchronous task updates via webhooks. Default: `false`.
   pushNotifications?: boolean;
   // If `true`, the agent may include a detailed history of status changes
@@ -247,8 +247,8 @@ interface AgentCapabilities {
 
 | Field Name               | Type      | Required | Default | Description                                                                               |
 | :----------------------- | :-------- | :------- | :------ | :---------------------------------------------------------------------------------------- |
-| `streaming`              | `boolean` | No       | `false` | Indicates support for SSE streaming methods (`tasks/sendSubscribe`, `tasks/resubscribe`). |
-| `pushNotifications`      | `boolean` | No       | `false` | Indicates support for push notification methods (`tasks/pushNotification/*`).             |
+| `streaming`              | `boolean` | No       | `false` | Indicates support for SSE streaming methods (`message/stream`, `tasks/resubscribe`). |
+| `pushNotifications`      | `boolean` | No       | `false` | Indicates support for push notification methods (`tasks/pushNotificationConfig/*`).             |
 | `stateTransitionHistory` | `boolean` | No       | `false` | Placeholder for future feature: exposing detailed task status change history.             |
 
 #### 5.5.3. `AgentAuthentication` Object
@@ -686,7 +686,7 @@ interface PushNotificationConfig {
 | :--------------- | :------------------------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `url`            | `string`                                                                               | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
 | `token`          | `string`                                                                      | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
-| `authentication` | [`AuthenticationInfo`](#69-authenticationinfo-object-for-push-notifications) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                                        |
+| `authentication` | [`AuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                                        |
 
 ### 6.9. `PushNotificationAuthenticationInfo` Object
 
@@ -718,7 +718,7 @@ interface AuthenticationInfo {
 
 ### 6.10. `TaskPushNotificationConfig` Object
 
-Used as the `params` object for the [`tasks/pushNotificationConfig/set`](#75-taskspushnotificationset) method and as the `result` object for the [`tasks/pushNotificationConfig/get`](#76-taskspushnotificationget) method.
+Used as the `params` object for the [`tasks/pushNotificationConfig/set`](#75-taskspushnotificationconfigset) method and as the `result` object for the [`tasks/pushNotificationConfig/get`](#76-taskspushnotificationconfigget) method.
 
 ```typescript
 interface TaskPushNotificationConfig {
@@ -794,7 +794,7 @@ The A2A Server's HTTP response body **MUST** be a `JSONRPCResponse` object (or, 
 
 Sends a message to an agent to initiate a new interaction or to continue an existing one. This method is suitable for synchronous request/response interactions or when client-side polling (using `tasks/get`) is acceptable for monitoring longer-running tasks.
 
-- **Request `params` type**: [`MessageSendParams`](#711-tasksendparams-object)
+- **Request `params` type**: [`MessageSendParams`](#711-messagesendparams-object)
 - **Response `result` type (on success)**: [`Task` | `Message`](#61-task-object) (A message object or the current or final state of the task after processing the message).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object).
 
@@ -806,7 +806,7 @@ interface MessageSendParams {
   message: Message;
   // Optional: additional configuration to send to the agent`.
   configuration?: MessageSendConfiguration;
-  // Arbitrary metadata for this specific `tasks/send` request.
+  // Arbitrary metadata for this specific `message/send` request.
   metadata?: object;
 }
 
@@ -832,11 +832,11 @@ interface MessageSendConfiguration {
 
 Sends a message to an agent to initiate/continue a task AND subscribes the client to real-time updates for that task via Server-Sent Events (SSE). This method requires the server to have `AgentCard.capabilities.streaming: true`.
 
-- **Request `params` type**: [`MessageSendParams`](#711-tasksendparams-object) (same as `message/send`).
+- **Request `params` type**: [`MessageSendParams`](#711-messagesendparams-object) (same as `message/send`).
 - **Response (on successful subscription)**:
     - HTTP Status: `200 OK`.
     - HTTP `Content-Type`: `text/event-stream`.
-    - HTTP Body: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendtaskstreamingresponse-object) JSON object.
+    - HTTP Body: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) JSON object.
 - **Response (on initial subscription failure)**:
     - Standard HTTP error code (e.g., 4xx, 5xx).
     - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object detailing the failure.
@@ -925,6 +925,8 @@ interface TaskArtifactUpdateEvent {
 | `contextId`       | `string`                       | Yes      |         | Context ID the task is associated with |
 | `itemType`       | `string`, literal               | Yes      | `artifact-update` | Type discriminator, literal value |
 | `artifact` | [`Artifact`](#67-artifact-object) | Yes      |         | The `Artifact` data. Could be a complete artifact or an incremental chunk.  |
+| `append`      | `boolean`             | No       | `false` |`true` means append parts to artifact; `false` (default) means replace. |
+| `lastChunk`   | `boolean`             | No       | `false` |`true` indicates this is the final update for the artifact.      |
 | `metadata` | `object`   | No       | `null`  | Event-specific metadata.|
 
 ### 7.3. `tasks/get`
@@ -964,7 +966,7 @@ Requests the cancellation of an ongoing task. The server will attempt to cancel 
 - **Response `result` type (on success)**: [`Task`](#61-task-object) (The state of the task after the cancellation attempt. Ideally, `Task.status.state` will be `"canceled"` if successful).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`TaskNotFoundError`](#82-a2a-specific-errors), [`TaskNotCancelableError`](#82-a2a-specific-errors)).
 
-#### 7.4.1. `TaskIdParams` Object (for `tasks/cancel` and `tasks/pushNotification/get`)
+#### 7.4.1. `TaskIdParams` Object (for `tasks/cancel` and `tasks/pushNotificationConfig/get`)
 
 A simple object containing just the task ID and optional metadata.
 
@@ -1008,7 +1010,7 @@ The purpose is to resume receiving _subsequent_ updates. The server's behavior r
 - **Response (on successful resubscription)**:
     - HTTP Status: `200 OK`.
     - HTTP `Content-Type`: `text/event-stream`.
-    - HTTP Body: A stream of Server-Sent Events, identical in format to `tasks/sendSubscribe`, carrying _subsequent_ [`SendStreamingMessageResponse`](#721-sendtaskstreamingresponse-object) events for the task.
+    - HTTP Body: A stream of Server-Sent Events, identical in format to `message/stream`, carrying _subsequent_ [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) events for the task.
 - **Response (on resubscription failure)**:
     - Standard HTTP error code (e.g., 4xx, 5xx).
     - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
@@ -1038,7 +1040,7 @@ These are custom error codes defined within the JSON-RPC server error range (`-3
 | :------- | :---------------------------------- | :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-32001` | `TaskNotFoundError`                 | Task not found                     | The specified task `id` does not correspond to an existing or active task. It might be invalid, expired, or already completed and purged.                                                                                            |
 | `-32002` | `TaskNotCancelableError`            | Task cannot be canceled            | An attempt was made to cancel a task that is not in a cancelable state (e.g., it has already reached a terminal state like `completed`, `failed`, or `canceled`).                                                                    |
-| `-32003` | `PushNotificationNotSupportedError` | Push Notification is not supported | Client attempted to use push notification features (e.g., `tasks/pushNotification/set`) but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                                    |
+| `-32003` | `PushNotificationNotSupportedError` | Push Notification is not supported | Client attempted to use push notification features (e.g., `tasks/pushNotificationConfig/set`) but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                                    |
 | `-32004` | `UnsupportedOperationError`        | This operation is not supported    | The requested operation or a specific aspect of it (perhaps implied by parameters) is not supported by this server agent implementation. Broader than just method not found.                                                         |
 | `-32005` | `ContentTypeNotSupportedError`      | Incompatible content types         | A [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) provided in the request's `message.parts` (or implied for an artifact) is not supported by the agent or the specific skill being invoked. |
 | `-32006` | `InvalidAgentResponseError`        | Invalid agent response type         | Agent generated an invalid response for the requested method |
@@ -1323,7 +1325,7 @@ _(Server closes the SSE connection after the `final:true` event)._
    {
      "jsonrpc": "2.0",
      "id": "req-003",
-     "method": "tasks/send",
+     "method": "message/send",
      "params": {
        "message": {
          "role": "user",
@@ -1493,7 +1495,7 @@ _(Server closes the SSE connection after the `final:true` event)._
 
 **Scenario:** Client requests a long-running report generation and wants to be notified via webhook when it's done.
 
-1. **Client `tasks/send` with `pushNotification` config:**
+1. **Client `message/send` with `pushNotification` config:**
 
    ```json
    {

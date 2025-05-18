@@ -19,14 +19,14 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
     - See details in the [Protocol Specification: Agent Card](../specification.md#5-agent-discovery-the-agent-card).
 
 - **Task:**
-    - The central unit of work in A2A. A client initiates a task to achieve a specific goal (e.g., "generate a report," "book a flight," "answer a question").
-    - Each task has a unique ID (typically client-generated) and progresses through a defined lifecycle (e.g., `submitted`, `working`, `input-required`, `completed`, `failed`).
+    - When a client sends a message to an agent, the agent might determine that fulfulling the request requires a stateful task to be completed (e.g., "generate a report," "book a flight," "answer a question").
+    - Each task has a unique ID defined by the agent and progresses through a defined lifecycle (e.g., `submitted`, `working`, `input-required`, `completed`, `failed`).
     - Tasks are stateful and can involve multiple exchanges (messages) between the client and the server.
     - See details in the [Protocol Specification: Task Object](../specification.md#61-task-object).
 
 - **Message:**
-    - Represents a single turn or unit of communication within a Task.
-    - Messages have a `role` (either `"user"` for client-sent messages or `"agent"` for server-sent messages) and contain one or more `Part` objects that carry the actual content.
+    - Represents a single turn or unit of communication between a client and an agent.
+    - Messages have a `role` (either `"user"` for client-sent messages or `"agent"` for server-sent messages) and contain one or more `Part` objects that carry the actual content. `messageId` part of the Message object is a unique identifier for each message set by the sender of the message.
     - Used for conveying instructions, context, questions, answers, or status updates that are not necessarily formal `Artifacts`.
     - See details in the [Protocol Specification: Message Object](../specification.md#64-message-object).
 
@@ -46,12 +46,12 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
 ## Interaction Mechanisms
 
 - **Request/Response (Polling):**
-    - The client sends a request (e.g., using the `tasks/send` RPC method) and receives a response from the server.
-    - For long-running tasks, the server might initially respond with a `working` status. The client would then periodically call `tasks/get` to poll for updates until the task reaches a terminal state (e.g., `completed`, `failed`).
+    - The client sends a request (e.g., using the `message/send` RPC method) and receives a response from the server.
+    - If the interaction requires a stateful long-running task, the server might initially respond with a `working` status. The client would then periodically call `tasks/get` to poll for updates until the task reaches a terminal state (e.g., `completed`, `failed`).
 
 - **Streaming (Server-Sent Events - SSE):**
     - For tasks that produce results incrementally or provide real-time progress updates.
-    - The client initiates a task using `tasks/sendSubscribe`.
+    - The client initiates an interaction with the server using `message/stream`.
     - The server responds with an HTTP connection that remains open, over which it sends a stream of Server-Sent Events (SSE).
     - These events can be `Task`, `Message`, or ``TaskStatusUpdateEvent` (for status changes) or `TaskArtifactUpdateEvent` (for new or updated artifact chunks).
     - This requires the server to advertise the `streaming` capability in its Agent Card.
@@ -59,14 +59,14 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
 
 - **Push Notifications:**
     - For very long-running tasks or scenarios where maintaining a persistent connection (like SSE) is impractical.
-    - The client can provide a webhook URL when initiating a task (or by calling `tasks/pushNotification/set`).
+    - The client can provide a webhook URL when initiating a task (or by calling `tasks/pushNotificationConfig/set`).
     - When the task status changes significantly (e.g., completes, fails, or requires input), the server can send an asynchronous notification (an HTTP POST request) to this client-provided webhook.
     - This requires the server to advertise the `pushNotifications` capability in its Agent Card.
     - Learn more about [Streaming & Asynchronous Operations](./streaming-and-async.md).
 
 ## Other Important Concepts
 
-- **Session (`sessionId`):** An optional client-generated identifier that can be used to logically group multiple related `Task` objects, providing context across a series of interactions.
+- **Context (`contextId`):** A server-generated identifier that can be used to logically group multiple related `Task` objects, providing context across a series of interactions.
 - **Transport and Format:** A2A communication occurs over HTTP(S). JSON-RPC 2.0 is used as the payload format for all requests and responses.
 - **Authentication & Authorization:** A2A relies on standard web security practices. Authentication requirements are declared in the Agent Card, and credentials (e.g., OAuth tokens, API keys) are typically passed via HTTP headers, separate from the A2A protocol messages themselves.
     - Learn more about [Enterprise-Ready Features](./enterprise-ready.md).
