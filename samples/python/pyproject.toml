@@ -37,7 +37,7 @@ members = [
 ]
 
 [tool.uv.sources]
-a2a_sdk = { path = "../../sdk/a2a_sdk-0.2.0-py3-none-any.whl" }
+a2a_sdk = { path = "../../sdk/a2a_sdk-0.2.1a1.post13.dev0+3368783-py3-none-any.whl" }
 
 [build-system]
 requires = ["hatchling"]
