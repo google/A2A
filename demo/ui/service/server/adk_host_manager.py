@@ -159,6 +159,7 @@ class ADKHostManager(ApplicationManager):
             'task_id': task_id,
             'context_id': context_id,
             'message_id': message.messageId,
+            'message_metadata': message.metadata or {},
         }
         # Need to upsert session state now, only way is to append an event.
         self._session_service.append_event(
@@ -408,6 +409,9 @@ class ADKHostManager(ApplicationManager):
                 rval.append((message_id, ''))
         return rval
 
+    def update_credentials(self, agent_name: str, credentials: str):
+        self._host_agent.remote_agent_connections[agent_name].credentials = credentials
+
     def register_agent(self, url):
         agent_data = get_agent_card(url)
         if not agent_data.url:
@@ -578,4 +582,5 @@ def task_still_open(task: Task | None) -> bool:
         TaskState.SUBMITTED,
         TaskState.WORKING,
         TaskState.INPUT_REQUIRED,
+        TaskState.AUTH_REQUIRED,
     ]

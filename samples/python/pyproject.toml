@@ -23,6 +23,7 @@ packages = ["common", "hosts"]
 members = [
     "agents/crewai",
     "agents/google_adk",
+    "agents/google_adk_with_agent_auth",
     "agents/langgraph",
     "agents/marvin",
     "hosts/cli",
@@ -32,7 +33,7 @@ members = [
     "agents/semantickernel",
     "agents/mindsdb",
     "agents/ag2",
-    "agents/extended_agent_card_adk"
+    "agents/extended_agent_card_adk",
 ]
 
 [build-system]

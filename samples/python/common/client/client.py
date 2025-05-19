@@ -9,24 +9,24 @@ from httpx._types import TimeoutTypes
 from httpx_sse import connect_sse
 
 from common.types import (
+    A2AClientError,
     AgentCard,
-    GetTaskRequest,
-    JSONRPCRequest,
-    GetTaskResponse,
-    CancelTaskResponse,
     CancelTaskRequest,
-    SetTaskPushNotificationRequest,
-    SetTaskPushNotificationResponse,
+    CancelTaskResponse,
+    GetAuthenticatedExtendedCardRequest,
+    GetAuthenticatedExtendedCardResponse,
     GetTaskPushNotificationRequest,
     GetTaskPushNotificationResponse,
-    A2AClientHTTPError,
-    A2AClientJSONError,
+    GetTaskRequest,
+    GetTaskResponse,
+    JSONRPCRequest,
     SendMessageRequest,
     SendMessageResponse,
     SendMessageStreamRequest,
     SendMessageStreamResponse,
-    GetAuthenticatedExtendedCardRequest,
-    GetAuthenticatedExtendedCardResponse,
+    SetTaskPushNotificationRequest,
+    SetTaskPushNotificationResponse,
+    httpx_error_to_a2a_error,
 )
 
 
@@ -47,15 +47,11 @@ class A2AClient:
             raise ValueError('Must provide either agent_card or url')
         self.default_headers = default_headers or {}
 
-    async def send_message(
-        self, payload: dict[str, Any]
-    ) -> SendMessageResponse:
+    async def send_message(self, payload: dict[str, Any]) -> SendMessageResponse:
         request = SendMessageRequest(params=payload)
         return SendMessageResponse(**await self._send_request(request))
 
-    async def send_message_stream(
-        self, payload: dict[str, Any]
-    ) -> AsyncIterable[SendMessageStreamResponse]:
+    async def send_message_stream(self, payload: dict[str, Any]) -> AsyncIterable[SendMessageStreamResponse]:
         request = SendMessageStreamRequest(params=payload)
         headers = self.default_headers.copy()
         with httpx.Client(timeout=None) as client:
@@ -66,11 +62,13 @@ class A2AClient:
                     for sse in event_source.iter_sse():
                         yield SendMessageStreamResponse(**json.loads(sse.data))
                 except json.JSONDecodeError as e:
-                    raise A2AClientJSONError(str(e)) from e
-                except httpx.RequestError as e:
-                    raise A2AClientHTTPError(400, str(e)) from e
+                    raise A2AClientError(str(e)) from e
+                except httpx.HTTPError as e:
+                    raise httpx_error_to_a2a_error(e, event_source)
 
-    async def _send_request(self, request: JSONRPCRequest, extra_headers: dict[str, str] | None = None) -> dict[str, Any]:
+    async def _send_request(
+        self, request: JSONRPCRequest, extra_headers: dict[str, str] | None = None
+    ) -> dict[str, Any]:
         headers = self.default_headers.copy()
         if extra_headers:
             headers.update(extra_headers)
@@ -83,10 +81,10 @@ class A2AClient:
                 )
                 response.raise_for_status()
                 return response.json()
-            except httpx.HTTPStatusError as e:
-                raise A2AClientHTTPError(e.response.status_code, str(e)) from e
             except json.JSONDecodeError as e:
-                raise A2AClientJSONError(str(e)) from e
+                raise A2AClientError(str(e)) from e
+            except httpx.HTTPError as e:
+                raise httpx_error_to_a2a_error(e)
 
     async def get_task(self, payload: dict[str, Any]) -> GetTaskResponse:
         request = GetTaskRequest(params=payload)
@@ -96,21 +94,13 @@ class A2AClient:
         request = CancelTaskRequest(params=payload)
         return CancelTaskResponse(**await self._send_request(request))
 
-    async def set_task_callback(
-        self, payload: dict[str, Any]
-    ) -> SetTaskPushNotificationResponse:
+    async def set_task_callback(self, payload: dict[str, Any]) -> SetTaskPushNotificationResponse:
         request = SetTaskPushNotificationRequest(params=payload)
-        return SetTaskPushNotificationResponse(
-            **await self._send_request(request)
-        )
+        return SetTaskPushNotificationResponse(**await self._send_request(request))
 
-    async def get_task_callback(
-        self, payload: dict[str, Any]
-    ) -> GetTaskPushNotificationResponse:
+    async def get_task_callback(self, payload: dict[str, Any]) -> GetTaskPushNotificationResponse:
         request = GetTaskPushNotificationRequest(params=payload)
-        return GetTaskPushNotificationResponse(
-            **await self._send_request(request)
-        )
+        return GetTaskPushNotificationResponse(**await self._send_request(request))
 
     async def get_authenticated_extended_card(
         self, auth_headers: dict[str, str] | None = None
