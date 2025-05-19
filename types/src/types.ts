@@ -130,7 +130,7 @@ export interface Task {
   /** extension metadata */
   metadata?: object;
   /** event type */
-  itemType: "task";
+  kind: "task";
 }
 
 /** TaskState and accompanying message. */
@@ -152,7 +152,7 @@ export interface TaskStatusUpdateEvent {
   /** the context the task is associated with */
   contextId: string;
   /** event type */
-  itemType: "status-update";
+  kind: "status-update";
   /** current status of the task */
   status: TaskStatus;
   /** indicates the end of the event stream */
@@ -168,7 +168,7 @@ export interface TaskArtifactUpdateEvent {
   /** the context the task is associated with */
   contextId: string;
   /** event type */
-  itemType: "artifact-update";
+  kind: "artifact-update";
   /** generated artifact */
   artifact: Artifact;
   /** Indicates if this artifact appends to a previous one */
@@ -256,7 +256,7 @@ export interface Message {
   /** the context the message is associated with */
   contextId?: string;
   /** event type */
-  itemType: "message";
+  kind: "message";
 }
 
 /** Base properties common to all message parts. */
@@ -268,7 +268,7 @@ export interface PartBase {
 /** Represents a text segment within parts.*/
 export interface TextPart extends PartBase {
   /** Part type - text for TextParts*/
-  itemType: "text";
+  kind: "text";
   /** Text content */
   text: string;
 }
@@ -297,7 +297,7 @@ export interface FileWithUri extends FileBase {
 /** Represents a File segment within parts.*/
 export interface FilePart extends PartBase {
   /** Part type - file for FileParts */
-  itemType: "file";
+  kind: "file";
   /** File content either as url or bytes */
   file: FileWithBytes | FileWithUri;
 }
@@ -305,7 +305,7 @@ export interface FilePart extends PartBase {
 /** Represents a structured data segment within a message part. */
 export interface DataPart extends PartBase {
   /** Part type - data for DataParts */
-  itemType: "data";
+  kind: "data";
   /** Structured data content 
   */
   data: object;

@@ -132,7 +132,7 @@ Allows a client to send content to a remote agent to interact, start a new Task,
       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
     }
     ],
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -153,7 +153,7 @@ Allows a client to send content to a remote agent to interact, start a new Task,
         "text": "Why did the chicken cross the road? To get to the other side!"
       }
     ],
-    "itemType": "message",
+    "kind": "message",
     "metadata": {}
   }
 }
@@ -216,7 +216,7 @@ The client may also request the last N items of history for the Task, which will
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -252,7 +252,7 @@ A client may choose to cancel previously submitted Tasks.
     "status": {
       "state": "canceled"
     },
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -404,7 +404,7 @@ The Message included in the `input-required` state must include details indicati
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -499,7 +499,7 @@ The Message included in the `input-required` state must include details indicati
         "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
       }
     ],
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -574,7 +574,7 @@ data: {
         "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1"
       }
     ],
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -593,7 +593,7 @@ data: {
     },
     "append": false,
     "lastChunk": false,
-    "itemType":"artifact-update"
+    "kind":"artifact-update"
   }
 }
 
@@ -611,7 +611,7 @@ data: {
     },
     "append": true,
     "lastChunk": false,
-    "itemType":"artifact-update"
+    "kind":"artifact-update"
   }
 }
 
@@ -630,7 +630,7 @@ data: {
     },
     "append": true,
     "lastChunk": true,
-    "itemType":"artifact-update"
+    "kind":"artifact-update"
   }
 }
 
@@ -645,7 +645,7 @@ data: {
       "timestamp":"2025-04-02T16:59:35.331844"
     },
     "final": true,
-    "itemType":"status-update"
+    "kind":"status-update"
   }
 }
 ```
@@ -683,7 +683,7 @@ data: {
     },
     "append": true,
     "lastChunk":false,
-    "itemType":"artifact-update"  
+    "kind":"artifact-update"  
   }
 }
     ```
@@ -702,7 +702,7 @@ data: {
     },
     "append": true,
     "lastChunk": true,
-    "itemType":"artifact-update"
+    "kind":"artifact-update"
   }
 }
 
@@ -718,7 +718,7 @@ data: {
       "timestamp":"2025-04-02T16:59:35.331844"
     },
     "final": true,
-    "itemType":"status-update"
+    "kind":"status-update"
   }
 }
 ```
@@ -804,7 +804,7 @@ The following example demonstrates an interaction between a client and an agent 
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -879,7 +879,7 @@ The following example demonstrates an interaction between a client and an agent 
         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
       }
     ],
-    "itemType": "task",
+    "kind": "task",
     "metadata": {}
   }
 }
@@ -950,7 +950,7 @@ Both the client and the agent can request structured output from the other party
         "index": 0
       }
     ],
-    "itemType": "task"
+    "kind": "task"
   }
 }
 ```

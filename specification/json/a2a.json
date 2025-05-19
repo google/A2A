@@ -378,7 +378,7 @@
                     "properties": {},
                     "type": "object"
                 },
-                "itemType": {
+                "kind": {
                     "const": "data",
                     "description": "Part type - data for DataParts",
                     "type": "string"
@@ -392,7 +392,7 @@
             },
             "required": [
                 "data",
-                "itemType"
+                "kind"
             ],
             "type": "object"
         },
@@ -424,7 +424,7 @@
                     ],
                     "description": "File content either as url or bytes"
                 },
-                "itemType": {
+                "kind": {
                     "const": "file",
                     "description": "Part type - file for FileParts",
                     "type": "string"
@@ -438,7 +438,7 @@
             },
             "required": [
                 "file",
-                "itemType"
+                "kind"
             ],
             "type": "object"
         },
@@ -929,7 +929,7 @@
                     "description": "the context the message is associated with",
                     "type": "string"
                 },
-                "itemType": {
+                "kind": {
                     "const": "message",
                     "description": "event type",
                     "type": "string"
@@ -965,7 +965,7 @@
                 }
             },
             "required": [
-                "itemType",
+                "kind",
                 "messageId",
                 "parts",
                 "role"
@@ -1385,7 +1385,7 @@
                     "description": "unique identifier for the task",
                     "type": "string"
                 },
-                "itemType": {
+                "kind": {
                     "const": "task",
                     "description": "event type",
                     "type": "string"
@@ -1404,7 +1404,7 @@
             "required": [
                 "contextId",
                 "id",
-                "itemType",
+                "kind",
                 "status"
             ],
             "type": "object"
@@ -1424,7 +1424,7 @@
                     "description": "the context the task is associated with",
                     "type": "string"
                 },
-                "itemType": {
+                "kind": {
                     "const": "artifact-update",
                     "description": "event type",
                     "type": "string"
@@ -1447,7 +1447,7 @@
             "required": [
                 "artifact",
                 "contextId",
-                "itemType",
+                "kind",
                 "taskId"
             ],
             "type": "object"
@@ -1633,7 +1633,7 @@
                     "description": "indicates the end of the event stream",
                     "type": "boolean"
                 },
-                "itemType": {
+                "kind": {
                     "const": "status-update",
                     "description": "event type",
                     "type": "string"
@@ -1656,7 +1656,7 @@
             "required": [
                 "contextId",
                 "final",
-                "itemType",
+                "kind",
                 "status",
                 "taskId"
             ],
@@ -1665,7 +1665,7 @@
         "TextPart": {
             "description": "Represents a text segment within parts.",
             "properties": {
-                "itemType": {
+                "kind": {
                     "const": "text",
                     "description": "Part type - text for TextParts",
                     "type": "string"
@@ -1682,7 +1682,7 @@
                 }
             },
             "required": [
-                "itemType",
+                "kind",
                 "text"
             ],
             "type": "object"

@@ -33,7 +33,7 @@ interface Task {
   history?: Message[];
   artifacts?: Artifact[]; // collection of artifacts created by the agent.
   metadata?: object; // extension metadata
-  itemType: "task";
+  kind: "task";
 }
 // TaskState and accompanying message.
 interface TaskStatus {
@@ -45,7 +45,7 @@ interface TaskStatus {
 interface TaskStatusUpdateEvent {
   taskId: string; //Task id
   contextId: string;
-  itemType: "status-update";
+  kind: "status-update";
   status: TaskStatus;
   final: boolean; //indicates the end of the event stream
   metadata?: object;
@@ -54,7 +54,7 @@ interface TaskStatusUpdateEvent {
 interface TaskArtifactUpdateEvent {
   taskId: string; //Task id
   contextId: string;
-  itemType: "artifact-update";
+  kind: "artifact-update";
   artifact: Artifact;
   append?: boolean;
   lastChunk?: boolean;
@@ -118,7 +118,7 @@ interface Message {
   taskId?: string; // identifier of task the message is related to, optional.
   contextId?: string; // the context the message is associated with, optional.
   final?: boolean;
-  itemType: "message";
+  kind: "message";
 }
 ```
 
