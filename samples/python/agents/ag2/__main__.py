@@ -40,7 +40,7 @@ def main(host, port):
 
 
 def get_agent_card(host: str, port: int):
-    """Returns the Agent Card for the Currency Agent."""
+    """Returns the Agent Card for the AG2 Agent."""
     capabilities = AgentCapabilities(streaming=True)
     skill = AgentSkill(
             id='download_closed_captions',

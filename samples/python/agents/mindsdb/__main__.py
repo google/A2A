@@ -37,7 +37,7 @@ def main(host, port):
     uvicorn.run(server.build(), host=host, port=port)
 
 def get_agent_card(host: str, port: int):
-    """Returns the Agent Card for the Currency Agent."""
+    """Returns the Agent Card for the MindsDB Agent."""
     capabilities = AgentCapabilities(streaming=True)
     skill = AgentSkill(
         id='chat_with_your_data',
