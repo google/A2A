@@ -2,7 +2,6 @@ import os
 import sys
 
 import click
-import httpx
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
@@ -22,8 +21,7 @@ def main(host, port):
     if not os.getenv('MINDS_API_KEY'):
         print('MINDS_API_KEY environment variable not set.')
         sys.exit(1)
-
-    client = httpx.AsyncClient()
+    
     request_handler = DefaultRequestHandler(
         agent_executor=MindsDBAgentExecutor(),
         task_store=InMemoryTaskStore(),
