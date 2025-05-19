@@ -1,0 +1,868 @@
+{
+  "openrpc": "1.3.2",
+  "info": {
+    "version": "1.0.0",
+    "title": "Petstore",
+    "license": {
+      "name": "MIT"
+    },
+    "description": "Transport Protocol\nAll A2A RPC methods are invoked via HTTP POST to the A2A Server's endpoint (specified in its AgentCard).\n- Request body MUST be a JSONRPCRequest object\n- Request Content-Type MUST be application/json\n- Response body MUST be a JSONRPCResponse object (or SSE stream for streaming methods)\n- Response Content-Type is application/json (or text/event-stream for SSE)"
+  },
+  "servers": [
+    {
+      "name": "A2A Server",
+      "url": "https://{a2aServerUrl}/a2a",
+      "description": "Base URL should be obtained from the AgentCard.url field",
+      "variables": {
+        "a2aServerUrl": {
+          "description": "The A2A Server's endpoint URL as specified in its AgentCard",
+          "default": "agent.example.com"
+        }
+      },
+      "x-transport": {
+        "protocol": "https",
+        "methods": {
+          "default": {
+            "httpMethod": "POST",
+            "requestContentType": "application/json",
+            "responseContentType": "application/json"
+          },
+          "streaming": {
+            "httpMethod": "POST",
+            "requestContentType": "application/json",
+            "responseContentType": "text/event-stream",
+            "description": "For methods that support streaming"
+          }
+        }
+      }
+    }
+  ],
+  "methods": [
+    {
+      "name": "tasks/send",
+      "summary": "Send a message to initiate or continue a task",
+      "description": "Sends a message to an agent to initiate a new task or to continue an existing one. This method is suitable for synchronous request/response interactions or when client-side polling (using tasks/get) is acceptable for monitoring longer-running tasks.",
+      "params": [
+        {
+          "name": "id",
+          "description": "Task ID. If new, the server SHOULD create the task. If existing, this message continues the task.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sessionId",
+          "description": "Optional client-generated session ID to group this task with others.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        {
+          "name": "message",
+          "description": "The message content to send. Message.role is typically 'user'.",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        {
+          "name": "pushNotification",
+          "description": "Optional: sets push notification configuration for the task (usually on the first send). Requires server capability.",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/PushNotificationConfig",
+            "nullable": true
+          }
+        },
+        {
+          "name": "historyLength",
+          "description": "If positive, requests the server to include up to N recent messages in Task.history.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        {
+          "name": "metadata",
+          "description": "Request-specific metadata.",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
+      ],
+      "result": {
+        "name": "task",
+        "description": "The current or final state of the task after processing the message.",
+        "schema": {
+          "$ref": "#/components/schemas/Task"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/InvalidParams"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotFound"
+        },
+        {
+          "$ref": "#/components/errors/PermissionDenied"
+        }
+      ]
+    },
+    {
+      "name": "tasks/sendSubscribe",
+      "summary": "Send a message to initiate/continue a task and subscribe to real-time updates",
+      "description": "Sends a message to an agent to initiate/continue a task AND subscribes the client to real-time updates for that task via Server-Sent Events (SSE). This method requires the server to have AgentCard.capabilities.streaming: true.",
+      "x-transport": "streaming",
+      "params": [
+        {
+          "name": "id",
+          "description": "Task ID. If new, the server SHOULD create the task. If existing, this message continues the task.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sessionId",
+          "description": "Optional client-generated session ID to group this task with others.",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        {
+          "name": "message",
+          "description": "The message content to send. Message.role is typically 'user'.",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/Message"
+          }
+        },
+        {
+          "name": "pushNotification",
+          "description": "Optional: sets push notification configuration for the task (usually on the first send). Requires server capability.",
+          "required": false,
+          "schema": {
+            "$ref": "#/components/schemas/PushNotificationConfig",
+            "nullable": true
+          }
+        },
+        {
+          "name": "historyLength",
+          "description": "If positive, requests the server to include up to N recent messages in Task.history.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        {
+          "name": "metadata",
+          "description": "Request-specific metadata.",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
+      ],
+      "result": {
+        "name": "stream",
+        "description": "A stream of Server-Sent Events. Each SSE data field contains a SendTaskStreamingResponse JSON object.",
+        "schema": {
+          "$ref": "#/components/schemas/SendTaskStreamingResponse"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/InvalidParams"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotFound"
+        },
+        {
+          "$ref": "#/components/errors/PermissionDenied"
+        },
+        {
+          "$ref": "#/components/errors/StreamingNotSupported"
+        }
+      ]
+    },
+    {
+      "name": "tasks/get",
+      "summary": "Retrieve the current state of a task",
+      "description": "Retrieves the current state (including status, artifacts, and optionally history) of a previously initiated task. This is typically used for polling the status of a task initiated with tasks/send, or for fetching the final state of a task after being notified via a push notification or after an SSE stream has ended.",
+      "params": [
+        {
+          "name": "id",
+          "description": "The ID of the task to retrieve.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "historyLength",
+          "description": "If positive, requests the server to include up to N recent messages in Task.history.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        {
+          "name": "metadata",
+          "description": "Request-specific metadata.",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
+      ],
+      "result": {
+        "name": "task",
+        "description": "A snapshot of the task's current state.",
+        "schema": {
+          "$ref": "#/components/schemas/Task"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/InvalidParams"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotFound"
+        },
+        {
+          "$ref": "#/components/errors/PermissionDenied"
+        }
+      ]
+    },
+    {
+      "name": "tasks/cancel",
+      "summary": "Request cancellation of an ongoing task",
+      "description": "Requests the cancellation of an ongoing task. The server will attempt to cancel the task, but success is not guaranteed (e.g., the task might have already completed or failed, or cancellation might not be supported at its current stage).",
+      "params": [
+        {
+          "name": "id",
+          "description": "The ID of the task to cancel.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "metadata",
+          "description": "Request-specific metadata.",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
+      ],
+      "result": {
+        "name": "task",
+        "description": "The state of the task after the cancellation attempt.",
+        "schema": {
+          "$ref": "#/components/schemas/Task"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/InvalidParams"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotFound"
+        },
+        {
+          "$ref": "#/components/errors/PermissionDenied"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotCancelable"
+        }
+      ]
+    },
+    {
+      "name": "tasks/pushNotification/set",
+      "summary": "Set push notification configuration for a task",
+      "description": "Sets or updates the push notification configuration for a specified task. This allows the client to tell the server where and how to send asynchronous updates for the task.",
+      "params": [
+        {
+          "name": "id",
+          "description": "The ID of the task to configure.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "pushNotificationConfig",
+          "description": "The push notification configuration.",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/PushNotificationConfig",
+            "nullable": true
+          }
+        }
+      ],
+      "result": {
+        "name": "config",
+        "description": "Confirms the configuration that was set.",
+        "schema": {
+          "$ref": "#/components/schemas/TaskPushNotificationConfig"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/InvalidParams"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotFound"
+        },
+        {
+          "$ref": "#/components/errors/PermissionDenied"
+        },
+        {
+          "$ref": "#/components/errors/PushNotificationNotSupported"
+        }
+      ]
+    },
+    {
+      "name": "tasks/pushNotification/get",
+      "summary": "Get push notification configuration for a task",
+      "description": "Retrieves the current push notification configuration for a specified task.",
+      "params": [
+        {
+          "name": "id",
+          "description": "The ID of the task to query.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "metadata",
+          "description": "Request-specific metadata.",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
+      ],
+      "result": {
+        "name": "config",
+        "description": "The current push notification configuration for the task.",
+        "schema": {
+          "$ref": "#/components/schemas/TaskPushNotificationConfig"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/InvalidParams"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotFound"
+        },
+        {
+          "$ref": "#/components/errors/PermissionDenied"
+        },
+        {
+          "code": 501,
+          "message": "Push notifications not supported"
+        }
+      ]
+    },
+    {
+      "name": "tasks/resubscribe",
+      "summary": "Resubscribe to a task's SSE stream",
+      "description": "Allows a client to reconnect to an SSE stream for an ongoing task after a previous connection was interrupted.",
+      "x-transport": "streaming",
+      "params": [
+        {
+          "name": "id",
+          "description": "The ID of the task to resubscribe to.",
+          "required": true,
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "historyLength",
+          "description": "Typically ignored for resubscription, but included for structural consistency.",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "nullable": true
+          }
+        },
+        {
+          "name": "metadata",
+          "description": "Request-specific metadata.",
+          "required": false,
+          "schema": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        }
+      ],
+      "result": {
+        "name": "stream",
+        "description": "A stream of Server-Sent Events with subsequent updates for the task.",
+        "schema": {
+          "$ref": "#/components/schemas/SendTaskStreamingResponse"
+        }
+      },
+      "errors": [
+        {
+          "$ref": "#/components/errors/InvalidParams"
+        },
+        {
+          "$ref": "#/components/errors/TaskNotFound"
+        },
+        {
+          "$ref": "#/components/errors/PermissionDenied"
+        },
+        {
+          "$ref": "#/components/errors/StreamingNotSupported"
+        }
+      ]
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "A unique identifier for the task (e.g., a UUID v4)"
+          },
+          "sessionId": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional client-generated identifier to group related tasks"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus"
+          },
+          "artifacts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Artifact"
+            },
+            "nullable": true
+          },
+          "history": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "nullable": true
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        },
+        "required": ["id", "status"]
+      },
+      "TaskStatus": {
+        "type": "object",
+        "properties": {
+          "state": {
+            "$ref": "#/components/schemas/TaskState"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message",
+            "nullable": true
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "required": ["state"]
+      },
+      "TaskState": {
+        "type": "string",
+        "enum": ["submitted", "working", "input-required", "completed", "canceled", "failed", "unknown"]
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["user", "agent"]
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Part"
+            },
+            "minItems": 1
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        },
+        "required": ["role", "parts"]
+      },
+      "Part": {
+        "oneOf": [
+          {
+            "$ref": "#/components/schemas/TextPart"
+          },
+          {
+            "$ref": "#/components/schemas/FilePart"
+          },
+          {
+            "$ref": "#/components/schemas/DataPart"
+          }
+        ]
+      },
+      "TextPart": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "text"
+          },
+          "text": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        },
+        "required": ["type", "text"]
+      },
+      "FilePart": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "file"
+          },
+          "file": {
+            "$ref": "#/components/schemas/FileContent"
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        },
+        "required": ["type", "file"]
+      },
+      "DataPart": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "data"
+          },
+          "data": {
+            "type": ["object", "array"]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        },
+        "required": ["type", "data"]
+      },
+      "FileContent": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "mimeType": {
+            "type": "string",
+            "nullable": true
+          },
+          "bytes": {
+            "type": "string",
+            "nullable": true
+          },
+          "uri": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "Artifact": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "parts": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Part"
+            },
+            "minItems": 1
+          },
+          "index": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          },
+          "append": {
+            "type": "boolean",
+            "nullable": true,
+            "default": false
+          },
+          "lastChunk": {
+            "type": "boolean",
+            "nullable": true,
+            "default": false
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true
+          }
+        },
+        "required": ["parts"]
+      },
+      "PushNotificationConfig": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Absolute HTTPS webhook URL for the A2A Server to POST task updates to.",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "token": {
+            "type": "string",
+            "description": "Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an X-A2A-Notification-Token header).",
+            "nullable": true
+          },
+          "authentication": {
+            "$ref": "#/components/schemas/AuthenticationInfo",
+            "nullable": true,
+            "description": "Authentication details the A2A Server must use when calling the url. The client's webhook (receiver) defines these requirements."
+          }
+        },
+        "required": ["url"],
+        "description": "Configuration provided by the client to the server for sending asynchronous push notifications about task updates."
+      },
+      "AuthenticationInfo": {
+        "type": "object",
+        "properties": {
+          "schemes": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "examples": ["Bearer", "ApiKey", "Basic"]
+            },
+            "description": "Array of authentication scheme names the caller must use when sending the request to the webhook URL."
+          },
+          "credentials": {
+            "type": "string",
+            "nullable": true,
+            "description": "Optional static credentials or scheme-specific configuration info. Handle with EXTREME CAUTION if secrets are involved. Prefer server-side dynamic credential fetching where possible."
+          }
+        },
+        "required": ["schemes"],
+        "description": "A generic structure for specifying authentication requirements, typically used within PushNotificationConfig."
+      },
+      "TaskPushNotificationConfig": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the task to configure push notifications for, or retrieve configuration from."
+          },
+          "pushNotificationConfig": {
+            "$ref": "#/components/schemas/PushNotificationConfig",
+            "nullable": true,
+            "description": "The push notification configuration. For set, the desired config. For get, the current config (secrets MAY be omitted by server). null might clear config on set."
+          }
+        },
+        "required": ["id", "pushNotificationConfig"],
+        "description": "Used as the params object for the tasks/pushNotification/set method and as the result object for the tasks/pushNotification/get method."
+      },
+      "SendTaskStreamingResponse": {
+        "type": "object",
+        "properties": {
+          "jsonrpc": {
+            "type": "string",
+            "const": "2.0"
+          },
+          "id": {
+            "type": ["string", "number"],
+            "description": "Matches the id from the originating tasks/sendSubscribe or tasks/resubscribe request."
+          },
+          "result": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/TaskStatusUpdateEvent"
+              },
+              {
+                "$ref": "#/components/schemas/TaskArtifactUpdateEvent"
+              }
+            ],
+            "description": "The event payload: either a status update or an artifact update."
+          },
+          "error": {
+            "$ref": "#/components/schemas/JSONRPCError",
+            "nullable": true,
+            "description": "Typically null or absent for stream events. If a fatal stream error occurs, this MAY be populated in the final SSE message before the stream closes."
+          }
+        },
+        "required": ["jsonrpc", "id", "result"],
+        "description": "The structure of the JSON object found in the data field of each Server-Sent Event sent by the server for a tasks/sendSubscribe or tasks/resubscribe stream."
+      },
+      "TaskStatusUpdateEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Task ID being updated, matching the original request's task ID."
+          },
+          "status": {
+            "$ref": "#/components/schemas/TaskStatus",
+            "description": "The new TaskStatus object."
+          },
+          "final": {
+            "type": "boolean",
+            "default": false,
+            "description": "If true, indicates this is the terminal status update for the current stream cycle. The server typically closes the SSE connection after this."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true,
+            "description": "Event-specific metadata."
+          }
+        },
+        "required": ["id", "status"],
+        "description": "Carries information about a change in the task's status during streaming."
+      },
+      "TaskArtifactUpdateEvent": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Task ID that generated the artifact, matching the original request's task ID."
+          },
+          "artifact": {
+            "$ref": "#/components/schemas/Artifact",
+            "description": "The Artifact data. Could be a complete artifact or an incremental chunk. Use index, append, and lastChunk fields within Artifact for client-side assembly."
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true,
+            "description": "Event-specific metadata."
+          }
+        },
+        "required": ["id", "artifact"],
+        "description": "Carries a new or updated artifact (or a chunk of an artifact) generated by the task during streaming."
+      },
+      "JSONRPCError": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "integer",
+            "description": "A Number that indicates the error type that occurred."
+          },
+          "message": {
+            "type": "string",
+            "description": "A short description of the error."
+          },
+          "data": {
+            "type": ["object", "array", "string", "number", "boolean", "null"],
+            "description": "Additional information about the error."
+          }
+        },
+        "required": ["code", "message"],
+        "description": "Defines the application level error."
+      }
+    },
+    "errors": {
+      "InvalidParams": {
+        "code": -32602,
+        "message": "Invalid parameters"
+      },
+      "TaskNotFound": {
+        "code": -32001,
+        "message": "Task not found"
+      },
+      "PermissionDenied": {
+        "code": -32008,
+        "message": "Authorization failed"
+      },
+      "StreamingNotSupported": {
+        "code": -32006,
+        "message": "Streaming is not supported by this agent"
+      },
+      "TaskNotCancelable": {
+        "code": -32002,
+        "message": "Task cannot be canceled"
+      },
+      "PushNotificationNotSupported": {
+        "code": -32003,
+        "message": "Push Notification is not supported"
+      },
+      "OperationNotSupported": {
+        "code": -32004,
+        "message": "This operation is not supported"
+      },
+      "ContentTypeNotSupported": {
+        "code": -32005,
+        "message": "Incompatible content types"
+      },
+      "AuthenticationRequired": {
+        "code": -32007,
+        "message": "Authentication required"
+      },
+      "InvalidTaskState": {
+        "code": -32009,
+        "message": "Invalid task state for operation"
+      },
+      "RateLimitExceeded": {
+        "code": -32010,
+        "message": "Rate limit exceeded"
+      },
+      "ResourceUnavailable": {
+        "code": -32011,
+        "message": "A required resource is unavailable"
+      }
+    }
+  }
+}
