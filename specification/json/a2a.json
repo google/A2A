@@ -254,9 +254,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "extension metadata",
-                    "properties": {},
                     "type": "object"
                 },
                 "name": {
@@ -373,9 +372,8 @@
             "description": "Represents a structured data segment within a message part.",
             "properties": {
                 "data": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "Structured data content",
-                    "properties": {},
                     "type": "object"
                 },
                 "kind": {
@@ -384,9 +382,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
-                    "properties": {},
                     "type": "object"
                 }
             },
@@ -430,9 +427,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
-                    "properties": {},
                     "type": "object"
                 }
             },
@@ -939,9 +935,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "extension metadata",
-                    "properties": {},
                     "type": "object"
                 },
                 "parts": {
@@ -1012,9 +1007,8 @@
                     "description": "The message being sent to the server"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "extension metadata",
-                    "properties": {},
                     "type": "object"
                 }
             },
@@ -1064,9 +1058,8 @@
             "description": "Base properties common to all message parts.",
             "properties": {
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
-                    "properties": {},
                     "type": "object"
                 }
             },
@@ -1391,9 +1384,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "extension metadata",
-                    "properties": {},
                     "type": "object"
                 },
                 "status": {
@@ -1434,9 +1426,8 @@
                     "type": "boolean"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "extension metadata",
-                    "properties": {},
                     "type": "object"
                 },
                 "taskId": {
@@ -1460,8 +1451,7 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "properties": {},
+                    "additionalProperties": {},
                     "type": "object"
                 }
             },
@@ -1545,8 +1535,7 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
-                    "properties": {},
+                    "additionalProperties": {},
                     "type": "object"
                 }
             },
@@ -1639,9 +1628,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "extension metadata",
-                    "properties": {},
                     "type": "object"
                 },
                 "status": {
@@ -1671,9 +1659,8 @@
                     "type": "string"
                 },
                 "metadata": {
-                    "additionalProperties": true,
+                    "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
-                    "properties": {},
                     "type": "object"
                 },
                 "text": {
