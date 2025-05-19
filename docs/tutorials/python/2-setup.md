@@ -1,59 +1,29 @@
-# 2. Setup Your Environment
+# Set up Your Environment
 
-## Prerequisites
+## What You'll Need <!-- {docsify-ignore} -->
 
-- Python 3.10 or higher.
-- Access to a terminal or command prompt.
-- Git, for cloning the repository.
-- A code editor (e.g., VS Code) is recommended.
+- A code editor such as Visual Studio Code (VS Code)
+- A command prompt such as Terminal (Linux), iTerm (Mac) or just the Terminal in VS Code
 
-## Clone the Repository
+## Python Environment <!-- {docsify-ignore} -->
 
-If you haven't already, clone the A2A repository and navigate to the Python SDK directory:
+We'll be using [https://docs.astral.sh/uv/](https://docs.astral.sh/uv/getting-started/installation/) as our package manager and to set up our project.
 
-```bash
-git clone https://github.com/google/a2a-python.git -b main --depth 1
-cd a2a-python
-```
+The A2A libraries we'll be using require `python >= 3.12` which [uv can install](https://docs.astral.sh/uv/guides/install-python/) if you don't already have a matching version. We'll be using python 3.12.
 
-## Python Environment & SDK Installation
+## Check <!-- {docsify-ignore} -->
 
-We recommend using a virtual environment for Python projects. The A2A Python SDK uses `uv` for dependency management, but you can use `pip` with `venv` as well.
-
-1. **Create and activate a virtual environment:**
-
-    Using `venv` (standard library):
-
-    === "Mac/Linux"
-
-        ```sh
-        python -m venv .venv
-        source .venv/bin/activate
-        ```
-
-    === "Windows"
-
-        ```powershell
-        python -m venv .venv
-        .venv\Scripts\activate
-        ```
-
-2. **Install the A2A SDK and its dependencies:**
-
-    The `a2a-python` repository contains the SDK source code. To make it and its dependencies available in your environment, run:
-
-    ```bash
-    pip install -e '.[dev]'
-    ```
-
-    This command installs the SDK in "editable" mode (`-e`), meaning changes to the SDK source code are immediately available. It also installs development dependencies specified in `pyproject.toml`.
-
-## Verify Installation
-
-After installation, you should be able to import the `a2a` package in a Python interpreter:
+Run the following command to make sure you're ready for the next step.
 
 ```bash
-python -c "import a2a; print('A2A SDK imported successfully')"
+echo 'import sys; print(sys.version)' | uv run -
 ```
 
-If this command runs without error and prints the success message, your environment is set up correctly.
+If you see something similar to the following, you are ready to proceed!
+
+```bash
+3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0]
+```
+
+[Prev](./1-introduction.md)
+[Next](./3-create-project.md)
