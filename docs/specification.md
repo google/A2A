@@ -145,10 +145,10 @@ This follows the principles of [RFC 8615](https://datatracker.ietf.org/doc/html/
 
 ### 5.4. Security of Agent Cards
 
-Agent Cards themselves might contain information that is considered sensitive (e.g., the URL of an internal-only agent, or scheme-specific information in `authentication.credentials`).
+Agent Cards themselves might contain information that is considered sensitive.
 
 - If an Agent Card contains sensitive information, the endpoint serving the card **MUST** be protected by appropriate access controls (e.g., mTLS, network restrictions, authentication required to fetch the card).
-- It is generally **NOT RECOMMENDED** to include plaintext secrets (like static API keys) directly in an Agent Card. Prefer authentication schemes where clients obtain dynamic credentials out-of-band. If `authentication.credentials` is used, it should be for non-secret information like OAuth flow URLs or API key _names_ (not values).
+- It is generally **NOT RECOMMENDED** to include plaintext secrets (like static API keys) directly in an Agent Card. Prefer authentication schemes where clients obtain dynamic credentials out-of-band. 
 
 ### 5.5. `AgentCard` Object Structure
 
@@ -180,10 +180,10 @@ interface AgentCard {
   documentationUrl?: string;
   // Specifies optional A2A protocol features supported by this agent.
   capabilities: AgentCapabilities;
-  // Authentication schemes required to interact with the agent's `url` endpoint.
-  // If omitted, or an empty `schemes` array, no A2A-level authentication is explicitly advertised
-  // (NOT recommended for production; other security like network ACLs might still apply).
-  authentication?: AgentAuthentication;
+  /** Security scheme details used for authenticating with this agent. */
+  securitySchemes?: { [scheme: string]: SecurityScheme };
+  /** Security requirements for contacting the agent. */
+  security?: { [scheme: string]: string[]; }[];
   // Array of [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
   // the agent generally accepts as input across all skills, unless overridden by a specific skill.
   defaultInputModes: string[];
@@ -204,7 +204,8 @@ interface AgentCard {
 | `version`            | `string`                                                           | Yes      | Agent or A2A implementation version string.                                                                       |
 | `documentationUrl`   | `string`                                                | No       | URL to human-readable documentation for the agent.                                                                |
 | `capabilities`       | [`AgentCapabilities`](#552-agentcapabilities-object)               | Yes      | Specifies optional A2A protocol features supported (e.g., streaming, push notifications).                         |
-| `authentication`     | [`AgentAuthentication`](#553-agentauthentication-object) | No       | Authentication schemes required. undefined implies no A2A-advertised auth (not recommended for production). |
+| `securitySchemes`     | { [scheme: string]: [SecurityScheme](#553-securityscheme-object)  }| No       | Security scheme details used for authenticating with this agent. undefined implies no A2A-advertised auth (not recommended for production). |
+| `security`     | `{ [scheme: string]: string[]; }[]` | No       | Security requirements for contacting the agent.  |
 | `defaultInputModes`  | `string[]`                                                         | Yes       | Input MIME types accepted by the agent.
 | `defaultOutputModes` | `string[]`                                                         | Yes       | Output MIME types produced by the agent.                                  |
 | `skills`             | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                            |
@@ -251,31 +252,20 @@ interface AgentCapabilities {
 | `pushNotifications`      | `boolean` | No       | `false` | Indicates support for push notification methods (`tasks/pushNotificationConfig/*`).             |
 | `stateTransitionHistory` | `boolean` | No       | `false` | Placeholder for future feature: exposing detailed task status change history.             |
 
-#### 5.5.3. `AgentAuthentication` Object
+#### 5.5.3. `SecurityScheme` Object
 
-Describes the authentication requirements for accessing the agent's `url` endpoint.
+Describes the authentication requirements for accessing the agent's `url` endpoint. Refer [Sample Agent Card](#56-sample-agent-card) for an example.
+
 
 ```typescript
-interface AgentAuthentication {
-  // Array of authentication scheme names supported/required by the agent's endpoint
-  // (e.g., "Bearer", "Basic", "OAuth2", "ApiKey").
-  // Standard names (e.g., from OpenAPI specification, IANA registry) SHOULD be used where applicable.
-  // An empty array means no specific A2A-level schemes are advertised.
-  schemes: string[];
-  // Optional field, MAY contain non-secret, scheme-specific information.
-  // Examples: For "OAuth2", this could be a JSON string with `tokenUrl`, `authorizationUrl`, `scopes`.
-  // For "ApiKey", it could specify the header name (`in: "header"`, `name: "X-Custom-API-Key"`).
-  // **CRITICAL**: This field MUST NOT contain plaintext secrets (e.g., actual API key values, passwords).
-  // If the Agent Card itself needs to be protected due to this field containing sensitive URLs
-  // or configuration, the endpoint serving the Agent Card MUST be secured.
-  credentials?: string; // E.g., A JSON string parsable by the client for scheme details.
-}
+/** 
+ * Mirrors the OpenAPI Security Scheme Object
+ * (https://swagger.io/specification/#security-scheme-object)
+*/
+type SecurityScheme = APIKeySecurityScheme | HTTPAuthSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
+
 ```
 
-| Field Name    | Type               | Required | Description                                                                                                                                                                                       |
-| :------------ | :----------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `schemes`     | `string[]`         | Yes      | Array of auth scheme names (e.g., "Bearer", "OAuth2", "ApiKey"). Empty array means no A2A-advertised schemes.                                                                                     |
-| `credentials` | `string`           | No       | Optional non-secret, scheme-specific configuration info (e.g., OAuth URLs, API key header name). **MUST NOT contain plaintext secrets.** Secure the Agent Card if this field implies sensitivity. |
 
 #### 5.5.4. `AgentSkill` Object
 
@@ -336,10 +326,13 @@ interface AgentSkill {
     "pushNotifications": true,
     "stateTransitionHistory": false
   },
-  "authentication": {
-    "schemes": ["OAuth2"],
-    "credentials": "{\"authorizationUrl\": \"https://auth.examplegeoservices.com/authorize\", \"tokenUrl\": \"https://auth.examplegeoservices.com/token\", \"scopes\": {\"route:plan\": \"Allows planning new routes.\", \"map:custom\": \"Allows creating and managing custom maps.\"}}"
+  "securitySchemes": {
+    "google": {
+      "type": "openIdConnect",
+      "openIdConnectUrl": "https://accounts.google.com/.well-known/openid-configuration",
+    }
   },
+  "security": {"google": ["openid", "profile", "email"]},
   "defaultInputModes": ["application/json", "text/plain"],
   "defaultOutputModes": ["application/json", "image/png"],
   "skills": [
