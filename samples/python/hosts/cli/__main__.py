@@ -25,6 +25,7 @@ from a2a.types import (
     MessageSendParams,
     GetTaskRequest,
     TaskQueryParams,
+    JSONRPCErrorResponse,
 )
 from common.utils.push_notification_auth import PushNotificationReceiverAuth
 
@@ -162,7 +163,6 @@ async def completeTask(
     taskResult = None
     message = None
     if streaming:
-        print("Sending payload", payload)
         response_stream = client.send_message_streaming(
             SendStreamingMessageRequest(
                 id=str(uuid4()),
@@ -170,7 +170,9 @@ async def completeTask(
             )
         )
         async for result in response_stream:
-            print("Response ", result)
+            if isinstance(result.root, JSONRPCErrorResponse):
+                print("Error: ", result.root.error)
+                return False, contextId, taskId
             event = result.root.result
             contextId = event.contextId
             if (
@@ -216,12 +218,24 @@ async def completeTask(
         elif isinstance(event, Message):
             message = event
 
-    print(f"Returning context id {contextId} and {taskId}")
     if message:
         print(f'\n{message.model_dump_json(exclude_none=True)}')
         return True, contextId, taskId
     if taskResult:
-        print(f'\n{taskResult.model_dump_json(exclude_none=True)}')
+        # Don't print the contents of a file.
+        task_content = taskResult.model_dump_json(
+            exclude={
+                "history": {
+                    "__all__": {
+                        "parts": {
+                            "__all__" : {"file"},
+                        },
+                    },
+                },
+            },
+            exclude_none=True,
+        )
+        print(f'\n{task_content}')
         ## if the result is that more input is required, loop again.
         state = TaskState(taskResult.status.state)
         if state.name == TaskState.input_required.name:

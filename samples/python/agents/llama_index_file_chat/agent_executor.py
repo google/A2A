@@ -1,7 +1,9 @@
+import asyncio
 import logging
 import traceback
+from typing import cast
 
-from agent import (
+from agents.llama_index_file_chat.agent import (
     ParseAndChat,
     InputEvent,
     LogEvent,
@@ -15,14 +17,15 @@ from a2a.server.tasks import TaskUpdater
 from a2a.utils.errors import ServerError
 from a2a.utils import new_agent_text_message, are_modalities_compatible
 from a2a.types import (
-    Task,
+    Part,
     TextPart,
+    FilePart,
+    FileWithBytes,
+    Task,
     TaskState,
     InternalError,
     UnsupportedOperationError,
     InvalidParamsError,
-    FilePart,
-    FileWithBytes,
 )
 from common.utils.push_notification_auth import PushNotificationSenderAuth
 
@@ -90,7 +93,6 @@ class LlamaIndexAgentExecutor(AgentExecutor):
             # Emit an initial task object
             updater = TaskUpdater(event_queue, task_id, context_id)
             updater.submit()
-            # Stream updates as they come
             async for event in handler.stream_events():
                 if isinstance(event, LogEvent):
                     # Send log event as intermediate message
