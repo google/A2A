@@ -101,6 +101,13 @@
             },
             "title": "Skills",
             "type": "array"
+          },
+          "extensions": {
+            "items": {
+              "$ref": "#/$defs/AgentExtension"
+            },
+            "title": "Extensions",
+            "type": "array"
           }
         },
         "required": [
@@ -111,6 +118,44 @@
           "skills"
         ],
         "title": "AgentCard",
+        "type": "object"
+      },
+      "AgentExtension": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "description": {
+            "default": "",
+            "title": "Description",
+            "type": "string"
+          },
+          "methods": {
+            "default": [],
+            "description": "The list of method names (without prefix) provided by the extension.",
+            "items": {
+              "type": "string"
+            },
+            "title": "Methods",
+            "type": "array"
+          },
+          "prefix": {
+            "default": "Prefix added in front of the method names. E.g. for prefix='extensions/taskHistory/' and method='clearRecent', the actual method will be served at 'extensions/taskHistory/clearRecent'",
+            "title": "Prefix",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "prefix"
+        ],
+        "title": "AgentExtension",
         "type": "object"
       },
       "AgentProvider": {
