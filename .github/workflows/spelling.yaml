@@ -1,67 +1,6 @@
 name: Check Spelling
 
-# Comment management is handled through a secondary job, for details see:
-# https://github.com/check-spelling/check-spelling/wiki/Feature%3A-Restricted-Permissions
-#
-# `jobs.comment-push` runs when a push is made to a repository and the `jobs.spelling` job needs to make a comment
-#   (in odd cases, it might actually run just to collapse a comment, but that's fairly rare)
-#   it needs `contents: write` in order to add a comment.
-#
-# `jobs.comment-pr` runs when a pull_request is made to a repository and the `jobs.spelling` job needs to make a comment
-#   or collapse a comment (in the case where it had previously made a comment and now no longer needs to show a comment)
-#   it needs `pull-requests: write` in order to manipulate those comments.
-
-# Updating pull request branches is managed via comment handling.
-# For details, see: https://github.com/check-spelling/check-spelling/wiki/Feature:-Update-expect-list
-#
-# These elements work together to make it happen:
-#
-# `on.issue_comment`
-#   This event listens to comments by users asking to update the metadata.
-#
-# `jobs.update`
-#   This job runs in response to an issue_comment and will push a new commit
-#   to update the spelling metadata.
-#
-# `with.experimental_apply_changes_via_bot`
-#   Tells the action to support and generate messages that enable it
-#   to make a commit to update the spelling metadata.
-#
-# `with.ssh_key`
-#   In order to trigger workflows when the commit is made, you can provide a
-#   secret (typically, a write-enabled github deploy key).
-#
-#   For background, see: https://github.com/check-spelling/check-spelling/wiki/Feature:-Update-with-deploy-key
-
-# Sarif reporting
-#
-# Access to Sarif reports is generally restricted (by GitHub) to members of the repository.
-#
-# Requires enabling `security-events: write`
-# and configuring the action with `use_sarif: 1`
-#
-#   For information on the feature, see: https://github.com/check-spelling/check-spelling/wiki/Feature:-Sarif-output
-
-# Minimal workflow structure:
-#
-# on:
-#   push:
-#     ...
-#   pull_request_target:
-#     ...
-# jobs:
-#   # you only want the spelling job, all others should be omitted
-#   spelling:
-#     # remove `security-events: write` and `use_sarif: 1`
-#     # remove `experimental_apply_changes_via_bot: 1`
-#     ... otherwise adjust the `with:` as you wish
-
 on:
-  push:
-    branches:
-      - "**"
-    tags-ignore:
-      - "**"
   pull_request:
     branches:
       - "**"
@@ -141,6 +80,6 @@ jobs:
             cspell:sql/src/tsql.txt
             cspell:terraform/dict/terraform.txt
             cspell:typescript/dict/typescript.txt
-          check_extra_dictionaries: ''
+          check_extra_dictionaries: ""
           only_check_changed_files: true
           longest_word: "10"

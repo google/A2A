@@ -37,7 +37,7 @@
           },
           "stateTransitionHistory": {
             "default": false,
-            "title": "Statetransitionhistory",
+            "title": "StateTransitionHistory",
             "type": "boolean"
           }
         },
@@ -67,7 +67,7 @@
           },
           "documentationUrl": {
             "type": "string",
-            "title": "Documentationurl"
+            "title": "DocumentationUrl"
           },
           "capabilities": {
             "$ref": "#/$defs/AgentCapabilities"
@@ -82,7 +82,7 @@
             "items": {
               "type": "string"
             },
-            "title": "Defaultinputmodes",
+            "title": "DefaultInputModes",
             "type": "array"
           },
           "defaultOutputModes": {
@@ -92,7 +92,7 @@
             "items": {
               "type": "string"
             },
-            "title": "Defaultoutputmodes",
+            "title": "DefaultOutputModes",
             "type": "array"
           },
           "skills": {
@@ -163,14 +163,14 @@
               "type": "string"
             },
             "type": "array",
-            "title": "Inputmodes"
+            "title": "InputModes"
           },
           "outputModes": {
             "items": {
               "type": "string"
             },
             "type": "array",
-            "title": "Outputmodes"
+            "title": "OutputModes"
           }
         },
         "required": [
@@ -1111,7 +1111,7 @@
           },
           "sessionId": {
             "type": "string",
-            "title": "Sessionid"
+            "title": "SessionId"
           },
           "status": {
             "$ref": "#/$defs/TaskStatus"
@@ -1273,7 +1273,7 @@
             "type": "string"
           },
           "sessionId": {
-            "title": "Sessionid",
+            "title": "SessionId",
             "type": "string"
           },
           "message": {
