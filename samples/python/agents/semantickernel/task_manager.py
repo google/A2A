@@ -61,7 +61,7 @@ class TaskManager(InMemoryTaskManager):
             )
         except Exception as e:
             logger.error(f'Semantic Kernel Task Manager error: {e}')
-            raise ValueError(f'Agent error: {e}')
+            raise ValueError(f'Agent error: {e}') from e
 
         return await self._process_agent_response(request, agent_response)
 
@@ -83,7 +83,7 @@ class TaskManager(InMemoryTaskManager):
 
             await self.upsert_task(request.params)
             sse_queue = await self.setup_sse_consumer(request.params.id, False)
-            asyncio.create_task(self._run_streaming_agent(request))
+            asyncio.create_task(self._run_streaming_agent(request))  # noqa: RUF006
             return self.dequeue_events_for_sse(
                 request.id, request.params.id, sse_queue
             )
