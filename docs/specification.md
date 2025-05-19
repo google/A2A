@@ -332,7 +332,7 @@ interface AgentSkill {
       "openIdConnectUrl": "https://accounts.google.com/.well-known/openid-configuration",
     }
   },
-  "security": {"google": ["openid", "profile", "email"]},
+  "security": [{"google": ["openid", "profile", "email"]}],
   "defaultInputModes": ["application/json", "text/plain"],
   "defaultOutputModes": ["application/json", "image/png"],
   "skills": [
