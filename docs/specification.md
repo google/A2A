@@ -198,7 +198,7 @@ interface AgentCard {
 | Field Name           | Type                                                               | Required | Description                                                                                                       |
 | :------------------- | :----------------------------------------------------------------- | :------- | :---------------------------------------------------------------------------------------------------------------- |
 | `name`               | `string`                                                           | Yes      | Human-readable name of the agent.                                                                                 |
-| `description`        | `string` \| `null`                                                 | Yes       | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                    |
+| `description`        | `string`                                                | Yes       | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                    |
 | `url`                | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                     |
 | `provider`           | [`AgentProvider`](#551-agentprovider-object)             | No       | Information about the agent's provider.                                                                           |
 | `version`            | `string`                                                           | Yes      | Agent or A2A implementation version string.                                                                       |
@@ -890,7 +890,7 @@ interface TaskStatusUpdateEvent {
 | `itemType`       | `string`, literal               | Yes      | `status-update` | Type discriminator, literal value |
 | `status`   | [`TaskStatus`](#62-taskstatus-object) | Yes      |         | The new `TaskStatus` object. |
 | `final`    | `boolean`                             | No       | `false` | If `true`, indicates this is the terminal status update for the current stream cycle. The server typically closes the SSE connection after this. |
-| `metadata` | `Record<string, any>` \| `null`       | No       | `null`  | Event-specific metadata. |
+| `metadata` | `object`       | No       | `undefined`  | Event-specific metadata. |
 
 #### 7.2.3. `TaskArtifactUpdateEvent` Object
 
@@ -924,7 +924,7 @@ interface TaskArtifactUpdateEvent {
 | `artifact` | [`Artifact`](#67-artifact-object) | Yes      |         | The `Artifact` data. Could be a complete artifact or an incremental chunk.  |
 | `append`      | `boolean`             | No       | `false` |`true` means append parts to artifact; `false` (default) means replace. |
 | `lastChunk`   | `boolean`             | No       | `false` |`true` indicates this is the final update for the artifact.      |
-| `metadata` | `object`   | No       | `null`  | Event-specific metadata.|
+| `metadata` | `object`   | No       | `undefined` | Event-specific metadata.|
 
 ### 7.3. `tasks/get`
 
