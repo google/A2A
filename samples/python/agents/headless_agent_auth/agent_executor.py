@@ -32,7 +32,7 @@ class HRAgentExecutor(AgentExecutor):
             task = new_task(context.message)
             event_queue.enqueue_event(task)
         # invoke the underlying agent, using streaming results
-        async for event in self.agent.stream(query, task.contextId):
+        async for event in self.agent.stream(query, task.contextId, task.id):
             task_state = TaskState(event['task_state'])
             if event['is_task_complete']:
                 event_queue.enqueue_event(
@@ -68,6 +68,7 @@ class HRAgentExecutor(AgentExecutor):
                             ),
                         ),
                         final=task_state in {
+                            TaskState.auth_required,
                             TaskState.input_required,
                             TaskState.failed,
                             TaskState.unknown,

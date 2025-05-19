@@ -23,6 +23,7 @@ from a2a.types import (
     TaskQueryParams,
     TaskArtifactUpdateEvent,
 )
+from push_notification_listener import PushNotificationListener
 
 
 load_dotenv()
@@ -44,14 +45,13 @@ class AgentAuth(httpx.Auth):
         
         if not access_token:
             token_url = json.loads(auth.credentials)['tokenUrl']
-            print(f'\nFetching agent access token from {token_url}...')
+            print(f'\nFetching agent access token from {token_url}...\n')
             get_token = GetToken(
                 domain=urlparse(token_url).hostname,
                 client_id=os.getenv('A2A_CLIENT_AUTH0_CLIENT_ID'),
                 client_secret=os.getenv('A2A_CLIENT_AUTH0_CLIENT_SECRET')
             )
             access_token = get_token.client_credentials(os.getenv('HR_AGENT_AUTH0_AUDIENCE'))['access_token']
-            print('Done.\n')
         
         request.headers['Authorization'] = f'Bearer {access_token}'
         yield request
@@ -59,11 +59,19 @@ class AgentAuth(httpx.Auth):
 
 @click.command()
 @click.option('--agent', default='http://localhost:10050')
+@click.option('--push_notification_receiver', default='http://localhost:10040')
 @click.option('--context_id')
 @click.option('--history', default=False, is_flag=True)
 @click.option('--debug', default=False, is_flag=True)
-async def cli(agent: str, context_id: str | None, history: bool, debug: bool):
+async def cli(agent: str, push_notification_receiver: str, context_id: str | None, history: bool, debug: bool):
     async with httpx.AsyncClient() as httpx_client:
+        notif_receiver_parsed = urlparse(push_notification_receiver)
+        push_notification_listener = PushNotificationListener(
+            host=notif_receiver_parsed.hostname,
+            port=notif_receiver_parsed.port,
+        )
+        push_notification_listener.start()
+
         agent_card = await (A2ACardResolver(
             httpx_client=httpx_client,
             base_url=agent,
@@ -93,6 +101,7 @@ async def cli(agent: str, context_id: str | None, history: bool, debug: bool):
                 streaming,
                 task_id,
                 context_id,
+                notif_receiver_parsed.geturl(),
                 debug,
             )
 
@@ -109,7 +118,7 @@ async def cli(agent: str, context_id: str | None, history: bool, debug: bool):
 
 
 def create_send_params(
-    text: str, task_id: str | None = None, context_id: str | None = None
+    text: str, task_id: str | None = None, context_id: str | None = None, push_notification_receiver: str = None
 ) -> MessageSendParams:
     """Helper function to create the payload for sending a task."""
     send_params: dict[str, Any] = {
@@ -123,12 +132,17 @@ def create_send_params(
         }
     }
 
+    if push_notification_receiver:
+        send_params['configuration']['pushNotificationConfig'] = {
+            'url': f'{push_notification_receiver}/notify',
+        }
+
     if task_id:
         send_params['message']['taskId'] = task_id
 
     if context_id:
         send_params['message']['contextId'] = context_id
-    
+
     return MessageSendParams(**send_params)
 
 
@@ -137,6 +151,7 @@ async def complete_task(
     streaming: bool,
     task_id: str,
     context_id: str,
+    push_notification_receiver: str,
     debug: bool = False,
 ) -> bool:
     prompt = click.prompt(
@@ -150,6 +165,7 @@ async def complete_task(
         text=prompt,
         task_id=task_id,
         context_id=context_id,
+        push_notification_receiver=push_notification_receiver,
     )
 
     task = None
@@ -211,6 +227,7 @@ async def complete_task(
             streaming,
             task_id,
             context_id,
+            push_notification_receiver,
             debug,
         )
     
