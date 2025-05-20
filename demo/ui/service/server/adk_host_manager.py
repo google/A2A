@@ -377,7 +377,7 @@ class ADKHostManager(ApplicationManager):
                     current_task.artifacts = []
                 current_task.artifacts.append(artifact)
             else:
-                # this is a chunk of an artifact, stash it in temp store for assemling
+                # this is a chunk of an artifact, stash it in temp store for assembling
                 if artifact.artifactId not in self._artifact_chunks:
                     self._artifact_chunks[artifact.artifactId] = []
                 self._artifact_chunks[artifact.artifactId].append(artifact)
