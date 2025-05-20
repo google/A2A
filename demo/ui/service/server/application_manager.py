@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from common.types import AgentCard, Message, Task
+from a2a.types import AgentCard, Message, Task
 from service.types import Conversation, Event
 
 
@@ -22,7 +22,13 @@ class ApplicationManager(ABC):
         pass
 
     @abstractmethod
-    def get_pending_messages(self) -> list[str]:
+    def get_pending_messages(self) -> list[tuple[str,str]]:
+        pass
+
+    @abstractmethod
+    def get_conversation(
+        self, conversation_id: str | None
+    ) -> Conversation | None:
         pass
 
     @property
