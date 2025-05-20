@@ -1,5 +1,7 @@
 # JavaScript Samples
 
+**Note: JS examples still implement v0.1.0 of the protocol.**
+
 The provided samples are built using [Genkit](https://genkit.dev/) using the Gemini API.
 
 ## Agents

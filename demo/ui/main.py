@@ -4,13 +4,15 @@ run:
 """
 
 import os
+import httpx
+from contextlib import asynccontextmanager
 
 import mesop as me
 
 from components.api_key_dialog import api_key_dialog
 from components.page_scaffold import page_scaffold
 from dotenv import load_dotenv
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI
 from fastapi.middleware.wsgi import WSGIMiddleware
 from pages.agent_list import agent_list_page
 from pages.conversation import conversation_page
@@ -134,23 +136,53 @@ def task_page():
     task_list_page(me.state(AppState))
 
 
-# Setup the server global objects
-app = FastAPI()
-router = APIRouter()
-agent_server = ConversationServer(router)
-app.include_router(router)
+class HTTPXClientWrapper:
+    """Wrapper to return the singleton client where needed."""
 
-app.mount(
-    '/',
-    WSGIMiddleware(
-        me.create_wsgi_app(
-            debug_mode=os.environ.get('DEBUG_MODE', '') == 'true'
-        )
-    ),
-)
+    async_client: httpx.AsyncClient = None
+
+    def start(self):
+        """ Instantiate the client. Call from the FastAPI startup hook."""
+        self.async_client = httpx.AsyncClient(timeout=30)
+
+    async def stop(self):
+        """ Gracefully shutdown. Call from FastAPI shutdown hook."""
+        await self.async_client.aclose()
+        self.async_client = None
+
+    def __call__(self):
+        """ Calling the instantiated HTTPXClientWrapper returns the wrapped singleton."""
+        # Ensure we don't use it if not started / running
+        assert self.async_client is not None
+        return self.async_client
+
+
+# Setup the server global objects
+httpx_client_wrapper = HTTPXClientWrapper()
+agent_server = None
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    httpx_client_wrapper.start()
+    agent_server = ConversationServer(app, httpx_client_wrapper())
+    app.openapi_schema = None
+    app.mount(
+        '/',
+        WSGIMiddleware(
+            me.create_wsgi_app(
+                debug_mode=os.environ.get('DEBUG_MODE', '') == 'true'
+            )
+        ),
+    )
+    app.setup()
+    yield
+    await httpx_client_wrapper.stop()
 
 if __name__ == '__main__':
     import uvicorn
+
+    app = FastAPI(lifespan=lifespan)
 
     # Setup the connection details, these should be set in the environment
     host = os.environ.get('A2A_UI_HOST', '0.0.0.0')
@@ -160,10 +192,8 @@ if __name__ == '__main__':
     host_agent_service.server_url = f'http://{host}:{port}'
 
     uvicorn.run(
-        'main:app',
+        app,
         host=host,
         port=port,
-        reload=True,
-        reload_includes=['*.py', '*.js'],
         timeout_graceful_shutdown=0,
     )

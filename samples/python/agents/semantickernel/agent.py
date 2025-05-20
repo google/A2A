@@ -65,7 +65,7 @@ class CurrencyPlugin:
             rate = data['rates'][currency_to]
             return f'1 {currency_from} = {rate} {currency_to}'
         except Exception as e:
-            return f'Currency API call failed: {e!s}'
+            return f'Currency API call failed: {str(e)}'
 
 
 # endregion
