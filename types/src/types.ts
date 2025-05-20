@@ -6,9 +6,9 @@
  * Represents the service provider of an agent.
  */
 export interface AgentProvider {
-  /** Agent provider's organization name*/
+  /** Agent provider's organization name. */
   organization: string;
-  /** Agent provider's url */
+  /** Agent provider's URL. */
   url: string;
 }
 
@@ -16,11 +16,11 @@ export interface AgentProvider {
  * Defines optional capabilities supported by an agent.
  */
 export interface AgentCapabilities {
-  /** true if the agent supports SSE */
+  /** true if the agent supports SSE. */
   streaming?: boolean;
-  /** true if the agent can notify updates to client */
+  /** true if the agent can notify updates to client. */
   pushNotifications?: boolean;
-  /** true if the agent exposes status change history for tasks */
+  /** true if the agent exposes status change history for tasks. */
   stateTransitionHistory?: boolean;
 }
 
@@ -28,12 +28,12 @@ export interface AgentCapabilities {
  * Represents a unit of capability that an agent can perform.
  */
 export interface AgentSkill {
-  /** unique identifier for the agent's skill */
+  /** Unique identifier for the agent's skill. */
   id: string;
-  /** human readable name of the skill */
+  /** Human readable name of the skill. */
   name: string;
   /**
-   * description of the skill - will be used by the client or a human
+   * Description of the skill - will be used by the client or a human
    * as a hint to understand what the skill does.
    */
   description: string;
@@ -109,27 +109,27 @@ export interface AgentCard {
 }
 
 export interface Task {
-  /** unique identifier for the task */
+  /** Unique identifier for the task */
   id: string;
-  /** server-generated id for contextual alignment across interactions */
+  /** Server-generated id for contextual alignment across interactions */
   contextId: string;
-  /** current status of the task */
+  /** Current status of the task */
   status: TaskStatus;
   history?: Message[];
-  /** collection of artifacts created by the agent. */
+  /** Collection of artifacts created by the agent. */
   artifacts?: Artifact[];
-  /** extension metadata */
+  /** Extension metadata. */
   metadata?: {
     [key: string]: any;
   };
-  /** event type */
+  /** Event type */
   kind: "task";
 }
 
 /** TaskState and accompanying message. */
 export interface TaskStatus {
   state: TaskState;
-  /** additional status updates for client */
+  /** Additional status updates for client */
   message?: Message;
   /**
   * ISO 8601 datetime string when the status was recorded.
@@ -142,15 +142,15 @@ export interface TaskStatus {
 export interface TaskStatusUpdateEvent {
   /** Task id */
   taskId: string;
-  /** the context the task is associated with */
+  /** The context the task is associated with */
   contextId: string;
-  /** event type */
+  /** Event type */
   kind: "status-update";
-  /** current status of the task */
+  /** Current status of the task */
   status: TaskStatus;
-  /** indicates the end of the event stream */
+  /** Indicates the end of the event stream */
   final: boolean;
-  /** extension metadata */
+  /** Extension metadata. */
   metadata?: {
     [key: string]: any;
   };
@@ -160,17 +160,17 @@ export interface TaskStatusUpdateEvent {
 export interface TaskArtifactUpdateEvent {
   /** Task id */
   taskId: string;
-  /** the context the task is associated with */
+  /** The context the task is associated with */
   contextId: string;
-  /** event type */
+  /** Event type */
   kind: "artifact-update";
-  /** generated artifact */
+  /** Generated artifact */
   artifact: Artifact;
   /** Indicates if this artifact appends to a previous one */
   append?: boolean;
   /** Indicates if this is the last chunk of the artifact */
   lastChunk?: boolean;
-  /** extension metadata */
+  /** Extension metadata. */
   metadata?: {
     [key: string]: any;
   };
@@ -178,7 +178,7 @@ export interface TaskArtifactUpdateEvent {
 
 /** Parameters containing only a task ID, used for simple task operations. */
 export interface TaskIdParams {
-  /** task id */
+  /** Task id. */
   id: string;
   metadata?: {
     [key: string]: any;
@@ -187,29 +187,29 @@ export interface TaskIdParams {
 
 /** Parameters for querying a task, including optional history length. */
 export interface TaskQueryParams extends TaskIdParams {
-  /** number of recent messages to be retrieved */
+  /** Number of recent messages to be retrieved. */
   historyLength?: number;
 }
 
-/**Configuration for the send message request */
+/**Configuration for the send message request. */
 export interface MessageSendConfiguration {
-  /** accepted output modalities by the client */
+  /** Accepted output modalities by the client. */
   acceptedOutputModes: string[];
-  /** number of recent messages to be retrieved */
+  /** Number of recent messages to be retrieved. */
   historyLength?: number;
-  /** where the server should send notifications when disconnected. */
+  /** Where the server should send notifications when disconnected. */
   pushNotificationConfig?: PushNotificationConfig;
-  /** If the server should treat the client as a blocking request */
+  /** If the server should treat the client as a blocking request. */
   blocking?: boolean;
 }
 
 /** Sent by the client to the agent as a request. May create, continue or restart a task. */
 export interface MessageSendParams {
-  /** The message being sent to the server */
+  /** The message being sent to the server. */
   message: Message;
-  /** Send message configuration */
+  /** Send message configuration. */
   configuration?: MessageSendConfiguration;
-  /** extension metadata */
+  /** Extension metadata. */
   metadata?: {
     [key: string]: any;
   };
@@ -230,15 +230,15 @@ export enum TaskState {
 
 /** Represents an artifact generated for a task task. */
 export interface Artifact {
-  /** unique identifier for the artifact */
+  /** Unique identifier for the artifact. */
   artifactId: string;
-  /** Optional name for the artifact */
+  /** Optional name for the artifact. */
   name?: string;
-  /** Optional description for the artifact */
+  /** Optional description for the artifact. */
   description?: string;
-  /** artifact parts */
+  /** Artifact parts. */
   parts: Part[];
-  /** extension metadata */
+  /** Extension metadata. */
   metadata?: {
     [key: string]: any;
   };
@@ -246,21 +246,21 @@ export interface Artifact {
 
 /** Represents a single message exchanged between user and agent. */
 export interface Message {
-  /** message sender's role */
+  /** Message sender's role */
   role: "user" | "agent";
-  /** message content */
+  /** Message content */
   parts: Part[];
-  /** extension metadata */
+  /** Extension metadata. */
   metadata?: {
     [key: string]: any;
   };
-  /** identifier created by the message creator*/
+  /** Identifier created by the message creator*/
   messageId: string;
-  /** identifier of task the message is related to */
+  /** Identifier of task the message is related to */
   taskId?: string;
-  /** the context the message is associated with */
+  /** The context the message is associated with */
   contextId?: string;
-  /** event type */
+  /** Event type */
   kind: "message";
 }
 
@@ -297,6 +297,7 @@ export interface FileWithBytes extends FileBase {
 
 /** Define the variant where 'uri' is present and 'bytes' is absent  */
 export interface FileWithUri extends FileBase {
+  /** URL for the File content */
   uri: string;
   bytes?: never;
 }
@@ -333,17 +334,18 @@ export interface PushNotificationAuthenticationInfo {
 
 /**Configuration for setting up push notifications for task updates. */
 export interface PushNotificationConfig {
-  /** url for sending the push notifications */
+  /** URL for sending the push notifications. */
   url: string;
-  /** token unique to this task/session */
+  /** Token unique to this task/session. */
   token?: string;
   authentication?: PushNotificationAuthenticationInfo;
 }
 
 /**Parameters for setting or getting push notification configuration for a task */
 export interface TaskPushNotificationConfig {
-  /** task id */
+  /** Task id. */
   taskId: string;
+  /** Push notification configuration. */
   pushNotificationConfig: PushNotificationConfig;
 }
 
@@ -355,7 +357,7 @@ export type SecurityScheme = APIKeySecurityScheme | HTTPAuthSecurityScheme | OAu
 
 /** Base properties shared by all security schemes. */
 export interface SecuritySchemeBase {
-  /** description of this security scheme */
+  /** Description of this security scheme. */
   description?: string;
 }
 
@@ -616,7 +618,9 @@ export type SendStreamingMessageResponse = SendStreamingMessageSuccessResponse |
  * JSON-RPC request model for the 'tasks/get' method.
  */
 export interface GetTaskRequest extends JSONRPCRequest {
+  /** A String containing the name of the method to be invoked. */
   method: "tasks/get";
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
   params: TaskQueryParams;
 }
 
@@ -624,6 +628,7 @@ export interface GetTaskRequest extends JSONRPCRequest {
  * JSON-RPC success response for the 'tasks/get' method.
  */
 export interface GetTaskSuccessResponse extends JSONRPCResult {
+  /** The result object on success. */
   result: Task;
 }
 
@@ -636,7 +641,9 @@ export type GetTaskResponse = GetTaskSuccessResponse | JSONRPCErrorResponse;
  * JSON-RPC request model for the 'tasks/cancel' method.
  */
 export interface CancelTaskRequest extends JSONRPCRequest {
+  /** A String containing the name of the method to be invoked. */
   method: "tasks/cancel";
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
   params: TaskIdParams;
 }
 
@@ -644,6 +651,7 @@ export interface CancelTaskRequest extends JSONRPCRequest {
  * JSON-RPC success response model for the 'tasks/cancel' method.
  */
 export interface CancelTaskSuccessResponse extends JSONRPCResult {
+  /** The result object on success. */
   result: Task;
 }
 
@@ -656,7 +664,9 @@ export type CancelTaskResponse = CancelTaskSuccessResponse | JSONRPCErrorRespons
  * JSON-RPC request model for the 'tasks/pushNotificationConfig/set' method.
  */
 export interface SetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/set";
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
   params: TaskPushNotificationConfig;
 }
 
@@ -664,6 +674,7 @@ export interface SetTaskPushNotificationConfigRequest extends JSONRPCRequest {
  * JSON-RPC success response model for the 'tasks/pushNotificationConfig/set' method.
  */
 export interface SetTaskPushNotificationConfigSuccessResponse extends JSONRPCResult {
+  /** The result object on success. */
   result: TaskPushNotificationConfig;
 }
 
@@ -676,7 +687,9 @@ export type SetTaskPushNotificationConfigResponse = SetTaskPushNotificationConfi
  * JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.
  */
 export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/get";
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
   params: TaskIdParams;
 }
 
@@ -684,6 +697,7 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
  * JSON-RPC success response model for the 'tasks/pushNotificationConfig/get' method.
  */
 export interface GetTaskPushNotificationConfigSuccessResponse extends JSONRPCResult {
+  /** The result object on success. */
   result: TaskPushNotificationConfig;
 }
 
@@ -697,7 +711,9 @@ export type GetTaskPushNotificationConfigResponse = GetTaskPushNotificationConfi
  * JSON-RPC request model for the 'tasks/resubscribe' method.
  */
 export interface TaskResubscriptionRequest extends JSONRPCRequest {
+  /** A String containing the name of the method to be invoked. */
   method: "tasks/resubscribe";
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
   params: TaskIdParams;
 }
 
@@ -728,6 +744,7 @@ export interface JSONParseError extends JSONRPCError {
  * JSON-RPC error indicating the JSON sent is not a valid Request object.
  */
 export interface InvalidRequestError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32600;
   /**
    * @default Request payload validation error
@@ -739,6 +756,7 @@ export interface InvalidRequestError extends JSONRPCError {
  * JSON-RPC error indicating the method does not exist or is not available.
  */
 export interface MethodNotFoundError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32601;
   /**
    * @default Method not found
@@ -750,6 +768,7 @@ export interface MethodNotFoundError extends JSONRPCError {
  * JSON-RPC error indicating invalid method parameter(s).
  */
 export interface InvalidParamsError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32602;
   /**
    * @default Invalid parameters
@@ -761,6 +780,7 @@ export interface InvalidParamsError extends JSONRPCError {
  * JSON-RPC error indicating an internal JSON-RPC error on the server.
  */
 export interface InternalError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32603;
   /**
    * @default Internal error
@@ -773,6 +793,7 @@ export interface InternalError extends JSONRPCError {
  * A2A specific error indicating the requested task ID was not found.
  */
 export interface TaskNotFoundError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32001;
   /**
    * @default Task not found
@@ -784,6 +805,7 @@ export interface TaskNotFoundError extends JSONRPCError {
  * A2A specific error indicating the task is in a state where it cannot be canceled.
  */
 export interface TaskNotCancelableError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32002;
   /**
    * @default Task cannot be canceled
@@ -795,6 +817,7 @@ export interface TaskNotCancelableError extends JSONRPCError {
  * A2A specific error indicating the agent does not support push notifications.
  */
 export interface PushNotificationNotSupportedError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32003;
   /**
    * @default Push Notification is not supported
@@ -806,6 +829,7 @@ export interface PushNotificationNotSupportedError extends JSONRPCError {
  * A2A specific error indicating the requested operation is not supported by the agent.
  */
 export interface UnsupportedOperationError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32004;
   /**
    * @default This operation is not supported
@@ -817,6 +841,7 @@ export interface UnsupportedOperationError extends JSONRPCError {
  * A2A specific error indicating incompatible content types between request and agent capabilities.
  */
 export interface ContentTypeNotSupportedError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32005;
   /**
    * @default Incompatible content types
@@ -828,6 +853,7 @@ export interface ContentTypeNotSupportedError extends JSONRPCError {
  * A2A specific error indicating agent returned invalid response for the current method
  */
 export interface InvalidAgentResponseError extends JSONRPCError {
+  /** A Number that indicates the error type that occurred. */
   code: -32006;
   /**
    * @default Invalid agent response
