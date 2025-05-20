@@ -2,11 +2,11 @@ import dataclasses
 import json
 import uuid
 
-from typing import Any, Literal
+from typing import Any, Literal, Tuple
 
 import mesop as me
 
-from common.types import DataPart, Message, TextPart
+from a2a.types import DataPart, Message, TextPart, Role, Part
 from state.host_agent_service import SendMessage
 from state.state import AppState, StateMessage
 
@@ -104,7 +104,9 @@ def render_form(message: StateMessage, app_state: AppState):
             state.forms[message.message_id] = form_state_to_string(form)
         except Exception as e:
             print('Failed to serialize form', e, form)
-    render_structure(message.message_id, form_structure, instructions)
+    render_structure(
+        message.message_id, message.task_id, form_structure, instructions
+    )
 
 
 def render_form_card(message: StateMessage, data: dict[str, Any] | None):
@@ -140,15 +142,15 @@ def render_form_card(message: StateMessage, data: dict[str, Any] | None):
 
 def generate_form_elements(
     message: StateMessage,
-) -> tuple[str, list[FormElement]]:
+) -> Tuple[str, list[FormElement]]:
     """Returns a declarative structure for a form to generate"""
     # Get the message part with the form information.
     form_content = next(filter(lambda x: x[1] == 'form', message.content), None)
     if not form_content:
-        return []
+        return ('', [])
     form_info = form_content[0]
     if not isinstance(form_info, dict):
-        return []
+        return ('', [])
     return instructions_for_form(form_info), make_form_elements(form_info)
 
 
@@ -190,7 +192,9 @@ def instructions_for_form(form_info: dict[str, Any]) -> str:
     return ''
 
 
-def render_structure(id: str, elements: list[FormElement], instructions: str):
+def render_structure(
+    id: str, task_id: str, elements: list[FormElement], instructions: str
+):
     with me.box(
         style=me.Style(
             padding=me.Padding.all(BOX_PADDING),
@@ -214,8 +218,18 @@ def render_structure(id: str, elements: list[FormElement], instructions: str):
             with form_group():
                 input_field(id=id, element=element)
         with me.box():
-            me.button('Cancel', type='flat', on_click=cancel_form, key=id)
-            me.button('Submit', type='flat', on_click=submit_form, key=id)
+            me.button(
+                'Cancel',
+                type='flat',
+                on_click=cancel_form,
+                key='_'.join([id, task_id]),
+            )
+            me.button(
+                'Submit',
+                type='flat',
+                on_click=submit_form,
+                key='_'.join([id, task_id]),
+            )
 
 
 def input_field(
@@ -294,42 +308,44 @@ def on_blur(e: me.InputBlurEvent):
 async def cancel_form(e: me.ClickEvent):
     message_id = str(uuid.uuid4())
     app_state = me.state(AppState)
-    app_state.form_responses[message_id] = e.key
+    key_parts = e.key.split('_')
+    form_message_id, task_id = key_parts[0], key_parts[1]
+    app_state.form_responses[message_id] = form_message_id
     app_state.background_tasks[message_id] = ''
-    app_state.completed_forms[e.key] = None
+    app_state.completed_forms[form_message_id] = None
     request = Message(
-        id=message_id,
-        role='user',
-        parts=[TextPart(text='rejected form entry')],
-        metadata={
-            'conversation_id': app_state.current_conversation_id,
-            'message_id': message_id,
-        },
+        messageId=message_id,
+        taskId=task_id,
+        contextId=app_state.current_conversation_id,
+        role=Role.user,
+        parts=[Part(root=TextPart(text='rejected form entry'))],
     )
     response = await SendMessage(request)
 
 
-async def send_response(id: str, state: State, app_state: AppState):
+async def send_response(
+    id: str, task_id: str, state: State, app_state: AppState
+):
     message_id = str(uuid.uuid4())
     app_state.background_tasks[message_id] = ''
     app_state.form_responses[message_id] = id
     form = FormState(**json.loads(state.forms[id]))
+    print("Sending form response", form)
     request = Message(
-        id=message_id,
-        role='user',
-        parts=[DataPart(data=form.data)],
-        metadata={
-            'conversation_id': app_state.current_conversation_id,
-            'message_id': message_id,
-        },
+        messageId=message_id,
+        taskId=task_id,
+        contextId=app_state.current_conversation_id,
+        role=Role.user,
+        parts=[Part(root=DataPart(data=form.data))],
     )
-    response = await SendMessage(request)
+    await SendMessage(request)
 
 
 async def submit_form(e: me.ClickEvent):
     try:
         state = me.state(State)
-        id = e.key
+        key_parts = e.key.split('_')
+        id, task_id = key_parts[0], key_parts[1]
         form = FormState(**json.loads(state.forms[id]))
         # Replace with real validation logic.
         errors = {}
@@ -347,7 +363,7 @@ async def submit_form(e: me.ClickEvent):
             return
         app_state = me.state(AppState)
         app_state.completed_forms[id] = form.data
-        await send_response(id, state, app_state)
+        await send_response(id, task_id, state, app_state)
     except Exception as e:
         print('Failed to submit form', e)
 

@@ -43,15 +43,17 @@ class ConversationClient:
             try:
                 response = await client.post(
                     self.base_url + '/' + request.method,
-                    json=request.model_dump(),
+                    json=request.model_dump(mode='json', exclude_none=True),
                 )
                 response.raise_for_status()
                 return response.json()
             except httpx.HTTPStatusError as e:
+                print("http error", e)
                 raise AgentClientHTTPError(
                     e.response.status_code, str(e)
                 ) from e
             except json.JSONDecodeError as e:
+                print("decode error", e)
                 raise AgentClientJSONError(str(e)) from e
 
     async def create_conversation(
