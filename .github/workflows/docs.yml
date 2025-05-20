@@ -43,8 +43,7 @@ jobs:
             mkdocs-material-
 
       - name: Install documentation dependencies
-        run: pip install -r requirements-docs.txt
-        run: pip install a2a-sdk
+        run: pip install -r requirements-docs.txt && pip install a2a-sdk
 
       - name: Build Documentation (PR Check)
         if: github.event_name == 'pull_request'
