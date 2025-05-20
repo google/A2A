@@ -145,7 +145,7 @@
             "type": "array"
           },
           "prefix": {
-            "default": "Prefix added in front of the method names. E.g. for prefix='extensions/taskHistory/' and method='clearRecent', the actual method will be served at 'extensions/taskHistory/clearRecent'",
+            "description": "Prefix added in front of the method names. E.g. for prefix='extensions/taskHistory/' and method='clearRecent', the actual method will be served at 'extensions/taskHistory/clearRecent'",
             "title": "Prefix",
             "type": "string"
           }
