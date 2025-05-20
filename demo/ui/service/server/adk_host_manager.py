@@ -581,7 +581,7 @@ class ADKHostManager(ApplicationManager):
                         parts.append(Part(root=DataPart(data=p)))
                 elif isinstance(p, DataPart):
                     if 'artifact-file-id' in p.data:
-                        file_part = await self._artifact_service.load_artifact(
+                        file_part = self._artifact_service.load_artifact(
                             user_id=self.user_id,
                             session_id=context_id,
                             app_name=self.app_name,
