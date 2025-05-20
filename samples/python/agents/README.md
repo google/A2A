@@ -6,6 +6,8 @@ Each agent can be run as its own A2A server with the instructions on its README.
 
 To interact with the servers, use an A2AClient in a host app (such as the CLI). See [Host Apps](/samples/python/hosts/README.md) for details.
 
+## Agents Directory
+
 * [**Google ADK**](/samples/python/agents/google_adk/README.md)  
 Sample agent to (mock) fill out expense reports. Showcases multi-turn interactions and returning/replying to webforms through A2A.
 
