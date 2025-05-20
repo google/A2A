@@ -1,13 +1,11 @@
 import json
 import os
-
+import ssl
 from collections.abc import AsyncIterable
 from typing import Any
 
 import aiohttp
-
 from dotenv import load_dotenv
-
 
 # from flat_ai import FlatAI
 
@@ -46,12 +44,11 @@ class MindsDBAgent:
                 {'role': 'user', 'content': query},
             ],
             'stream': True,
-        }
-
+        }        
         async with aiohttp.ClientSession() as session:
             async with session.post(
                 self.API_URL, headers=self.headers, json=payload
-            ) as response:
+            ) as response:                
                 async for line in response.content:
                     if line:
                         # Skip empty lines

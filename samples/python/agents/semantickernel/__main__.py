@@ -1,13 +1,14 @@
 import logging
 
 import click
-
-from agents.semantickernel.task_manager import TaskManager
-from common.server import A2AServer
+from a2a.server.apps import A2AStarletteApplication
+from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.tasks import InMemoryTaskStore
+from a2a.types import (AgentAuthentication, AgentCapabilities, AgentCard,
+                       AgentSkill)
+from agent_executor import SemanticKernelTravelAgentExecutor
 from common.types import AgentCapabilities, AgentCard, AgentSkill
-from common.utils.push_notification_auth import PushNotificationSenderAuth
 from dotenv import load_dotenv
-
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,8 +21,23 @@ load_dotenv()
 @click.option('--port', default=10020)
 def main(host, port):
     """Starts the Semantic Kernel Agent server using A2A."""
-    # Build the agent card
-    capabilities = AgentCapabilities(streaming=True, pushNotifications=True)
+    request_handler = DefaultRequestHandler(
+        agent_executor=SemanticKernelTravelAgentExecutor(),
+        task_store=InMemoryTaskStore(),
+    )
+
+    server = A2AStarletteApplication(
+        agent_card=get_agent_card(host, port), http_handler=request_handler
+    )
+    import uvicorn
+
+    uvicorn.run(server.build(), host=host, port=port)
+
+def get_agent_card(host: str, port: int):
+    """Returns the Agent Card for the Sementic Kernel Travel Agent."""
+
+    # Build the agent card    
+    capabilities = AgentCapabilities(streaming=True)
     skill_trip_planning = AgentSkill(
         id='trip_planning_sk',
         name='Semantic Kernel Trip Planning',
@@ -48,27 +64,8 @@ def main(host, port):
         defaultOutputModes=['text'],
         capabilities=capabilities,
         skills=[skill_trip_planning],
+        authentication=AgentAuthentication(schemes=['public']),
     )
-
-    # Prepare push notification system
-    notification_sender_auth = PushNotificationSenderAuth()
-    notification_sender_auth.generate_jwk()
-
-    # Create the server
-    task_manager = TaskManager(
-        notification_sender_auth=notification_sender_auth
-    )
-    server = A2AServer(
-        agent_card=agent_card, task_manager=task_manager, host=host, port=port
-    )
-    server.app.add_route(
-        '/.well-known/jwks.json',
-        notification_sender_auth.handle_jwks_endpoint,
-        methods=['GET'],
-    )
-
-    logger.info(f'Starting the Semantic Kernel agent server on {host}:{port}')
-    server.start()
 
 
 if __name__ == '__main__':
