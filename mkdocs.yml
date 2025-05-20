@@ -146,4 +146,3 @@ plugins:
           options:
             show_root_heading: false
             show_object_full_path: false
-            paths: [a2a-python-repo/src]
