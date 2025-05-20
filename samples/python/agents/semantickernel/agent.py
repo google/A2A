@@ -200,7 +200,9 @@ class SemanticKernelTravelAgent:
         text_notice_seen = False
         chunks: list[StreamingChatMessageContent] = []
 
-        async def _handle_intermediate_message(message: 'ChatMessageContent') -> None:
+        async def _handle_intermediate_message(
+            message: 'ChatMessageContent',
+        ) -> None:
             """Handle intermediate messages from the agent."""
             nonlocal plugin_notice_seen
             if not plugin_notice_seen:
@@ -209,11 +211,15 @@ class SemanticKernelTravelAgent:
             # An example of handling intermediate messages during function calling
             for item in message.items or []:
                 if isinstance(item, FunctionResultContent):
-                    print(f"SK Function Result:> {item.result} for function: {item.name}")
+                    print(
+                        f'SK Function Result:> {item.result} for function: {item.name}'
+                    )
                 elif isinstance(item, FunctionCallContent):
-                    print(f"SK Function Call:> {item.name} with arguments: {item.arguments}")
+                    print(
+                        f'SK Function Call:> {item.name} with arguments: {item.arguments}'
+                    )
                 else:
-                    print(f"SK Message:> {item}")
+                    print(f'SK Message:> {item}')
 
         async for chunk in self.agent.invoke_stream(
             messages=user_input,
@@ -222,18 +228,18 @@ class SemanticKernelTravelAgent:
         ):
             if plugin_event.is_set():
                 yield {
-                    "is_task_complete": False,
-                    "require_user_input": False,
-                    "content": "Processing function calls...",
+                    'is_task_complete': False,
+                    'require_user_input': False,
+                    'content': 'Processing function calls...',
                 }
                 plugin_event.clear()
 
             if any(isinstance(i, StreamingTextContent) for i in chunk.items):
                 if not text_notice_seen:
                     yield {
-                        "is_task_complete": False,
-                        "require_user_input": False,
-                        "content": "Building the output...",
+                        'is_task_complete': False,
+                        'require_user_input': False,
+                        'content': 'Building the output...',
                     }
                     text_notice_seen = True
                 chunks.append(chunk.message)
@@ -293,5 +299,6 @@ class SemanticKernelTravelAgent:
         if self.thread is None or self.thread.id != session_id:
             await self.thread.delete() if self.thread else None
             self.thread = ChatHistoryAgentThread(thread_id=session_id)
+
 
 # endregion
