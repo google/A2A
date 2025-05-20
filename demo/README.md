@@ -2,7 +2,7 @@
 
 This demo application showcases agents talking to other agents over A2A.
 
-![image](/images/a2a_demo_arch.png)
+![image](./a2a_demo_arch.png)
 
 - The frontend is a [mesop](https://github.com/mesop-dev/mesop) web application that renders conversations as content between the end user and the "Host Agent". This app can render text content, thought bubbles, web forms (requests for input from agents), and images. More content types coming soon
 
@@ -81,7 +81,7 @@ Click on the task list to see all the A2A task updates from the remote agents
    Next go start up **any** sample agent:
 
    ```bash
-   cd ../../samples/agents/google_adk/
+   cd ../../samples/python/agents/google_adk/
    cp ../../../../demo/ui/.env ./
    uv run .
    ```
