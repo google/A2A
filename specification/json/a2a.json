@@ -1079,6 +1079,13 @@
                     },
                     "type": "array"
                 },
+                "referenceTaskIds": {
+                    "description": "list of tasks referenced as context by this message.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "role": {
                     "description": "message sender's role",
                     "enum": [
