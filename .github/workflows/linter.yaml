@@ -14,9 +14,6 @@ name: Lint Code Base
 # Start the job on all push #
 #############################
 on:
-  push:
-    branches-ignore: [main]
-    # Remove the line above to run when pushing to main
   pull_request:
     branches: [main]
 
@@ -56,6 +53,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LOG_LEVEL: WARN
           SHELLCHECK_OPTS: -e SC1091 -e 2086
+          FILTER_REGEX_INCLUDE: "^(docs/|specification/).*"
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false

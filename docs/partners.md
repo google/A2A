@@ -7,73 +7,137 @@ hide:
 
 Below is a list of partners (and a link to their A2A announcement or blog post,
 if available) who are part of the A2A community and are helping build, codify,
-and adopt A2A as the standard standard protocol for AI agents to communicate and
+and adopt A2A as the standard protocol for AI agents to communicate and
 collaborate effectively with each other and with users.
 
 !!! note
 
     If you're interested in becoming a partner of A2A and getting your listing added to or updated on this page, let us know by [submitting this form](https://forms.gle/BuQQ2zvXfFUA1bu98), and we'll contact you soon!
 
-- Accenture
+- [Accenture](https://www.accenture.com)
+- [Activeloop](https://www.activeloop.ai/)
+- [AI21 Labs](https://www.ai21.com/)
+- [Almawave.it](http://www.almawave.it)
+- [ArcBlock](http://www.arcblock.io)
 - [Arize](https://arize.com/blog/arize-ai-and-future-of-agent-interoperability-embracing-googles-a2a-protocol/)
 - [Articul8](https://www.articul8.ai/news/unleashing-the-next-frontier-of-enterprise-ai-introducing-model-mesh-dock-and-inter-lock-and-our-a2-a-partnership-with-google)
-- ask-ai.com
-- Atlassian
-- BCG
-- Box
-- C3 AI
-- Capgemini
-- Chronosphere
-- Cognizant
-- Cohere
-- Collibra
-- Contextual
-- Cotality (fka Corelogic)
-- Datadog
-- DataRobot
-- DataStax
-- Decagon.ai
+- [ask-ai.com](https://ask-ai.com)
+- [Atlassian](https://www.atlassian.com)
+- [Autodesk](https://www.autodesk.com)
+- [Beekeeper](http://beekeeper.io)
+- [BCG](https://www.bcg.com)
+- [Block Inc](https://block.xyz/)
+- [Bloomberg LP](http://techatbloomberg.com/)
+- [BLUEISH Inc](https://www.blueish.co.jp/)
+- [BMC Software Inc](https://www.bmc.com/it-solutions/bmc-helix.html)
+- [Boomi](https://boomi.com/)
+- [Box](https://www.box.com)
+- [Bridge2Things Automation Process GmbH](http://bridge2things.at)
+- [Cafe 24](https://www.cafe24corp.com/en/company/about)
+- [C3 AI](https://c3.ai)
+- [Capgemini](https://www.capgemini.com)
+- [Chronosphere](https://chronosphere.io)
+- [Codimite PTE LTD](https://codimite.ai/)
+- [Cognizant](https://www.cognizant.com)
+- [Cohere](https://cohere.com)
+- [Collibra](https://www.collibra.com)
+- [Contextual](https://contextual.ai)
+- [Cotality](https://cotality.com) (fka Corelogic)
+- [Crubyt](https://www.crubyt.com)
+- [Cyderes](http://www.cyderes.com)
+- [Datadog](https://www.datadoghq.com)
+- [DataRobot](https://www.datarobot.com)
+- [DataStax](https://www.datastax.com)
+- [Decagon.ai](https://decagon.ai)
 - [Deloitte](https://www.prnewswire.com/news-releases/deloitte-expands-alliances-with-google-cloud-and-servicenow-to-accelerate-agentic-ai-adoption-in-the-enterprise-302423941.html)
-- Devnagri
-- Elastic
-- Ema.co
-- EPAM
-- Glean
-- GrowthLoop
-- Harness
-- HCLTech
-- Incorta
-- InfoSys
-- Intuit
-- JetBrains
-- JFrog
+- [Devnagri](https://devnagri.com)
+- [Deutsche Telekom](https://www.telekom.com/en)
+- [Dexter Tech Labs ](http://www.dextertechlabs.com)
+- [Distyl.ai](https://distyl.ai)
+- [Elastic](https://www.elastic.co)
+- [Ema.co](https://ema.co)
+- [EPAM](https://www.epam.com)
+- [fractal.ai](https://fractal.ai/new)
+- [GenAI Nebula9.ai Solutions Pvt Ltd](http://nebula9.ai)
+- [Glean](https://www.glean.com)
+- [Global Logic](https://www.globallogic.com/)
+- [Gravitee](https://www.gravitee.io/)
+- [GrowthLoop](https://growthloop.com)
+- [Guru](http://www.getguru.com)
+- [Harness](https://harness.io)
+- [HCLTech](https://www.hcltech.com)
+- [Headwaters](https://www.headwaters.co.jp)
+- [Hellotars](https://hellotars.com)
+- [Hexaware](https://hexaware.com/)
+- [HUMAN](https://www.humansecurity.com/)
+- [Incorta](https://www.incorta.com)
+- [InfoSys](https://www.infosys.com)
+- [Intuit](https://www.intuit.com)
+- [Iron Mountain](https://www.ironmountain.com/)
+- [JetBrains](https://www.jetbrains.com)
+- [JFrog](https://jfrog.com)
+- [King's College London](https://www.kcl.ac.uk/informatics)
 - [KPMG](https://kpmg.com/us/en/media/news/kpmg-google-cloud-alliance-expansion-agentspace-adoption.html)
-- LabelBox
-- LangChain
-- Livex.ai
+- [Kyndryl](http://www.kyndryl.com)
+- [LabelBox](https://labelbox.com)
+- [LangChain](https://www.langchain.com)
+- [LG CNS](http://www.lgcns.com)
+- [Livex.ai](https://livex.ai)
 - [LlamaIndex](https://x.com/llama_index/status/1912949446322852185)
-- LTIMindTtree
-- Lyzr.ai
-- McKinsey
-- MongoDB
-- Neo4j
-- New Relic
-- Oracle / NetSuite
-- Pendo
-- PWC
-- Quantiphi
-- S\&P
-- Salesforce
+- [LTIMindTtree](https://www.ltimindtree.com)
+- [Lumeris](https://www.lumeris.com/)
+- [Lyzr.ai](https://lyzr.ai)
+- [Magyar Telekom](https://www.telekom.hu/)
+- [Microsoft](https://www.microsoft.com/en-us/microsoft-cloud/blog/2025/05/07/empowering-multi-agent-apps-with-the-open-agent2agent-a2a-protocol/)
+- [McKinsey](https://www.mckinsey.com)
+- [MongoDB](https://www.mongodb.com)
+- [Neo4j](https://neo4j.com)
+- [New Relic](https://newrelic.com)
+- [Nisum](http://www.nisum.com)
+- [Noorle Inc](http://www.noorle.com)
+- [Optimizely Inc](https://www.optimizely.com/)
+- [Oracle / NetSuite](https://www.oracle.com/netsuite)
+- [PancakeAI ](https://www.pancakeai.tech/)
+- [Pendo](https://www.pendo.io)
+- [Personal AI](https://personal.ai)
+- [Productive Edge](https://www.productiveedge.com/)
+- [Proofs](https://proofs.io)
+- [Publicis Sapient](https://www.publicissapient.com/)
+- [PWC](https://www.pwc.com)
+- [Quantiphi](https://www.quantiphi.com)
+- [RagaAI Inc](https://raga.ai/)
+- [Red Hat](https://www.redhat.com)
+- [Reltio Inc](http://www.reltio.com)
+- [S&P](https://www.spglobal.com)
+- [Sage](https://www.sage.com/en-us/)
+- [Salesforce](https://www.salesforce.com)
 - [SAP](https://news.sap.com/2025/04/sap-google-cloud-enterprise-ai-open-agent-collaboration-model-choice-multimodal-intelligence/)
-- ServiceNow
+- [ServiceNow](https://www.servicenow.com)
+- [Solace](http://solace.com)
+- [Stacklok, Inc](https://stacklok.com)
 - [Supertab](https://www.supertab.co/post/supertab-connect-partners-with-google-cloud-to-enable-ai-agents)
-- TCS
-- Typeface
-- UKG
+- [Suzega](https://suzega.com/)
+- [TCS](https://www.tcs.com)
+- [Tech Mahindra](https://www.techmahindra.com/)
+- [Test Innovation Technology](https://www.test-it.com)
+- [the artinet project](https://artinet.io/)
+- [Think41](http://www.think41.com)
+- [Thoughtworks](https://www.thoughtworks.com/)
+- [Tredence](http://www.tredence.com)
+- [Two Tall Totems Ltd. DBA TTT Studios](https://ttt.studio)
+- [Typeface](https://typeface.ai)
+- [UKG](https://www.ukg.com)
 - [UiPath](https://www.uipath.com/newsroom/uipath-launches-first-enterprise-grade-platform-for-agentic-automation)
+- [Ushur, Inc.](http://ushur.ai)
+- [Valle AI](http://www.valleai.com.br)
+- [Valtech](https://www.valtech.com/)
+- [VoltAgent](https://voltagent.dev/)
 - [Weights & Biases](https://wandb.ai/wandb_fc/product-announcements-fc/reports/Powering-Agent-Collaboration-Weights-Biases-Partners-with-Google-Cloud-on-Agent2Agent-Interoperability-Protocol---VmlldzoxMjE3NDg3OA)
-- Wipro
-- Workday
-- Writer
-- Zeotap
-- Zoom
+- [Wipro](https://www.wipro.com)
+- [Workday](https://www.workday.com)
+- [Writer](https://writer.com)
+- [Zenity](https://zenity.io)
+- [Zeotap](https://www.zeotap.com)
+- [Zocket Technologies , Inc.](https://zocket.ai)
+- [Zoom](https://www.zoom.us)
+- [zyprova](http://www.zyprova.com)
