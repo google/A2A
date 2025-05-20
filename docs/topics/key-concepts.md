@@ -19,7 +19,7 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
     - See details in the [Protocol Specification: Agent Card](../specification.md#5-agent-discovery-the-agent-card).
 
 - **Task:**
-    - When a client sends a message to an agent, the agent might determine that fulfulling the request requires a stateful task to be completed (e.g., "generate a report," "book a flight," "answer a question").
+    - When a client sends a message to an agent, the agent might determine that fulfilling the request requires a stateful task to be completed (e.g., "generate a report," "book a flight," "answer a question").
     - Each task has a unique ID defined by the agent and progresses through a defined lifecycle (e.g., `submitted`, `working`, `input-required`, `completed`, `failed`).
     - Tasks are stateful and can involve multiple exchanges (messages) between the client and the server.
     - See details in the [Protocol Specification: Task Object](../specification.md#61-task-object).
