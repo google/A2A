@@ -1,6 +1,10 @@
 # Python SDK Reference
 
-This page contains SDK documentation for the [`a2a-python`](https://github.com/a2a-python) package.
+This page contains SDK documentation for the [`a2a-sdk`](https://github.com/a2a-python) Python package.
+
+```sh
+pip install a2a-sdk
+```
 
 ::: a2a
     options:
