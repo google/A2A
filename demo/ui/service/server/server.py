@@ -3,10 +3,12 @@ import base64
 import os
 import threading
 import uuid
+
 import httpx
 
-from a2a.types import FileWithUri, FilePart, Message, Part
-from fastapi import FastAPI, APIRouter, Request, Response
+from a2a.types import FilePart, FileWithUri, Message, Part
+from fastapi import APIRouter, FastAPI, Request, Response
+
 from service.types import (
     CreateConversationResponse,
     GetEventResponse,
@@ -44,7 +46,9 @@ class ConversationServer:
 
         if agent_manager.upper() == 'ADK':
             self.manager = ADKHostManager(
-                http_client, api_key=api_key, uses_vertex_ai=uses_vertex_ai,
+                http_client,
+                api_key=api_key,
+                uses_vertex_ai=uses_vertex_ai,
             )
         else:
             self.manager = InMemoryFakeAgentManager()
@@ -57,9 +61,7 @@ class ConversationServer:
         app.add_api_route(
             '/conversation/list', self._list_conversation, methods=['POST']
         )
-        app.add_api_route(
-            '/message/send', self._send_message, methods=['POST']
-        )
+        app.add_api_route('/message/send', self._send_message, methods=['POST'])
         app.add_api_route('/events/get', self._get_events, methods=['POST'])
         app.add_api_route(
             '/message/list', self._list_messages, methods=['POST']
@@ -99,7 +101,7 @@ class ConversationServer:
         return SendMessageResponse(
             result=MessageInfo(
                 message_id=message.messageId,
-                context_id=message.contextId if message.contextId else ''
+                context_id=message.contextId if message.contextId else '',
             )
         )
 
@@ -123,7 +125,7 @@ class ConversationServer:
             new_parts: list[Part] = []
             for i, p in enumerate(m.parts):
                 part = p.root
-                if part.type != 'file':
+                if part.kind != 'file':
                     new_parts.append(p)
                     continue
                 message_part_id = f'{message_id}:{i}'

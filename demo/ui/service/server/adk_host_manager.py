@@ -2,28 +2,28 @@ import base64
 import datetime
 import json
 import os
-from typing import Tuple, Optional
 import uuid
+
+from typing import Optional, Tuple
+
 import httpx
 
 from a2a.types import (
     AgentCard,
     Artifact,
+    DataPart,
+    FilePart,
     FileWithBytes,
+    FileWithUri,
     Message,
     Part,
+    Role,
     Task,
     TaskArtifactUpdateEvent,
     TaskState,
     TaskStatus,
     TaskStatusUpdateEvent,
-    TaskArtifactUpdateEvent,
-    DataPart,
-    FilePart,
-    Part,
-    Role,
     TextPart,
-    FileWithUri,
 )
 from google.adk import Runner
 from google.adk.artifacts import InMemoryArtifactService
@@ -36,9 +36,10 @@ from hosts.multiagent.host_agent import HostAgent
 from hosts.multiagent.remote_agent_connection import (
     TaskCallbackArg,
 )
+from utils.agent_card import get_agent_card
+
 from service.server.application_manager import ApplicationManager
 from service.types import Conversation, Event
-from utils.agent_card import get_agent_card
 
 
 class ADKHostManager(ApplicationManager):
@@ -53,7 +54,7 @@ class ADKHostManager(ApplicationManager):
         self,
         http_client: httpx.AsyncClient,
         api_key: str = '',
-        uses_vertex_ai: bool = False
+        uses_vertex_ai: bool = False,
     ):
         self._conversations: list[Conversation] = []
         self._messages: list[Message] = []
@@ -89,7 +90,9 @@ class ADKHostManager(ApplicationManager):
         # Map of message id to task id
         self._task_map: dict[str, str] = {}
         # Map to manage 'lost' message ids until protocol level id is introduced
-        self._next_id: dict[str, str] = {}  # dict[str, str]: previous message to next message
+        self._next_id: dict[
+            str, str
+        ] = {}  # dict[str, str]: previous message to next message
 
     def _initialize_host(self):
         agent = self._host_agent.create_agent()
@@ -103,8 +106,8 @@ class ADKHostManager(ApplicationManager):
 
     def create_conversation(self) -> Conversation:
         session = self._session_service.create_session(
-            app_name=self.app_name,
-            user_id=self.user_id)
+            app_name=self.app_name, user_id=self.user_id
+        )
         conversation_id = session.id
         c = Conversation(conversation_id=conversation_id, is_active=True)
         self._conversations.append(c)
@@ -133,8 +136,9 @@ class ADKHostManager(ApplicationManager):
             if conversation.messages:
                 task_id = conversation.messages[-1].taskId
                 if task_id and task_still_open(
-                    next(filter(lambda x: x and x.id == task_id, self._tasks),
-                         None,
+                    next(
+                        filter(lambda x: x and x.id == task_id, self._tasks),
+                        None,
                     )
                 ):
                     message.taskId = task_id
@@ -316,10 +320,10 @@ class ADKHostManager(ApplicationManager):
         if not message_id:
             return
         if task.history and (
-            task.status.message and
-            task.status.message.messageId not in [
-                x.messageId for x in task.history
-            ]):
+            task.status.message
+            and task.status.message.messageId
+            not in [x.messageId for x in task.history]
+        ):
             task.history.append(task.status.message)
         elif not task.history and task.status.message:
             task.history = [task.status.message]
@@ -363,8 +367,10 @@ class ADKHostManager(ApplicationManager):
         artifact = task_update_event.artifact
         if not task_update_event.append:
             # received the first chunk or entire payload for an artifact
-            if (task_update_event.lastChunk is None
-                or task_update_event.lastChunk):
+            if (
+                task_update_event.lastChunk is None
+                or task_update_event.lastChunk
+            ):
                 # lastChunk bit is missing or is set to true, so this is the entire payload
                 # add this to artifacts
                 if not current_task.artifacts:
@@ -374,9 +380,7 @@ class ADKHostManager(ApplicationManager):
                 # this is a chunk of an artifact, stash it in temp store for assemling
                 if artifact.artifactId not in self._artifact_chunks:
                     self._artifact_chunks[artifact.artifactId] = []
-                self._artifact_chunks[artifact.artifactId].append(
-                    artifact
-                )
+                self._artifact_chunks[artifact.artifactId].append(artifact)
         else:
             # we received an append chunk, add to the existing temp artifact
             current_temp_artifact = self._artifact_chunks[artifact.artifactId][
@@ -426,7 +430,7 @@ class ADKHostManager(ApplicationManager):
                             (
                                 message_id,
                                 part.root.text
-                                if part.root.type == 'text'
+                                if part.root.kind == 'text'
                                 else 'Working...',
                             )
                         )
@@ -463,12 +467,12 @@ class ADKHostManager(ApplicationManager):
         parts: list[types.Part] = []
         for p in message.parts:
             part = p.root
-            if part.type == 'text':
+            if part.kind == 'text':
                 parts.append(types.Part.from_text(text=part.text))
-            elif part.type == 'data':
+            elif part.kind == 'data':
                 json_string = json.dumps(part.data)
                 parts.append(types.Part.from_text(text=json_string))
-            elif part.type == 'file':
+            elif part.kind == 'file':
                 if isinstance(part.file, FileWithUri):
                     parts.append(
                         types.Part.from_uri(
@@ -489,7 +493,7 @@ class ADKHostManager(ApplicationManager):
         self,
         content: types.Content,
         context_id: str | None,
-        task_id: str | None
+        task_id: str | None,
     ) -> Message:
         parts: list[Part] = []
         if not content.parts:
@@ -510,36 +514,42 @@ class ADKHostManager(ApplicationManager):
                     parts.append(Part(root=TextPart(text=part.text)))
             elif part.inline_data:
                 parts.append(
-                    Part(root=
-                         FilePart(
-                             file=FileWithBytes(
-                                 bytes=part.inline_data.decode('utf-8'),
-                                 mimeType=part.file_data.mime_type,
-                             ),
-                         )
+                    Part(
+                        root=FilePart(
+                            file=FileWithBytes(
+                                bytes=part.inline_data.decode('utf-8'),
+                                mimeType=part.file_data.mime_type,
+                            ),
+                        )
                     )
                 )
             elif part.file_data:
                 parts.append(
-                    Part(root=
-                         FilePart(
-                             file=FileWithUri(
-                                 uri=part.file_data.file_uri,
-                                 mimeType=part.file_data.mime_type,
-                             )
-                         )
+                    Part(
+                        root=FilePart(
+                            file=FileWithUri(
+                                uri=part.file_data.file_uri,
+                                mimeType=part.file_data.mime_type,
+                            )
+                        )
                     )
                 )
             # These aren't managed by the A2A message structure, these are internal
             # details of ADK, we will simply flatten these to json representations.
             elif part.video_metadata:
-                parts.append(Part(root=DataPart(data=part.video_metadata.model_dump())))
+                parts.append(
+                    Part(root=DataPart(data=part.video_metadata.model_dump()))
+                )
             elif part.thought:
                 parts.append(Part(root=TextPart(text='thought')))
             elif part.executable_code:
-                parts.append(Part(root=DataPart(data=part.executable_code.model_dump())))
+                parts.append(
+                    Part(root=DataPart(data=part.executable_code.model_dump()))
+                )
             elif part.function_call:
-                parts.append(Part(root=DataPart(data=part.function_call.model_dump())))
+                parts.append(
+                    Part(root=DataPart(data=part.function_call.model_dump()))
+                )
             elif part.function_response:
                 parts.extend(
                     await self._handle_function_response(
@@ -565,7 +575,7 @@ class ADKHostManager(ApplicationManager):
                 if isinstance(p, str):
                     parts.append(Part(root=TextPart(text=p)))
                 elif isinstance(p, dict):
-                    if 'type' in p and p['type'] == 'file':
+                    if 'kind' in p and p['kind'] == 'file':
                         parts.append(Part(root=FilePart(**p)))
                     else:
                         parts.append(Part(root=DataPart(data=p)))
@@ -582,13 +592,15 @@ class ADKHostManager(ApplicationManager):
                             'utf-8'
                         )
                         parts.append(
-                            Part(root=FilePart(
-                                file=FileWithBytes(
-                                    bytes=base64_data,
-                                    mimeType=file_data.mime_type,
-                                    name='artifact_file',
+                            Part(
+                                root=FilePart(
+                                    file=FileWithBytes(
+                                        bytes=base64_data,
+                                        mimeType=file_data.mime_type,
+                                        name='artifact_file',
+                                    )
                                 )
-                            ))
+                            )
                         )
                     else:
                         parts.append(Part(root=DataPart(data=p.data)))
@@ -602,7 +614,9 @@ class ADKHostManager(ApplicationManager):
                     )
         except Exception as e:
             print("Couldn't convert to messages:", e)
-            parts.append(Part(root=DataPart(data=part.function_response.model_dump())))
+            parts.append(
+                Part(root=DataPart(data=part.function_response.model_dump()))
+            )
         return parts
 
 

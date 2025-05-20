@@ -1,29 +1,22 @@
+import base64
 import json
 import uuid
-from typing import List
 
-from google.genai import types
-import base64
+from typing import List
 
 import httpx
 
-from google.adk import Agent
-from google.adk.agents.readonly_context import ReadonlyContext
-from google.adk.agents.callback_context import CallbackContext
-from google.adk.tools.tool_context import ToolContext
-from .remote_agent_connection import RemoteAgentConnections, TaskUpdateCallback
 from a2a.client import A2ACardResolver
 from a2a.types import (
     AgentCard,
     DataPart,
     Message,
     MessageSendConfiguration,
-    TaskState,
-    Task,
-    TextPart,
-    DataPart,
-    Part,
     MessageSendParams,
+    Part,
+    Task,
+    TaskState,
+    TextPart,
 )
 from google.adk import Agent
 from google.adk.agents.callback_context import CallbackContext
@@ -227,11 +220,11 @@ async def convert_parts(parts: list[Part], tool_context: ToolContext):
 
 
 async def convert_part(part: Part, tool_context: ToolContext):
-    if part.root.type == 'text':
+    if part.root.kind == 'text':
         return part.root.text
-    elif part.root.type == 'data':
+    elif part.root.kind == 'data':
         return part.root.data
-    elif part.root.type == 'file':
+    elif part.root.kind == 'file':
         # Repackage A2A FilePart to google.genai Blob
         # Currently not considering plain text as files
         file_id = part.root.file.name
@@ -245,4 +238,4 @@ async def convert_part(part: Part, tool_context: ToolContext):
         tool_context.actions.skip_summarization = True
         tool_context.actions.escalate = True
         return DataPart(data={'artifact-file-id': file_id})
-    return f'Unknown type: {part.type}'
+    return f'Unknown type: {part.kind}'

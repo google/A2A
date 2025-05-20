@@ -6,7 +6,7 @@ import uuid
 
 from typing import Any
 
-from a2a.types import Message, Part, Task, Role, TaskState, FileWithBytes
+from a2a.types import FileWithBytes, Message, Part, Role, Task, TaskState
 from service.client.client import ConversationClient
 from service.types import (
     Conversation,
@@ -17,10 +17,10 @@ from service.types import (
     ListConversationRequest,
     ListMessageRequest,
     ListTaskRequest,
+    MessageInfo,
     PendingMessageRequest,
     RegisterAgentRequest,
     SendMessageRequest,
-    MessageInfo,
 )
 
 from .state import (
@@ -61,9 +61,11 @@ async def CreateConversation() -> Conversation:
     client = ConversationClient(server_url)
     try:
         response = await client.create_conversation(CreateConversationRequest())
-        return (response.result
-                if response.result
-                else Conversation(conversation_id='', is_active=False))
+        return (
+            response.result
+            if response.result
+            else Conversation(conversation_id='', is_active=False)
+        )
     except Exception as e:
         print('Failed to create conversation', e)
     return Conversation(conversation_id='', is_active=False)
@@ -224,7 +226,8 @@ def convert_task_to_state(task: Task) -> StateTask:
                 context_id=task.contextId,
                 task_id=task.id,
                 role=Role.agent.name,
-                content=[("No history", "text")],),
+                content=[('No history', 'text')],
+            ),
             artifacts=output,
         )
     else:
@@ -259,17 +262,17 @@ def extract_content(
         return []
     for part in message_parts:
         p = part.root
-        if p.type == 'text':
+        if p.kind == 'text':
             parts.append((p.text, 'text/plain'))
-        elif p.type == 'file':
+        elif p.kind == 'file':
             if isinstance(p.file, FileWithBytes):
                 parts.append((p.file.bytes, p.file.mimeType or ''))
             else:
                 parts.append((p.file.uri, p.file.mimeType or ''))
-        elif p.type == 'data':
+        elif p.kind == 'data':
             try:
                 jsonData = json.dumps(p.data)
-                if 'type' in p.data and p.data['type'] == 'form':
+                if 'kind' in p.data and p.data['kind'] == 'form':
                     parts.append((p.data, 'form'))
                 else:
                     parts.append((jsonData, 'application/json'))

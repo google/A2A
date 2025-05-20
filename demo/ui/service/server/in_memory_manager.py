@@ -7,17 +7,18 @@ from a2a.types import (
     Artifact,
     DataPart,
     Message,
+    Part,
+    Role,
     Task,
     TaskState,
     TaskStatus,
     TextPart,
-    Role,
-    Part,
 )
+from utils.agent_card import get_agent_card
+
 from service.server import test_image
 from service.server.application_manager import ApplicationManager
 from service.types import Conversation, Event
-from utils.agent_card import get_agent_card
 
 
 class InMemoryFakeAgentManager(ApplicationManager):
@@ -120,11 +121,13 @@ class InMemoryFakeAgentManager(ApplicationManager):
         # Now clean up the task
         if task:
             task.status.state = TaskState.completed
-            task.artifacts = [Artifact(
-                name='response',
-                parts=response.parts,
-                artifactId=str(uuid.uuid4()),
-            )]
+            task.artifacts = [
+                Artifact(
+                    name='response',
+                    parts=response.parts,
+                    artifactId=str(uuid.uuid4()),
+                )
+            ]
             if not task.history:
                 task.history = [response]
             else:
@@ -182,7 +185,7 @@ class InMemoryFakeAgentManager(ApplicationManager):
                             (
                                 message_id,
                                 part.root.text
-                                if part.root.type == 'text'
+                                if part.root.kind == 'text'
                                 else 'Working...',
                             )
                         )
@@ -210,7 +213,7 @@ class InMemoryFakeAgentManager(ApplicationManager):
         return self._tasks
 
     @property
-    def events(self) ->list[Event]:
+    def events(self) -> list[Event]:
         return []
 
 
@@ -228,32 +231,34 @@ _message_queue: list[Message] = [
     Message(
         role=Role.agent,
         parts=[
-            Part(root=DataPart(
-                data={
-                    'type': 'form',
-                    'form': {
-                        'type': 'object',
-                        'properties': {
-                            'name': {
-                                'type': 'string',
-                                'description': 'Enter your name',
-                                'title': 'Name',
+            Part(
+                root=DataPart(
+                    data={
+                        'type': 'form',
+                        'form': {
+                            'type': 'object',
+                            'properties': {
+                                'name': {
+                                    'type': 'string',
+                                    'description': 'Enter your name',
+                                    'title': 'Name',
+                                },
+                                'date': {
+                                    'type': 'string',
+                                    'format': 'date',
+                                    'description': 'Birthday',
+                                    'title': 'Birthday',
+                                },
                             },
-                            'date': {
-                                'type': 'string',
-                                'format': 'date',
-                                'description': 'Birthday',
-                                'title': 'Birthday',
-                            },
+                            'required': ['date'],
                         },
-                        'required': ['date'],
-                    },
-                    'form_data': {
-                        'name': 'John Smith',
-                    },
-                    'instructions': 'Please provide your birthday and name',
-                }
-            )),
+                        'form_data': {
+                            'name': 'John Smith',
+                        },
+                        'instructions': 'Please provide your birthday and name',
+                    }
+                )
+            ),
         ],
         contextId=_contextId,
         messageId=str(uuid.uuid4()),

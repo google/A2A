@@ -42,7 +42,7 @@ class ImageGenerationAgentExecutor(AgentExecutor):
             result = self.agent.invoke(query, context.context_id)
             print(f'Final Result ===> {result}')
         except Exception as e:
-            logger.error('Error invoking agent: %s', e)
+            print('Error invoking agent: %s', e)
             raise ServerError(
                 error=ValueError(f'Error invoking agent: {e}')
             ) from e
