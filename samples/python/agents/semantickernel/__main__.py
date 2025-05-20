@@ -68,6 +68,8 @@ def get_agent_card(host: str, port: int):
         skills=[skill_trip_planning],
     )
 
+    return agent_card
+
 
 if __name__ == '__main__':
     main()
