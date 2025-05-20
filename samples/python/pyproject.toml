@@ -5,6 +5,7 @@ description = "Agent2Agent samples"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "a2a-sdk>=0.2.1",
     "httpx>=0.28.1",
     "httpx-sse>=0.4.0",
     "jwcrypto>=1.5.6",
@@ -14,7 +15,6 @@ dependencies = [
     "starlette>=0.46.1",
     "typing-extensions>=4.12.2",
     "uvicorn>=0.34.0",
-    "a2a_sdk",
 ]
 
 [tool.hatch.build.targets.wheel]

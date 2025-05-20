@@ -1,6 +1,6 @@
 import requests
 
-from common.types import AgentCard
+from a2a.types import AgentCard
 
 
 def get_agent_card(remote_agent_address: str) -> AgentCard:

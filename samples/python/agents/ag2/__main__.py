@@ -4,14 +4,15 @@ import sys
 
 import click
 import httpx
+
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.types import (AgentAuthentication, AgentCapabilities, AgentCard,
-                       AgentSkill)
+from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from agent import YoutubeMCPAgent  # type: ignore[import-untyped]
 from agent_executor import AG2AgentExecutor  # type: ignore[import-untyped]
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -26,7 +27,7 @@ def main(host, port):
     """Starts the AG2 MCP Agent server."""
     if not os.getenv('OPENAI_API_KEY'):
         print('OPENAI_API_KEY environment variable not set.')
-    
+
     request_handler = DefaultRequestHandler(
         agent_executor=AG2AgentExecutor(),
         task_store=InMemoryTaskStore(),
@@ -43,15 +44,15 @@ def get_agent_card(host: str, port: int):
     """Returns the Agent Card for the AG2 Agent."""
     capabilities = AgentCapabilities(streaming=True)
     skill = AgentSkill(
-            id='download_closed_captions',
-            name='Download YouTube Closed Captions',
-            description='Retrieve closed captions/transcripts from YouTube videos',
-            tags=['youtube', 'captions', 'transcription', 'video'],
-            examples=[
-                'Extract the transcript from this YouTube video: https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'Download the captions for this YouTube tutorial',
-            ],
-        )
+        id='download_closed_captions',
+        name='Download YouTube Closed Captions',
+        description='Retrieve closed captions/transcripts from YouTube videos',
+        tags=['youtube', 'captions', 'transcription', 'video'],
+        examples=[
+            'Extract the transcript from this YouTube video: https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            'Download the captions for this YouTube tutorial',
+        ],
+    )
     return AgentCard(
         name='YouTube Captions Agent',
         description='AI agent that can extract closed captions and transcripts from YouTube videos. This agent provides raw transcription data that can be used for further processing.',
@@ -61,7 +62,6 @@ def get_agent_card(host: str, port: int):
         defaultOutputModes=YoutubeMCPAgent.SUPPORTED_CONTENT_TYPES,
         capabilities=capabilities,
         skills=[skill],
-        authentication=AgentAuthentication(schemes=['public']),
     )
 
 

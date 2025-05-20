@@ -142,7 +142,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "a2a-sdk" },
+    { name = "a2a-sdk", specifier = ">=0.2.1" },
     { name = "httpx", specifier = ">=0.28.1" },
     { name = "httpx-sse", specifier = ">=0.4.0" },
     { name = "jwcrypto", specifier = ">=1.5.6" },
@@ -232,7 +232,7 @@ requires-dist = [
 
 [[package]]
 name = "a2a-sdk"
-version = "0.2.1a2"
+version = "0.2.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "httpx" },
@@ -244,9 +244,9 @@ dependencies = [
     { name = "starlette" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/f3/82/f3e46216bb7b2954b3b1f117c4fdf093f10878bb01c40089abf03f5cb88c/a2a_sdk-0.2.1a2.tar.gz", hash = "sha256:16e06efc1e5910390e3c991a8a42a3db0212ef70a1028088c44a7be0c31f3822", size = 117378 }
+sdist = { url = "https://files.pythonhosted.org/packages/0c/c0/c2bae45e164f49a96d305f96957daafd772618af387cb9318b1af3264a6a/a2a_sdk-0.2.1.tar.gz", hash = "sha256:9473a497eb575fe5b554e28c300b14a99cd827d3949b7b6605abc536873b8fff", size = 117369 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b1/31/7d50ed834d75379063d8bdab2d50ecc5f37f020b9b723c4c1b09e12cacf7/a2a_sdk-0.2.1a2-py3-none-any.whl", hash = "sha256:eb048a1bda42cd6af403e525c07382db0ad3162de4ab735ad041dafa562cd47d", size = 47109 },
+    { url = "https://files.pythonhosted.org/packages/db/29/b36a96936c7b52505700fb94ff63e00840f6fd32caa9b5327dbcd76678e3/a2a_sdk-0.2.1-py3-none-any.whl", hash = "sha256:7a7381f7c20fe042e8cb50ed8f725c12d954181f9afd30e0fac9a9f3f3487fe1", size = 47091 },
 ]
 
 [[package]]

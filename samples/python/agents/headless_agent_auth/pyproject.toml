@@ -5,7 +5,7 @@ description = "Example of an agent using Auth0 Client-Initiated Backchannel Auth
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "a2a-sdk @ git+https://github.com/google/a2a-python.git@main",
+    "a2a-sdk==0.2.1a1",
     "asyncclick>=8.1.8",
     "auth0-ai-langchain==1.0.0b2",
     "auth0-api-python==1.0.0b3",

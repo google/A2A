@@ -2,14 +2,15 @@ import os
 import sys
 
 import click
+
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.types import (AgentAuthentication, AgentCapabilities, AgentCard,
-                       AgentSkill)
+from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from agent import MindsDBAgent  # type: ignore[import-untyped]
 from agent_executor import MindsDBAgentExecutor  # type: ignore[import-untyped]
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -21,7 +22,7 @@ def main(host, port):
     if not os.getenv('MINDS_API_KEY'):
         print('MINDS_API_KEY environment variable not set.')
         sys.exit(1)
-    
+
     request_handler = DefaultRequestHandler(
         agent_executor=MindsDBAgentExecutor(),
         task_store=InMemoryTaskStore(),
@@ -34,6 +35,7 @@ def main(host, port):
 
     uvicorn.run(server.build(), host=host, port=port)
 
+
 def get_agent_card(host: str, port: int):
     """Returns the Agent Card for the MindsDB Agent."""
     capabilities = AgentCapabilities(streaming=True)
@@ -43,9 +45,9 @@ def get_agent_card(host: str, port: int):
         description='Interact with your databases and tables through natural language queries using MindsDB.',
         tags=['database', 'sql', 'mindsdb', 'data analysis'],
         examples=[
-                'What TABLES are in my database?',
-                'What are some good queries to run on my data?',
-            ],
+            'What TABLES are in my database?',
+            'What are some good queries to run on my data?',
+        ],
     )
     return AgentCard(
         name='MindsDB Data Chat Agent',
@@ -56,7 +58,6 @@ def get_agent_card(host: str, port: int):
         defaultOutputModes=MindsDBAgent.SUPPORTED_CONTENT_TYPES,
         capabilities=capabilities,
         skills=[skill],
-        authentication=AgentAuthentication(schemes=['public']),
     )
 
 

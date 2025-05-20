@@ -1,14 +1,15 @@
 import logging
 
 import click
+
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.types import (AgentAuthentication, AgentCapabilities, AgentCard,
-                       AgentSkill)
+from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from agent_executor import SemanticKernelTravelAgentExecutor
 from common.types import AgentCapabilities, AgentCard, AgentSkill
 from dotenv import load_dotenv
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -33,10 +34,11 @@ def main(host, port):
 
     uvicorn.run(server.build(), host=host, port=port)
 
+
 def get_agent_card(host: str, port: int):
     """Returns the Agent Card for the Sementic Kernel Travel Agent."""
 
-    # Build the agent card    
+    # Build the agent card
     capabilities = AgentCapabilities(streaming=True)
     skill_trip_planning = AgentSkill(
         id='trip_planning_sk',
@@ -64,7 +66,6 @@ def get_agent_card(host: str, port: int):
         defaultOutputModes=['text'],
         capabilities=capabilities,
         skills=[skill_trip_planning],
-        authentication=AgentAuthentication(schemes=['public']),
     )
 
 

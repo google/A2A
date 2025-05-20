@@ -9,11 +9,7 @@ import click
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.types import (AgentAuthentication, AgentCapabilities, AgentCard,
-                       AgentSkill)
-from agent import ExtractorAgent  # type: ignore[import-untyped]
-from agent_executor import \
-    ExtractorAgentExecutor  # type: ignore[import-untyped]
+from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from agents.marvin.agent import ExtractorAgent
 from agents.marvin.task_manager import AgentTaskManager
 from common.server import A2AServer
@@ -21,6 +17,9 @@ from common.types import AgentCapabilities, AgentCard, AgentSkill
 from common.utils.push_notification_auth import PushNotificationSenderAuth
 from dotenv import load_dotenv
 from pydantic import BaseModel, EmailStr, Field
+
+from agent import ExtractorAgent  # type: ignore[import-untyped]
+from agent_executor import ExtractorAgentExecutor  # type: ignore[import-untyped]
 
 load_dotenv()
 
@@ -68,6 +67,7 @@ def main(host, port, result_type, instructions):
 
     uvicorn.run(server.build(), host=host, port=port)
 
+
 def get_agent_card(host: str, port: int):
     """Returns the Agent Card for the ExtractorAgent."""
     capabilities = AgentCapabilities(streaming=True)
@@ -89,7 +89,6 @@ def get_agent_card(host: str, port: int):
         defaultOutputModes=ExtractorAgent.SUPPORTED_CONTENT_TYPES,
         capabilities=capabilities,
         skills=[skill],
-        authentication=AgentAuthentication(schemes=['public']),
     )
 
 

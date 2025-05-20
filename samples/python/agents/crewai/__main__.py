@@ -4,22 +4,21 @@ It initializes the A2A server, defines the agent's capabilities,
 and starts the server to handle incoming requests.
 """
 
-import click
-import os
 import logging
 import os
 
-from agent import ImageGenerationAgent
-from agent_executor import ImageGenerationAgentExecutor
+import click
+
+from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.server.apps import A2AStarletteApplication
 from a2a.types import (
-    AgentAuthentication,
     AgentCapabilities,
     AgentCard,
     AgentSkill,
 )
+from agent import ImageGenerationAgent
+from agent_executor import ImageGenerationAgentExecutor
 from dotenv import load_dotenv
 
 
@@ -31,7 +30,9 @@ logger = logging.getLogger(__name__)
 
 class MissingAPIKeyError(Exception):
     """Exception for missing API key."""
+
     pass
+
 
 @click.command()
 @click.option('--host', 'host', default='localhost')
@@ -72,7 +73,6 @@ def main(host, port):
             defaultOutputModes=ImageGenerationAgent.SUPPORTED_CONTENT_TYPES,
             capabilities=capabilities,
             skills=[skill],
-            authentication=AgentAuthentication(schemes=[]),
         )
 
         request_handler = DefaultRequestHandler(

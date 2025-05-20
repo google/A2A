@@ -1,20 +1,18 @@
-
-import click
-import os
 import logging
 import os
 
-from agent import ReimbursementAgent
-from agent_executor import ReimbursementAgentExecutor
+import click
+
+from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.server.apps import A2AStarletteApplication
 from a2a.types import (
-    AgentAuthentication,
     AgentCapabilities,
     AgentCard,
     AgentSkill,
 )
+from agent import ReimbursementAgent
+from agent_executor import ReimbursementAgentExecutor
 from dotenv import load_dotenv
 
 
@@ -23,8 +21,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class MissingAPIKeyError(Exception):
     """Exception for missing API key."""
+
     pass
 
 
@@ -59,7 +59,6 @@ def main(host, port):
             defaultOutputModes=ReimbursementAgent.SUPPORTED_CONTENT_TYPES,
             capabilities=capabilities,
             skills=[skill],
-            authentication=AgentAuthentication(schemes=[]),
         )
         request_handler = DefaultRequestHandler(
             agent_executor=ReimbursementAgentExecutor(),

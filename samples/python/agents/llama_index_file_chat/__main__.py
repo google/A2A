@@ -1,18 +1,18 @@
-import click
-import os
 import logging
+import os
 
-from agents.llama_index_file_chat.agent import ParseAndChat
-from agent_executor import LlamaIndexAgentExecutor
+import click
+
+from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.server.apps import A2AStarletteApplication
 from a2a.types import (
-    AgentAuthentication,
     AgentCapabilities,
     AgentCard,
     AgentSkill,
 )
+from agent_executor import LlamaIndexAgentExecutor
+from agents.llama_index_file_chat.agent import ParseAndChat
 from common.utils.push_notification_auth import PushNotificationSenderAuth
 from dotenv import load_dotenv
 
@@ -22,8 +22,10 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class MissingAPIKeyError(Exception):
     """Exception for missing API key."""
+
     pass
 
 
@@ -61,7 +63,6 @@ def main(host, port):
             defaultOutputModes=LlamaIndexAgentExecutor.SUPPORTED_OUTPUT_TYPES,
             capabilities=capabilities,
             skills=[skill],
-            authentication=AgentAuthentication(schemes=[]),
         )
 
         notification_sender_auth = PushNotificationSenderAuth()

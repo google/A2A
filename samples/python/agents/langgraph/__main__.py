@@ -1,22 +1,21 @@
-from agents.langgraph.agent import CurrencyAgent
-
-import click
-import os
 import logging
 import os
 
-from agent import CurrencyAgent
-from agent_executor import CurrencyAgentExecutor
+import click
+
+from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
 from a2a.server.tasks import InMemoryTaskStore
-from a2a.server.apps import A2AStarletteApplication
 from a2a.types import (
-    AgentAuthentication,
     AgentCapabilities,
     AgentCard,
     AgentSkill,
 )
+from agent import CurrencyAgent
+from agent_executor import CurrencyAgentExecutor
+from agents.langgraph.agent import CurrencyAgent
 from dotenv import load_dotenv
+
 
 load_dotenv()
 
@@ -26,7 +25,9 @@ logger = logging.getLogger(__name__)
 
 class MissingAPIKeyError(Exception):
     """Exception for missing API key."""
+
     pass
+
 
 @click.command()
 @click.option('--host', 'host', default='localhost')
@@ -56,7 +57,6 @@ def main(host, port):
             defaultOutputModes=CurrencyAgent.SUPPORTED_CONTENT_TYPES,
             capabilities=capabilities,
             skills=[skill],
-            authentication=AgentAuthentication(schemes=[]),
         )
 
         # Add push notification support back when SDK ready
