@@ -11,10 +11,15 @@ class TravelPlannerAgent:
         try:
             with open("config.json") as f:
                 config = json.load(f)
+            if not os.getenv(config["api_key"]):
+                print(f'{config["api_key"]} environment variable not set.')
+                sys.exit(1)
+            api_key = os.getenv(config["api_key"])
+
             self.model = ChatOpenAI(
                 model=config["model_name"],
                 base_url=config["base_url"],
-                api_key=config["api_key"],
+                api_key=api_key,
                 temperature=0.7  # Control the generation randomness (0-2, higher values indicate greater randomness)
             )
         except FileNotFoundError:
