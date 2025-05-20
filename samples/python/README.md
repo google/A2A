@@ -15,7 +15,7 @@ Host applications that use the A2AClient. Includes a CLI which shows simple task
 
 ## Prerequisites
 
-- Python 3.11 or higher
+- Python 3.13 or higher
 - [UV](https://docs.astral.sh/uv/)
 
 ## Running the Samples

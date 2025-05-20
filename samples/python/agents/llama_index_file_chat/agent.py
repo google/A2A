@@ -1,9 +1,6 @@
 import base64
 import os
-
-from typing import Any
-
-from llama_cloud_services.parse import LlamaParse
+from typing import Any, Optional
 from llama_index.core.llms import ChatMessage
 from llama_index.core.workflow import (
     Context,
@@ -13,6 +10,8 @@ from llama_index.core.workflow import (
     Workflow,
     step,
 )
+from llama_index.llms.google_genai import GoogleGenAI
+from llama_cloud_services.parse import LlamaParse
 from llama_index.llms.google_genai import GoogleGenAI
 from pydantic import BaseModel, Field
 
@@ -74,7 +73,7 @@ class ChatResponse(BaseModel):
 class ParseAndChat(Workflow):
     def __init__(
         self,
-        timeout: float | None = None,
+        timeout: Optional[float] = None,
         verbose: bool = False,
         **workflow_kwargs: Any,
     ):
@@ -106,7 +105,8 @@ When citing content from the document:
             return ParseEvent(
                 attachment=ev.attachment, file_name=ev.file_name, msg=ev.msg
             )
-        return ChatEvent(msg=ev.msg)
+        else:
+            return ChatEvent(msg=ev.msg)
 
     @step
     async def parse(self, ctx: Context, ev: ParseEvent) -> ChatEvent:

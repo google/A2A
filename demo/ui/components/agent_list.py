@@ -1,7 +1,7 @@
 import mesop as me
 import pandas as pd
 
-from common.types import AgentCard
+from a2a.types import AgentCard
 from state.agent_state import AgentState
 
 
@@ -10,7 +10,7 @@ def agents_list(
     agents: list[AgentCard],
 ):
     """Agents list component."""
-    df_data = {
+    df_data: dict[str, list[str | bool | None]] = {
         'Address': [],
         'Name': [],
         'Description': [],

@@ -4,13 +4,11 @@ Handles the agents and also presents the tools required.
 """
 
 import base64
-import logging
+from io import BytesIO
 import os
 import re
-
-from collections.abc import AsyncIterable
-from io import BytesIO
-from typing import Any
+import logging
+from typing import Any, AsyncIterable, Dict
 from uuid import uuid4
 
 from PIL import Image
@@ -52,6 +50,7 @@ def generate_image_tool(
     prompt: str, session_id: str, artifact_file_id: str = None
 ) -> str:
     """Image generation tool that generates images or modifies a given image based on a prompt."""
+
     if not prompt:
         raise ValueError('Prompt cannot be empty')
 
@@ -113,6 +112,7 @@ def generate_image_tool(
     for part in response.candidates[0].content.parts:
         if part.inline_data is not None:
             try:
+                print("Creating image data")
                 data = Imagedata(
                     bytes=base64.b64encode(part.inline_data.data).decode(
                         'utf-8'
