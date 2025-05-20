@@ -32,7 +32,7 @@ sequenceDiagram
 ## Prerequisites
 
 - Python 3.12 or higher
-- UV package manager (recommended)
+- [UV](https://docs.astral.sh/uv/) package manager (recommended)
 - Google API Key (for Gemini access)
 
 ## Setup & Running
@@ -43,7 +43,7 @@ sequenceDiagram
    cd samples/python/agents/crewai
    ```
 
-2. Create an environment file with your API key:
+2. Create an environment file with your API key (or Vertex AI credentials):
 
    ```bash
    echo "GOOGLE_API_KEY=your_api_key_here" > .env
@@ -67,11 +67,19 @@ sequenceDiagram
    uv run . --host 0.0.0.0 --port 8080
    ```
 
-5. In a separate terminal, run the A2A client:
+5. Run the A2A client:
 
+   In a separate terminal:
    ```bash
-   uv run hosts/cli
+   # Connect to the agent (specify the agent URL with correct port)
+   cd samples/python/hosts/cli   
+   uv run . --agent http://localhost:10001
+   
+   # If you changed the port when starting the agent, use that port instead
+   # uv run . --agent http://localhost:YOUR_PORT
    ```
+
+   Or run the [demo app](/A2A/A2A/demo/README.md)
 
 ## Features & Improvements
 

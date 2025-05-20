@@ -3,39 +3,39 @@ name = "a2a-samples"
 version = "0.1.0"
 description = "Agent2Agent samples"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 dependencies = [
-    "asyncclick>=8.1.8",
-    "asyncio>=3.4.3",
-    "click>=8.1.8",
-    "google-genai>=1.9.0",
     "httpx>=0.28.1",
     "httpx-sse>=0.4.0",
-    "langchain-google-genai>=2.0.10",
-    "langgraph>=0.3.18",
+    "jwcrypto>=1.5.6",
     "pydantic>=2.10.6",
+    "pyjwt>=2.10.1",
     "sse-starlette>=2.2.1",
     "starlette>=0.46.1",
-    "streamlit>=1.44.0",
+    "typing-extensions>=4.12.2",
     "uvicorn>=0.34.0",
-    "google-adk>=0.0.3",
-    "jwcrypto>=1.5.6",
-    "pyjwt>=2.10.1",
 ]
 
 [tool.hatch.build.targets.wheel]
 packages = ["common", "hosts"]
 
 [tool.uv.workspace]
-members = ["agents/crewai"]
+members = [
+    "agents/crewai",
+    "agents/google_adk",
+    "agents/langgraph",
+    "agents/marvin",
+    "hosts/cli",
+    "hosts/multiagent",
+    "agents/llama_index_file_chat",
+    "agents/semantickernel",
+    "agents/mindsdb",
+    "agents/ag2"
+]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [dependency-groups]
-dev = [
-    "pytest>=8.3.5",
-    "pytest-mock>=3.14.0",
-    "ruff>=0.11.2",
-]
+dev = ["pytest>=8.3.5", "pytest-mock>=3.14.0", "ruff>=0.11.2"]

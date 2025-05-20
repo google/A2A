@@ -1,13 +1,8 @@
 import mesop as me
 import mesop.labs as mel
 
-from .side_nav import sidenav
-from .async_poller import async_poller, AsyncAction
-from .poller import polling_buttons
-
-from state.state import AppState
 from state.host_agent_service import UpdateAppState
-
+from state.state import AppState
 from styles.styles import (
     MAIN_COLUMN_STYLE,
     PAGE_BACKGROUND_PADDING_STYLE,
@@ -15,6 +10,10 @@ from styles.styles import (
     SIDENAV_MAX_WIDTH,
     SIDENAV_MIN_WIDTH,
 )
+
+from .async_poller import AsyncAction, async_poller
+from .side_nav import sidenav
+
 
 async def refresh_app_state(e: mel.WebEvent):  # pylint: disable=unused-argument
     """Refresh app state event handler"""
@@ -26,37 +25,36 @@ async def refresh_app_state(e: mel.WebEvent):  # pylint: disable=unused-argument
 
 @me.content_component
 def page_scaffold():
-    """page scaffold component"""
-
+    """Page scaffold component"""
     app_state = me.state(AppState)
     action = (
         AsyncAction(
-            value=app_state,
-            duration_seconds=app_state.polling_interval)
+            value=app_state, duration_seconds=app_state.polling_interval
+        )
         if app_state
         else None
     )
-    async_poller(
-        action=action, trigger_event=refresh_app_state
-    )
+    async_poller(action=action, trigger_event=refresh_app_state)
 
-    sidenav("")
+    sidenav('')
 
     with me.box(
         style=me.Style(
-            display="flex",
-            flex_direction="column",
-            height="100%",
+            display='flex',
+            flex_direction='column',
+            height='100%',
             margin=me.Margin(
-                left=SIDENAV_MAX_WIDTH if app_state.sidenav_open else SIDENAV_MIN_WIDTH,
+                left=SIDENAV_MAX_WIDTH
+                if app_state.sidenav_open
+                else SIDENAV_MIN_WIDTH,
             ),
         ),
     ):
         with me.box(
             style=me.Style(
-                background=me.theme_var("background"),
-                height="100%",
-                overflow_y="scroll",
+                background=me.theme_var('background'),
+                height='100%',
+                overflow_y='scroll',
                 margin=me.Margin(bottom=20),
             )
         ):

@@ -1,0 +1,20 @@
+[project]
+name = "a2a-semantic-kernel"
+version = "0.1.0"
+description = "Leverage Semantic Kernel Agents using the A2A protocol."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "semantic-kernel>=1.28.0",
+    "a2a-samples",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[tool.uv.sources]
+a2a-samples = { workspace = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,85 @@
+name: Check Spelling
+
+on:
+  pull_request:
+    branches:
+      - "**"
+    types:
+      - "opened"
+      - "reopened"
+      - "synchronize"
+  issue_comment:
+    types:
+      - "created"
+
+jobs:
+  spelling:
+    name: Check Spelling
+    permissions:
+      contents: read
+      actions: read
+      security-events: write
+    outputs:
+      followup: ${{ steps.spelling.outputs.followup }}
+    runs-on: ubuntu-latest
+    # if on repo to avoid failing runs on forks
+    if: |
+      github.repository == 'google/A2A' 
+        && (contains(github.event_name, 'pull_request') || github.event_name == 'push')
+    concurrency:
+      group: spelling-${{ github.event.pull_request.number || github.ref }}
+      # note: If you use only_check_changed_files, you do not want cancel-in-progress
+      cancel-in-progress: false
+    steps:
+      - name: check-spelling
+        id: spelling
+        uses: check-spelling/check-spelling@main
+        with:
+          suppress_push_for_open_pull_request: ${{ github.actor != 'dependabot[bot]' && 1 }}
+          checkout: true
+          check_file_names: 1
+          spell_check_this: check-spelling/spell-check-this@main
+          post_comment: 0
+          use_magic_file: 1
+          report-timing: 1
+          warnings: bad-regex,binary-file,deprecated-feature,ignored-expect-variant,large-file,limited-references,no-newline-at-eof,noisy-file,non-alpha-in-dictionary,token-is-substring,unexpected-line-ending,whitespace-in-dictionary,minified-file,unsupported-configuration,no-files-to-check,unclosed-block-ignore-begin,unclosed-block-ignore-end
+          experimental_apply_changes_via_bot: 1
+          dictionary_source_prefixes: '{"cspell": "https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/main/dictionaries/"}'
+          extra_dictionaries: |
+            cspell:aws/dict/aws.txt
+            cspell:bash/samples/bash-words.txt
+            cspell:companies/dict/companies.txt
+            cspell:css/dict/css.txt
+            cspell:data-science/dict/data-science-models.txt
+            cspell:data-science/dict/data-science.txt
+            cspell:data-science/dict/data-science-tools.txt
+            cspell:en_shared/dict/acronyms.txt
+            cspell:en_shared/dict/shared-additional-words.txt
+            cspell:en_GB/en_GB.trie
+            cspell:en_US/en_US.trie
+            cspell:filetypes/src/filetypes.txt
+            cspell:fonts/dict/fonts.txt
+            cspell:fullstack/dict/fullstack.txt
+            cspell:golang/dict/go.txt
+            cspell:google/dict/google.txt
+            cspell:html/dict/html.txt
+            cspell:java/src/java.txt
+            cspell:k8s/dict/k8s.txt
+            cspell:mnemonics/dict/mnemonics.txt
+            cspell:monkeyc/src/monkeyc_keywords.txt
+            cspell:node/dict/node.txt
+            cspell:npm/dict/npm.txt
+            cspell:people-names/dict/people-names.txt
+            cspell:python/dict/python.txt
+            cspell:python/dict/python-common.txt
+            cspell:shell/dict/shell-all-words.txt
+            cspell:software-terms/dict/softwareTerms.txt
+            cspell:software-terms/dict/webServices.txt
+            cspell:sql/src/common-terms.txt
+            cspell:sql/src/sql.txt
+            cspell:sql/src/tsql.txt
+            cspell:terraform/dict/terraform.txt
+            cspell:typescript/dict/typescript.txt
+          check_extra_dictionaries: ""
+          only_check_changed_files: true
+          longest_word: "10"
