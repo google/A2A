@@ -512,6 +512,7 @@ export interface JSONRPCMessage {
  * Represents a JSON-RPC 2.0 Request object.
  */
 export interface JSONRPCRequest extends JSONRPCMessage {
+  id: number | string;
   /**
    * A String containing the name of the method to be invoked.
    */
@@ -549,6 +550,7 @@ export interface JSONRPCError {
  * Represents a JSON-RPC 2.0 Result object.
  */
 interface JSONRPCResult extends JSONRPCMessage {
+  id: number | string;
   /**
    * The result object on success
    */
@@ -562,6 +564,7 @@ interface JSONRPCResult extends JSONRPCMessage {
  * Represents a JSON-RPC 2.0 Error Response object.
  */
 export interface JSONRPCErrorResponse extends JSONRPCMessage {
+  id: number | string;
   result?: never; // Optional 'never' helps enforce exclusivity
   error: JSONRPCError | A2AError
 }
