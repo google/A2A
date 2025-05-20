@@ -1,0 +1,17 @@
+[project]
+name = "a2a-samples-restate"
+version = "0.1.0"
+description = "Resilient A2A agent using the Restate SDK"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "a2a-samples",
+    "restate-sdk[serde]>=0.7.1",
+    "hypercorn",
+    "google-adk>=0.0.3",
+    "google-genai>=1.9.0",
+    "fastapi"
+]
+
+[tool.uv.sources]
+a2a-samples = { workspace = true }

@@ -54,6 +54,7 @@ As AI agents become more prevalent, their ability to interoperate is crucial for
   - [Marvin](/samples/python/agents/marvin/README.md)
   - [Semantic Kernel](/samples/python/agents/semantickernel/README.md)
   - [AG2 + MCP](/samples/python/agents/ag2/README.md)
+  - [Restate](/samples/python/agents/restate/README.md)
 
 ## Contributing
 
