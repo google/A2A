@@ -14,13 +14,14 @@ from pydantic import (
 
 
 class TaskState(str, Enum):
-    SUBMITTED = 'submitted'
-    WORKING = 'working'
-    INPUT_REQUIRED = 'input-required'
-    COMPLETED = 'completed'
-    CANCELED = 'canceled'
-    FAILED = 'failed'
-    UNKNOWN = 'unknown'
+    SUBMITTED = "submitted"
+    WORKING = "working"
+    INPUT_REQUIRED = "input-required"
+    COMPLETED = "completed"
+    CANCELED = "canceled"
+    FAILED = "failed"
+    REJECTED = "rejected"
+    UNKNOWN = "unknown"
 
 
 class TextPart(BaseModel):
