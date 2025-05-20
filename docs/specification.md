@@ -1399,87 +1399,89 @@ _(Server closes the SSE connection after the `final:true` event)._
 
 4. **Server processes the new input and responds (e.g., task completed or more input needed):**
 
-   ```json
-  {
-    "jsonrpc": "2.0",
-    "id": "req-004",
-    "result": {
-    "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-    "status": {
-      "state": "completed",
-      "message": {
-           "role": "agent",
-           "parts": [
-             {
-               "type": "text",
-               "text": "Okay, I've found a flight for you. Confirmation XYZ123. Details are in the artifact."
-             }
-           ]
-         },
-    },
-    "artifacts": [
-      {
-        "artifactId":"9b6934dd-37e3-4eb1-8766-962efaab63a1",
-        "name": "FlightItinerary.json",
-        "parts": [
-          {
-            "type": "data",
-            "data": {
-              "confirmationId": "XYZ123",
-              "from": "JFK",
-              "to": "LHR",
-              "departure": "2024-10-10T18:00:00Z",
-              "arrival": "2024-10-11T06:00:00Z",
-              "returnDeparture": "..."
+
+    ```json
+    {
+      "jsonrpc": "2.0",
+      "id": "req-004",
+      "result": {
+      "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+      "status": {
+        "state": "completed",
+        "message": {
+            "role": "agent",
+            "parts": [
+              {
+                "type": "text",
+                "text": "Okay, I've found a flight for you. Confirmation XYZ123. Details are in the artifact."
+              }
+            ]
+          },
+      },
+      "artifacts": [
+        {
+          "artifactId":"9b6934dd-37e3-4eb1-8766-962efaab63a1",
+          "name": "FlightItinerary.json",
+          "parts": [
+            {
+              "type": "data",
+              "data": {
+                "confirmationId": "XYZ123",
+                "from": "JFK",
+                "to": "LHR",
+                "departure": "2024-10-10T18:00:00Z",
+                "arrival": "2024-10-11T06:00:00Z",
+                "returnDeparture": "..."
+              }
             }
-          }
-        ]
-      }
-    ],
-    "history": [
-      {
+          ]
+        }
+      ],
+      "history": [
+        {
+            "role": "user",
+            "parts": [
+              {
+                "type": "text",
+                "text": "I'd like to book a flight."
+              }
+            ],
+            "messageId": "c53ba666-3f97-433c-a87b-6084276babe2",
+            "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+            "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+          },
+        {
+            "role": "agent",
+            "parts": [
+              {
+                "type": "text",
+                "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
+              }
+            ],
+            "messageId": "c2e1b2dd-f200-4b04-bc22-1b0c65a1aad2",
+            "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+            "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+          },
+        {
           "role": "user",
           "parts": [
             {
               "type": "text",
-              "text": "I'd like to book a flight."
+              "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
             }
           ],
-          "messageId": "c53ba666-3f97-433c-a87b-6084276babe2",
+          "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
           "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-          "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
-        },
-      {
-           "role": "agent",
-           "parts": [
-             {
-               "type": "text",
-               "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
-             }
-           ],
-           "messageId": "c2e1b2dd-f200-4b04-bc22-1b0c65a1aad2",
-           "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-           "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
-         },
-      {
-         "role": "user",
-         "parts": [
-           {
-             "type": "text",
-             "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
-           }
-         ],
-         "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-         "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-         "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
-       }
-    ],
-    "kind": "task",
-    "metadata": {}
+          "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
+        }
+      ],
+      "kind": "task",
+      "metadata": {}
+      }
     }
-  }
-  ```
+    ```
+
 
 ### 9.4. Push Notification Setup and Usage
 

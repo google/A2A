@@ -377,7 +377,7 @@ class ADKHostManager(ApplicationManager):
                     current_task.artifacts = []
                 current_task.artifacts.append(artifact)
             else:
-                # this is a chunk of an artifact, stash it in temp store for assemling
+                # this is a chunk of an artifact, stash it in temp store for assembling
                 if artifact.artifactId not in self._artifact_chunks:
                     self._artifact_chunks[artifact.artifactId] = []
                 self._artifact_chunks[artifact.artifactId].append(artifact)
@@ -581,7 +581,7 @@ class ADKHostManager(ApplicationManager):
                         parts.append(Part(root=DataPart(data=p)))
                 elif isinstance(p, DataPart):
                     if 'artifact-file-id' in p.data:
-                        file_part = await self._artifact_service.load_artifact(
+                        file_part = self._artifact_service.load_artifact(
                             user_id=self.user_id,
                             session_id=context_id,
                             app_name=self.app_name,

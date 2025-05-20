@@ -1,7 +1,9 @@
 # Agent2Agent (A2A) Protocol
 
-![A2A Banner](docs/assets/a2a-banner.png)
+![PyPI - Version](https://img.shields.io/pypi/v/a2a-sdk)
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
+![A2A Banner](docs/assets/a2a-banner.png)
 
 **An open protocol enabling communication and interoperability between opaque agentic applications.**
 
