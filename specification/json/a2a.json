@@ -122,7 +122,7 @@
                     "description": "Optional capabilities supported by the agent."
                 },
                 "defaultInputModes": {
-                    "description": "The set of interaction modes that the agent\nsupports across all skills. This can be overridden per-skill.\nSupported mime types for input.",
+                    "description": "The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.\nSupported mime types for input.",
                     "items": {
                         "type": "string"
                     },
@@ -178,6 +178,10 @@
                     },
                     "type": "array"
                 },
+                "supportsAuthenticatedExtendedCard": {
+                    "description": "true if the agent supports providing an extended agent card when the user is authenticated.\nDefaults to false if not specified.",
+                    "type": "boolean"
+                },
                 "url": {
                     "description": "A URL to the address the agent is hosted at.",
                     "type": "string"
@@ -221,11 +225,11 @@
             "description": "Represents a unit of capability that an agent can perform.",
             "properties": {
                 "description": {
-                    "description": "Description of the skill - will be used by the client or a human\nas a hint to understand what the skill does.",
+                    "description": "Description of the skill - will be used by the client or a human \nas a hint to understand what the skill does.",
                     "type": "string"
                 },
                 "examples": {
-                    "description": "The set of example scenarios that the skill can perform.\nWill be used by the client as a hint to understand how the skill can be\nused.",
+                    "description": "The set of example scenarios that the skill can perform.\nWill be used by the client as a hint to understand how the skill can be used.",
                     "items": {
                         "type": "string"
                     },
@@ -254,7 +258,7 @@
                     "type": "array"
                 },
                 "tags": {
-                    "description": "Set of tagwords describing classes of capabilities for this specific\nskill.",
+                    "description": "Set of tagwords describing classes of capabilities for this specific skill.",
                     "items": {
                         "type": "string"
                     },
@@ -307,22 +311,22 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "authorizationUrl": {
-                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS",
+                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS",
                     "type": "string"
                 },
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
                     "type": "object"
                 },
                 "tokenUrl": {
-                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
+                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard \nrequires the use of TLS.",
                     "type": "string"
                 }
             },
@@ -337,7 +341,7 @@
             "description": "JSON-RPC request model for the 'tasks/cancel' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -380,7 +384,7 @@
             "description": "JSON-RPC success response model for the 'tasks/cancel' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -406,18 +410,18 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
                     "type": "object"
                 },
                 "tokenUrl": {
-                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
+                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard \nrequires the use of TLS.",
                     "type": "string"
                 }
             },
@@ -566,7 +570,7 @@
             "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -609,7 +613,7 @@
             "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -635,7 +639,7 @@
             "description": "JSON-RPC request model for the 'tasks/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -678,7 +682,7 @@
             "description": "JSON-RPC success response for the 'tasks/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -704,7 +708,7 @@
             "description": "HTTP Authentication security scheme.",
             "properties": {
                 "bearerFormat": {
-                    "description": "A hint to the client to identify how the bearer token is formatted. Bearer tokens are usually\ngenerated by an authorization server, so this information is primarily for documentation\npurposes.",
+                    "description": "A hint to the client to identify how the bearer token is formatted. Bearer tokens are usually \ngenerated by an authorization server, so this information is primarily for documentation \npurposes.",
                     "type": "string"
                 },
                 "description": {
@@ -730,18 +734,18 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "authorizationUrl": {
-                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS",
+                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS",
                     "type": "string"
                 },
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
                     "type": "object"
                 }
             },
@@ -931,7 +935,7 @@
                     ]
                 },
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -953,7 +957,7 @@
             "description": "Base interface for any JSON-RPC 2.0 request or response.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -974,7 +978,7 @@
             "description": "Represents a JSON-RPC 2.0 Request object.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1031,7 +1035,7 @@
             "description": "Represents a JSON-RPC 2.0 Result object.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1081,7 +1085,7 @@
                     "type": "array"
                 },
                 "referenceTaskIds": {
-                    "description": "list of tasks referenced as context by this message.",
+                    "description": "List of tasks referenced as context by this message.",
                     "items": {
                         "type": "string"
                     },
@@ -1276,18 +1280,18 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
                     "type": "object"
                 },
                 "tokenUrl": {
-                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
+                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard \nrequires the use of TLS.",
                     "type": "string"
                 }
             },
@@ -1391,7 +1395,7 @@
             "description": "JSON-RPC request model for the 'message/send' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1434,7 +1438,7 @@
             "description": "JSON-RPC success response model for the 'message/send' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1467,7 +1471,7 @@
             "description": "JSON-RPC request model for the 'message/stream' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1510,7 +1514,7 @@
             "description": "JSON-RPC success response model for the 'message/stream' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1549,7 +1553,7 @@
             "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/set' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1592,7 +1596,7 @@
             "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/set' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1808,7 +1812,7 @@
             "description": "JSON-RPC request model for the 'tasks/resubscribe' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"

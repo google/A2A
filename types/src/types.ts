@@ -103,6 +103,11 @@ export interface AgentCard {
   defaultOutputModes: string[];
   /** Skills are a unit of capability that an agent can perform. */
   skills: AgentSkill[];
+    /**
+   * true if the agent supports providing an extended agent card when the user is authenticated.
+   * Defaults to false if not specified.
+   */
+  supportsAuthenticatedExtendedCard?: boolean;
 }
 
 export interface Task {
