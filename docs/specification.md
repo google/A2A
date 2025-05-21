@@ -5,7 +5,7 @@ hide:
 
 # Agent2Agent (A2A) Protocol Specification
 
-**Version:** `0.2.0`
+**Version:** `0.2.1`
 
 ## 1. Introduction
 
@@ -488,6 +488,8 @@ interface Message {
   // Keys SHOULD be strings; values can be any valid JSON type.
   // Useful for timestamps, source identifiers, language codes, etc.
   metadata?: Record<string, any>;
+  // List of tasks referenced as contextual hint by this message.
+  referenceTaskIds?: string[];
   //message identifier created by the message creator
   messageId: string;
   //task identifier the current message is related to
