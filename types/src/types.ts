@@ -140,7 +140,7 @@ export interface TaskStatus {
   timestamp?: string;
 }
 
-/** sent by server during sendStream or subscribe requests */
+/** Sent by server during sendStream or subscribe requests */
 export interface TaskStatusUpdateEvent {
   /** Task id */
   taskId: string;
@@ -158,7 +158,7 @@ export interface TaskStatusUpdateEvent {
   };
 }
 
-/** sent by server during sendStream or subscribe requests */
+/** Sent by server during sendStream or subscribe requests */
 export interface TaskArtifactUpdateEvent {
   /** Task id */
   taskId: string;
