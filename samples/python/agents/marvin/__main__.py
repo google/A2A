@@ -6,15 +6,15 @@ It is integrated with the Agent2Agent (A2A) protocol.
 import logging
 
 import click
+import httpx
+
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
-from a2a.server.tasks import InMemoryTaskStore
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier
 from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from agents.marvin.agent import ExtractorAgent
-from agents.marvin.task_manager import AgentTaskManager
 from common.server import A2AServer
 from common.types import AgentCapabilities, AgentCard, AgentSkill
-from common.utils.push_notification_auth import PushNotificationSenderAuth
 from dotenv import load_dotenv
 from pydantic import BaseModel, EmailStr, Field
 
@@ -56,9 +56,11 @@ def main(host, port, result_type, instructions):
         logger.error(f"Invalid result type: {e}")
         exit(1)
     agent = ExtractorAgent(instructions=instructions, result_type=result_type)
+    httpx_client = httpx.AsyncClient()
     request_handler = DefaultRequestHandler(
         agent_executor=ExtractorAgentExecutor(agent=agent),
         task_store=InMemoryTaskStore(),
+        push_notifier=InMemoryPushNotifier(httpx_client),
     )
     server = A2AStarletteApplication(
         agent_card=get_agent_card(host, port), http_handler=request_handler
