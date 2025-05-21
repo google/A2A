@@ -39,7 +39,7 @@ def main(host, port):
 
 
 def get_agent_card(host: str, port: int):
-    """Returns the Agent Card for the Sementic Kernel Travel Agent."""
+    """Returns the Agent Card for the Semantic Kernel Travel Agent."""
 
     # Build the agent card
     capabilities = AgentCapabilities(streaming=True)
