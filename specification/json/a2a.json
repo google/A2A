@@ -68,7 +68,7 @@
             "description": "API Key security scheme.",
             "properties": {
                 "description": {
-                    "description": "description of this security scheme",
+                    "description": "Description of this security scheme.",
                     "type": "string"
                 },
                 "in": {
@@ -100,15 +100,15 @@
             "description": "Defines optional capabilities supported by an agent.",
             "properties": {
                 "pushNotifications": {
-                    "description": "true if the agent can notify updates to client",
+                    "description": "true if the agent can notify updates to client.",
                     "type": "boolean"
                 },
                 "stateTransitionHistory": {
-                    "description": "true if the agent exposes status change history for tasks",
+                    "description": "true if the agent exposes status change history for tasks.",
                     "type": "boolean"
                 },
                 "streaming": {
-                    "description": "true if the agent supports SSE",
+                    "description": "true if the agent supports SSE.",
                     "type": "boolean"
                 }
             },
@@ -203,11 +203,11 @@
             "description": "Represents the service provider of an agent.",
             "properties": {
                 "organization": {
-                    "description": "Agent provider's organization name",
+                    "description": "Agent provider's organization name.",
                     "type": "string"
                 },
                 "url": {
-                    "description": "Agent provider's url",
+                    "description": "Agent provider's URL.",
                     "type": "string"
                 }
             },
@@ -221,7 +221,7 @@
             "description": "Represents a unit of capability that an agent can perform.",
             "properties": {
                 "description": {
-                    "description": "description of the skill - will be used by the client or a human\nas a hint to understand what the skill does.",
+                    "description": "Description of the skill - will be used by the client or a human\nas a hint to understand what the skill does.",
                     "type": "string"
                 },
                 "examples": {
@@ -232,7 +232,7 @@
                     "type": "array"
                 },
                 "id": {
-                    "description": "unique identifier for the agent's skill",
+                    "description": "Unique identifier for the agent's skill.",
                     "type": "string"
                 },
                 "inputModes": {
@@ -243,7 +243,7 @@
                     "type": "array"
                 },
                 "name": {
-                    "description": "human readable name of the skill",
+                    "description": "Human readable name of the skill.",
                     "type": "string"
                 },
                 "outputModes": {
@@ -273,24 +273,24 @@
             "description": "Represents an artifact generated for a task task.",
             "properties": {
                 "artifactId": {
-                    "description": "unique identifier for the artifact",
+                    "description": "Unique identifier for the artifact.",
                     "type": "string"
                 },
                 "description": {
-                    "description": "Optional description for the artifact",
+                    "description": "Optional description for the artifact.",
                     "type": "string"
                 },
                 "metadata": {
                     "additionalProperties": {},
-                    "description": "extension metadata",
+                    "description": "Extension metadata.",
                     "type": "object"
                 },
                 "name": {
-                    "description": "Optional name for the artifact",
+                    "description": "Optional name for the artifact.",
                     "type": "string"
                 },
                 "parts": {
-                    "description": "artifact parts",
+                    "description": "Artifact parts.",
                     "items": {
                         "$ref": "#/definitions/Part"
                     },
@@ -393,7 +393,7 @@
                 },
                 "result": {
                     "$ref": "#/definitions/Task",
-                    "description": "The result object on success"
+                    "description": "The result object on success."
                 }
             },
             "required": [
@@ -553,6 +553,7 @@
                     "type": "string"
                 },
                 "uri": {
+                    "description": "URL for the File content",
                     "type": "string"
                 }
             },
@@ -621,7 +622,7 @@
                 },
                 "result": {
                     "$ref": "#/definitions/TaskPushNotificationConfig",
-                    "description": "The result object on success"
+                    "description": "The result object on success."
                 }
             },
             "required": [
@@ -690,7 +691,7 @@
                 },
                 "result": {
                     "$ref": "#/definitions/Task",
-                    "description": "The result object on success"
+                    "description": "The result object on success."
                 }
             },
             "required": [
@@ -707,7 +708,7 @@
                     "type": "string"
                 },
                 "description": {
-                    "description": "description of this security scheme",
+                    "description": "Description of this security scheme.",
                     "type": "string"
                 },
                 "scheme": {
@@ -1055,32 +1056,39 @@
             "description": "Represents a single message exchanged between user and agent.",
             "properties": {
                 "contextId": {
-                    "description": "the context the message is associated with",
+                    "description": "The context the message is associated with",
                     "type": "string"
                 },
                 "kind": {
                     "const": "message",
-                    "description": "event type",
+                    "description": "Event type",
                     "type": "string"
                 },
                 "messageId": {
-                    "description": "identifier created by the message creator",
+                    "description": "Identifier created by the message creator",
                     "type": "string"
                 },
                 "metadata": {
                     "additionalProperties": {},
-                    "description": "extension metadata",
+                    "description": "Extension metadata.",
                     "type": "object"
                 },
                 "parts": {
-                    "description": "message content",
+                    "description": "Message content",
                     "items": {
                         "$ref": "#/definitions/Part"
                     },
                     "type": "array"
                 },
+                "referenceTaskIds": {
+                    "description": "list of tasks referenced as context by this message.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "role": {
-                    "description": "message sender's role",
+                    "description": "Message sender's role",
                     "enum": [
                         "agent",
                         "user"
@@ -1088,7 +1096,7 @@
                     "type": "string"
                 },
                 "taskId": {
-                    "description": "identifier of task the message is related to",
+                    "description": "Identifier of task the message is related to",
                     "type": "string"
                 }
             },
@@ -1101,26 +1109,26 @@
             "type": "object"
         },
         "MessageSendConfiguration": {
-            "description": "Configuration for the send message request",
+            "description": "Configuration for the send message request.",
             "properties": {
                 "acceptedOutputModes": {
-                    "description": "accepted output modalities by the client",
+                    "description": "Accepted output modalities by the client.",
                     "items": {
                         "type": "string"
                     },
                     "type": "array"
                 },
                 "blocking": {
-                    "description": "If the server should treat the client as a blocking request",
+                    "description": "If the server should treat the client as a blocking request.",
                     "type": "boolean"
                 },
                 "historyLength": {
-                    "description": "number of recent messages to be retrieved",
+                    "description": "Number of recent messages to be retrieved.",
                     "type": "integer"
                 },
                 "pushNotificationConfig": {
                     "$ref": "#/definitions/PushNotificationConfig",
-                    "description": "where the server should send notifications when disconnected."
+                    "description": "Where the server should send notifications when disconnected."
                 }
             },
             "required": [
@@ -1133,15 +1141,15 @@
             "properties": {
                 "configuration": {
                     "$ref": "#/definitions/MessageSendConfiguration",
-                    "description": "Send message configuration"
+                    "description": "Send message configuration."
                 },
                 "message": {
                     "$ref": "#/definitions/Message",
-                    "description": "The message being sent to the server"
+                    "description": "The message being sent to the server."
                 },
                 "metadata": {
                     "additionalProperties": {},
-                    "description": "extension metadata",
+                    "description": "Extension metadata.",
                     "type": "object"
                 }
             },
@@ -1177,7 +1185,7 @@
             "description": "OAuth2.0 security scheme configuration.",
             "properties": {
                 "description": {
-                    "description": "description of this security scheme",
+                    "description": "Description of this security scheme.",
                     "type": "string"
                 },
                 "flows": {
@@ -1221,7 +1229,7 @@
             "description": "OpenID Connect security scheme configuration.",
             "properties": {
                 "description": {
-                    "description": "description of this security scheme",
+                    "description": "Description of this security scheme.",
                     "type": "string"
                 },
                 "openIdConnectUrl": {
@@ -1316,11 +1324,11 @@
                     "$ref": "#/definitions/PushNotificationAuthenticationInfo"
                 },
                 "token": {
-                    "description": "token unique to this task/session",
+                    "description": "Token unique to this task/session.",
                     "type": "string"
                 },
                 "url": {
-                    "description": "url for sending the push notifications",
+                    "description": "URL for sending the push notifications.",
                     "type": "string"
                 }
             },
@@ -1373,7 +1381,7 @@
             "description": "Base properties shared by all security schemes.",
             "properties": {
                 "description": {
-                    "description": "description of this security scheme",
+                    "description": "Description of this security scheme.",
                     "type": "string"
                 }
             },
@@ -1597,7 +1605,7 @@
                 },
                 "result": {
                     "$ref": "#/definitions/TaskPushNotificationConfig",
-                    "description": "The result object on success"
+                    "description": "The result object on success."
                 }
             },
             "required": [
@@ -1609,14 +1617,14 @@
         "Task": {
             "properties": {
                 "artifacts": {
-                    "description": "collection of artifacts created by the agent.",
+                    "description": "Collection of artifacts created by the agent.",
                     "items": {
                         "$ref": "#/definitions/Artifact"
                     },
                     "type": "array"
                 },
                 "contextId": {
-                    "description": "server-generated id for contextual alignment across interactions",
+                    "description": "Server-generated id for contextual alignment across interactions",
                     "type": "string"
                 },
                 "history": {
@@ -1626,22 +1634,22 @@
                     "type": "array"
                 },
                 "id": {
-                    "description": "unique identifier for the task",
+                    "description": "Unique identifier for the task",
                     "type": "string"
                 },
                 "kind": {
                     "const": "task",
-                    "description": "event type",
+                    "description": "Event type",
                     "type": "string"
                 },
                 "metadata": {
                     "additionalProperties": {},
-                    "description": "extension metadata",
+                    "description": "Extension metadata.",
                     "type": "object"
                 },
                 "status": {
                     "$ref": "#/definitions/TaskStatus",
-                    "description": "current status of the task"
+                    "description": "Current status of the task"
                 }
             },
             "required": [
@@ -1661,15 +1669,15 @@
                 },
                 "artifact": {
                     "$ref": "#/definitions/Artifact",
-                    "description": "generated artifact"
+                    "description": "Generated artifact"
                 },
                 "contextId": {
-                    "description": "the context the task is associated with",
+                    "description": "The context the task is associated with",
                     "type": "string"
                 },
                 "kind": {
                     "const": "artifact-update",
-                    "description": "event type",
+                    "description": "Event type",
                     "type": "string"
                 },
                 "lastChunk": {
@@ -1678,7 +1686,7 @@
                 },
                 "metadata": {
                     "additionalProperties": {},
-                    "description": "extension metadata",
+                    "description": "Extension metadata.",
                     "type": "object"
                 },
                 "taskId": {
@@ -1698,7 +1706,7 @@
             "description": "Parameters containing only a task ID, used for simple task operations.",
             "properties": {
                 "id": {
-                    "description": "task id",
+                    "description": "Task id.",
                     "type": "string"
                 },
                 "metadata": {
@@ -1761,10 +1769,11 @@
             "description": "Parameters for setting or getting push notification configuration for a task",
             "properties": {
                 "pushNotificationConfig": {
-                    "$ref": "#/definitions/PushNotificationConfig"
+                    "$ref": "#/definitions/PushNotificationConfig",
+                    "description": "Push notification configuration."
                 },
                 "taskId": {
-                    "description": "task id",
+                    "description": "Task id.",
                     "type": "string"
                 }
             },
@@ -1778,11 +1787,11 @@
             "description": "Parameters for querying a task, including optional history length.",
             "properties": {
                 "historyLength": {
-                    "description": "number of recent messages to be retrieved",
+                    "description": "Number of recent messages to be retrieved.",
                     "type": "integer"
                 },
                 "id": {
-                    "description": "task id",
+                    "description": "Task id.",
                     "type": "string"
                 },
                 "metadata": {
@@ -1847,7 +1856,7 @@
             "properties": {
                 "message": {
                     "$ref": "#/definitions/Message",
-                    "description": "additional status updates for client"
+                    "description": "Additional status updates for client"
                 },
                 "state": {
                     "$ref": "#/definitions/TaskState"
@@ -1866,26 +1875,26 @@
             "description": "sent by server during sendStream or subscribe requests",
             "properties": {
                 "contextId": {
-                    "description": "the context the task is associated with",
+                    "description": "The context the task is associated with",
                     "type": "string"
                 },
                 "final": {
-                    "description": "indicates the end of the event stream",
+                    "description": "Indicates the end of the event stream",
                     "type": "boolean"
                 },
                 "kind": {
                     "const": "status-update",
-                    "description": "event type",
+                    "description": "Event type",
                     "type": "string"
                 },
                 "metadata": {
                     "additionalProperties": {},
-                    "description": "extension metadata",
+                    "description": "Extension metadata.",
                     "type": "object"
                 },
                 "status": {
                     "$ref": "#/definitions/TaskStatus",
-                    "description": "current status of the task"
+                    "description": "Current status of the task"
                 },
                 "taskId": {
                     "description": "Task id",
