@@ -6,5 +6,8 @@
       "target": "ES5",
       "module": "CommonJS",
       "strictNullChecks": false,
-  }
+      "skipLibCheck": true,
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules"]
 }
