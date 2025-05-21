@@ -234,7 +234,7 @@ async def convert_part(part: Part, tool_context: ToolContext):
                 mime_type=part.root.file.mimeType, data=file_bytes
             )
         )
-        await tool_context.save_artifact(file_id, file_part)
+        tool_context.save_artifact(file_id, file_part)
         tool_context.actions.skip_summarization = True
         tool_context.actions.escalate = True
         return DataPart(data={'artifact-file-id': file_id})
