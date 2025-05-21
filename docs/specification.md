@@ -5,7 +5,7 @@ hide:
 
 # Agent2Agent (A2A) Protocol Specification
 
-**Version:** `0.2.0`
+**Version:** `0.2.1`
 
 ## 1. Introduction
 
@@ -192,6 +192,10 @@ interface AgentCard {
   // An array of specific skills or capabilities the agent offers.
   // Must contain at least one skill if the agent is expected to perform actions beyond simple presence.
   skills: AgentSkill[];
+  // If `true`, the agent provides an authenticated endpoint (`/agent/authenticatedExtendedCard`)
+  // relative to the `url` field, from which a client can retrieve a potentially more detailed
+  // Agent Card after authenticating. Default: `false`.
+  supportsAuthenticatedExtendedCard?: boolean;
 }
 ```
 
@@ -209,6 +213,7 @@ interface AgentCard {
 | `defaultInputModes`  | `string[]`                                                         | Yes       | Input MIME types accepted by the agent.
 | `defaultOutputModes` | `string[]`                                                         | Yes       | Output MIME types produced by the agent.                                  |
 | `skills`             | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                            |
+| `supportsAuthenticatedExtendedCard` | `boolean` | No | Indicates support for retrieving a more detailed Agent Card via an authenticated endpoint. |
 
 #### 5.5.1. `AgentProvider` Object
 
@@ -369,7 +374,8 @@ interface AgentSkill {
         "text/html"
       ]
     }
-  ]
+  ],
+  "supportsAuthenticatedExtendedCard": true,
 }
 ```
 
@@ -1005,6 +1011,36 @@ The purpose is to resume receiving _subsequent_ updates. The server's behavior r
     - Standard HTTP error code (e.g., 4xx, 5xx).
     - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
 
+### 7.8. `agent/authenticatedExtendedCard`
+
+Retrieves a potentially more detailed version of the Agent Card after the client has authenticated. This endpoint is available only if `AgentCard.supportsAuthenticatedExtendedCard` is `true`. This is an HTTP GET endpoint, not a JSON-RPC method.
+
+- **Endpoint URL**: `{AgentCard.url}/../agent/authenticatedExtendedCard` (relative to the base URL specified in the public Agent Card).
+- **HTTP Method**: `GET`
+- **Authentication**: The client **MUST** authenticate the request using one of the schemes declared in the public `AgentCard.securitySchemes` and `AgentCard.security` fields.
+- **Request `params`**: None (HTTP GET request).
+- **Response `result` type (on success)**: `AgentCard` (A complete Agent Card object, which may contain additional details or skills not present in the public card).
+- **Response `error` type (on failure)**: Standard HTTP error codes.
+    - `401 Unauthorized`: Authentication failed (missing or invalid credentials). The server **SHOULD** include a `WWW-Authenticate` header.
+    - `403 Forbidden`: Authentication succeeded, but the client/user is not authorized to access the extended card.
+    - `404 Not Found`: The `supportsAuthenticatedExtendedCard` capability is declared, but the server has not implemented this endpoint at the specified path.
+    - `5xx Server Error`: An internal server error occurred.
+
+Clients retrieving this authenticated card **SHOULD** replace their cached public Agent Card with the content received from this endpoint for the duration of their authenticated session or until the card's version changes.
+
+#### 7.8.1. `AuthenticatedExtendedCardParams` Object
+
+This endpoint does not use JSON-RPC `params`. Any parameters would be included as HTTP query parameters if needed (though none are defined by the standard).
+
+#### 7.8.2. `AuthenticatedExtendedCardResponse` Object
+
+The successful response body is a JSON object conforming to the `AgentCard` interface.
+
+```typescript
+// The response body for a successful GET request to /agent/authenticatedExtendedCard
+// is a complete AgentCard object.
+type AuthenticatedExtendedCardResponse = AgentCard;
+
 ## 8. Error Handling
 
 A2A uses standard [JSON-RPC 2.0 error codes and structure](https://www.jsonrpc.org/specification#error_object) for reporting errors. Errors are returned in the `error` member of the `JSONRPCErrorResponse` object. See [`JSONRPCError` Object definition](#612-jsonrpcerror-object).
@@ -1041,7 +1077,41 @@ Servers MAY define additional error codes within the `-32000` to `-32099` range 
 
 This section provides illustrative JSON examples of common A2A interactions. Timestamps, session IDs, and request/response IDs are for demonstration purposes. For brevity, some optional fields might be omitted if not central to the example.
 
-### 9.1. Basic Execution (Synchronous / Polling Style)
+### 9.1. Fetching Authenticated Extended Agent Card
+
+**Scenario:** A client discovers a public Agent Card indicating support for an authenticated extended card and wants to retrieve the full details.
+
+1.  **Client fetches the public Agent Card:**
+
+    ```http
+    GET https://example.com/.well-known/agent.json
+    ```
+
+    _Server responds with the public Agent Card (like the example in Section 5.6), including `supportsAuthenticatedExtendedCard: true` (at the root level) and `securitySchemes`._
+
+2.  **Client identifies required authentication from the public card.**
+
+3.  **Client obtains necessary credentials out-of-band (e.g., performs OAuth 2.0 flow with Google, resulting in an access token).**
+
+4.  **Client fetches the authenticated extended Agent Card:**
+
+    ```http
+    GET https://example.com/a2a/agent/authenticatedExtendedCard
+    Authorization: Bearer <obtained_access_token>
+    ```
+
+5.  **Server authenticates and authorizes the request.**
+
+6.  **Server responds with the full Agent Card:**
+
+    ```json
+    // HTTP Status: 200 OK
+    // HTTP Body: A JSON object representing the complete AgentCard, potentially including
+    // more skills, detailed descriptions, or other private configuration.
+    { ... full AgentCard object ... }
+     ```
+
+### 9.2. Basic Execution (Synchronous / Polling Style)
 
 **Scenario:** Client asks a simple question, and the agent responds quickly with a task
 
@@ -1159,7 +1229,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 _If the task were longer-running, the server might initially respond with `status.state: "working"`. The client would then periodically call `tasks/get` with `params: {"id": "363422be-b0f9-4692-a24d-278670e7c7f1"}` until the task reaches a terminal state._
 
-### 9.2. Streaming Task Execution (SSE)
+### 9.3. Streaming Task Execution (SSE)
 
 **Scenario:** Client asks the agent to write a long paper describing an attached picture.
 
@@ -1305,7 +1375,7 @@ data: {
 
 _(Server closes the SSE connection after the `final:true` event)._
 
-### 9.3. Multi-Turn Interaction (Input Required)
+### 9.4. Multi-Turn Interaction (Input Required)
 
 **Scenario:** Client wants to book a flight, and the agent needs more information.
 
@@ -1483,7 +1553,7 @@ _(Server closes the SSE connection after the `final:true` event)._
     ```
 
 
-### 9.4. Push Notification Setup and Usage
+### 9.5. Push Notification Setup and Usage
 
 **Scenario:** Client requests a long-running report generation and wants to be notified via webhook when it's done.
 
@@ -1561,7 +1631,7 @@ _(Server closes the SSE connection after the `final:true` event)._
    - Validates the `X-A2A-Notification-Token`.
    - Internally processes the notification (e.g., updates application state, notifies end-user).
 
-### 9.5. File Exchange (Upload and Download)
+### 9.6. File Exchange (Upload and Download)
 
 **Scenario:** Client sends an image for analysis, and the agent returns a modified image.
 
@@ -1629,7 +1699,7 @@ _(Server closes the SSE connection after the `final:true` event)._
    }
    ```
 
-### 9.6. Structured Data Exchange (Requesting and Providing JSON)
+### 9.7. Structured Data Exchange (Requesting and Providing JSON)
 
 **Scenario:** Client asks for a list of open support tickets in a specific JSON format.
 
