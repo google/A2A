@@ -26,7 +26,6 @@ from agents.llama_index_file_chat.agent import (
     LogEvent,
     ParseAndChat,
 )
-from common.utils.push_notification_auth import PushNotificationSenderAuth
 from typing_extensions import override
 
 
@@ -49,10 +48,8 @@ class LlamaIndexAgentExecutor(AgentExecutor):
     def __init__(
         self,
         agent: ParseAndChat,
-        notification_sender_auth: PushNotificationSenderAuth,
     ):
         self.agent = agent
-        self.notification_sender_auth = notification_sender_auth
         # Store context state by session ID
         # Ideally, you would use a database or other kv store the context state
         self.ctx_states: Dict[str, Dict[str, Any]] = {}

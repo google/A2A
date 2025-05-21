@@ -2,10 +2,11 @@ import logging
 import os
 
 import click
+import httpx
 
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
-from a2a.server.tasks import InMemoryTaskStore
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier
 from a2a.types import (
     AgentCapabilities,
     AgentCard,
@@ -59,12 +60,11 @@ def main(host, port):
             skills=[skill],
         )
 
-        # Add push notification support back when SDK ready
-        # notification_sender_auth = PushNotificationSenderAuth()
-        # notification_sender_auth.generate_jwk()
+        httpx_client = httpx.AsyncClient()
         request_handler = DefaultRequestHandler(
             agent_executor=CurrencyAgentExecutor(),
             task_store=InMemoryTaskStore(),
+            push_notifier=InMemoryPushNotifier(httpx_client),
         )
         server = A2AStarletteApplication(
             agent_card=agent_card, http_handler=request_handler
