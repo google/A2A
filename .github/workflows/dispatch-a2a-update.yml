@@ -1,0 +1,25 @@
+name: Dispatch A2A JSON Update
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "specification/json/a2a.json"
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch repository_dispatch to a2a-python
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.A2A_BOT_PAT }}
+          repository: google/a2a-python
+          event-type: a2a_json_update
+          client-payload: |
+            {
+              "ref": "${{ github.ref }}",
+              "sha": "${{ github.sha }}",
+              "message": "Updated 'specification/json/a2a.json' in google/A2A"
+            }

@@ -14,6 +14,7 @@ AStarlette
 Autogen
 CAs
 Camry
+Cjava
 DDo
 DGT
 EUR
@@ -30,6 +31,7 @@ JPY
 JWKS
 JWTs
 KGgo
+KRW
 LHR
 LLM
 LLMs
@@ -53,6 +55,7 @@ Xca
 YTT
 YWFh
 Zipkin
+aab
 aacacac
 aboutasha
 achat
@@ -75,6 +78,7 @@ bzr
 cae
 ccc
 cdn
+ceee
 cfe
 cls
 coc
@@ -82,11 +86,17 @@ codegen
 crewai
 datamodel
 datapart
+dbc
 dcda
+dcfa
+dde
 direnv
+efaab
 efbd
 evt
 excinfo
+fafd
+ffbb
 firewalls
 flightbook
 fsv

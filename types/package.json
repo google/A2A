@@ -1,0 +1,16 @@
+{
+  "name": "types",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "generate": "./node_modules/.bin/typescript-json-schema tsconfig.json \"*\" --defaultNumberType integer --required > ../specification/json/a2a.json"
+  },
+  "author": "",
+  "description": "A2A Types",
+  "dependencies": {
+    "typescript-json-schema": "^0.65.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}
