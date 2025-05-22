@@ -1,0 +1,32 @@
+{
+    "name": "Reimbursement Agent",
+    "description": "This agent handles the reimbursement process for the employees given the amount and purpose of the reimbursement.",
+    "url": "http://localhost:10002/",
+    "version": "1.0.0",
+    "capabilities": {
+        "streaming": "True",
+        "pushNotifications": "False",
+        "stateTransitionHistory": "False"
+    },
+    "defaultInputModes": [
+        "text",
+        "text/plain"
+    ],
+    "defaultOutputModes": [
+        "text",
+        "text/plain"
+    ],
+    "skills": [
+        {
+            "id": "process_reimbursement",
+            "name": "Process Reimbursement Tool",
+            "description": "Helps with the reimbursement process for users given the amount and purpose of the reimbursement.",
+            "tags": [
+                "reimbursement"
+            ],
+            "examples": [
+                "Can you reimburse me $20 for my lunch with the clients?"
+            ]
+        }
+    ]
+}
