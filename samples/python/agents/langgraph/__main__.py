@@ -2,17 +2,19 @@ import logging
 import os
 
 import click
+import httpx
 
-from agents.langgraph.agent import CurrencyAgent
-from agents.langgraph.task_manager import AgentTaskManager
-from common.server import A2AServer
-from common.types import (
+from a2a.server.apps import A2AStarletteApplication
+from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier
+from a2a.types import (
     AgentCapabilities,
     AgentCard,
     AgentSkill,
-    MissingAPIKeyError,
 )
-from common.utils.push_notification_auth import PushNotificationSenderAuth
+from agent import CurrencyAgent
+from agent_executor import CurrencyAgentExecutor
+from agents.langgraph.agent import CurrencyAgent
 from dotenv import load_dotenv
 
 
@@ -20,6 +22,12 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+class MissingAPIKeyError(Exception):
+    """Exception for missing API key."""
+
+    pass
 
 
 @click.command()
@@ -52,26 +60,18 @@ def main(host, port):
             skills=[skill],
         )
 
-        notification_sender_auth = PushNotificationSenderAuth()
-        notification_sender_auth.generate_jwk()
-        server = A2AServer(
-            agent_card=agent_card,
-            task_manager=AgentTaskManager(
-                agent=CurrencyAgent(),
-                notification_sender_auth=notification_sender_auth,
-            ),
-            host=host,
-            port=port,
+        httpx_client = httpx.AsyncClient()
+        request_handler = DefaultRequestHandler(
+            agent_executor=CurrencyAgentExecutor(),
+            task_store=InMemoryTaskStore(),
+            push_notifier=InMemoryPushNotifier(httpx_client),
         )
-
-        server.app.add_route(
-            '/.well-known/jwks.json',
-            notification_sender_auth.handle_jwks_endpoint,
-            methods=['GET'],
+        server = A2AStarletteApplication(
+            agent_card=agent_card, http_handler=request_handler
         )
+        import uvicorn
 
-        logger.info(f'Starting server on {host}:{port}')
-        server.start()
+        uvicorn.run(server.build(), host=host, port=port)
     except MissingAPIKeyError as e:
         logger.error(f'Error: {e}')
         exit(1)

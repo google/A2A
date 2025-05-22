@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import os
 
@@ -19,8 +20,7 @@ from semantic_kernel.contents import (
     StreamingChatMessageContent,
     StreamingTextContent,
 )
-from semantic_kernel.functions import kernel_function
-from semantic_kernel.functions.kernel_arguments import KernelArguments
+from semantic_kernel.functions import KernelArguments, kernel_function
 
 
 if TYPE_CHECKING:
@@ -65,7 +65,7 @@ class CurrencyPlugin:
             rate = data['rates'][currency_to]
             return f'1 {currency_from} = {rate} {currency_to}'
         except Exception as e:
-            return f'Currency API call failed: {e!s}'
+            return f'Currency API call failed: {str(e)}'
 
 
 # endregion
@@ -165,7 +165,8 @@ class SemanticKernelTravelAgent:
             session_id (str): Unique identifier for the session.
 
         Returns:
-            dict: A dictionary containing the content, task completion status, and user input requirement.
+            dict: A dictionary containing the content, task completion status,
+            and user input requirement.
         """
         await self._ensure_thread_exists(session_id)
 
@@ -177,55 +178,74 @@ class SemanticKernelTravelAgent:
         return self._get_agent_response(response.content)
 
     async def stream(
-        self, user_input: str, session_id: str
+        self,
+        user_input: str,
+        session_id: str,
     ) -> AsyncIterable[dict[str, Any]]:
-        """For streaming tasks (like tasks/sendSubscribe), we yield partial progress using SK agent's invoke_stream.
+        """For streaming tasks we yield the SK agent's invoke_stream progress.
 
         Args:
             user_input (str): User input message.
             session_id (str): Unique identifier for the session.
 
         Yields:
-            dict: A dictionary containing the content, task completion status, and user input requirement.
+            dict: A dictionary containing the content, task completion status,
+            and user input requirement.
         """
         await self._ensure_thread_exists(session_id)
 
+        plugin_notice_seen = False
+        plugin_event = asyncio.Event()
+
+        text_notice_seen = False
         chunks: list[StreamingChatMessageContent] = []
 
-        # For the sample, to avoid too many messages, only show one "in-progress" message for each task
-        tool_call_in_progress = False
-        message_in_progress = False
-        async for response_chunk in self.agent.invoke_stream(
+        async def _handle_intermediate_message(
+            message: 'ChatMessageContent',
+        ) -> None:
+            """Handle intermediate messages from the agent."""
+            nonlocal plugin_notice_seen
+            if not plugin_notice_seen:
+                plugin_notice_seen = True
+                plugin_event.set()
+            # An example of handling intermediate messages during function calling
+            for item in message.items or []:
+                if isinstance(item, FunctionResultContent):
+                    print(
+                        f'SK Function Result:> {item.result} for function: {item.name}'
+                    )
+                elif isinstance(item, FunctionCallContent):
+                    print(
+                        f'SK Function Call:> {item.name} with arguments: {item.arguments}'
+                    )
+                else:
+                    print(f'SK Message:> {item}')
+
+        async for chunk in self.agent.invoke_stream(
             messages=user_input,
             thread=self.thread,
+            on_intermediate_message=_handle_intermediate_message,
         ):
-            if any(
-                isinstance(item, (FunctionCallContent, FunctionResultContent))
-                for item in response_chunk.items
-            ):
-                if not tool_call_in_progress:
+            if plugin_event.is_set():
+                yield {
+                    'is_task_complete': False,
+                    'require_user_input': False,
+                    'content': 'Processing function calls...',
+                }
+                plugin_event.clear()
+
+            if any(isinstance(i, StreamingTextContent) for i in chunk.items):
+                if not text_notice_seen:
                     yield {
                         'is_task_complete': False,
                         'require_user_input': False,
-                        'content': 'Processing the trip plan (with plugins)...',
+                        'content': 'Building the output...',
                     }
-                    tool_call_in_progress = True
-            elif any(
-                isinstance(item, StreamingTextContent)
-                for item in response_chunk.items
-            ):
-                if not message_in_progress:
-                    yield {
-                        'is_task_complete': False,
-                        'require_user_input': False,
-                        'content': 'Building the trip plan...',
-                    }
-                    message_in_progress = True
+                    text_notice_seen = True
+                chunks.append(chunk.message)
 
-                chunks.append(response_chunk.message)
-
-        full_message = sum(chunks[1:], chunks[0])
-        yield self._get_agent_response(full_message)
+        if chunks:
+            yield self._get_agent_response(sum(chunks[1:], chunks[0]))
 
     def _get_agent_response(
         self, message: 'ChatMessageContent'
@@ -276,9 +296,7 @@ class SemanticKernelTravelAgent:
         Args:
             session_id (str): Unique identifier for the session.
         """
-        # Replace check with self.thread.id when
-        # https://github.com/microsoft/semantic-kernel/issues/11535 is fixed
-        if self.thread is None or self.thread._thread_id != session_id:
+        if self.thread is None or self.thread.id != session_id:
             await self.thread.delete() if self.thread else None
             self.thread = ChatHistoryAgentThread(thread_id=session_id)
 

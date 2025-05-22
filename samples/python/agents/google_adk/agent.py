@@ -1,8 +1,6 @@
 import json
 import random
-
-from typing import Any, Optional
-
+from typing import Any, AsyncIterable, Optional
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.artifacts import InMemoryArtifactService
 from google.adk.memory.in_memory_memory_service import InMemoryMemoryService
@@ -21,7 +19,8 @@ def create_request_form(
     amount: Optional[str] = None,
     purpose: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Create a request form for the employee to fill out.
+    """
+    Create a request form for the employee to fill out.
 
     Args:
         date (str): The date of the request. Can be an empty string.
@@ -48,7 +47,8 @@ def return_form(
     tool_context: ToolContext,
     instructions: Optional[str] = None,
 ) -> dict[str, Any]:
-    """Returns a structured json object indicating a form to complete.
+    """
+    Returns a structured json object indicating a form to complete.
 
     Args:
         form_request (dict[str, Any]): The request form data.

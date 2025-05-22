@@ -53,7 +53,7 @@ class ADKHostManagerTest(unittest.TestCase):
         )
         self.assertEqual(len(message.parts), 1)
         self.assertIsInstance(message.parts[0], FilePart)
-        self.assertEqual(message.parts[0].type, 'file')
+        self.assertEqual(message.parts[0].kind, 'file')
         self.assertEqual(message.parts[0].file.uri, 'gs://test-bucket/test.txt')
         self.assertEqual(message.parts[0].file.mimeType, 'text/plain')
         self.assertEqual(message.role, 'user')
@@ -82,7 +82,7 @@ class ADKHostManagerTest(unittest.TestCase):
         part = types.Part()
         part.function_response = types.FunctionResponse(
             name='test_function',
-            response={'result': [{'type': 'text', 'text': 'Hello'}]},
+            response={'result': [{'kind': 'text', 'text': 'Hello'}]},
         )
         content = types.Content(parts=[part], role='user')
         message = self.manager.adk_content_to_message(
@@ -91,7 +91,7 @@ class ADKHostManagerTest(unittest.TestCase):
         self.assertEqual(len(message.parts), 1)
         self.assertIsInstance(message.parts[0], DataPart)
         self.assertEqual(
-            message.parts[0].data, {'type': 'text', 'text': 'Hello'}
+            message.parts[0].data, {'kind': 'text', 'text': 'Hello'}
         )
         self.assertEqual(message.role, 'user')
         self.assertEqual(
