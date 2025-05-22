@@ -514,6 +514,7 @@ export interface JSONRPCMessage {
   /**
    * An identifier established by the Client that MUST contain a String, Number.
    * Numbers SHOULD NOT contain fractional parts.
+   * @nullable true
    */
   id?: number | string | null;
 }
@@ -559,6 +560,9 @@ export interface JSONRPCError {
  * Represents a JSON-RPC 2.0 Success Response object.
  */
 export interface JSONRPCSuccessResponse extends JSONRPCMessage {
+  /**
+   * @nullable true
+   */
   id: number | string | null;
   /**
    * The result object on success
@@ -572,6 +576,9 @@ export interface JSONRPCSuccessResponse extends JSONRPCMessage {
  * Represents a JSON-RPC 2.0 Error Response object.
  */
 export interface JSONRPCErrorResponse extends JSONRPCMessage {
+  /**
+   * @nullable true
+   */
   id: number | string | null;
   result?: never; // Optional 'never' helps enforce exclusivity
   error: JSONRPCError | A2AError;

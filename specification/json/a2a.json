@@ -388,7 +388,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -619,7 +620,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -690,7 +692,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -944,7 +947,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -967,7 +971,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -988,7 +993,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1045,7 +1051,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1450,7 +1457,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1528,7 +1536,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1612,7 +1621,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
