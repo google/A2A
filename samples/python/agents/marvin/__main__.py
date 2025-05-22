@@ -6,12 +6,22 @@ It is integrated with the Agent2Agent (A2A) protocol.
 import logging
 
 import click
+import httpx
+
+from a2a.server.apps import A2AStarletteApplication
+from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier
+from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from agents.marvin.agent import ExtractorAgent
-from agents.marvin.task_manager import AgentTaskManager
 from common.server import A2AServer
 from common.types import AgentCapabilities, AgentCard, AgentSkill
-from common.utils.push_notification_auth import PushNotificationSenderAuth
+from dotenv import load_dotenv
 from pydantic import BaseModel, EmailStr, Field
+
+from agent import ExtractorAgent  # type: ignore[import-untyped]
+from agent_executor import ExtractorAgentExecutor  # type: ignore[import-untyped]
+
+load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -45,54 +55,43 @@ def main(host, port, result_type, instructions):
     except Exception as e:
         logger.error(f"Invalid result type: {e}")
         exit(1)
+    agent = ExtractorAgent(instructions=instructions, result_type=result_type)
+    httpx_client = httpx.AsyncClient()
+    request_handler = DefaultRequestHandler(
+        agent_executor=ExtractorAgentExecutor(agent=agent),
+        task_store=InMemoryTaskStore(),
+        push_notifier=InMemoryPushNotifier(httpx_client),
+    )
+    server = A2AStarletteApplication(
+        agent_card=get_agent_card(host, port), http_handler=request_handler
+    )
+    import uvicorn
 
-    try:
-        capabilities = AgentCapabilities(streaming=True, pushNotifications=True)
-        skill = AgentSkill(
-            id="extract_contacts",
-            name="Contact Information Extraction",
-            description="Extracts structured contact information from text",
-            tags=["contact info", "structured extraction", "information extraction"],
-            examples=[
-                "My name is John Doe, email: john@example.com, phone: (555) 123-4567"
-            ],
-        )
-        agent_card = AgentCard(
-            name="Marvin Contact Extractor",
-            description="Extracts structured contact information from text using Marvin's extraction capabilities",
-            url=f"http://{host}:{port}/",
-            version="1.0.0",
-            defaultInputModes=ExtractorAgent.SUPPORTED_CONTENT_TYPES,
-            defaultOutputModes=ExtractorAgent.SUPPORTED_CONTENT_TYPES,
-            capabilities=capabilities,
-            skills=[skill],
-        )
+    uvicorn.run(server.build(), host=host, port=port)
 
-        notification_sender_auth = PushNotificationSenderAuth()
-        notification_sender_auth.generate_jwk()
-        server = A2AServer(
-            agent_card=agent_card,
-            task_manager=AgentTaskManager(
-                agent=ExtractorAgent(
-                    instructions=instructions, result_type=result_type
-                ),
-                notification_sender_auth=notification_sender_auth,
-            ),
-            host=host,
-            port=port,
-        )
 
-        server.app.add_route(
-            "/.well-known/jwks.json",
-            notification_sender_auth.handle_jwks_endpoint,
-            methods=["GET"],
-        )
-
-        logger.info(f"Starting Marvin Contact Extractor server on {host}:{port}")
-        server.start()
-    except Exception as e:
-        logger.exception(f"An error occurred during server startup: {e}", exc_info=e)
-        exit(1)
+def get_agent_card(host: str, port: int):
+    """Returns the Agent Card for the ExtractorAgent."""
+    capabilities = AgentCapabilities(streaming=True)
+    skill = AgentSkill(
+        id="extract_contacts",
+        name="Contact Information Extraction",
+        description="Extracts structured contact information from text",
+        tags=["contact info", "structured extraction", "information extraction"],
+        examples=[
+            "My name is John Doe, email: john@example.com, phone: (555) 123-4567"
+        ],
+    )
+    return AgentCard(
+        name="Marvin Contact Extractor",
+        description="Extracts structured contact information from text using Marvin's extraction capabilities",
+        url=f"http://{host}:{port}/",
+        version="1.0.0",
+        defaultInputModes=ExtractorAgent.SUPPORTED_CONTENT_TYPES,
+        defaultOutputModes=ExtractorAgent.SUPPORTED_CONTENT_TYPES,
+        capabilities=capabilities,
+        skills=[skill],
+    )
 
 
 if __name__ == "__main__":
