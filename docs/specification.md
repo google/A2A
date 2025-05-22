@@ -148,7 +148,7 @@ This follows the principles of [RFC 8615](https://datatracker.ietf.org/doc/html/
 Agent Cards themselves might contain information that is considered sensitive.
 
 - If an Agent Card contains sensitive information, the endpoint serving the card **MUST** be protected by appropriate access controls (e.g., mTLS, network restrictions, authentication required to fetch the card).
-- It is generally **NOT RECOMMENDED** to include plaintext secrets (like static API keys) directly in an Agent Card. Prefer authentication schemes where clients obtain dynamic credentials out-of-band. 
+- It is generally **NOT RECOMMENDED** to include plaintext secrets (like static API keys) directly in an Agent Card. Prefer authentication schemes where clients obtain dynamic credentials out-of-band.
 
 ### 5.5. `AgentCard` Object Structure
 
@@ -183,7 +183,7 @@ interface AgentCard {
   /** Security scheme details used for authenticating with this agent. */
   securitySchemes?: { [scheme: string]: SecurityScheme };
   /** Security requirements for contacting the agent. */
-  security?: { [scheme: string]: string[]; }[];
+  security?: { [scheme: string]: string[] }[];
   // Array of [MIME types](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
   // the agent generally accepts as input across all skills, unless overridden by a specific skill.
   defaultInputModes: string[];
@@ -199,21 +199,21 @@ interface AgentCard {
 }
 ```
 
-| Field Name           | Type                                                               | Required | Description                                                                                                       |
-| :------------------- | :----------------------------------------------------------------- | :------- | :---------------------------------------------------------------------------------------------------------------- |
-| `name`               | `string`                                                           | Yes      | Human-readable name of the agent.                                                                                 |
-| `description`        | `string`                                                | Yes       | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                    |
-| `url`                | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                     |
-| `provider`           | [`AgentProvider`](#551-agentprovider-object)             | No       | Information about the agent's provider.                                                                           |
-| `version`            | `string`                                                           | Yes      | Agent or A2A implementation version string.                                                                       |
-| `documentationUrl`   | `string`                                                | No       | URL to human-readable documentation for the agent.                                                                |
-| `capabilities`       | [`AgentCapabilities`](#552-agentcapabilities-object)               | Yes      | Specifies optional A2A protocol features supported (e.g., streaming, push notifications).                         |
-| `securitySchemes`     | { [scheme: string]: [SecurityScheme](#553-securityscheme-object)  }| No       | Security scheme details used for authenticating with this agent. undefined implies no A2A-advertised auth (not recommended for production). |
-| `security`     | `{ [scheme: string]: string[]; }[]` | No       | Security requirements for contacting the agent.  |
-| `defaultInputModes`  | `string[]`                                                         | Yes       | Input MIME types accepted by the agent.
-| `defaultOutputModes` | `string[]`                                                         | Yes       | Output MIME types produced by the agent.                                  |
-| `skills`             | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                            |
-| `supportsAuthenticatedExtendedCard` | `boolean` | No | Indicates support for retrieving a more detailed Agent Card via an authenticated endpoint. |
+| Field Name                          | Type                                                               | Required | Description                                                                                                                                 |
+| :---------------------------------- | :----------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `name`                              | `string`                                                           | Yes      | Human-readable name of the agent.                                                                                                           |
+| `description`                       | `string`                                                           | Yes      | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                                              |
+| `url`                               | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                                               |
+| `provider`                          | [`AgentProvider`](#551-agentprovider-object)                       | No       | Information about the agent's provider.                                                                                                     |
+| `version`                           | `string`                                                           | Yes      | Agent or A2A implementation version string.                                                                                                 |
+| `documentationUrl`                  | `string`                                                           | No       | URL to human-readable documentation for the agent.                                                                                          |
+| `capabilities`                      | [`AgentCapabilities`](#552-agentcapabilities-object)               | Yes      | Specifies optional A2A protocol features supported (e.g., streaming, push notifications).                                                   |
+| `securitySchemes`                   | { [scheme: string]: [SecurityScheme](#553-securityscheme-object) } | No       | Security scheme details used for authenticating with this agent. undefined implies no A2A-advertised auth (not recommended for production). |
+| `security`                          | `{ [scheme: string]: string[]; }[]`                                | No       | Security requirements for contacting the agent.                                                                                             |
+| `defaultInputModes`                 | `string[]`                                                         | Yes      | Input MIME types accepted by the agent.                                                                                                     |
+| `defaultOutputModes`                | `string[]`                                                         | Yes      | Output MIME types produced by the agent.                                                                                                    |
+| `skills`                            | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                                                      |
+| `supportsAuthenticatedExtendedCard` | `boolean`                                                          | No       | Indicates support for retrieving a more detailed Agent Card via an authenticated endpoint.                                                  |
 
 #### 5.5.1. `AgentProvider` Object
 
@@ -228,10 +228,10 @@ interface AgentProvider {
 }
 ```
 
-| Field Name     | Type               | Required | Description                             |
-| :------------- | :----------------- | :------- | :-------------------------------------- |
-| `organization` | `string`           | Yes      | Name of the organization/entity.        |
-| `url`          | `string`           | Yes       | URL for the provider's website/contact. |
+| Field Name     | Type     | Required | Description                             |
+| :------------- | :------- | :------- | :-------------------------------------- |
+| `organization` | `string` | Yes      | Name of the organization/entity.        |
+| `url`          | `string` | Yes      | URL for the provider's website/contact. |
 
 #### 5.5.2. `AgentCapabilities` Object
 
@@ -251,26 +251,27 @@ interface AgentCapabilities {
 }
 ```
 
-| Field Name               | Type      | Required | Default | Description                                                                               |
-| :----------------------- | :-------- | :------- | :------ | :---------------------------------------------------------------------------------------- |
+| Field Name               | Type      | Required | Default | Description                                                                          |
+| :----------------------- | :-------- | :------- | :------ | :----------------------------------------------------------------------------------- |
 | `streaming`              | `boolean` | No       | `false` | Indicates support for SSE streaming methods (`message/stream`, `tasks/resubscribe`). |
-| `pushNotifications`      | `boolean` | No       | `false` | Indicates support for push notification methods (`tasks/pushNotificationConfig/*`).             |
-| `stateTransitionHistory` | `boolean` | No       | `false` | Placeholder for future feature: exposing detailed task status change history.             |
+| `pushNotifications`      | `boolean` | No       | `false` | Indicates support for push notification methods (`tasks/pushNotificationConfig/*`).  |
+| `stateTransitionHistory` | `boolean` | No       | `false` | Placeholder for future feature: exposing detailed task status change history.        |
 
 #### 5.5.3. `SecurityScheme` Object
 
 Describes the authentication requirements for accessing the agent's `url` endpoint. Refer [Sample Agent Card](#56-sample-agent-card) for an example.
 
-
 ```typescript
-/** 
+/**
  * Mirrors the OpenAPI Security Scheme Object
  * (https://swagger.io/specification/#security-scheme-object)
-*/
-type SecurityScheme = APIKeySecurityScheme | HTTPAuthSecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
-
+ */
+type SecurityScheme =
+  | APIKeySecurityScheme
+  | HTTPAuthSecurityScheme
+  | OAuth2SecurityScheme
+  | OpenIdConnectSecurityScheme;
 ```
-
 
 #### 5.5.4. `AgentSkill` Object
 
@@ -303,15 +304,15 @@ interface AgentSkill {
 }
 ```
 
-| Field Name    | Type                 | Required | Description                                                                    |
-| :------------ | :------------------- | :------- | :----------------------------------------------------------------------------- |
-| `id`          | `string`             | Yes      | Unique skill identifier within this agent.                                     |
-| `name`        | `string`             | Yes      | Human-readable skill name.                                                     |
-| `description` | `string`             | Yes       | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
-| `tags`        | `string[]`           | Yes      | Keywords/categories for discoverability.                                       |
-| `examples`    | `string[]`           | No       | Example prompts or use cases demonstrating skill usage.                        |
-| `inputModes`  | `string[]`           | No       | Overrides `defaultInputModes` for this specific skill. Accepted MIME types.    |
-| `outputModes` | `string[]`           | No       | Overrides `defaultOutputModes` for this specific skill. Produced MIME types.   |
+| Field Name    | Type       | Required | Description                                                                    |
+| :------------ | :--------- | :------- | :----------------------------------------------------------------------------- |
+| `id`          | `string`   | Yes      | Unique skill identifier within this agent.                                     |
+| `name`        | `string`   | Yes      | Human-readable skill name.                                                     |
+| `description` | `string`   | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
+| `tags`        | `string[]` | Yes      | Keywords/categories for discoverability.                                       |
+| `examples`    | `string[]` | No       | Example prompts or use cases demonstrating skill usage.                        |
+| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted MIME types.    |
+| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced MIME types.   |
 
 ### 5.6. Sample Agent Card
 
@@ -334,10 +335,10 @@ interface AgentSkill {
   "securitySchemes": {
     "google": {
       "type": "openIdConnect",
-      "openIdConnectUrl": "https://accounts.google.com/.well-known/openid-configuration",
+      "openIdConnectUrl": "https://accounts.google.com/.well-known/openid-configuration"
     }
   },
-  "security": [{"google": ["openid", "profile", "email"]}],
+  "security": [{ "google": ["openid", "profile", "email"] }],
   "defaultInputModes": ["application/json", "text/plain"],
   "defaultOutputModes": ["application/json", "image/png"],
   "skills": [
@@ -375,7 +376,7 @@ interface AgentSkill {
       ]
     }
   ],
-  "supportsAuthenticatedExtendedCard": true,
+  "supportsAuthenticatedExtendedCard": true
 }
 ```
 
@@ -414,14 +415,14 @@ interface Task {
 }
 ```
 
-| Field Name  | Type                                          | Required | Description                                                                   |
-| :---------- | :-------------------------------------------- | :------- | :---------------------------------------------------------------------------- |
-| `id`        | `string`                                      | Yes      | Server generated unique task identifier (e.g., UUID) |
-| `contextId` | `string`                            | Yes       | Server generated ID for contextual alignment across interactions           |
-| `status`    | [`TaskStatus`](#62-taskstatus-object)         | Yes      | Current status of the task (state, message, timestamp).                       |
-| `artifacts` | [`Artifact[]`](#67-artifact-object) | No       | Array of outputs generated by the agent for this task.                        |
-| `history`   | [`Message[]`](#64-message-object)   | No       | Optional array of recent messages exchanged, if requested by `historyLength`. |
-| `metadata`  | `Record<string, any>`              | No       | Arbitrary key-value metadata associated with the task.                        |
+| Field Name  | Type                                  | Required | Description                                                                   |
+| :---------- | :------------------------------------ | :------- | :---------------------------------------------------------------------------- |
+| `id`        | `string`                              | Yes      | Server generated unique task identifier (e.g., UUID)                          |
+| `contextId` | `string`                              | Yes      | Server generated ID for contextual alignment across interactions              |
+| `status`    | [`TaskStatus`](#62-taskstatus-object) | Yes      | Current status of the task (state, message, timestamp).                       |
+| `artifacts` | [`Artifact[]`](#67-artifact-object)   | No       | Array of outputs generated by the agent for this task.                        |
+| `history`   | [`Message[]`](#64-message-object)     | No       | Optional array of recent messages exchanged, if requested by `historyLength`. |
+| `metadata`  | `Record<string, any>`                 | No       | Arbitrary key-value metadata associated with the task.                        |
 
 ### 6.2. `TaskStatus` Object
 
@@ -441,11 +442,11 @@ interface TaskStatus {
 }
 ```
 
-| Field Name  | Type                                      | Required | Description                                                |
-| :---------- | :---------------------------------------- | :------- | :--------------------------------------------------------- |
-| `state`     | [`TaskState`](#63-taskstate-enum)         | Yes      | Current lifecycle state of the task.                       |
-| `message`   | [`Message`](#64-message-object) | No       | Optional message providing context for the current status. |
-| `timestamp` | `string` (ISO 8601)             | No       | Timestamp (UTC recommended) when this status was recorded. |
+| Field Name  | Type                              | Required | Description                                                |
+| :---------- | :-------------------------------- | :------- | :--------------------------------------------------------- |
+| `state`     | [`TaskState`](#63-taskstate-enum) | Yes      | Current lifecycle state of the task.                       |
+| `message`   | [`Message`](#64-message-object)   | No       | Optional message providing context for the current status. |
+| `timestamp` | `string` (ISO 8601)               | No       | Timestamp (UTC recommended) when this status was recorded. |
 
 ### 6.3. `TaskState` Enum
 
@@ -453,28 +454,28 @@ Defines the possible lifecycle states of a `Task`.
 
 ```typescript
 type TaskState =
-  | 'submitted' // Task received by server, acknowledged, but processing has not yet actively started.
-  | 'working' // Task is actively being processed by the agent.
-  | 'input-required' // Agent requires additional input from the client/user to proceed. (Task is paused)
-  | 'completed' // Task finished successfully. (Terminal state)
-  | 'canceled' // Task was canceled by the client or potentially by the server. (Terminal state)
-  | 'failed' // Task terminated due to an error during processing. (Terminal state)
-  | 'rejected' //Task has be rejected by the remote agent (Terminal state)
-  | 'auth-required' //Authentication required from client/user to proceed. (Task is paused)
-  | 'unknown'; // The state of the task cannot be determined (e.g., task ID invalid or expired). (Effectively a terminal state from client's PoV for that ID)
+  | "submitted" // Task received by server, acknowledged, but processing has not yet actively started.
+  | "working" // Task is actively being processed by the agent.
+  | "input-required" // Agent requires additional input from the client/user to proceed. (Task is paused)
+  | "completed" // Task finished successfully. (Terminal state)
+  | "canceled" // Task was canceled by the client or potentially by the server. (Terminal state)
+  | "failed" // Task terminated due to an error during processing. (Terminal state)
+  | "rejected" //Task has be rejected by the remote agent (Terminal state)
+  | "auth-required" //Authentication required from client/user to proceed. (Task is paused)
+  | "unknown"; // The state of the task cannot be determined (e.g., task ID invalid or expired). (Effectively a terminal state from client's PoV for that ID)
 ```
 
-| Value            | Description                                                                                              | Terminal?  |
-| :--------------- | :------------------------------------------------------------------------------------------------------- | :--------- |
-| `submitted`      | Task received by the server and acknowledged, but processing has not yet actively started.               | No         |
-| `working`        | Task is actively being processed by the agent. Client may expect further updates or a terminal state.    | No         |
-| `input-required` | Agent requires additional input from the client/user to proceed. The task is effectively paused.         | No (Pause) |
-| `completed`      | Task finished successfully. Results are typically available in `Task.artifacts` or `TaskStatus.message`. | Yes        |
-| `canceled`       | Task was canceled (e.g., by a `tasks/cancel` request or server-side policy).                             | Yes        |
-| `failed`         | Task terminated due to an error during processing. `TaskStatus.message` may contain error details.       | Yes        |
-| `rejected`       | Task terminated due to rejection by remote agent. `TaskStatus.message` may contain error details.        | Yes        |
-| `auth-required`  | Agent requires additional authentication from the client/user to proceed. The task is effectively paused.| No (Pause) |
-| `unknown`        | The state of the task cannot be determined (e.g., task ID is invalid, unknown, or has expired).          | Yes        |
+| Value            | Description                                                                                               | Terminal?  |
+| :--------------- | :-------------------------------------------------------------------------------------------------------- | :--------- |
+| `submitted`      | Task received by the server and acknowledged, but processing has not yet actively started.                | No         |
+| `working`        | Task is actively being processed by the agent. Client may expect further updates or a terminal state.     | No         |
+| `input-required` | Agent requires additional input from the client/user to proceed. The task is effectively paused.          | No (Pause) |
+| `completed`      | Task finished successfully. Results are typically available in `Task.artifacts` or `TaskStatus.message`.  | Yes        |
+| `canceled`       | Task was canceled (e.g., by a `tasks/cancel` request or server-side policy).                              | Yes        |
+| `failed`         | Task terminated due to an error during processing. `TaskStatus.message` may contain error details.        | Yes        |
+| `rejected`       | Task terminated due to rejection by remote agent. `TaskStatus.message` may contain error details.         | Yes        |
+| `auth-required`  | Agent requires additional authentication from the client/user to proceed. The task is effectively paused. | No (Pause) |
+| `unknown`        | The state of the task cannot be determined (e.g., task ID is invalid, unknown, or has expired).           | Yes        |
 
 ### 6.4. `Message` Object
 
@@ -485,7 +486,7 @@ interface Message {
   // Indicates the sender of the message:
   // "user" for messages originating from the A2A Client (acting on behalf of an end-user or system).
   // "agent" for messages originating from the A2A Server (the remote agent).
-  role: 'user' | 'agent';
+  role: "user" | "agent";
   // An array containing the content of the message, broken down into one or more parts.
   // A message MUST contain at least one part.
   // Using multiple parts allows for rich, multi-modal content (e.g., text accompanying an image).
@@ -499,11 +500,11 @@ interface Message {
   // message identifier created by the message creator
   messageId: string;
   // task identifier the current message is related to
-  taskId?: string
+  taskId?: string;
   // Context identifier the message is associated with
   contextId?: string;
   // type discriminator
-  kind: 'message'
+  kind: "message";
 }
 ```
 
@@ -530,17 +531,17 @@ For conveying plain textual content.
 
 ```typescript
 interface TextPart {
-  kind: 'text'; // Discriminator
+  kind: "text"; // Discriminator
   text: string; // The actual textual content.
   metadata?: Record<string, any>; // Optional metadata (e.g., language, formatting hints if any)
 }
 ```
 
-| Field Name | Type                            | Required | Description                                   |
-| :--------- | :------------------------------ | :------- | :-------------------------------------------- |
-| `kind`     | `"text"` (literal)          | Yes      | Identifies this part as textual content.      |
-| `text`     | `string`                        | Yes      | The textual content of the part.              |
-| `metadata` | `Record<string, any>`                        | No       | Optional metadata specific to this text part. |
+| Field Name | Type                  | Required | Description                                   |
+| :--------- | :-------------------- | :------- | :-------------------------------------------- |
+| `kind`     | `"text"` (literal)    | Yes      | Identifies this part as textual content.      |
+| `text`     | `string`              | Yes      | The textual content of the part.              |
+| `metadata` | `Record<string, any>` | No       | Optional metadata specific to this text part. |
 
 #### 6.5.2. `FilePart` Object
 
@@ -548,17 +549,17 @@ For conveying file-based content.
 
 ```typescript
 interface FilePart {
-  kind: 'file'; // Discriminator
+  kind: "file"; // Discriminator
   file: FileWithBytes | FileWithUri; // Contains the file details and data (or reference).
   metadata?: Record<string, any>; // Optional metadata (e.g., purpose of the file)
 }
 ```
 
-| Field Name | Type                                    | Required | Description                                   |
-| :--------- | :-------------------------------------- | :------- | :-------------------------------------------- |
-| `kind`     | `"file"` (literal)                      | Yes      | Identifies this part as file content.         |
-| `file`     | FileWithBytes | FileWithUri             | Yes      | Contains the file details and data/reference. |
-| `metadata` | `Record<string, any>`                                | No       | Optional metadata specific to this file part. |
+| Field Name | Type                  | Required    | Description                                   |
+| :--------- | :-------------------- | :---------- | :-------------------------------------------- | --------------------------------------------- |
+| `kind`     | `"file"` (literal)    | Yes         | Identifies this part as file content.         |
+| `file`     | FileWithBytes         | FileWithUri | Yes                                           | Contains the file details and data/reference. |
+| `metadata` | `Record<string, any>` | No          | Optional metadata specific to this file part. |
 
 #### 6.5.3. `DataPart` Object
 
@@ -566,7 +567,7 @@ For conveying structured JSON data. Useful for forms, parameters, or any machine
 
 ```typescript
 interface DataPart {
-  kind: 'data'; // Discriminator
+  kind: "data"; // Discriminator
   // The structured JSON data payload. This can be any valid JSON object.
   // The schema of this data is application-defined and may be implicitly understood
   // by the interacting agents or explicitly described (e.g., via a JSON Schema reference
@@ -576,11 +577,11 @@ interface DataPart {
 }
 ```
 
-| Field Name | Type                             | Required | Description                                                                 |
-| :--------- | :------------------------------- | :------- | :-------------------------------------------------------------------------- |
-| `kind`     | `"data"` (literal)               | Yes      | Identifies this part as structured data.                                    |
+| Field Name | Type                  | Required | Description                                                                 |
+| :--------- | :-------------------- | :------- | :-------------------------------------------------------------------------- |
+| `kind`     | `"data"` (literal)    | Yes      | Identifies this part as structured data.                                    |
 | `data`     | `Record<string, any>` | Yes      | The structured JSON data payload (an object or an array).                   |
-| `metadata` | `Record<string, any>`  | No       | Optional metadata specific to this data part (e.g., reference to a schema). |
+| `metadata` | `Record<string, any>` | No       | Optional metadata specific to this data part (e.g., reference to a schema). |
 
 ### 6.6.1 `FileWithBytes` Object
 
@@ -599,12 +600,11 @@ interface FileWithBytes {
 }
 ```
 
-| Field Name | Type               | Required                       | Description                                                                                                                         |
-| :--------- | :----------------- | :----------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | `string` | No                             | Original filename (e.g., "report.pdf").                                                                                             |
-| `mimeType` | `string` | No                             | [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
-| `bytes`    | `string` | Yes | Base64 encoded file content. |
-
+| Field Name | Type     | Required | Description                                                                                                                         |
+| :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
+| `mimeType` | `string` | No       | [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
+| `bytes`    | `string` | Yes      | Base64 encoded file content.                                                                                                        |
 
 ### 6.6.2 `FileWithUri` Object
 
@@ -622,11 +622,11 @@ interface FileWithUri {
 }
 ```
 
-| Field Name | Type               | Required                       | Description                                                                                                                         |
-| :--------- | :----------------- | :----------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | `string` | No                             | Original filename (e.g., "report.pdf").                                                                                             |
-| `mimeType` | `string` | No                             | [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
-| `uri`      | `string`  | Yes | URI (absolute URL strongly recommended) to file content. Accessibility is context-dependent.                                        |
+| Field Name | Type     | Required | Description                                                                                                                         |
+| :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
+| `mimeType` | `string` | No       | [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
+| `uri`      | `string` | Yes      | URI (absolute URL strongly recommended) to file content. Accessibility is context-dependent.                                        |
 
 ### 6.7. `Artifact` Object
 
@@ -652,13 +652,13 @@ interface Artifact {
 }
 ```
 
-| Field Name    | Type                            | Required | Description                            |
-| :------------ | :------------------------------ | :------- | -------------------------------------- |
-| `artifactId`  | `string`                        | Yes       | Identifier for the artifact generated by the agent. |
-| `name`        | `string`                        | No       | Descriptive name for the artifact. |
-| `description` | `string`                        | No       | Human-readable description of the artifact. |
-| `parts`       | [`Part[]`](#65-part-union-type) | Yes      | Content of the artifact, as one or more `Part` objects. Must have at least one.|
-| `metadata`    | `Record<string, any>` | No       | Arbitrary key-value metadata associated with the artifact.|
+| Field Name    | Type                            | Required | Description                                                                     |
+| :------------ | :------------------------------ | :------- | ------------------------------------------------------------------------------- |
+| `artifactId`  | `string`                        | Yes      | Identifier for the artifact generated by the agent.                             |
+| `name`        | `string`                        | No       | Descriptive name for the artifact.                                              |
+| `description` | `string`                        | No       | Human-readable description of the artifact.                                     |
+| `parts`       | [`Part[]`](#65-part-union-type) | Yes      | Content of the artifact, as one or more `Part` objects. Must have at least one. |
+| `metadata`    | `Record<string, any>`           | No       | Arbitrary key-value metadata associated with the artifact.                      |
 
 ### 6.8. `PushNotificationConfig` Object
 
@@ -680,10 +680,10 @@ interface PushNotificationConfig {
 }
 ```
 
-| Field Name       | Type                                                                                   | Required | Description                                                                                                                                                               |
-| :--------------- | :------------------------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `url`            | `string`                                                                               | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
-| `token`          | `string`                                                                      | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
+| Field Name       | Type                                                                  | Required | Description                                                                                                                                                               |
+| :--------------- | :-------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `url`            | `string`                                                              | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
+| `token`          | `string`                                                              | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
 | `authentication` | [`AuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                                        |
 
 ### 6.9. `PushNotificationAuthenticationInfo` Object
@@ -709,10 +709,10 @@ interface AuthenticationInfo {
 }
 ```
 
-| Field Name    | Type               | Required | Description                                                                                                                                                                                |
-| :------------ | :----------------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schemes`     | `string[]`         | Yes      | Array of auth scheme names the A2A Server must use when calling the client's webhook (e.g., "Bearer", "ApiKey").                                                                           |
-| `credentials` | `string`          | No       | Optional static credentials or scheme-specific configuration info. **Handle with EXTREME CAUTION if secrets are involved.** Prefer server-side dynamic credential fetching where possible. |
+| Field Name    | Type       | Required | Description                                                                                                                                                                                |
+| :------------ | :--------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `schemes`     | `string[]` | Yes      | Array of auth scheme names the A2A Server must use when calling the client's webhook (e.g., "Bearer", "ApiKey").                                                                           |
+| `credentials` | `string`   | No       | Optional static credentials or scheme-specific configuration info. **Handle with EXTREME CAUTION if secrets are involved.** Prefer server-side dynamic credential fetching where possible. |
 
 ### 6.10. `TaskPushNotificationConfig` Object
 
@@ -729,9 +729,9 @@ interface TaskPushNotificationConfig {
 }
 ```
 
-| Field Name               | Type                                                                    | Required | Description                                                                                                                                                               |
-| :----------------------- | :---------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `taskId`                     | `string`                                                                | Yes      | The ID of the task to configure push notifications for, or retrieve configuration from.                                                                                   |
+| Field Name               | Type                                                          | Required | Description                                                                                                                           |
+| :----------------------- | :------------------------------------------------------------ | :------- | :------------------------------------------------------------------------------------------------------------------------------------ |
+| `taskId`                 | `string`                                                      | Yes      | The ID of the task to configure push notifications for, or retrieve configuration from.                                               |
 | `pushNotificationConfig` | [`PushNotificationConfig`](#68-pushnotificationconfig-object) | Yes      | The push notification configuration. For `set`, the desired config. For `get`, the current config (secrets MAY be omitted by server). |
 
 ### 6.11. JSON-RPC Structures
@@ -776,11 +776,11 @@ interface JSONRPCError {
 }
 ```
 
-| Field Name | Type            | Required | Description                                                                                                  |
-| :--------- | :-------------- | :------- | :----------------------------------------------------------------------------------------------------------- |
-| `code`     | `integer`       | Yes      | Integer error code. See [Section 8 (Error Handling)](#8-error-handling) for standard and A2A-specific codes. |
-| `message`  | `string`        | Yes      | Short, human-readable summary of the error.                                                                  |
-| `data`     | `any` | No       | Optional additional structured information about the error.                                                  |
+| Field Name | Type      | Required | Description                                                                                                  |
+| :--------- | :-------- | :------- | :----------------------------------------------------------------------------------------------------------- |
+| `code`     | `integer` | Yes      | Integer error code. See [Section 8 (Error Handling)](#8-error-handling) for standard and A2A-specific codes. |
+| `message`  | `string`  | Yes      | Short, human-readable summary of the error.                                                                  |
+| `data`     | `any`     | No       | Optional additional structured information about the error.                                                  |
 
 ## 7. Protocol RPC Methods
 
@@ -820,11 +820,11 @@ interface MessageSendConfiguration {
 }
 ```
 
-| Field Name         | Type                                                                    | Required | Description                                                                                                          |
-| :----------------- | :---------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------- |
-| `message`          | [`Message`](#64-message-object)       | Yes      | The message content to send. `Message.role` is typically `"user"`. |
-| `configuration`    | [`MessageSendConfiguration`](#68-pushnotificationconfig-object) | No       | Optional: additional message configuration |
-| `metadata`         | `Record<string, any>`                                         | No       | Request-specific metadata. |
+| Field Name      | Type                                                            | Required | Description                                                        |
+| :-------------- | :-------------------------------------------------------------- | :------- | :----------------------------------------------------------------- |
+| `message`       | [`Message`](#64-message-object)                                 | Yes      | The message content to send. `Message.role` is typically `"user"`. |
+| `configuration` | [`MessageSendConfiguration`](#68-pushnotificationconfig-object) | No       | Optional: additional message configuration                         |
+| `metadata`      | `Record<string, any>`                                           | No       | Request-specific metadata.                                         |
 
 ### 7.2. `message/stream`
 
@@ -844,7 +844,9 @@ Sends a message to an agent to initiate/continue a task AND subscribes the clien
 This is the structure of the JSON object found in the `data` field of each Server-Sent Event sent by the server for a `message/stream` request or `tasks/resubscribe` request.
 
 ```typescript
-type SendStreamingMessageResponse = SendStreamingMessageSuccessResponse | JSONRPCErrorResponse
+type SendStreamingMessageResponse =
+  | SendStreamingMessageSuccessResponse
+  | JSONRPCErrorResponse;
 
 interface SendStreamingMessageSuccessResponse extends JSONRPCResult {
   // The `result` field contains the actual event payload for this streaming update.
@@ -853,11 +855,11 @@ interface SendStreamingMessageSuccessResponse extends JSONRPCResult {
 }
 ```
 
-| Field Name | Type                                                                                                                                                 | Required | Description                                                                                                                                            |
-| :--------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `jsonrpc`  | `"2.0"` (literal)                                                                                                                                    | Yes      | JSON-RPC version string.                                                                                                                               |
-| `id`       | `string` \| `number`                                                                                                                                 | Yes      | Matches the `id` from the originating `message/stream` or `tasks/resubscribe` request.                                                            |
-| `result`   | **Either** `Message` <br> **OR** `Task` <br> **OR** [`TaskStatusUpdateEvent`](#722-taskstatusupdateevent-object) <br> **OR** [`TaskArtifactUpdateEvent`](#723-taskartifactupdateevent-object) | Yes      | The event payload |
+| Field Name | Type                                                                                                                                                                                          | Required | Description                                                                            |
+| :--------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------- |
+| `jsonrpc`  | `"2.0"` (literal)                                                                                                                                                                             | Yes      | JSON-RPC version string.                                                               |
+| `id`       | `string` \| `number`                                                                                                                                                                          | Yes      | Matches the `id` from the originating `message/stream` or `tasks/resubscribe` request. |
+| `result`   | **Either** `Message` <br> **OR** `Task` <br> **OR** [`TaskStatusUpdateEvent`](#722-taskstatusupdateevent-object) <br> **OR** [`TaskArtifactUpdateEvent`](#723-taskartifactupdateevent-object) | Yes      | The event payload                                                                      |
 
 #### 7.2.2. `TaskStatusUpdateEvent` Object
 
@@ -875,7 +877,7 @@ interface TaskStatusUpdateEvent {
   status: TaskStatus;
   // If `true`, this `TaskStatusUpdateEvent` signifies the terminal status update for the current
   // `message/stream` interaction cycle. This means the task has reached a terminal or paused state
-  // and the server does not expect to send more updates for *this specific* `stream` request. 
+  // and the server does not expect to send more updates for *this specific* `stream` request.
   // The server typically closes the SSE connection after sending an event with `final: true`.
   // Default: `false` if omitted.
   final?: boolean;
@@ -884,14 +886,14 @@ interface TaskStatusUpdateEvent {
 }
 ```
 
-| Field Name | Type                                  | Required | Default | Description                                                                                                                                      |
-| :--------- | :------------------------------------ | :------- | :------ | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `taskId`       | `string`                          | Yes      |         | Task ID being updated |
-| `contextId`       | `string`                       | Yes      |         | Context ID the task is associated with |
-| `kind`       | `string`, literal               | Yes      | `status-update` | Type discriminator, literal value |
-| `status`   | [`TaskStatus`](#62-taskstatus-object) | Yes      |         | The new `TaskStatus` object. |
-| `final`    | `boolean`                             | No       | `false` | If `true`, indicates this is the terminal status update for the current stream cycle. The server typically closes the SSE connection after this. |
-| `metadata` | `Record<string, any>`       | No       | `undefined`  | Event-specific metadata. |
+| Field Name  | Type                                  | Required | Default         | Description                                                                                                                                      |
+| :---------- | :------------------------------------ | :------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `taskId`    | `string`                              | Yes      |                 | Task ID being updated                                                                                                                            |
+| `contextId` | `string`                              | Yes      |                 | Context ID the task is associated with                                                                                                           |
+| `kind`      | `string`, literal                     | Yes      | `status-update` | Type discriminator, literal value                                                                                                                |
+| `status`    | [`TaskStatus`](#62-taskstatus-object) | Yes      |                 | The new `TaskStatus` object.                                                                                                                     |
+| `final`     | `boolean`                             | No       | `false`         | If `true`, indicates this is the terminal status update for the current stream cycle. The server typically closes the SSE connection after this. |
+| `metadata`  | `Record<string, any>`                 | No       | `undefined`     | Event-specific metadata.                                                                                                                         |
 
 #### 7.2.3. `TaskArtifactUpdateEvent` Object
 
@@ -917,15 +919,15 @@ interface TaskArtifactUpdateEvent {
 }
 ```
 
-| Field Name | Type                              | Required | Default |  Description                                                                                                                                                         |
-| :--------- | :-------------------------------- | :------- | :------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `taskId`       | `string`                          | Yes      |         | Task ID associated with the generated artifact part |
-| `contextId`       | `string`                       | Yes      |         | Context ID the task is associated with |
-| `kind`       | `string`, literal               | Yes      | `artifact-update` | Type discriminator, literal value |
-| `artifact` | [`Artifact`](#67-artifact-object) | Yes      |         | The `Artifact` data. Could be a complete artifact or an incremental chunk.  |
-| `append`      | `boolean`             | No       | `false` |`true` means append parts to artifact; `false` (default) means replace. |
-| `lastChunk`   | `boolean`             | No       | `false` |`true` indicates this is the final update for the artifact.      |
-| `metadata` | `Record<string, any>`   | No       | `undefined` | Event-specific metadata.|
+| Field Name  | Type                              | Required | Default           | Description                                                                |
+| :---------- | :-------------------------------- | :------- | :---------------- | :------------------------------------------------------------------------- |
+| `taskId`    | `string`                          | Yes      |                   | Task ID associated with the generated artifact part                        |
+| `contextId` | `string`                          | Yes      |                   | Context ID the task is associated with                                     |
+| `kind`      | `string`, literal                 | Yes      | `artifact-update` | Type discriminator, literal value                                          |
+| `artifact`  | [`Artifact`](#67-artifact-object) | Yes      |                   | The `Artifact` data. Could be a complete artifact or an incremental chunk. |
+| `append`    | `boolean`                         | No       | `false`           | `true` means append parts to artifact; `false` (default) means replace.    |
+| `lastChunk` | `boolean`                         | No       | `false`           | `true` indicates this is the final update for the artifact.                |
+| `metadata`  | `Record<string, any>`             | No       | `undefined`       | Event-specific metadata.                                                   |
 
 ### 7.3. `tasks/get`
 
@@ -950,17 +952,17 @@ interface TaskQueryParams {
 }
 ```
 
-| Field Name      | Type                            | Required | Description                                                                              |
-| :-------------- | :------------------------------ | :------- | :--------------------------------------------------------------------------------------- |
-| `id`            | `string`              | Yes      | The ID of the task whose current state is to be retrieved. |
+| Field Name      | Type                  | Required | Description                                                                              |
+| :-------------- | :-------------------- | :------- | :--------------------------------------------------------------------------------------- |
+| `id`            | `string`              | Yes      | The ID of the task whose current state is to be retrieved.                               |
 | `historyLength` | `integer`             | No       | If positive, requests the server to include up to `N` recent messages in `Task.history`. |
-| `metadata`      | `Record<string, any>`              | No       | Request-specific metadata.   |
+| `metadata`      | `Record<string, any>` | No       | Request-specific metadata.                                                               |
 
 ### 7.4. `tasks/cancel`
 
 Requests the cancellation of an ongoing task. The server will attempt to cancel the task, but success is not guaranteed (e.g., the task might have already completed or failed, or cancellation might not be supported at its current stage).
 
-- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationget)
+- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
 - **Response `result` type (on success)**: [`Task`](#61-task-object) (The state of the task after the cancellation attempt. Ideally, `Task.status.state` will be `"canceled"` if successful).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`TaskNotFoundError`](#82-a2a-specific-errors), [`TaskNotCancelableError`](#82-a2a-specific-errors)).
 
@@ -977,10 +979,10 @@ interface TaskIdParams {
 }
 ```
 
-| Field Name | Type                            | Required | Description                |
-| :--------- | :------------------------------ | :------- | :------------------------- |
-| `id`       | `string`                        | Yes      | The ID of the task.        |
-| `metadata` | `Record<string, any>`                        | No       | Request-specific metadata. |
+| Field Name | Type                  | Required | Description                |
+| :--------- | :-------------------- | :------- | :------------------------- |
+| `id`       | `string`              | Yes      | The ID of the task.        |
+| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
 
 ### 7.5. `tasks/pushNotificationConfig/set`
 
@@ -994,7 +996,7 @@ Sets or updates the push notification configuration for a specified task. This a
 
 Retrieves the current push notification configuration for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationget)
+- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
 - **Response `result` type (on success)**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object) (The current push notification configuration for the task. Server may return an error if no push notification configuration is associated with the task).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
 
@@ -1069,10 +1071,10 @@ These are custom error codes defined within the JSON-RPC server error range (`-3
 | :------- | :---------------------------------- | :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-32001` | `TaskNotFoundError`                 | Task not found                     | The specified task `id` does not correspond to an existing or active task. It might be invalid, expired, or already completed and purged.                                                                                            |
 | `-32002` | `TaskNotCancelableError`            | Task cannot be canceled            | An attempt was made to cancel a task that is not in a cancelable state (e.g., it has already reached a terminal state like `completed`, `failed`, or `canceled`).                                                                    |
-| `-32003` | `PushNotificationNotSupportedError` | Push Notification is not supported | Client attempted to use push notification features (e.g., `tasks/pushNotificationConfig/set`) but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                                    |
-| `-32004` | `UnsupportedOperationError`        | This operation is not supported    | The requested operation or a specific aspect of it (perhaps implied by parameters) is not supported by this server agent implementation. Broader than just method not found.                                                         |
+| `-32003` | `PushNotificationNotSupportedError` | Push Notification is not supported | Client attempted to use push notification features (e.g., `tasks/pushNotificationConfig/set`) but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                              |
+| `-32004` | `UnsupportedOperationError`         | This operation is not supported    | The requested operation or a specific aspect of it (perhaps implied by parameters) is not supported by this server agent implementation. Broader than just method not found.                                                         |
 | `-32005` | `ContentTypeNotSupportedError`      | Incompatible content types         | A [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) provided in the request's `message.parts` (or implied for an artifact) is not supported by the agent or the specific skill being invoked. |
-| `-32006` | `InvalidAgentResponseError`        | Invalid agent response type         | Agent generated an invalid response for the requested method |
+| `-32006` | `InvalidAgentResponseError`         | Invalid agent response type        | Agent generated an invalid response for the requested method                                                                                                                                                                         |
 
 Servers MAY define additional error codes within the `-32000` to `-32099` range for more specific scenarios not covered above, but they **SHOULD** document these clearly. The `data` field of the `JSONRPCError` object can be used to provide more structured details for any error.
 
@@ -1084,35 +1086,28 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 **Scenario:** A client discovers a public Agent Card indicating support for an authenticated extended card and wants to retrieve the full details.
 
-1.  **Client fetches the public Agent Card:**
+1. **Client fetches the public Agent Card:**
 
-    ```
-    GET https://example.com/.well-known/agent.json
-    ```
+   ```none
+   GET https://example.com/.well-known/agent.json
+   ```
 
-    _Server responds with the public Agent Card (like the example in Section 5.6), including `supportsAuthenticatedExtendedCard: true` (at the root level) and `securitySchemes`._
+   _Server responds with the public Agent Card (like the example in Section 5.6), including `supportsAuthenticatedExtendedCard: true` (at the root level) and `securitySchemes`._
 
-2.  **Client identifies required authentication from the public card.**
+2. **Client identifies required authentication from the public card.**
 
-3.  **Client obtains necessary credentials out-of-band (e.g., performs OAuth 2.0 flow with Google, resulting in an access token).**
+3. **Client obtains necessary credentials out-of-band (e.g., performs OAuth 2.0 flow with Google, resulting in an access token).**
 
-4.  **Client fetches the authenticated extended Agent Card:**
+4. **Client fetches the authenticated extended Agent Card:**
 
-    ```
-    GET https://example.com/a2a/agent/authenticatedExtendedCard
-    Authorization: Bearer <obtained_access_token>
-    ```
+   ```none
+   GET https://example.com/a2a/agent/authenticatedExtendedCard
+   Authorization: Bearer <obtained_access_token>
+   ```
 
-5.  **Server authenticates and authorizes the request.**
+5. **Server authenticates and authorizes the request.**
 
-6.  **Server responds with the full Agent Card:**
-
-    ```json
-    // HTTP Status: 200 OK
-    // HTTP Body: A JSON object representing the complete AgentCard, potentially including
-    // more skills, detailed descriptions, or other private configuration.
-    { ... full AgentCard object ... }
-     ```
+6. **Server responds with the full Agent Card:**
 
 ### 9.2. Basic Execution (Synchronous / Polling Style)
 
@@ -1121,114 +1116,115 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 1. **Client sends a message using `message/send`:**
 
    ```json
-    {
-      "jsonrpc": "2.0",
-      "id": 1,
-      "method": "message/send",
-      "params": {
-        "message": {
-          "role": "user",
-          "parts": [
-            {
-              "type": "text",
-              "text": "tell me a joke"
-            }
-          ],
-          "messageId": "9229e770-767c-417b-a0b0-f0741243c589"
-        },
-        "metadata": {}
-      }
-    }
+   {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "method": "message/send",
+     "params": {
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "tell me a joke"
+           }
+         ],
+         "messageId": "9229e770-767c-417b-a0b0-f0741243c589"
+       },
+       "metadata": {}
+     }
+   }
    ```
 
 2. **Server processes the request, creates a task and responds (task completes quickly)**
 
    ```json
    {
-    "jsonrpc": "2.0",
-    "id": 1,
-    "result": {
-      "id": "363422be-b0f9-4692-a24d-278670e7c7f1",
-      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-      "status": {
-        "state": "completed"
-      },
-      "artifacts": [
-        {
-          "artifactId":"9b6934dd-37e3-4eb1-8766-962efaab63a1",
-          "name": "joke",
-          "parts": [
-            {
-              "type": "text",
-              "text": "Why did the chicken cross the road? To get to the other side!"
-            }
-          ]
-        }
-      ],
-      "history": [
-      {
-        "role": "user",
-        "parts": [
-          {
-            "type": "text",
-            "text": "tell me a joke"
-          }
-        ],
-        "messageId": "9229e770-767c-417b-a0b0-f0741243c589",
-        "taskId": "363422be-b0f9-4692-a24d-278670e7c7f1",
-        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
-      }
-      ],
-      "kind": "task",
-      "metadata": {}
-    }
-  }
-  ```
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+       "id": "363422be-b0f9-4692-a24d-278670e7c7f1",
+       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+       "status": {
+         "state": "completed"
+       },
+       "artifacts": [
+         {
+           "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
+           "name": "joke",
+           "parts": [
+             {
+               "type": "text",
+               "text": "Why did the chicken cross the road? To get to the other side!"
+             }
+           ]
+         }
+       ],
+       "history": [
+         {
+           "role": "user",
+           "parts": [
+             {
+               "type": "text",
+               "text": "tell me a joke"
+             }
+           ],
+           "messageId": "9229e770-767c-417b-a0b0-f0741243c589",
+           "taskId": "363422be-b0f9-4692-a24d-278670e7c7f1",
+           "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+         }
+       ],
+       "kind": "task",
+       "metadata": {}
+     }
+   }
+   ```
 
 **Scenario:** Client asks a simple question, and the agent responds quickly without a task
 
 1. **Client sends a message using `message/send`:**
 
    ```json
-    {
-      "jsonrpc": "2.0",
-      "id": 1,
-      "method": "message/send",
-      "params": {
-        "message": {
-          "role": "user",
-          "parts": [
-            {
-              "type": "text",
-              "text": "tell me a joke"
-            }
-          ],
-          "messageId": "9229e770-767c-417b-a0b0-f0741243c589"
-        },
-        "metadata": {}
-      }
-    }
+   {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "method": "message/send",
+     "params": {
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "tell me a joke"
+           }
+         ],
+         "messageId": "9229e770-767c-417b-a0b0-f0741243c589"
+       },
+       "metadata": {}
+     }
+   }
    ```
+
 2. **Server processes the request, responds quickly without a task**
 
-```json
-{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "messageId": "363422be-b0f9-4692-a24d-278670e7c7f1",
-    "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-    "parts": [
-      {
-        "type": "text",
-        "text": "Why did the chicken cross the road? To get to the other side!"
-      }
-    ],
-    "kind": "message",
-    "metadata": {}
-  }
-}
-```
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+       "messageId": "363422be-b0f9-4692-a24d-278670e7c7f1",
+       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+       "parts": [
+         {
+           "type": "text",
+           "text": "Why did the chicken cross the road? To get to the other side!"
+         }
+       ],
+       "kind": "message",
+       "metadata": {}
+     }
+   }
+   ```
 
 _If the task were longer-running, the server might initially respond with `status.state: "working"`. The client would then periodically call `tasks/get` with `params: {"id": "363422be-b0f9-4692-a24d-278670e7c7f1"}` until the task reaches a terminal state._
 
@@ -1238,145 +1234,145 @@ _If the task were longer-running, the server might initially respond with `statu
 
 1. **Client sends a message and subscribes using `message/stream`:**
 
-```json
-{
-  "method": "message/stream",
-  "params": {
-    "message": {
-      "role": "user",
-      "parts": [
-        {
-          "type": "text",
-          "text": "write a long paper describing the attached pictures"
-        },
-        {
-          "type": "file",
-          "file": {
-            "mimeType": "image/png",
-            "data": "<base64-encoded-content>"
-          }
-        }
-      ],
-      "messageId": "bbb7dee1-cf5c-4683-8a6f-4114529da5eb"
-    },
-    "metadata": {}
-  }
-}
-```
+   ```json
+   {
+     "method": "message/stream",
+     "params": {
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "write a long paper describing the attached pictures"
+           },
+           {
+             "type": "file",
+             "file": {
+               "mimeType": "image/png",
+               "data": "<base64-encoded-content>"
+             }
+           }
+         ],
+         "messageId": "bbb7dee1-cf5c-4683-8a6f-4114529da5eb"
+       },
+       "metadata": {}
+     }
+   }
+   ```
 
 2. **Server responds with HTTP 200 OK, `Content-Type: text/event-stream`, and starts sending SSE events:**
 
    _Event 1: Task status update - working_
 
-```json
-data: {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
-    "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
-    "status": {
-      "state": "submitted",
-      "timestamp":"2025-04-02T16:59:25.331844"
-    },
-    "history": [
-      {
-        "role": "user",
-        "parts": [
-          {
-            "type": "text",
-            "text": "write a long paper describing the attached pictures"
-          },
-          {
-            "type": "file",
-            "file": {
-              "mimeType": "image/png",
-              "data": "<base64-encoded-content>"
-            }
-          }
-        ],
-        "messageId": "bbb7dee1-cf5c-4683-8a6f-4114529da5eb",
-        "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
-        "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1"
-      }
-    ],
-    "kind": "task",
-    "metadata": {}
-  }
-}
+   ```json
+   data: {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+       "id": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+       "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
+       "status": {
+         "state": "submitted",
+         "timestamp":"2025-04-02T16:59:25.331844"
+       },
+       "history": [
+         {
+           "role": "user",
+           "parts": [
+             {
+               "type": "text",
+               "text": "write a long paper describing the attached pictures"
+             },
+             {
+               "type": "file",
+               "file": {
+                 "mimeType": "image/png",
+                 "data": "<base64-encoded-content>"
+               }
+             }
+           ],
+           "messageId": "bbb7dee1-cf5c-4683-8a6f-4114529da5eb",
+           "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+           "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1"
+         }
+       ],
+       "kind": "task",
+       "metadata": {}
+     }
+   }
 
-data: {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
-    "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
-    "artifact": {
-      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
-      "parts": [
-        {"type":"text", "text": "<section 1...>"}
-      ]
-    },
-    "append": false,
-    "lastChunk": false,
-    "kind":"artifact-update"
-  }
-}
+   data: {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+       "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+       "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
+       "artifact": {
+         "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
+         "parts": [
+           {"type":"text", "text": "<section 1...>"}
+         ]
+       },
+       "append": false,
+       "lastChunk": false,
+       "kind":"artifact-update"
+     }
+   }
 
-data: {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
-    "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
-    "artifact": {
-      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
-      "parts": [
-        {"type":"text", "text": "<section 2...>"}
-      ],
-    },
-    "append": true,
-    "lastChunk": false,
-    "kind":"artifact-update"
-  }
-}
+   data: {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+       "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+       "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
+       "artifact": {
+         "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
+         "parts": [
+           {"type":"text", "text": "<section 2...>"}
+         ],
+       },
+       "append": true,
+       "lastChunk": false,
+       "kind":"artifact-update"
+     }
+   }
 
 
-data: {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
-    "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
-    "artifact": {
-      "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
-      "parts": [
-        {"type":"text", "text": "<section 3...>"}
-      ]
-    },
-    "append": true,
-    "lastChunk": true,
-    "kind":"artifact-update"
-  }
-}
+   data: {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+       "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+       "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
+       "artifact": {
+         "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
+         "parts": [
+           {"type":"text", "text": "<section 3...>"}
+         ]
+       },
+       "append": true,
+       "lastChunk": true,
+       "kind":"artifact-update"
+     }
+   }
 
-data: {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
-    "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
-    "status": {
-      "state": "completed",
-      "timestamp":"2025-04-02T16:59:35.331844"
-    },
-    "final": true,
-    "kind":"status-update"
-  }
-}
-```
+   data: {
+     "jsonrpc": "2.0",
+     "id": 1,
+     "result": {
+       "taskId": "225d6247-06ba-4cda-a08b-33ae35c8dcfa",
+       "contextId": "05217e44-7e9f-473e-ab4f-2c2dde50a2b1",
+       "status": {
+         "state": "completed",
+         "timestamp":"2025-04-02T16:59:35.331844"
+       },
+       "final": true,
+       "kind":"status-update"
+     }
+   }
+   ```
 
-_(Server closes the SSE connection after the `final:true` event)._
+   _(Server closes the SSE connection after the `final:true` event)._
 
 ### 9.4. Multi-Turn Interaction (Input Required)
 
@@ -1406,9 +1402,9 @@ _(Server closes the SSE connection after the `final:true` event)._
      "jsonrpc": "2.0",
      "id": "req-003",
      "result": {
-        "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-        "status": {
+       "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+       "status": {
          "state": "input-required",
          "message": {
            "role": "agent",
@@ -1425,20 +1421,20 @@ _(Server closes the SSE connection after the `final:true` event)._
          "timestamp": "2024-03-15T10:10:00Z"
        },
        "history": [
-        {
-          "role": "user",
-          "parts": [
-            {
-              "type": "text",
-              "text": "I'd like to book a flight."
-            }
-          ],
-          "messageId": "c53ba666-3f97-433c-a87b-6084276babe2",
-          "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-          "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
-        }
-      ],
-      "kind": "task",
+         {
+           "role": "user",
+           "parts": [
+             {
+               "type": "text",
+               "text": "I'd like to book a flight."
+             }
+           ],
+           "messageId": "c53ba666-3f97-433c-a87b-6084276babe2",
+           "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+           "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+         }
+       ],
+       "kind": "task"
      }
    }
    ```
@@ -1464,97 +1460,95 @@ _(Server closes the SSE connection after the `final:true` event)._
          "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
        },
        "configuration": {
-        "blocking": true,
-       },
+         "blocking": true
+       }
      }
    }
    ```
 
 4. **Server processes the new input and responds (e.g., task completed or more input needed):**
 
-
-    ```json
-    {
-      "jsonrpc": "2.0",
-      "id": "req-004",
-      "result": {
-      "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-      "status": {
-        "state": "completed",
-        "message": {
-            "role": "agent",
-            "parts": [
-              {
-                "type": "text",
-                "text": "Okay, I've found a flight for you. Confirmation XYZ123. Details are in the artifact."
-              }
-            ]
-          },
-      },
-      "artifacts": [
-        {
-          "artifactId":"9b6934dd-37e3-4eb1-8766-962efaab63a1",
-          "name": "FlightItinerary.json",
-          "parts": [
-            {
-              "type": "data",
-              "data": {
-                "confirmationId": "XYZ123",
-                "from": "JFK",
-                "to": "LHR",
-                "departure": "2024-10-10T18:00:00Z",
-                "arrival": "2024-10-11T06:00:00Z",
-                "returnDeparture": "..."
-              }
-            }
-          ]
-        }
-      ],
-      "history": [
-        {
-            "role": "user",
-            "parts": [
-              {
-                "type": "text",
-                "text": "I'd like to book a flight."
-              }
-            ],
-            "messageId": "c53ba666-3f97-433c-a87b-6084276babe2",
-            "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-            "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
-          },
-        {
-            "role": "agent",
-            "parts": [
-              {
-                "type": "text",
-                "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
-              }
-            ],
-            "messageId": "c2e1b2dd-f200-4b04-bc22-1b0c65a1aad2",
-            "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-            "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
-          },
-        {
-          "role": "user",
-          "parts": [
-            {
-              "type": "text",
-              "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
-            }
-          ],
-          "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-          "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
-          "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
-        }
-      ],
-      "kind": "task",
-      "metadata": {}
-      }
-    }
-    ```
-
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "req-004",
+     "result": {
+       "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+       "status": {
+         "state": "completed",
+         "message": {
+           "role": "agent",
+           "parts": [
+             {
+               "type": "text",
+               "text": "Okay, I've found a flight for you. Confirmation XYZ123. Details are in the artifact."
+             }
+           ]
+         }
+       },
+       "artifacts": [
+         {
+           "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
+           "name": "FlightItinerary.json",
+           "parts": [
+             {
+               "type": "data",
+               "data": {
+                 "confirmationId": "XYZ123",
+                 "from": "JFK",
+                 "to": "LHR",
+                 "departure": "2024-10-10T18:00:00Z",
+                 "arrival": "2024-10-11T06:00:00Z",
+                 "returnDeparture": "..."
+               }
+             }
+           ]
+         }
+       ],
+       "history": [
+         {
+           "role": "user",
+           "parts": [
+             {
+               "type": "text",
+               "text": "I'd like to book a flight."
+             }
+           ],
+           "messageId": "c53ba666-3f97-433c-a87b-6084276babe2",
+           "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+           "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+         },
+         {
+           "role": "agent",
+           "parts": [
+             {
+               "type": "text",
+               "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
+             }
+           ],
+           "messageId": "c2e1b2dd-f200-4b04-bc22-1b0c65a1aad2",
+           "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+           "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+         },
+         {
+           "role": "user",
+           "parts": [
+             {
+               "type": "text",
+               "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
+             }
+           ],
+           "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+           "taskId": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+           "messageId": "0db1d6c4-3976-40ed-b9b8-0043ea7a03d3"
+         }
+       ],
+       "kind": "task",
+       "metadata": {}
+     }
+   }
+   ```
 
 ### 9.5. Push Notification Setup and Usage
 
@@ -1579,16 +1573,16 @@ _(Server closes the SSE connection after the `final:true` event)._
          "messageId": "6dbc13b5-bd57-4c2b-b503-24e381b6c8d6"
        },
        "configuration": {
-          "pushNotificationConfig": {
-            "url": "https://client.example.com/webhook/a2a-notifications",
-            "token": "secure-client-token-for-task-aaa",
-            "authentication": {
-              "schemes": ["Bearer"]
-              // Assuming server knows how to get a Bearer token for this webhook audience,
-              // or this implies the webhook is public/uses the 'token' for auth.
-              // 'credentials' could provide more specifics if needed by the server.
-            }
-          }
+         "pushNotificationConfig": {
+           "url": "https://client.example.com/webhook/a2a-notifications",
+           "token": "secure-client-token-for-task-aaa",
+           "authentication": {
+             "schemes": ["Bearer"]
+             // Assuming server knows how to get a Bearer token for this webhook audience,
+             // or this implies the webhook is public/uses the 'token' for auth.
+             // 'credentials' could provide more specifics if needed by the server.
+           }
+         }
        }
      }
    }
@@ -1622,7 +1616,7 @@ _(Server closes the SSE connection after the `final:true` event)._
      "id": "43667960-d455-4453-b0cf-1bae4955270d",
      "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
      "status": { "state": "completed", "timestamp": "2024-03-15T18:30:00Z" },
-     "kind": "task",
+     "kind": "task"
      // ... other fields ...
    }
    ```
@@ -1680,7 +1674,7 @@ _(Server closes the SSE connection after the `final:true` event)._
        "status": { "state": "completed", "timestamp": "2024-03-15T12:05:00Z" },
        "artifacts": [
          {
-           "artifactId":"9b6934dd-37e3-4eb1-8766-962efaab63a1",
+           "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
            "name": "processed_image_with_faces.png",
            "parts": [
              {
@@ -1710,66 +1704,66 @@ _(Server closes the SSE connection after the `final:true` event)._
    _(Note: A2A doesn't formally standardize schema negotiation in v0.2.0, but `metadata` can be used for such hints by convention between client/server)._
 
    ```json
-    {
-      "jsonrpc": "2.0",
-      "id": 9,
-      "method": "message/send",
-      "params": {
-        "message": {
-          "role": "user",
-          "parts": [
-            {
-              "type": "text",
-              "text": "Show me a list of my open IT tickets",
-              "metadata": {
-                "mimeType": "application/json",
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "ticketNumber": { "type": "string" },
-                      "description": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          ],
-          "messageId": "85b26db5-ffbb-4278-a5da-a7b09dea1b47"
-        },
-        "metadata": {}
-      }
-    }
+   {
+     "jsonrpc": "2.0",
+     "id": 9,
+     "method": "message/send",
+     "params": {
+       "message": {
+         "role": "user",
+         "parts": [
+           {
+             "type": "text",
+             "text": "Show me a list of my open IT tickets",
+             "metadata": {
+               "mimeType": "application/json",
+               "schema": {
+                 "type": "array",
+                 "items": {
+                   "type": "object",
+                   "properties": {
+                     "ticketNumber": { "type": "string" },
+                     "description": { "type": "string" }
+                   }
+                 }
+               }
+             }
+           }
+         ],
+         "messageId": "85b26db5-ffbb-4278-a5da-a7b09dea1b47"
+       },
+       "metadata": {}
+     }
+   }
    ```
 
 2. **Server responds with structured JSON data:**
 
    ```json
-    {
-      "jsonrpc": "2.0",
-      "id": 9,
-      "result": {
-        "id": "d8c6243f-5f7a-4f6f-821d-957ce51e856c",
-        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-        "status": {
-          "state": "completed",
-          "timestamp": "2025-04-17T17:47:09.680794"
-        },
-        "artifacts": [
-          {
-            "artifactId":"c5e0382f-b57f-4da7-87d8-b85171fad17c",
-            "parts": [
-              {
-                "type": "text",
-                "text": "[{\"ticketNumber\":\"REQ12312\",\"description\":\"request for VPN access\"},{\"ticketNumber\":\"REQ23422\",\"description\":\"Add to DL - team-gcp-onboarding\"}]"
-              }
-            ],
-          }
-        ],
-        "kind": "task"
-      }
-    }
+   {
+     "jsonrpc": "2.0",
+     "id": 9,
+     "result": {
+       "id": "d8c6243f-5f7a-4f6f-821d-957ce51e856c",
+       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+       "status": {
+         "state": "completed",
+         "timestamp": "2025-04-17T17:47:09.680794"
+       },
+       "artifacts": [
+         {
+           "artifactId": "c5e0382f-b57f-4da7-87d8-b85171fad17c",
+           "parts": [
+             {
+               "type": "text",
+               "text": "[{\"ticketNumber\":\"REQ12312\",\"description\":\"request for VPN access\"},{\"ticketNumber\":\"REQ23422\",\"description\":\"Add to DL - team-gcp-onboarding\"}]"
+             }
+           ]
+         }
+       ],
+       "kind": "task"
+     }
+   }
    ```
 
 These examples illustrate the flexibility of A2A in handling various interaction patterns and data types. Implementers should refer to the detailed object definitions for all fields and constraints.
