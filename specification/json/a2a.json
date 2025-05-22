@@ -143,6 +143,13 @@
                     "description": "A URL to documentation for the agent.",
                     "type": "string"
                 },
+                "extensions": {
+                    "description": "A2A API extensions available for this agent.",
+                    "items": {
+                        "$ref": "#/definitions/AgentExtension"
+                    },
+                    "type": "array"
+                },
                 "name": {
                     "description": "Human readable name of the agent.",
                     "type": "string"
@@ -200,6 +207,46 @@
                 "skills",
                 "url",
                 "version"
+            ],
+            "type": "object"
+        },
+        "AgentExtension": {
+            "description": "Describes an API extension that an agent enpoint supports.",
+            "properties": {
+                "description": {
+                    "description": "Description of the API extension.",
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Unique identifier of the API extension.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "description": "Metadata can be used to supply API-extension-specific docs, request-response schemas, and other\nrelevant information.",
+                    "type": "object"
+                },
+                "methods": {
+                    "description": "The list of method names (without prefix) provided by the API extension.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "description": "Human-readable name of the API extension.",
+                    "type": "string"
+                },
+                "prefix": {
+                    "description": "Prefix added in front of the extension's JSON-RPC methods. For example, with\n`prefix=extensions/taskHistory/`, a method `clearRecent` describes an RPC method registered at\n`extensions/taskHistory/clearRecent` on the A2A server. This allows supplying multiple versions\nof a method to A2A clients.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "methods",
+                "name",
+                "prefix"
             ],
             "type": "object"
         },

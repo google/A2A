@@ -25,6 +25,34 @@ export interface AgentCapabilities {
 }
 
 /**
+ * Describes an API extension that an agent enpoint supports.
+ */
+export interface AgentExtension {
+  /** Unique identifier of the API extension. */
+  id: string;
+  /** Human-readable name of the API extension. */
+  name: string;
+  /** Description of the API extension. */
+  description?: string;
+  /**
+   * Prefix added in front of the extension's JSON-RPC methods. For example, with
+   * `prefix=extensions/taskHistory/`, a method `clearRecent` describes an RPC method registered at
+   * `extensions/taskHistory/clearRecent` on the A2A server. This allows supplying multiple versions
+   * of a method to A2A clients.
+   */
+  prefix: string;
+  /** The list of method names (without prefix) provided by the API extension. */
+  methods: string[];
+  /**
+   * Metadata can be used to supply API-extension-specific docs, request-response schemas, and other
+   * relevant information.
+   */
+  metadata?: {
+    [key: string]: any;
+  };
+}
+
+/**
  * Represents a unit of capability that an agent can perform.
  */
 export interface AgentSkill {
@@ -103,6 +131,8 @@ export interface AgentCard {
   defaultOutputModes: string[];
   /** Skills are a unit of capability that an agent can perform. */
   skills: AgentSkill[];
+  /** A2A API extensions available for this agent. */
+  extensions?: AgentExtension[];
   /**
    * true if the agent supports providing an extended agent card when the user is authenticated.
    * Defaults to false if not specified.
