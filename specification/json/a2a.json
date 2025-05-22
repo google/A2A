@@ -1038,8 +1038,8 @@
             ],
             "description": "Represents a JSON-RPC 2.0 Response object."
         },
-        "JSONRPCResult": {
-            "description": "Represents a JSON-RPC 2.0 Result object.",
+        "JSONRPCSuccessResponse": {
+            "description": "Represents a JSON-RPC 2.0 Success Response object.",
             "properties": {
                 "id": {
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",

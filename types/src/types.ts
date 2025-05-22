@@ -556,9 +556,9 @@ export interface JSONRPCError {
 }
 
 /**
- * Represents a JSON-RPC 2.0 Result object.
+ * Represents a JSON-RPC 2.0 Success Response object.
  */
-interface JSONRPCResult extends JSONRPCMessage {
+interface JSONRPCSuccessResponse extends JSONRPCMessage {
   id: number | string;
   /**
    * The result object on success
@@ -572,7 +572,7 @@ interface JSONRPCResult extends JSONRPCMessage {
  * Represents a JSON-RPC 2.0 Error Response object.
  */
 export interface JSONRPCErrorResponse extends JSONRPCMessage {
-  id: number | string;
+  id: number | string | null;
   result?: never; // Optional 'never' helps enforce exclusivity
   error: JSONRPCError | A2AError;
 }
@@ -600,7 +600,7 @@ export interface SendMessageRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response model for the 'message/send' method.
  */
-export interface SendMessageSuccessResponse extends JSONRPCResult {
+export interface SendMessageSuccessResponse extends JSONRPCSuccessResponse {
   result: Message | Task;
 }
 
@@ -623,7 +623,7 @@ export interface SendStreamingMessageRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response model for the 'message/stream' method.
  */
-export interface SendStreamingMessageSuccessResponse extends JSONRPCResult {
+export interface SendStreamingMessageSuccessResponse extends JSONRPCSuccessResponse {
   result: Message | Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent;
 }
 
@@ -648,7 +648,7 @@ export interface GetTaskRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response for the 'tasks/get' method.
  */
-export interface GetTaskSuccessResponse extends JSONRPCResult {
+export interface GetTaskSuccessResponse extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: Task;
 }
@@ -672,7 +672,7 @@ export interface CancelTaskRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response model for the 'tasks/cancel' method.
  */
-export interface CancelTaskSuccessResponse extends JSONRPCResult {
+export interface CancelTaskSuccessResponse extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: Task;
 }
@@ -699,7 +699,7 @@ export interface SetTaskPushNotificationConfigRequest extends JSONRPCRequest {
  * JSON-RPC success response model for the 'tasks/pushNotificationConfig/set' method.
  */
 export interface SetTaskPushNotificationConfigSuccessResponse
-  extends JSONRPCResult {
+  extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: TaskPushNotificationConfig;
 }
@@ -726,7 +726,7 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
  * JSON-RPC success response model for the 'tasks/pushNotificationConfig/get' method.
  */
 export interface GetTaskPushNotificationConfigSuccessResponse
-  extends JSONRPCResult {
+  extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: TaskPushNotificationConfig;
 }
