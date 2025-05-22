@@ -43,7 +43,7 @@ A2A revolves around several key concepts. For detailed explanations, please refe
 
 - **A2A Client:** An application or agent that initiates requests to an A2A Server on behalf of a user or another system.
 - **A2A Server (Remote Agent):** An agent or agentic system that exposes an A2A-compliant HTTP endpoint, processing tasks and providing responses.
-- **Agent Card:** A JSON metadata document published by an A2A Server, describing its identity, capabilities, skills, service endpoint, and authentication requirements.
+- **Agent Card:** A JSON metadata document published by an A2A Server, describing its identity, capabilities, skills, service endpoint, and authentication requirements. If the A2A server implements custom API extensions, they can be listed in the Agent Card as well.
 - **Message:** A communication turn between a client and a remote agent, having a `role` ("user" or "agent") and containing one or more `Parts`.
 - **Task:** The fundamental unit of work managed by A2A, identified by a unique ID. Tasks are stateful and progress through a defined lifecycle.
 - **Part:** The smallest unit of content within a Message or Artifact (e.g., `TextPart`, `FilePart`, `DataPart`).
@@ -192,6 +192,8 @@ interface AgentCard {
   // An array of specific skills or capabilities the agent offers.
   // Must contain at least one skill if the agent is expected to perform actions beyond simple presence.
   skills: AgentSkill[];
+  /** A2A API extensions available for this agent. */
+  extensions?: AgentExtension[];
 }
 ```
 
@@ -209,6 +211,7 @@ interface AgentCard {
 | `defaultInputModes`  | `string[]`                                                         | Yes       | Input MIME types accepted by the agent.
 | `defaultOutputModes` | `string[]`                                                         | Yes       | Output MIME types produced by the agent.                                  |
 | `skills`             | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                            |
+| `extensions`         | [`AgentExtension[]`](#555-agentextension-object)                   | No       | Array of API extensions available for this agent.                                                                 |
 
 #### 5.5.1. `AgentProvider` Object
 
@@ -307,6 +310,52 @@ interface AgentSkill {
 | `examples`    | `string[]`           | No       | Example prompts or use cases demonstrating skill usage.                        |
 | `inputModes`  | `string[]`           | No       | Overrides `defaultInputModes` for this specific skill. Accepted MIME types.    |
 | `outputModes` | `string[]`           | No       | Overrides `defaultOutputModes` for this specific skill. Produced MIME types.   |
+
+#### 5.5.5. `AgentExtension` Object
+
+Describes an API extension that provides additional methods on top of the core functionality of the A2A protocol.
+
+Note that, unlike agent ["skills"](#554-agentskill-object) and ["capabilities"](#552-agentcapabilities-object), **individual extensions are not part of the A2A specification**. Therefore, when adding extensions to their A2A servers, developers carefully consider potential security, performance, and other implications.
+
+```typescript
+export interface AgentExtension {
+  /** Unique identifier of the API extension. */
+  id: string;
+  /** Human-readable name of the API extension. */
+  name: string;
+  /** Description of the API extension. */
+  description?: string;
+  /**
+   * Prefix added in front of the extension's JSON-RPC methods. `prefix` SHOULD NOT start with
+   * "message" or "tasks". It is recommended to put all extensions under a common prefix, for
+   * example `extensions/first/`, `extensions/second/`.
+   *
+   * Examples:
+   * With `prefix=extensions/taskHistory/`, an API extension method listed as `clearRecent` would
+   * match an RPC method registered at `extensions/taskHistory/clearRecent` on the A2A server. This
+   * allows supplying multiple versions of an extension.
+   */
+  prefix: string;
+  /** The list of method names (without prefix) provided by the API extension. */
+  methods: string[];
+  /**
+   * Metadata can be used to supply API-extension-specific docs, request-response schemas, and
+   * other relevant information.
+   */
+  metadata?: {
+    [key: string]: any;
+  };
+}
+```
+
+| Field Name    | Type                 | Required | Description                                                                    |
+| :------------ | :------------------- | :------- | :----------------------------------------------------------------------------- |
+| `id`          | `string`             | Yes      | Unique identifier of the API extension.                                        |
+| `name`        | `string`             | Yes      | Human-readable name of the API extension.                                      |
+| `description` | `string`             | No       | Description of the API extension.                                              |
+| `prefix`      | `string`             | Yes      | Prefix added in front of the extension's JSON-RPC methods. `prefix` SHOULD NOT start with "message" or "tasks". It is recommended to put all extensions under a common prefix, for example `extensions/first/`, `extensions/second/`. |
+| `methods`     | `string[]`           | Yes      | The list of method names (without prefix) provided by the API extension.       |
+| `metadata`    | `Record<string, any>`| No       | Metadata can be used to supply API-extension-specific docs, request-response schemas, and other relevant information. |
 
 ### 5.6. Sample Agent Card
 
