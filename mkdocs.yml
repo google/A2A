@@ -148,3 +148,5 @@ plugins:
             show_object_full_path: false
             show_value: true
             show_if_no_docstring: true
+            filters: ["!^_"]
+            show_qualifiers: false
