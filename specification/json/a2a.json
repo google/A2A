@@ -274,7 +274,7 @@
             "type": "object"
         },
         "Artifact": {
-            "description": "Represents an artifact generated for a task task.",
+            "description": "Represents an artifact generated for a task.",
             "properties": {
                 "artifactId": {
                     "description": "Unique identifier for the artifact.",
@@ -1665,7 +1665,7 @@
             "type": "object"
         },
         "TaskArtifactUpdateEvent": {
-            "description": "sent by server during sendStream or subscribe requests",
+            "description": "Sent by server during sendStream or subscribe requests",
             "properties": {
                 "append": {
                     "description": "Indicates if this artifact appends to a previous one",
@@ -1876,7 +1876,7 @@
             "type": "object"
         },
         "TaskStatusUpdateEvent": {
-            "description": "sent by server during sendStream or subscribe requests",
+            "description": "Sent by server during sendStream or subscribe requests",
             "properties": {
                 "contextId": {
                     "description": "The context the task is associated with",
