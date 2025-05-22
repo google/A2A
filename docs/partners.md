@@ -63,7 +63,7 @@ collaborate effectively with each other and with users.
 - [Elastic](https://www.elastic.co)
 - [Ema.co](https://ema.co)
 - [EPAM](https://www.epam.com)
-- [Eviden  (Atos Group)](https://atos.net/)
+- [Eviden (Atos Group)](https://atos.net/)
 - [fractal.ai](https://fractal.ai/new)
 - [GenAI Nebula9.ai Solutions Pvt Ltd](http://nebula9.ai)
 - [Glean](https://www.glean.com)
