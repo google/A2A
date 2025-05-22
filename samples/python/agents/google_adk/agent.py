@@ -11,14 +11,14 @@ from google.adk.models.lite_llm import LiteLlm
 from google.adk.tools.tool_context import ToolContext
 from task_manager import AgentWithTaskManager
 
-
 # Local cache of created request_ids for demo purposes.
 request_ids = set()
 
+
 def create_request_form(
-    date: Optional[str] = None,
-    amount: Optional[str] = None,
-    purpose: Optional[str] = None,
+        date: Optional[str] = None,
+        amount: Optional[str] = None,
+        purpose: Optional[str] = None,
 ) -> dict[str, Any]:
     """
     Create a request form for the employee to fill out.
@@ -42,10 +42,11 @@ def create_request_form(
         else purpose,
     }
 
+
 def return_form(
-    form_request: dict[str, Any],
-    tool_context: ToolContext,
-    instructions: Optional[str] = None,
+        form_request: dict[str, Any],
+        tool_context: ToolContext,
+        instructions: Optional[str] = None,
 ) -> dict[str, Any]:
     """
     Returns a structured json object indicating a form to complete.
@@ -128,39 +129,39 @@ class ReimbursementAgent(AgentWithTaskManager):
     def get_processing_message(self) -> str:
         return 'Processing the reimbursement request...'
 
-  def _build_agent(self) -> LlmAgent:
-    """Builds the LLM agent for the reimbursement agent."""
-    return LlmAgent(
-        model=LiteLlm(
-          model="github/gpt-4.1",
-      ),
-        name="reimbursement_agent",
-        description=(
-            "This agent handles the reimbursement process for the employees"
-            " given the amount and purpose of the reimbursement."
-        ),
-        instruction="""
-    You are an agent who handles the reimbursement process for employees.
+    def _build_agent(self) -> LlmAgent:
+        """Builds the LLM agent for the reimbursement agent."""
+        return LlmAgent(
+            model=LiteLlm(
+                model="github/gpt-4.1",
+            ),
+            name="reimbursement_agent",
+            description=(
+                "This agent handles the reimbursement process for the employees"
+                " given the amount and purpose of the reimbursement."
+            ),
+            instruction="""
+        You are an agent who handles the reimbursement process for employees.
 
-    When you receive a reimbursement request, you should first create a new request form using create_request_form(). Only provide default values if they are provided by the user, otherwise use an empty string as the default value.
-      1. 'Date': the date of the transaction.
-      2. 'Amount': the dollar amount of the transaction.
-      3. 'Business Justification/Purpose': the reason for the reimbursement.
+        When you receive a reimbursement request, you should first create a new request form using create_request_form(). Only provide default values if they are provided by the user, otherwise use an empty string as the default value.
+        1. 'Date': the date of the transaction.
+        2. 'Amount': the dollar amount of the transaction.
+        3. 'Business Justification/Purpose': the reason for the reimbursement.
 
-    Once you created the form, you should return the result of calling return_form with the form data from the create_request_form call.
+        Once you created the form, you should return the result of calling return_form with the form data from the create_request_form call.
 
-    Once you received the filled-out form back from the user, you should then check the form contains all required information:
-      1. 'Date': the date of the transaction.
-      2. 'Amount': the value of the amount of the reimbursement being requested.
-      3. 'Business Justification/Purpose': the item/object/artifact of the reimbursement.
+        Once you received the filled-out form back from the user, you should then check the form contains all required information:
+        1. 'Date': the date of the transaction.
+        2. 'Amount': the value of the amount of the reimbursement being requested.
+        3. 'Business Justification/Purpose': the item/object/artifact of the reimbursement.
 
-    If you don't have all of the information, you should reject the request directly by calling the request_form method, providing the missing fields.
+        If you don't have all of the information, you should reject the request directly by calling the request_form method, providing the missing fields.
 
 
-    For valid reimbursement requests, you can then use reimburse() to reimburse the employee.
-      * In your response, you should include the request_id and the status of the reimbursement request.
+        For valid reimbursement requests, you can then use reimburse() to reimburse the employee.
+        * In your response, you should include the request_id and the status of the reimbursement request.
 
-    """,
+        """,
             tools=[
                 create_request_form,
                 reimburse,

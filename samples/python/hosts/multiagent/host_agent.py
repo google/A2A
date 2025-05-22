@@ -7,7 +7,7 @@ from typing import List
 import httpx
 
 from a2a.client import A2ACardResolver
-from a2a.types import (
+# from a2a.types import (
 from google.adk import Agent
 from google.adk.agents import LlmAgent
 from google.adk.models.lite_llm import LiteLlm
@@ -48,10 +48,10 @@ class HostAgent:
     """
 
     def __init__(
-        self,
-        remote_agent_addresses: list[str],
-        http_client: httpx.AsyncClient,
-        task_callback: TaskUpdateCallback | None = None,
+            self,
+            remote_agent_addresses: list[str],
+            http_client: httpx.AsyncClient,
+            task_callback: TaskUpdateCallback | None = None,
     ):
         self.task_callback = task_callback
         self.httpx_client = http_client
@@ -77,23 +77,23 @@ class HostAgent:
             agent_info.append(json.dumps(ra))
         self.agents = '\n'.join(agent_info)
 
-  def create_agent(self) -> Agent:
-    return Agent(
-        model=LiteLlm(
-          model="github/gpt-4.1",
-      ),
-        name="host_agent",
-        instruction=self.root_instruction,
-        before_model_callback=self.before_model_callback,
-        description=(
-            "This agent orchestrates the decomposition of the user request into"
-            " tasks that can be performed by the child agents."
-        ),
-        tools=[
-            self.list_remote_agents,
-            self.send_task,
-        ],
-    )
+    def create_agent(self) -> Agent:
+        return Agent(
+            model=LiteLlm(
+                model="github/gpt-4.1",
+            ),
+            name="host_agent",
+            instruction=self.root_instruction,
+            before_model_callback=self.before_model_callback,
+            description=(
+                "This agent orchestrates the decomposition of the user request into"
+                " tasks that can be performed by the child agents."
+            ),
+            tools=[
+                self.list_remote_agents,
+                self.send_task,
+            ],
+        )
 
     def root_instruction(self, context: ReadonlyContext) -> str:
         current_agent = self.check_state(context)
@@ -121,16 +121,16 @@ Current agent: {current_agent['active_agent']}
     def check_state(self, context: ReadonlyContext):
         state = context.state
         if (
-            'context_id' in state
-            and 'session_active' in state
-            and state['session_active']
-            and 'agent' in state
+                'context_id' in state
+                and 'session_active' in state
+                and state['session_active']
+                and 'agent' in state
         ):
             return {'active_agent': f'{state["agent"]}'}
         return {'active_agent': 'None'}
 
     def before_model_callback(
-        self, callback_context: CallbackContext, llm_request
+            self, callback_context: CallbackContext, llm_request
     ):
         state = callback_context.state
         if 'session_active' not in state or not state['session_active']:
@@ -149,7 +149,7 @@ Current agent: {current_agent['active_agent']}
         return remote_agent_info
 
     async def send_message(
-        self, agent_name: str, message: str, tool_context: ToolContext
+            self, agent_name: str, message: str, tool_context: ToolContext
     ):
         """Sends a task either streaming (if supported) or non-streaming.
 
