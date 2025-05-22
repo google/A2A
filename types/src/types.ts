@@ -522,7 +522,6 @@ export interface JSONRPCMessage {
  * Represents a JSON-RPC 2.0 Request object.
  */
 export interface JSONRPCRequest extends JSONRPCMessage {
-  id: number | string;
   /**
    * A String containing the name of the method to be invoked.
    */
@@ -593,6 +592,7 @@ export type JSONRPCResponse =
  * JSON-RPC request model for the 'message/send' method.
  */
 export interface SendMessageRequest extends JSONRPCRequest {
+  id: number | string;
   method: "message/send";
   params: MessageSendParams;
 }
@@ -615,6 +615,7 @@ export type SendMessageResponse =
  * JSON-RPC request model for the 'message/stream' method.
  */
 export interface SendStreamingMessageRequest extends JSONRPCRequest {
+  id: number | string;
   method: "message/stream";
   params: MessageSendParams;
 }
@@ -637,6 +638,7 @@ export type SendStreamingMessageResponse =
  * JSON-RPC request model for the 'tasks/get' method.
  */
 export interface GetTaskRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/get";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -660,6 +662,7 @@ export type GetTaskResponse = GetTaskSuccessResponse | JSONRPCErrorResponse;
  * JSON-RPC request model for the 'tasks/cancel' method.
  */
 export interface CancelTaskRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/cancel";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -685,6 +688,7 @@ export type CancelTaskResponse =
  * JSON-RPC request model for the 'tasks/pushNotificationConfig/set' method.
  */
 export interface SetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/set";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -711,6 +715,7 @@ export type SetTaskPushNotificationConfigResponse =
  * JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.
  */
 export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/get";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -737,6 +742,7 @@ export type GetTaskPushNotificationConfigResponse =
  * JSON-RPC request model for the 'tasks/resubscribe' method.
  */
 export interface TaskResubscriptionRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/resubscribe";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
