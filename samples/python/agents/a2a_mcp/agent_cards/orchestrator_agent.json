@@ -1,0 +1,42 @@
+{
+    "name": "Orchestrator Agent",
+    "description": "Orchestrates the task generation and execution",
+    "url": "http://localhost:10101/",
+    "provider": null,
+    "version": "1.0.0",
+    "documentationUrl": null,
+    "capabilities": {
+        "streaming": "True",
+        "pushNotifications": "True",
+        "stateTransitionHistory": "False"
+    },
+    "authentication": {
+        "credentials": null,
+        "schemes": [
+            "public"
+        ]
+    },
+    "defaultInputModes": [
+        "text",
+        "text/plain"
+    ],
+    "defaultOutputModes": [
+        "text",
+        "text/plain"
+    ],
+    "skills": [
+        {
+            "id": "executor",
+            "name": "Task Executor",
+            "description": "Orchestrates the task generation and execution, takes help from the planner to generate tasks",
+            "tags": [
+                "execute plan"
+            ],
+            "examples": [
+                "Plan my trip to London, submit an expense report"
+            ],
+            "inputModes": null,
+            "outputModes": null
+        }
+    ]
+}
