@@ -1,3 +1,11 @@
+from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_google_vertexai import ChatVertexAI
+from langchain_community.chat_models import ChatTongyi
+#from langchain_deepseek import ChatDeepSeek
+from langchain_core.tools import tool
+from langgraph.prebuilt import create_react_agent
+from langgraph.checkpoint.memory import MemorySaver
+from langchain_core.messages import AIMessage, ToolMessage
 from collections.abc import AsyncIterable
 from typing import Any, Literal, Dict
 
@@ -7,13 +15,15 @@ from langchain_core.messages import AIMessage, ToolMessage
 from langchain_core.tools import tool
 from langchain_google_genai import ChatGoogleGenerativeAI
 from pydantic import BaseModel
+import json
+from langchain_openai import ChatOpenAI
+import os
 
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.prebuilt import create_react_agent
 
 
 memory = MemorySaver()
-
 
 @tool
 def get_exchange_rate(
@@ -68,7 +78,14 @@ class CurrencyAgent:
     )
 
     def __init__(self):
-        self.model = ChatGoogleGenerativeAI(model='gemini-2.0-flash')
+        token = os.getenv("GITHUB_API_KEY")
+        endpoint = "https://models.github.ai/inference"
+        model_name = "openai/gpt-4.1"
+        self.model = ChatOpenAI(
+            model=model_name,
+            base_url=endpoint,
+            api_key=token,
+        )
         self.tools = [get_exchange_rate]
 
         self.graph = create_react_agent(
@@ -110,8 +127,11 @@ class CurrencyAgent:
         yield self.get_agent_response(config)
 
     def get_agent_response(self, config):
+        print(config)
         current_state = self.graph.get_state(config)
+        print(current_state)
         structured_response = current_state.values.get('structured_response')
+        print(structured_response)
         if structured_response and isinstance(
             structured_response, ResponseFormat
         ):

@@ -1,4 +1,16 @@
 # Agent2Agent (A2A) Protocol
+### 国内环境可运行的demo
+因为谷歌提供的demo依赖自家gemini服务，但是gemini在中国用不了，所以要想跑这个demo只能使用国内可用的模型服务替代。
+
+这个项目的变动如下：
+- 使用github提供的openai 4.1替换gemini模型服务。
+
+前置要求:
+- 为了使用github的模型服务，需要先申请访问token
+- 将申请到的token配置到环境变量。例如、GITHUB_API_KEY=github_pat_xxxxxxxx
+
+[A2A入门介绍](https://zhuanlan.zhihu.com/p/1896607306839475402)
+![image info](images/A2A_banner.png)
 
 ![PyPI - Version](https://img.shields.io/pypi/v/a2a-sdk)
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
