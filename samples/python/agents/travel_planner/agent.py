@@ -1,6 +1,6 @@
+import os, json, asyncio, sys
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage
-import json
 from collections.abc import AsyncGenerator
 
 class TravelPlannerAgent:
@@ -11,10 +11,15 @@ class TravelPlannerAgent:
         try:
             with open("config.json") as f:
                 config = json.load(f)
+            if not os.getenv(config["api_key"]):
+                print(f'{config["api_key"]} environment variable not set.')
+                sys.exit(1)
+            api_key = os.getenv(config["api_key"])
+
             self.model = ChatOpenAI(
                 model=config["model_name"],
                 base_url=config["base_url"],
-                api_key=config["api_key"],
+                api_key=api_key,
                 temperature=0.7  # Control the generation randomness (0-2, higher values indicate greater randomness)
             )
         except FileNotFoundError:
@@ -63,8 +68,8 @@ class TravelPlannerAgent:
             for chunk in self.model.stream(messages):
                 # Return the text content block.
                 if hasattr(chunk, 'content') and chunk.content:
-                    yield  {'content': chunk.content, 'done': False}
-            yield {'content': '\n', 'done': True}
+                    yield {'content': chunk.content, 'done': False}
+            yield {'content': '', 'done': True}
 
         except Exception as e:
             print(f"error：{str(e)}")

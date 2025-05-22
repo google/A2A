@@ -31,3 +31,6 @@ Sample agent which can answer questions from any database, datawarehouse, app. -
 
 * [**Semantic Kernel Agent**](/samples/python/agents/semantickernel/README.md)  
 Demonstrates how to implement a travel agent built on [Semantic Kernel](https://github.com/microsoft/semantic-kernel/) and exposed through the A2A protocol.
+
+* [**travel planner Agent**](/samples/python/agents/travel_planner/README.md)  
+ A travel assistant demo implemented based on Google's official [a2a-python](https://github.com/google/a2a-python) SDK, And Implemented through the A2A protocol.

@@ -1,0 +1,5 @@
+{
+  "model_name":"qwen3-32b",
+  "api_key": "API_KEY",
+  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1"
+}

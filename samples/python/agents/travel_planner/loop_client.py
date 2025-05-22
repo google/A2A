@@ -3,6 +3,10 @@ from typing import Any
 import httpx
 from uuid import uuid4
 import asyncio
+from a2a.types import (
+    MessageSendParams,
+    SendStreamingMessageRequest,
+)
 
 def print_welcome_message() -> None:
     print("Welcome to the generic A2A client!")
@@ -29,25 +33,26 @@ async def interact_with_server(client: A2AClient) -> None:
         }
 
         try:
-            stream_response = client.send_message_streaming(
-                payload=send_message_payload
+            streaming_request = SendStreamingMessageRequest(
+                params=MessageSendParams(**send_message_payload)
             )
-            # print as steam type
+            stream_response = client.send_message_streaming(streaming_request)
             async for chunk in stream_response:
-                data = chunk.model_dump(mode='json', exclude_none=True)
-                for part in data.get('result', {}).get('parts', []):
-                    if part.get('type') == 'text':
-                        print(part.get('text'), end='',flush=True)
-                        await asyncio.sleep(0.05)
+                print(get_response_text(chunk),  end='', flush=True)
+                await asyncio.sleep(0.1)
         except Exception as e:
             print(f"An error occurred: {e}")
+
+def get_response_text(chunk):
+    data = chunk.model_dump(mode='json', exclude_none=True)
+    return data['result']['artifact']['parts'][0]['text']
 
 
 async def main() -> None:
     print_welcome_message()
     async with httpx.AsyncClient() as httpx_client:
         client = await A2AClient.get_client_from_agent_card_url(
-            httpx_client, 'http://localhost:9999'
+            httpx_client, 'http://localhost:10001'
         )
         await interact_with_server(client)
 
