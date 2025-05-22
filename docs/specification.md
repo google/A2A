@@ -1042,6 +1042,7 @@ The successful response body is a JSON object conforming to the `AgentCard` inte
 // The response body for a successful GET request to /agent/authenticatedExtendedCard
 // is a complete AgentCard object.
 type AuthenticatedExtendedCardResponse = AgentCard;
+```
 
 ## 8. Error Handling
 
