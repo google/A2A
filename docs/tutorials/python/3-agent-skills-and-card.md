@@ -43,7 +43,6 @@ Key attributes of an `AgentCard` (defined in `a2a.types`):
 - `name`, `description`, `version`: Basic identity information.
 - `url`: The endpoint where the A2A service can be reached.
 - `capabilities`: Specifies supported A2A features like `streaming` or `pushNotifications`.
-- `authentication`: Details on how clients should authenticate.
 - `defaultInputModes` / `defaultOutputModes`: Default MIME types for the agent.
 - `skills`: A list of `AgentSkill` objects that the agent offers.
 
@@ -59,9 +58,8 @@ The `helloworld` example defines its Agent Card like this:
         version='1.0.0',
         defaultInputModes=['text'],
         defaultOutputModes=['text'],
-        capabilities=AgentCapabilities(), # Basic capabilities
+        capabilities=AgentCapabilities(streaming=True), # Basic capabilities
         skills=[skill], # Includes the skill defined above
-        authentication=AgentAuthentication(schemes=['public']), # No auth needed
     )
 # ...
 ```

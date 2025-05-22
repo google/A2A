@@ -18,6 +18,8 @@ nav:
   - Specification: specification.md
   - Community: community.md
   - Partners: partners.md
+  - SDK Reference:
+    - Python: sdk/python/index.md
   - Tutorial (Python):
     - Introduction: tutorials/python/1-introduction.md
     - Setup: tutorials/python/2-setup.md
@@ -138,3 +140,9 @@ plugins:
         "tutorials/python/8-agent-capabilities.md": "tutorials/python/7-streaming-and-multiturn.md"
         "tutorials/python/9-ollama-agent.md": "tutorials/python/7-streaming-and-multiturn.md"
         "tutorials/python/10-next-steps.md": "tutorials/python/8-next-steps.md"
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: false
+            show_object_full_path: false
