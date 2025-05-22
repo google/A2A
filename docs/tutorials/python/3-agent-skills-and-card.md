@@ -2,7 +2,7 @@
 
 Before an A2A agent can do anything, it needs to define what it _can_ do (its skills) and how other agents or clients can find out about these capabilities (its Agent Card).
 
-We'll use the `helloworld` example located in `a2a-python-sdk/examples/helloworld/`.
+We'll use the `helloworld` example located in `a2a-python/examples/helloworld/`.
 
 ## Agent Skills
 
@@ -43,7 +43,6 @@ Key attributes of an `AgentCard` (defined in `a2a.types`):
 - `name`, `description`, `version`: Basic identity information.
 - `url`: The endpoint where the A2A service can be reached.
 - `capabilities`: Specifies supported A2A features like `streaming` or `pushNotifications`.
-- `authentication`: Details on how clients should authenticate.
 - `defaultInputModes` / `defaultOutputModes`: Default MIME types for the agent.
 - `skills`: A list of `AgentSkill` objects that the agent offers.
 
@@ -59,9 +58,8 @@ The `helloworld` example defines its Agent Card like this:
         version='1.0.0',
         defaultInputModes=['text'],
         defaultOutputModes=['text'],
-        capabilities=AgentCapabilities(), # Basic capabilities
+        capabilities=AgentCapabilities(streaming=True), # Basic capabilities
         skills=[skill], # Includes the skill defined above
-        authentication=AgentAuthentication(schemes=['public']), # No auth needed
     )
 # ...
 ```
