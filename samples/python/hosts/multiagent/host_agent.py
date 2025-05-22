@@ -19,8 +19,8 @@ from .remote_agent_connection import (
     RemoteAgentConnections,
     TaskUpdateCallback
 )
-from common.client import A2ACardResolver
-from common.types import (
+from a2a.client import A2ACardResolver
+from a2a.types import (
     AgentCard,
     DataPart,
     Message,
@@ -91,7 +91,7 @@ class HostAgent:
             ),
             tools=[
                 self.list_remote_agents,
-                self.send_task,
+                self.send_message,
             ],
         )
 
