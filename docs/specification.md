@@ -315,7 +315,7 @@ interface AgentSkill {
 
 Describes an API extension that provides additional methods on top of the core functionality of the A2A protocol.
 
-Note that, unlike agent ["skills"](#554-agentskill-object) and ["capabilities"](#552-agentcapabilities-object), **individual extensions are not part of the A2A specification**. Therefore, when adding extensions to their A2A servers, developers carefully consider potential security, performance, and other implications.
+Note that, unlike agent ["skills"](#554-agentskill-object) and ["capabilities"](#552-agentcapabilities-object), **individual extensions are not part of the A2A specification**. Therefore, when adding extensions to their A2A servers, developers should carefully consider potential security, performance, and other implications.
 
 ```typescript
 export interface AgentExtension {
