@@ -1,0 +1,25 @@
+[project]
+name = "travel_planner"
+version = "0.1.0"
+description = "travel planner agent example that only returns Messages"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "a2a-sdk>=0.2.0",
+    "click>=8.1.8",
+    "dotenv>=0.9.9",
+    "httpx>=0.28.1",
+    "pydantic>=2.11.4",
+    "python-dotenv>=1.1.0",
+    "langchain-core>=0.2.31",
+    "langchain-openai>=0.1.26",
+    "langchain>=0.1.22",
+    "uvicorn>=0.34.2"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
