@@ -88,3 +88,4 @@
 \.gitignore\E$
 \.vscode/
 ^\Qdocs/partners.md\E$
+^\Qspecification/json/a2a.json\E$

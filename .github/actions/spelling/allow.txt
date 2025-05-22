@@ -86,11 +86,17 @@ codegen
 crewai
 datamodel
 datapart
+dbc
 dcda
+dcfa
+dde
 direnv
+efaab
 efbd
 evt
 excinfo
+fafd
+ffbb
 firewalls
 flightbook
 fsv

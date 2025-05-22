@@ -122,7 +122,7 @@
                     "description": "Optional capabilities supported by the agent."
                 },
                 "defaultInputModes": {
-                    "description": "The set of interaction modes that the agent\nsupports across all skills. This can be overridden per-skill.\nSupported mime types for input.",
+                    "description": "The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.\nSupported mime types for input.",
                     "items": {
                         "type": "string"
                     },
@@ -178,6 +178,10 @@
                     },
                     "type": "array"
                 },
+                "supportsAuthenticatedExtendedCard": {
+                    "description": "true if the agent supports providing an extended agent card when the user is authenticated.\nDefaults to false if not specified.",
+                    "type": "boolean"
+                },
                 "url": {
                     "description": "A URL to the address the agent is hosted at.",
                     "type": "string"
@@ -225,7 +229,7 @@
                     "type": "string"
                 },
                 "examples": {
-                    "description": "The set of example scenarios that the skill can perform.\nWill be used by the client as a hint to understand how the skill can be\nused.",
+                    "description": "The set of example scenarios that the skill can perform.\nWill be used by the client as a hint to understand how the skill can be used.",
                     "items": {
                         "type": "string"
                     },
@@ -254,7 +258,7 @@
                     "type": "array"
                 },
                 "tags": {
-                    "description": "Set of tagwords describing classes of capabilities for this specific\nskill.",
+                    "description": "Set of tagwords describing classes of capabilities for this specific skill.",
                     "items": {
                         "type": "string"
                     },
@@ -337,7 +341,7 @@
             "description": "JSON-RPC request model for the 'tasks/cancel' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -380,7 +384,7 @@
             "description": "JSON-RPC success response model for the 'tasks/cancel' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -566,7 +570,7 @@
             "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -609,7 +613,7 @@
             "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -635,7 +639,7 @@
             "description": "JSON-RPC request model for the 'tasks/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -678,7 +682,7 @@
             "description": "JSON-RPC success response for the 'tasks/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -931,7 +935,7 @@
                     ]
                 },
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -953,7 +957,7 @@
             "description": "Base interface for any JSON-RPC 2.0 request or response.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -974,7 +978,7 @@
             "description": "Represents a JSON-RPC 2.0 Request object.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1031,7 +1035,7 @@
             "description": "Represents a JSON-RPC 2.0 Result object.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1081,7 +1085,7 @@
                     "type": "array"
                 },
                 "referenceTaskIds": {
-                    "description": "list of tasks referenced as context by this message.",
+                    "description": "List of tasks referenced as context by this message.",
                     "items": {
                         "type": "string"
                     },
@@ -1391,7 +1395,7 @@
             "description": "JSON-RPC request model for the 'message/send' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1434,7 +1438,7 @@
             "description": "JSON-RPC success response model for the 'message/send' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1467,7 +1471,7 @@
             "description": "JSON-RPC request model for the 'message/stream' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1510,7 +1514,7 @@
             "description": "JSON-RPC success response model for the 'message/stream' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1549,7 +1553,7 @@
             "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/set' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1592,7 +1596,7 @@
             "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/set' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1661,7 +1665,7 @@
             "type": "object"
         },
         "TaskArtifactUpdateEvent": {
-            "description": "sent by server during sendStream or subscribe requests",
+            "description": "Sent by server during sendStream or subscribe requests",
             "properties": {
                 "append": {
                     "description": "Indicates if this artifact appends to a previous one",
@@ -1808,7 +1812,7 @@
             "description": "JSON-RPC request model for the 'tasks/resubscribe' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number\nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1872,7 +1876,7 @@
             "type": "object"
         },
         "TaskStatusUpdateEvent": {
-            "description": "sent by server during sendStream or subscribe requests",
+            "description": "Sent by server during sendStream or subscribe requests",
             "properties": {
                 "contextId": {
                     "description": "The context the task is associated with",
