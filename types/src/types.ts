@@ -558,7 +558,7 @@ export interface JSONRPCError {
 /**
  * Represents a JSON-RPC 2.0 Success Response object.
  */
-interface JSONRPCSuccessResponse extends JSONRPCMessage {
+export interface JSONRPCSuccessResponse extends JSONRPCMessage {
   id: number | string;
   /**
    * The result object on success
