@@ -223,7 +223,7 @@
                 },
                 "metadata": {
                     "additionalProperties": {},
-                    "description": "Metadata can be used to supply API-extension-specific docs, request-response schemas, and other\nrelevant information.",
+                    "description": "Metadata can be used to supply API-extension-specific docs, request-response schemas, and\nother relevant information.",
                     "type": "object"
                 },
                 "methods": {
@@ -238,7 +238,7 @@
                     "type": "string"
                 },
                 "prefix": {
-                    "description": "Prefix added in front of the extension's JSON-RPC methods. For example, with\n`prefix=extensions/taskHistory/`, a method `clearRecent` describes an RPC method registered at\n`extensions/taskHistory/clearRecent` on the A2A server. This allows supplying multiple versions\nof a method to A2A clients.",
+                    "description": "Prefix added in front of the extension's JSON-RPC methods. `prefix` SHOULD NOT start with\n\"message\" or \"tasks\". It is recommended to put all extensions under a common prefix, for\nexample `extensions/first/`, `extensions/second/`.\n\nExamples:\nWith `prefix=extensions/taskHistory/`, an API extension method listed as `clearRecent` would\nmatch an RPC method registered at `extensions/taskHistory/clearRecent` on the A2A server. This\nallows supplying multiple versions of an extension.",
                     "type": "string"
                 }
             },
