@@ -230,7 +230,7 @@ export enum TaskState {
   Unknown = "unknown",
 }
 
-/** Represents an artifact generated for a task task. */
+/** Represents an artifact generated for a task. */
 export interface Artifact {
   /** Unique identifier for the artifact. */
   artifactId: string;
