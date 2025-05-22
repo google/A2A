@@ -2,10 +2,11 @@ import logging
 import os
 
 import click
+import httpx
 
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
-from a2a.server.tasks import InMemoryTaskStore
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier
 from a2a.types import (
     AgentCapabilities,
     AgentCard,
@@ -13,7 +14,6 @@ from a2a.types import (
 )
 from agent_executor import LlamaIndexAgentExecutor
 from agents.llama_index_file_chat.agent import ParseAndChat
-from common.utils.push_notification_auth import PushNotificationSenderAuth
 from dotenv import load_dotenv
 
 
@@ -65,14 +65,13 @@ def main(host, port):
             skills=[skill],
         )
 
-        notification_sender_auth = PushNotificationSenderAuth()
-        notification_sender_auth.generate_jwk()
+        httpx_client = httpx.AsyncClient()
         request_handler = DefaultRequestHandler(
             agent_executor=LlamaIndexAgentExecutor(
                 agent=ParseAndChat(),
-                notification_sender_auth=notification_sender_auth,
             ),
             task_store=InMemoryTaskStore(),
+            push_notifier=InMemoryPushNotifier(httpx_client),
         )
         server = A2AStarletteApplication(
             agent_card=agent_card, http_handler=request_handler

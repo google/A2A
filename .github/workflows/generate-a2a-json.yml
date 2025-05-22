@@ -1,0 +1,69 @@
+name: Auto-generate A2A JSON Schema
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "types/src/types.ts"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  generate_json:
+    name: Generate JSON Schema
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies and generate a2a.json
+        working-directory: types
+        run: |
+          npm install
+          npm run generate
+        id: generate_schema
+
+      - name: Configure Git for Bot
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git config user.name "a2a-bot"
+          git config user.email "a2a-bot@google.com"
+
+      - name: Check for Changes
+        id: git_status
+        run: |
+          git add specification/json/a2a.json
+          if ! git diff --cached --quiet --exit-code; then
+            echo "changes_detected=true" >> "$GITHUB_OUTPUT"
+            echo "a2a.json is not up-to-date with types.ts"
+          else
+            echo "a2a.json is up-to-date."
+          fi
+
+      - name: Commit and Push Changes (if on base repository)
+        if: steps.git_status.outputs.changes_detected == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git commit -m "chore: Auto-generate a2a.json from types.ts changes"
+          git push
+
+      - name: Fail on Fork PR if Changes Required
+        if: steps.git_status.outputs.changes_detected == 'true' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error::a2a.json is out of date."
+          echo "Please run 'npm install' then 'npm run generate' in the 'types' directory of your branch and commit the updated 'specification/json/a2a.json' file."
+          exit 1 # Exit with a non-zero code to fail the workflow

@@ -1,10 +1,11 @@
 import logging
 
 import click
+import httpx
 
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
-from a2a.server.tasks import InMemoryTaskStore
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier
 from a2a.types import AgentCapabilities, AgentCard, AgentSkill
 from agent_executor import SemanticKernelTravelAgentExecutor
 from common.types import AgentCapabilities, AgentCard, AgentSkill
@@ -22,9 +23,11 @@ load_dotenv()
 @click.option('--port', default=10020)
 def main(host, port):
     """Starts the Semantic Kernel Agent server using A2A."""
+    httpx_client = httpx.AsyncClient()
     request_handler = DefaultRequestHandler(
         agent_executor=SemanticKernelTravelAgentExecutor(),
         task_store=InMemoryTaskStore(),
+        push_notifier=InMemoryPushNotifier(httpx_client),
     )
 
     server = A2AStarletteApplication(
@@ -36,7 +39,7 @@ def main(host, port):
 
 
 def get_agent_card(host: str, port: int):
-    """Returns the Agent Card for the Sementic Kernel Travel Agent."""
+    """Returns the Agent Card for the Semantic Kernel Travel Agent."""
 
     # Build the agent card
     capabilities = AgentCapabilities(streaming=True)
