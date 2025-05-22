@@ -81,6 +81,33 @@ sequenceDiagram
 
    Or run the [demo app](/A2A/A2A/demo/README.md)
 
+## Build Container Image
+
+Agent can also be built using a container file.
+
+1. Navigate to the `samples/python` directory:
+
+   ```bash
+   cd samples/python
+   ```
+
+2. Build the container file
+
+    ```bash
+    podman build -f agents/crewai/Containerfile . -t crewai-a2a-server
+    ```
+
+3. Run you container
+
+    ```bash
+    podman run -p 10001:10001 -e GOOGLE_API_KEY=your_api_key_here crewai-a2a-server
+    ```
+
+4. Run A2A client (follow step 5 from the section above)
+
+> [!Note]  
+> Must be accessed through the url `0.0.0.0:10001`, local host will not work.
+
 ## Features & Improvements
 
 **Features:**
