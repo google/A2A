@@ -1,8 +1,6 @@
 from uuid import uuid4
 from agent import TravelPlannerAgent
-
 from typing_extensions import override
-
 from a2a.types import (
     TaskArtifactUpdateEvent,
     TaskStatusUpdateEvent,
