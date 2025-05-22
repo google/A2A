@@ -1,5 +1,5 @@
 from collections.abc import AsyncIterable
-from typing import Any, Literal
+from typing import Any, Literal, Dict
 
 import httpx
 
@@ -84,7 +84,7 @@ class CurrencyAgent:
         self.graph.invoke({'messages': [('user', query)]}, config)
         return self.get_agent_response(config)
 
-    async def stream(self, query, sessionId) -> AsyncIterable[dict[str, Any]]:
+    async def stream(self, query, sessionId) -> AsyncIterable[Dict[str, Any]]:
         inputs = {'messages': [('user', query)]}
         config = {'configurable': {'thread_id': sessionId}}
 
@@ -115,16 +115,19 @@ class CurrencyAgent:
         if structured_response and isinstance(
             structured_response, ResponseFormat
         ):
-            if (
-                structured_response.status == 'input_required'
-                or structured_response.status == 'error'
-            ):
+            if structured_response.status == 'input_required':
                 return {
                     'is_task_complete': False,
                     'require_user_input': True,
                     'content': structured_response.message,
                 }
-            if structured_response.status == 'completed':
+            elif structured_response.status == 'error':
+                return {
+                    'is_task_complete': False,
+                    'require_user_input': True,
+                    'content': structured_response.message,
+                }
+            elif structured_response.status == 'completed':
                 return {
                     'is_task_complete': True,
                     'require_user_input': False,

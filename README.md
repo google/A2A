@@ -1,7 +1,9 @@
 # Agent2Agent (A2A) Protocol
 
-![A2A Banner](docs/assets/a2a-banner.png)
+![PyPI - Version](https://img.shields.io/pypi/v/a2a-sdk)
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
+![A2A Banner](docs/assets/a2a-banner.png)
 
 **An open protocol enabling communication and interoperability between opaque agentic applications.**
 
@@ -40,6 +42,7 @@ As AI agents become more prevalent, their ability to interoperate is crucial for
 - 📚 **Explore the Documentation:** Visit the [Agent2Agent Protocol Documentation Site](https://google.github.io/A2A/) for a complete overview, the full protocol specification, tutorials, and guides.
 - 📝 **View the Specification:** [A2A Protocol Specification](https://google.github.io/A2A/specification/)
 - 🐍 Use the [A2A Python SDK](https://github.com/google/a2a-python)
+  - `pip install a2a-sdk`
 - 🎬 Use our [samples](/samples) to see A2A in action
   - [Multi-Agent Web App](/demo/README.md)
   - CLI ([Python](/samples/python/hosts/cli/README.md), [JS](/samples/js/README.md))

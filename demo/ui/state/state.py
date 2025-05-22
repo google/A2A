@@ -1,3 +1,6 @@
+import mesop as me
+from typing import Literal, Tuple, Any
+from pydantic.dataclasses import dataclass
 import dataclasses
 
 from typing import Any, Literal
@@ -25,9 +28,11 @@ class StateMessage:
     """StateMessage provides mesop state compliant view of a message"""
 
     message_id: str = ''
+    task_id: str = ''
+    context_id: str = ''
     role: str = ''
     # Each content entry is a content, media type pair.
-    content: list[tuple[ContentPart, str]] = dataclasses.field(
+    content: list[Tuple[ContentPart, str]] = dataclasses.field(
         default_factory=list
     )
 
@@ -37,10 +42,10 @@ class StateTask:
     """StateTask provides mesop state compliant view of task"""
 
     task_id: str = ''
-    session_id: str | None = None
+    context_id: str | None = None
     state: str | None = None
     message: StateMessage = dataclasses.field(default_factory=StateMessage)
-    artifacts: list[list[tuple[ContentPart, str]]] = dataclasses.field(
+    artifacts: list[list[Tuple[ContentPart, str]]] = dataclasses.field(
         default_factory=list
     )
 
@@ -49,7 +54,7 @@ class StateTask:
 class SessionTask:
     """SessionTask organizes tasks based on conversation"""
 
-    session_id: str = ''
+    context_id: str = ''
     task: StateTask = dataclasses.field(default_factory=StateTask)
 
 
@@ -57,12 +62,12 @@ class SessionTask:
 class StateEvent:
     """StateEvent provides mesop state compliant view of event"""
 
-    conversation_id: str = ''
+    context_id: str = ''
     actor: str = ''
     role: str = ''
     id: str = ''
     # Each entry is a pair of (content, media type)
-    content: list[tuple[ContentPart, str]] = dataclasses.field(
+    content: list[Tuple[ContentPart, str]] = dataclasses.field(
         default_factory=list
     )
 
