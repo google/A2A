@@ -1086,7 +1086,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 1.  **Client fetches the public Agent Card:**
 
-    ```http
+    ```
     GET https://example.com/.well-known/agent.json
     ```
 
@@ -1098,7 +1098,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 
 4.  **Client fetches the authenticated extended Agent Card:**
 
-    ```http
+    ```
     GET https://example.com/a2a/agent/authenticatedExtendedCard
     Authorization: Bearer <obtained_access_token>
     ```
