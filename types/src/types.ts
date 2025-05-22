@@ -135,7 +135,7 @@ export interface AgentCard {
   defaultOutputModes: string[];
   /** Skills are a unit of capability that an agent can perform. */
   skills: AgentSkill[];
-  /** A2A API extensions available for this agent. */
+  /** Custom API extensions available for this agent. */
   extensions?: AgentExtension[];
   /**
    * true if the agent supports providing an extended agent card when the user is authenticated.

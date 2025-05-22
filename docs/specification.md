@@ -192,7 +192,7 @@ interface AgentCard {
   // An array of specific skills or capabilities the agent offers.
   // Must contain at least one skill if the agent is expected to perform actions beyond simple presence.
   skills: AgentSkill[];
-  /** A2A API extensions available for this agent. */
+  /** Custom API extensions available for this agent. */
   extensions?: AgentExtension[];
 }
 ```
@@ -211,7 +211,7 @@ interface AgentCard {
 | `defaultInputModes`  | `string[]`                                                         | Yes       | Input MIME types accepted by the agent.
 | `defaultOutputModes` | `string[]`                                                         | Yes       | Output MIME types produced by the agent.                                  |
 | `skills`             | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                            |
-| `extensions`         | [`AgentExtension[]`](#555-agentextension-object)                   | No       | Array of API extensions available for this agent.                                                                 |
+| `extensions`         | [`AgentExtension[]`](#555-agentextension-object)                   | No       | Array of custom API extensions available for this agent.                                                          |
 
 #### 5.5.1. `AgentProvider` Object
 

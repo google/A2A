@@ -144,7 +144,7 @@
                     "type": "string"
                 },
                 "extensions": {
-                    "description": "A2A API extensions available for this agent.",
+                    "description": "Custom API extensions available for this agent.",
                     "items": {
                         "$ref": "#/definitions/AgentExtension"
                     },
