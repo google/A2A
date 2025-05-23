@@ -44,8 +44,8 @@ requires-dist = [
 
 [[package]]
 name = "a2a-sdk"
-version = "0.2.1a1.post9.dev0+2993c0b"
-source = { git = "https://github.com/google/a2a-python.git?rev=main#2993c0bf5a2f90c5e2a39fce7362993d6da10d9b" }
+version = "0.2.1a1.post15.dev0+b80cb22"
+source = { git = "https://github.com/google/a2a-python.git?rev=main#b80cb22adabb5d402e1c0d75215f172136b41728" }
 dependencies = [
     { name = "httpx" },
     { name = "httpx-sse" },
