@@ -41,6 +41,7 @@ The launch of A2A has sparked lively discussions and positive reactions on vario
 - PydanticAI example [PR\#127](https://github.com/google/A2A/pull/127)
 - Go example [PR\#52](https://github.com/google/A2A/pull/52)
 - Daytona sandbox running agent [PR\#170](https://github.com/google/A2A/pull/170)
+- Server documentation example and template
 
 ## What is Driving This Excitement?
 
