@@ -1,0 +1,12 @@
+# Agent contexts
+
+These are some consults from agent(s) that may be useful to answer the question
+{% for context in agent_contexts %}
+Agent name: {{context.agent_name}}
+Agent skills: {% for skill in context.agent_skills%}
+    - name: {{skill.name}}
+        - description: {{skill.description}}
+        - example: {{skill.examples}}{% endfor %}
+Question: {{context.question}}
+Answer: {{context.answer}}{% endfor %}
+-------------------
