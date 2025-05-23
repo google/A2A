@@ -19,7 +19,7 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
     This is a simple helper class that encapsulates the actual "business logic".
 
     ```python { .no-copy }
-    # examples/helloworld/agent_executor.py
+    # examples/helloworld/agent.py
     class HelloWorldAgent:
         """Hello World Agent."""
 
