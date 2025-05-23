@@ -7,7 +7,7 @@ from google.adk.memory.in_memory_memory_service import InMemoryMemoryService
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.adk.tools.tool_context import ToolContext
-from task_manager import AgentWithTaskManager
+from google.genai import types
 
 
 # Local cache of created request_ids for demo purposes.
@@ -109,7 +109,7 @@ def reimburse(request_id: str) -> dict[str, Any]:
     return {'request_id': request_id, 'status': 'approved'}
 
 
-class ReimbursementAgent(AgentWithTaskManager):
+class ReimbursementAgent:
     """An agent that handles reimbursement requests."""
 
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
@@ -165,3 +165,57 @@ class ReimbursementAgent(AgentWithTaskManager):
                 return_form,
             ],
         )
+
+    async def stream(self, query, session_id) -> AsyncIterable[dict[str, Any]]:
+        session = await self._runner.session_service.get_session(
+            app_name=self._agent.name,
+            user_id=self._user_id,
+            session_id=session_id,
+        )
+        content = types.Content(
+            role='user', parts=[types.Part.from_text(text=query)]
+        )
+        if session is None:
+            session = await self._runner.session_service.create_session(
+                app_name=self._agent.name,
+                user_id=self._user_id,
+                state={},
+                session_id=session_id,
+            )
+        async for event in self._runner.run_async(
+            user_id=self._user_id, session_id=session.id, new_message=content
+        ):
+            if event.is_final_response():
+                response = ''
+                if (
+                    event.content
+                    and event.content.parts
+                    and event.content.parts[0].text
+                ):
+                    response = '\n'.join(
+                        [p.text for p in event.content.parts if p.text]
+                    )
+                elif (
+                    event.content
+                    and event.content.parts
+                    and any(
+                        [
+                            True
+                            for p in event.content.parts
+                            if p.function_response
+                        ]
+                    )
+                ):
+                    response = next(
+                        p.function_response.model_dump()
+                        for p in event.content.parts
+                    )
+                yield {
+                    'is_task_complete': True,
+                    'content': response,
+                }
+            else:
+                yield {
+                    'is_task_complete': False,
+                    'updates': self.get_processing_message(),
+                }
