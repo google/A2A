@@ -7,7 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "a2a-samples",
     "google-genai>=1.9.0",
-    "google-adk>=0.0.3",
+    "google-adk>=1.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]

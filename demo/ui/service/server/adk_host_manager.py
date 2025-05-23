@@ -104,8 +104,8 @@ class ADKHostManager(ApplicationManager):
             memory_service=self._memory_service,
         )
 
-    def create_conversation(self) -> Conversation:
-        session = self._session_service.create_session(
+    async def create_conversation(self) -> Conversation:
+        session = await self._session_service.create_session(
             app_name=self.app_name, user_id=self.user_id
         )
         conversation_id = session.id
@@ -163,7 +163,7 @@ class ADKHostManager(ApplicationManager):
         )
         final_event = None
         # Determine if a task is to be resumed.
-        session = self._session_service.get_session(
+        session = await self._session_service.get_session(
             app_name='A2A', user_id='test_user', session_id=context_id
         )
         task_id = message.taskId
@@ -174,7 +174,7 @@ class ADKHostManager(ApplicationManager):
             'message_id': message.messageId,
         }
         # Need to upsert session state now, only way is to append an event.
-        self._session_service.append_event(
+        await self._session_service.append_event(
             session,
             ADKEvent(
                 id=ADKEvent.new_id(),
@@ -581,7 +581,7 @@ class ADKHostManager(ApplicationManager):
                         parts.append(Part(root=DataPart(data=p)))
                 elif isinstance(p, DataPart):
                     if 'artifact-file-id' in p.data:
-                        file_part = self._artifact_service.load_artifact(
+                        file_part = await self._artifact_service.load_artifact(
                             user_id=self.user_id,
                             session_id=context_id,
                             app_name=self.app_name,
