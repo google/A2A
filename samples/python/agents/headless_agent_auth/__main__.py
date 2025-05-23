@@ -1,5 +1,6 @@
 import asyncio
 import click
+import httpx
 import json
 import logging
 import os
@@ -11,12 +12,13 @@ load_dotenv()
 
 from agent import HRAgent
 from agent_executor import HRAgentExecutor
+from graph_resumer import GraphResumer
 from api import hr_api
 from oauth2_middleware import OAuth2Middleware
 
 from a2a.server.apps import A2AStarletteApplication
 from a2a.server.request_handlers import DefaultRequestHandler
-from a2a.server.tasks import InMemoryTaskStore
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier, PushNotifier, TaskStore
 from a2a.types import (
     AgentAuthentication,
     AgentCapabilities,
@@ -37,16 +39,21 @@ logger = logging.getLogger()
 @click.option('--port_agent', default=10050)
 @click.option('--port_api', default=10051)
 def main(host: str, port_agent: int, port_api: int):
+    agent_executor = HRAgentExecutor()
+    task_store = InMemoryTaskStore()
+    push_notifier = InMemoryPushNotifier(httpx.AsyncClient())
+
     async def run_all():
         await asyncio.gather(
-            start_agent(host, port_agent),
+            start_agent(host, port_agent, agent_executor, task_store, push_notifier),
+            start_agent_graph_resumer(agent_executor, task_store, push_notifier),
             start_api(host, port_api),
         )
 
     asyncio.run(run_all())
 
 
-async def start_agent(host: str, port):
+async def start_agent(host: str, port: int, agent_executor: HRAgentExecutor, task_store: TaskStore, push_notifier: PushNotifier):
     agent_card = AgentCard(
         name='Staff0 HR Agent',
         description='This agent handles external verification requests about Staff0 employees made by third parties.',
@@ -54,7 +61,7 @@ async def start_agent(host: str, port):
         version='0.1.0',
         defaultInputModes=HRAgent.SUPPORTED_CONTENT_TYPES,
         defaultOutputModes=HRAgent.SUPPORTED_CONTENT_TYPES,
-        capabilities=AgentCapabilities(streaming=True),
+        capabilities=AgentCapabilities(streaming=True, pushNotifications=True),
         skills=[
             AgentSkill(
                 id='is_active_employee',
@@ -96,8 +103,9 @@ async def start_agent(host: str, port):
     )
 
     request_handler = DefaultRequestHandler(
-        agent_executor=HRAgentExecutor(),
-        task_store=InMemoryTaskStore(),
+        agent_executor=agent_executor,
+        task_store=task_store,
+        push_notifier=push_notifier,
     )
 
     server = A2AStarletteApplication(
@@ -109,6 +117,27 @@ async def start_agent(host: str, port):
 
     logger.info(f'Starting HR Agent server on {host}:{port}')
     await uvicorn.Server(uvicorn.Config(app=app, host=host, port=port)).serve()
+
+
+async def start_agent_graph_resumer(agent_executor: HRAgentExecutor, task_store: TaskStore, push_notifier: PushNotifier):
+    async def on_resuming(thread, item):
+        structured_response = item.get('generate_structured_response', {}).get('structured_response')
+        if structured_response:
+            task_id = thread['task_id']
+            print(f'Resuming thread {thread["thread_id"]} and task {task_id}, got {structured_response}')
+            task = await task_store.get(task_id)
+            # TODO: include structured_response into the task? 
+            # TODO: push_notifier.send_notification is not working because there is no push_info for task
+            await push_notifier.send_notification(task)
+
+    logger.info('Starting HR Agent Graph Resumer')
+    resumer = GraphResumer(graph=agent_executor.agent.graph)
+    resumer \
+        .on_resume_start(lambda thread: print(f'Attempting to resume thread {thread["thread_id"]}...')) \
+        .on_resuming(on_resuming) \
+        .on_error(lambda err: print(f'Error in GraphResumer: {str(err)}'))
+
+    resumer.start()
 
 
 async def start_api(host: str, port):

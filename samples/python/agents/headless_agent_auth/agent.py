@@ -32,7 +32,6 @@ with_async_user_confirmation = auth0_ai.with_async_user_confirmation(
     scopes=['read:employee'],
     user_id=lambda employee_id, **__: employee_id,
     audience=os.getenv('HR_API_AUTH0_AUDIENCE'),
-    on_authorization_request='block', # TODO: this is just for demo purposes
 )
 
 
@@ -117,7 +116,6 @@ class HRAgent:
     RESPONSE_FORMAT_INSTRUCTION: str = (
         'Set the status to "completed" if the request has been fully processed.'
         'Set the status to "input-required" if the tool response indicates that user input is needed to proceed.'
-        'If the tool response contains an AccessDeniedInterrupt error, set the message to "The user denied the authorization request", and set the status to "rejected".'
         'For any other tool error, set the status to "failed".'
     )
 
@@ -136,14 +134,9 @@ class HRAgent:
             response_format=(self.RESPONSE_FORMAT_INSTRUCTION, ResponseFormat),
         )
 
-    async def invoke(self, query: str, context_id: str) -> dict[str, Any]:
-        config: RunnableConfig = {'configurable': {'thread_id': context_id}}
-        await self.graph.ainvoke({'messages': [('user', query)]}, config)
-        return self.get_agent_response(config)
-
-    async def stream(self, query: str, context_id: str) -> AsyncIterable[dict[str, Any]]:
+    async def stream(self, query: str, context_id: str, task_id: str) -> AsyncIterable[dict[str, Any]]:
         inputs: dict[str, Any] = {'messages': [('user', query)]}
-        config: RunnableConfig = {'configurable': {'thread_id': context_id}}
+        config: RunnableConfig = {'configurable': {'thread_id': context_id, 'task_id': task_id}}
 
         async for item in self.graph.astream(inputs, config, stream_mode='values'):
             message = item['messages'][-1] if 'messages' in item else None
@@ -169,8 +162,22 @@ class HRAgent:
 
     def get_agent_response(self, config: RunnableConfig) -> dict[str, Any]:
         current_state = self.graph.get_state(config)
+
+        interrupts = current_state.interrupts
+        if interrupts:
+            code = interrupts[0].value['code']
+            message = interrupts[0].value['message']
+
+            return {
+                'is_task_complete': False,
+                'task_state': 'auth-required' if code == 'CIBA_AUTHORIZATION_PENDING' else 'unknown',
+                'content': (
+                    'Before continuing, an authorization request was sent to the employee to approve this transaction.'
+                    if code == 'CIBA_AUTHORIZATION_PENDING' else message
+                ),
+            }
+
         structured_response = current_state.values.get('structured_response')
-        
         if structured_response and isinstance(
             structured_response, ResponseFormat
         ):
