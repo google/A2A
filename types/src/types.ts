@@ -613,6 +613,10 @@ export interface LinkContext {
 /**
  * Represents a Link Target Object as defined in RFC 9264 Section 4.2.3.
  * See: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.3
+ * 
+ * While not a complete implementation of all target attributes defined in
+ * RFC 8288, this interface captures the minimal structure required for the
+ * current use case and leaves room for extension.
  */
 export interface LinkTarget {
   /**
@@ -626,6 +630,51 @@ export interface LinkTarget {
    * These are extension points as defined in RFC 9264 Section 4.2.4.
    */
   [key: string]: unknown;
+}
+
+/**
+ * Represents an API Catalog document, extending the Linkset structure defined in RFC 9264.
+ * This specialized catalog uses AgentLinkContext objects to describe agent-specific metadata.
+ * See: https://www.ietf.org/archive/id/draft-ietf-httpapi-api-catalog-08.html
+ */
+export interface AgentCatalog extends Linkset {
+  /**
+   * An array of AgentLinkContext objects.
+   * Each object uses the `anchor` to specify the agent’s endpoint and the `describedby` link to
+   * indicate the endpoint of its agent card.
+   */
+  linkset: AgentLinkContext[];
+}
+
+/**
+ * Represents a Link Context object specifically for agents.
+ * Extends the general LinkContext structure by requiring an `anchor` field
+ * and including a `describedby` relation to link to the agent's card endpoint.
+ */
+export interface AgentLinkContext extends LinkContext {
+  /**
+   * A URI reference identifying the agent's endpoint.
+   * MUST be a valid URI reference (RFC 3986).
+   * SHOULD NOT be a relative reference.
+   */
+  anchor: string;
+  /**
+   * A list of links that describe the agent's metadata (agent card).
+   */
+  describedby: AgentLinkTarget[];
+}
+
+/**
+ * Represents a Link Target Object that specifically points to an agent card
+ * in JSON format. This is a specialization of the generic LinkTarget,
+ * with a fixed media type of "application/json" as required for agent metadata.
+ */
+export interface AgentLinkTarget extends LinkTarget {
+  /**
+   * The media type of the target resource.
+   * MUST be "application/json" to indicate the agent card is in JSON format.
+   */
+  readonly type: "application/json";
 }
 
 /**
