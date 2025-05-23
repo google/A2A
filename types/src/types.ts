@@ -580,6 +580,55 @@ export interface PasswordOAuthFlow {
 
 // --8<-- [start:JSONRPCMessage]
 /**
+ * Represents a Linkset document as defined in RFC 9264.
+ * See: https://www.rfc-editor.org/rfc/rfc9264
+ */
+export interface Linkset {
+  /**
+   * An array of Link Context Objects.
+   * Each object defines a set of related links for a given anchor (context URI).
+   */
+  linkset: LinkContext[];
+}
+
+/**
+ * Represents a Link Context Object as defined in RFC 9264 Section 4.2.2.
+ * See: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.2
+ */
+export interface LinkContext {
+  /**
+   * The URI reference representing the link context.
+   * MUST be a valid URI reference (RFC 3986).
+   * SHOULD NOT be a relative reference.
+   */
+  anchor?: string;
+  /**
+   * Maps registered or extension relation types to arrays of LinkTarget objects.
+   * The corresponding value MUST be an array of LinkTarget objects.
+   * See: https://www.iana.org/assignments/link-relations/link-relations.xhtml
+   */
+  [relationType: string]: LinkTarget[] | string | undefined;
+}
+
+/**
+ * Represents a Link Target Object as defined in RFC 9264 Section 4.2.3.
+ * See: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.3
+ */
+export interface LinkTarget {
+  /**
+   * The target URI of the link.
+   * MUST be a valid URI reference (RFC 3986).
+   * SHOULD NOT be a relative reference.
+   */
+  href: string;
+  /**
+   * Additional metadata for the link target.
+   * These are extension points as defined in RFC 9264 Section 4.2.4.
+   */
+  [key: string]: unknown;
+}
+
+/**
  * Base interface for any JSON-RPC 2.0 request or response.
  */
 export interface JSONRPCMessage {
