@@ -617,8 +617,9 @@ interface FileWithUri {
   // The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
   // of the file (e.g., "application/pdf", "image/png"). Strongly recommended for proper handling.
   mimeType?: string;
-  // URI for the file.
-  uri: string; // Base64 string
+  // A web-accessible URI for the file.
+  // It can be a HTTPS URL or Data URI. URL strongly recommended for larger files that should not be embedded directly
+  uri: string; //e.g., "https://files.example.com/document.pdf" or "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
 }
 ```
 
