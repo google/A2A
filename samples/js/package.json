@@ -4,16 +4,22 @@
   "main": "dist/index.js",
   "type": "module",
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
     "@types/node": "^22.13.14",
+    "dotenv": "^16.5.0",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
   },
   "scripts": {
     "a2a:cli": "npx tsx src/cli.ts",
     "agents:movie-agent": "npx tsx src/agents/movie-agent/index.ts",
-    "agents:coder": "npx tsx src/agents/coder/index.ts"
+    "agents:coder": "npx tsx src/agents/coder/start.ts",
+    "agents:coder-with-auth": "npx tsx src/server-with-authentication/index.ts",
+    "a2a:setup-auth": "npx tsx src/server-with-authentication/create-agent-cards-and-profiles.ts"
   },
   "dependencies": {
+    "@agentic-profile/auth": "^0.4.10",
     "@genkit-ai/googleai": "^1.8.0",
     "@genkit-ai/vertexai": "^1.8.0",
     "@types/cors": "^2.8.17",

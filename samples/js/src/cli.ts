@@ -1,8 +1,23 @@
 #!/usr/bin/env node
 
+import { join } from "path";
+import os from "os";
+
+import {
+    AGENTIC_CHALLENGE_TYPE,
+    generateAuthToken
+} from "@agentic-profile/auth";
+import { parseArgs } from "./argv.js";
+import { hasProfile, loadProfileAndKeyring } from "./server-with-authentication/misc.js";
+import { pruneFragmentId } from "@agentic-profile/common";
+
 import readline from "node:readline";
 import crypto from "node:crypto";
 import { A2AClient } from "./client/client.js";
+import {
+    AgentContext,
+    resolveAgent
+} from "./client/card.js";
 import {
   // Specific Params/Payload types used by the CLI
   TaskSendParams,
@@ -39,11 +54,39 @@ function generateTaskId(): string {
   return crypto.randomUUID();
 }
 
+// --- Command line options ---
+const ARGV_OPTIONS: argv.ArgvOptions = {
+  iam: {
+    type: "string",
+    short: "i"
+  },
+  peerAgentUrl: {
+    type: "string",
+    short: "p"
+  },
+  userAgentDid: {
+    type: "string",
+    short: "u"
+  }
+};
+
+const port = process.env.PORT || 41241;
+
+// --- Parse command line ---
+console.log( "argv", process.argv );
+const { values } = parseArgs({
+  args: process.argv.slice(2),
+  options: ARGV_OPTIONS
+});
+const {
+  iam = "global-me",
+  peerAgentUrl = `http://localhost:${port}/.well-known/agent.json`,
+  userAgentDid = "#a2a-client"
+} = values;
+
 // --- State ---
 let currentTaskId: string = generateTaskId();
-const serverUrl = process.argv[2] || "http://localhost:41241";
-const client = new A2AClient(serverUrl);
-let agentName = "Agent"; // Default, try to get from agent card later
+let agentName = "Agent";  // default
 
 // --- Readline Setup ---
 const rl = readline.createInterface({
@@ -146,46 +189,38 @@ function printMessageContent(message: Message) {
 }
 
 // --- Agent Card Fetching ---
-async function fetchAndDisplayAgentCard() {
-  const wellKnownUrl = new URL("/.well-known/agent.json", serverUrl).toString();
-  console.log(
-    colorize("dim", `Attempting to fetch agent card from: ${wellKnownUrl}`)
-  );
-  try {
-    const response = await fetch(wellKnownUrl);
-    if (response.ok) {
-      const card: AgentCard = await response.json();
-      agentName = card.name || "Agent"; // Update global agent name
-      console.log(colorize("green", `✓ Agent Card Found:`));
-      console.log(`  Name:        ${colorize("bright", agentName)}`);
-      if (card.description) {
-        console.log(`  Description: ${card.description}`);
-      }
-      console.log(`  Version:     ${card.version || "N/A"}`);
-      // Update prompt prefix to use the fetched name
-      rl.setPrompt(colorize("cyan", `${agentName} > You: `));
-    } else {
-      console.log(
-        colorize(
-          "yellow",
-          `⚠️ Could not fetch agent card (Status: ${response.status})`
-        )
-      );
-    }
-  } catch (error: any) {
-    console.log(
-      colorize("yellow", `⚠️ Error fetching agent card: ${error.message}`)
-    );
+function displayAgentCard({ profileUrl, agenticProfile, agentCardUrl, agentCard }: AgentContext) {
+  if( agenticProfile ) {
+      console.log(colorize("green", `✓ Agentic Profile Found:`));
+      console.log(`  URL: ${profileUrl}`);
   }
+
+  const { name = "Agent", description, version, url } = agentCard;
+
+  console.log(colorize("green", `✓ Agent Card Found:`));
+  console.log(    `  Card URL:    ${colorize("bright", agentCardUrl)}`);
+  console.log(    `  Service URL: ${colorize("bright", url)}`);
+  console.log(    `  Name:        ${colorize("bright", name)}`);
+  if (description) {
+      console.log(`  Description: ${description}`);
+  }
+  console.log(    `  Version:     ${version || "N/A"}`);
+  // Update prompt prefix to use the fetched name
+  rl.setPrompt(colorize("cyan", `${name} > You: `));
 }
 
 // --- Main Loop ---
 async function main() {
   // Make main async
   console.log(colorize("bright", `A2A Terminal Client`));
-  console.log(colorize("dim", `Agent URL: ${serverUrl}`));
 
-  await fetchAndDisplayAgentCard(); // Fetch the card before starting the loop
+  const agentContext = await resolveAgent( peerAgentUrl as string );
+  displayAgentCard( agentContext );
+  const { agentCard } = agentContext;
+
+  const authHandler = await createAuthHandler( iam as string, userAgentDid as string );
+  const client = new A2AClient( agentCard.url, { authHandler } );
+  console.log(colorize("dim", `Agent URL: ${agentCard.url}`));
 
   console.log(colorize("dim", `Starting Task ID: ${currentTaskId}`));
   console.log(
@@ -221,6 +256,7 @@ async function main() {
       },
     };
 
+    agentName = agentCard.name ?? "Agent";
     try {
       console.log(colorize("gray", "Sending...")); // Indicate request is sent
       // Pass only the params object to the client method
@@ -255,3 +291,40 @@ async function main() {
 
 // --- Start ---
 main();
+
+async function createAuthHandler( iamProfile: string = "global-me", userAgentDid: string ) {
+  const dir = join( os.homedir(), ".agentic", "iam", iamProfile );
+  if( await hasProfile( dir ) !== true )
+    return undefined;
+
+  const myProfileAndKeyring = await loadProfileAndKeyring( dir );
+  const headers = {} as any;
+
+  const { documentId, fragmentId } = pruneFragmentId( userAgentDid );
+  const agentDid = documentId ? userAgentDid : myProfileAndKeyring.profile.id + fragmentId;
+
+  const authHandler = {
+    headers: () => headers,
+    process40x: async (fetchResponse:Response) => {
+      const agenticChallenge = await fetchResponse.json();
+      if( agenticChallenge.type !== AGENTIC_CHALLENGE_TYPE )
+        throw new Error(`Unexpected 401 response ${agenticChallenge}`);
+
+      const authToken = await generateAuthToken({
+        agentDid,
+        agenticChallenge,
+        profileResolver: async (did:string) => {
+          const { documentId } = pruneFragmentId( did );
+          if( documentId !== myProfileAndKeyring.profile.id )
+            throw new Error(`Failed to resolve agentic profile for ${did}`);
+          return myProfileAndKeyring;
+        }
+      });
+      headers.Authorization = `Agentic ${authToken}`;
+      return true;
+    },
+    onSuccess: async () => {}
+  };
+
+  return authHandler;
+}
