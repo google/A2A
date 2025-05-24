@@ -1,9 +1,11 @@
 import asyncio
+from typing import Tuple
 
 import mesop as me
 import pandas as pd
 
-from state.host_agent_service import GetEvents, convert_event_to_state
+from state.host_agent_service import GetEvents
+from state.host_agent_service import convert_event_to_state
 
 
 def flatten_content(content: list[tuple[str, str]]) -> str:
@@ -30,7 +32,7 @@ def event_list():
     events = asyncio.run(GetEvents())
     for e in events:
         event = convert_event_to_state(e)
-        df_data['Conversation ID'].append(event.conversation_id)
+        df_data['Conversation ID'].append(event.context_id)
         df_data['Role'].append(event.role)
         df_data['Id'].append(event.id)
         df_data['Content'].append(flatten_content(event.content))

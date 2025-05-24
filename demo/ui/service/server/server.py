@@ -4,8 +4,11 @@ import os
 import threading
 import uuid
 
-from common.types import FileContent, FilePart, Message
-from fastapi import APIRouter, Request, Response
+import httpx
+
+from a2a.types import FilePart, FileWithUri, Message, Part
+from fastapi import APIRouter, FastAPI, Request, Response
+
 from service.types import (
     CreateConversationResponse,
     GetEventResponse,
@@ -31,7 +34,7 @@ class ConversationServer:
     agents and provide details about the executions.
     """
 
-    def __init__(self, router: APIRouter):
+    def __init__(self, app: FastAPI, http_client: httpx.AsyncClient):
         agent_manager = os.environ.get('A2A_HOST', 'ADK')
         self.manager: ApplicationManager
 
@@ -43,38 +46,38 @@ class ConversationServer:
 
         if agent_manager.upper() == 'ADK':
             self.manager = ADKHostManager(
-                api_key=api_key, uses_vertex_ai=uses_vertex_ai
+                http_client,
+                api_key=api_key,
+                uses_vertex_ai=uses_vertex_ai,
             )
         else:
             self.manager = InMemoryFakeAgentManager()
         self._file_cache = {}  # dict[str, FilePart] maps file id to message data
         self._message_to_cache = {}  # dict[str, str] maps message id to cache id
 
-        router.add_api_route(
+        app.add_api_route(
             '/conversation/create', self._create_conversation, methods=['POST']
         )
-        router.add_api_route(
+        app.add_api_route(
             '/conversation/list', self._list_conversation, methods=['POST']
         )
-        router.add_api_route(
-            '/message/send', self._send_message, methods=['POST']
-        )
-        router.add_api_route('/events/get', self._get_events, methods=['POST'])
-        router.add_api_route(
+        app.add_api_route('/message/send', self._send_message, methods=['POST'])
+        app.add_api_route('/events/get', self._get_events, methods=['POST'])
+        app.add_api_route(
             '/message/list', self._list_messages, methods=['POST']
         )
-        router.add_api_route(
+        app.add_api_route(
             '/message/pending', self._pending_messages, methods=['POST']
         )
-        router.add_api_route('/task/list', self._list_tasks, methods=['POST'])
-        router.add_api_route(
+        app.add_api_route('/task/list', self._list_tasks, methods=['POST'])
+        app.add_api_route(
             '/agent/register', self._register_agent, methods=['POST']
         )
-        router.add_api_route('/agent/list', self._list_agents, methods=['POST'])
-        router.add_api_route(
+        app.add_api_route('/agent/list', self._list_agents, methods=['POST'])
+        app.add_api_route(
             '/message/file/{file_id}', self._files, methods=['GET']
         )
-        router.add_api_route(
+        app.add_api_route(
             '/api_key/update', self._update_api_key, methods=['POST']
         )
 
@@ -83,8 +86,8 @@ class ConversationServer:
         if isinstance(self.manager, ADKHostManager):
             self.manager.update_api_key(api_key)
 
-    def _create_conversation(self):
-        c = self.manager.create_conversation()
+    async def _create_conversation(self):
+        c = await self.manager.create_conversation()
         return CreateConversationResponse(result=c)
 
     async def _send_message(self, request: Request):
@@ -97,10 +100,8 @@ class ConversationServer:
         t.start()
         return SendMessageResponse(
             result=MessageInfo(
-                message_id=message.metadata['message_id'],
-                conversation_id=message.metadata['conversation_id']
-                if 'conversation_id' in message.metadata
-                else '',
+                message_id=message.messageId,
+                context_id=message.contextId if message.contextId else '',
             )
         )
 
@@ -121,10 +122,11 @@ class ConversationServer:
             if not message_id:
                 rval.append(m)
                 continue
-            new_parts = []
-            for i, part in enumerate(m.parts):
-                if part.type != 'file':
-                    new_parts.append(part)
+            new_parts: list[Part] = []
+            for i, p in enumerate(m.parts):
+                part = p.root
+                if part.kind != 'file':
+                    new_parts.append(p)
                     continue
                 message_part_id = f'{message_id}:{i}'
                 if message_part_id in self._message_to_cache:
@@ -134,10 +136,12 @@ class ConversationServer:
                     self._message_to_cache[message_part_id] = cache_id
                 # Replace the part data with a url reference
                 new_parts.append(
-                    FilePart(
-                        file=FileContent(
-                            mimeType=part.file.mimeType,
-                            uri=f'/message/file/{cache_id}',
+                    Part(
+                        root=FilePart(
+                            file=FileWithUri(
+                                mimeType=part.file.mimeType,
+                                uri=f'/message/file/{cache_id}',
+                            )
                         )
                     )
                 )

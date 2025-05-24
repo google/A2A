@@ -3,7 +3,7 @@ name = "a2a-python-example-ui"
 version = "0.1.0"
 description = "Agent2Agent example UI"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "asyncio>=3.4.3",
     "httpx>=0.28.1",
@@ -15,7 +15,7 @@ dependencies = [
     "a2a-samples",
     "pandas>=2.2.0",
     "google-genai>=1.9.0",
-    "google-adk>=0.0.3",
+    "google-adk>=1.0.0",
 ]
 
 [tool.hatch.build.targets.wheel]

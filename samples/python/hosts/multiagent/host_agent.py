@@ -2,14 +2,19 @@ import base64
 import json
 import uuid
 
-from common.client import A2ACardResolver
-from common.types import (
+from typing import List
+
+import httpx
+
+from a2a.client import A2ACardResolver
+from a2a.types import (
     AgentCard,
     DataPart,
     Message,
+    MessageSendConfiguration,
+    MessageSendParams,
     Part,
     Task,
-    TaskSendParams,
     TaskState,
     TextPart,
 )
@@ -32,15 +37,17 @@ class HostAgent:
     def __init__(
         self,
         remote_agent_addresses: list[str],
+        http_client: httpx.AsyncClient,
         task_callback: TaskUpdateCallback | None = None,
     ):
         self.task_callback = task_callback
+        self.httpx_client = http_client
         self.remote_agent_connections: dict[str, RemoteAgentConnections] = {}
         self.cards: dict[str, AgentCard] = {}
         for address in remote_agent_addresses:
-            card_resolver = A2ACardResolver(address)
+            card_resolver = A2ACardResolver(http_client, address)
             card = card_resolver.get_agent_card()
-            remote_connection = RemoteAgentConnections(card)
+            remote_connection = RemoteAgentConnections(http_client, card)
             self.remote_agent_connections[card.name] = remote_connection
             self.cards[card.name] = card
         agent_info = []
@@ -49,7 +56,7 @@ class HostAgent:
         self.agents = '\n'.join(agent_info)
 
     def register_agent_card(self, card: AgentCard):
-        remote_connection = RemoteAgentConnections(card)
+        remote_connection = RemoteAgentConnections(self.httpx_client, card)
         self.remote_agent_connections[card.name] = remote_connection
         self.cards[card.name] = card
         agent_info = []
@@ -69,7 +76,7 @@ class HostAgent:
             ),
             tools=[
                 self.list_remote_agents,
-                self.send_task,
+                self.send_message,
             ],
         )
 
@@ -83,16 +90,12 @@ Discovery:
 can use to delegate the task.
 
 Execution:
-- For actionable tasks, you can use `create_task` to assign tasks to remote agents to perform.
-Be sure to include the remote agent name when you respond to the user.
+- For actionable requests, you can use `send_message` to interact with remote agents to take action.
 
-You can use `check_pending_task_states` to check the states of the pending
-tasks.
+Be sure to include the remote agent name when you respond to the user.
 
 Please rely on tools to address the request, and don't make up the response. If you are not sure, please ask the user for more details.
 Focus on the most recent parts of the conversation primarily.
-
-If there is an active agent, send the request to that agent with the update task tool.
 
 Agents:
 {self.agents}
@@ -103,7 +106,7 @@ Current agent: {current_agent['active_agent']}
     def check_state(self, context: ReadonlyContext):
         state = context.state
         if (
-            'session_id' in state
+            'context_id' in state
             and 'session_active' in state
             and state['session_active']
             and 'agent' in state
@@ -116,8 +119,6 @@ Current agent: {current_agent['active_agent']}
     ):
         state = callback_context.state
         if 'session_active' not in state or not state['session_active']:
-            if 'session_id' not in state:
-                state['session_id'] = str(uuid.uuid4())
             state['session_active'] = True
 
     def list_remote_agents(self):
@@ -132,7 +133,7 @@ Current agent: {current_agent['active_agent']}
             )
         return remote_agent_info
 
-    async def send_task(
+    async def send_message(
         self, agent_name: str, message: str, tool_context: ToolContext
     ):
         """Sends a task either streaming (if supported) or non-streaming.
@@ -151,91 +152,90 @@ Current agent: {current_agent['active_agent']}
             raise ValueError(f'Agent {agent_name} not found')
         state = tool_context.state
         state['agent'] = agent_name
-        card = self.cards[agent_name]
         client = self.remote_agent_connections[agent_name]
         if not client:
             raise ValueError(f'Client not available for {agent_name}')
-        if 'task_id' in state:
-            taskId = state['task_id']
-        else:
-            taskId = str(uuid.uuid4())
-        sessionId = state['session_id']
+        taskId = state.get('task_id', None)
+        contextId = state.get('context_id', None)
+        messageId = state.get('message_id', None)
         task: Task
-        messageId = ''
-        metadata = {}
-        if 'input_message_metadata' in state:
-            metadata.update(**state['input_message_metadata'])
-            if 'message_id' in state['input_message_metadata']:
-                messageId = state['input_message_metadata']['message_id']
         if not messageId:
             messageId = str(uuid.uuid4())
-        metadata.update(conversation_id=sessionId, message_id=messageId)
-        request: TaskSendParams = TaskSendParams(
-            id=taskId,
-            sessionId=sessionId,
+        request: MessageSendParams = MessageSendParams(
+            id=str(uuid.uuid4()),
             message=Message(
                 role='user',
                 parts=[TextPart(text=message)],
-                metadata=metadata,
+                messageId=messageId,
+                contextId=contextId,
+                taskId=taskId,
             ),
-            acceptedOutputModes=['text', 'text/plain', 'image/png'],
-            # pushNotification=None,
-            metadata={'conversation_id': sessionId},
+            configuration=MessageSendConfiguration(
+                acceptedOutputModes=['text', 'text/plain', 'image/png'],
+            ),
         )
-        task = await client.send_task(request, self.task_callback)
+        response = await client.send_message(request, self.task_callback)
+        if isinstance(response, Message):
+            return await convert_parts(task.parts, tool_context)
+        task: Task = response
         # Assume completion unless a state returns that isn't complete
         state['session_active'] = task.status.state not in [
-            TaskState.COMPLETED,
-            TaskState.CANCELED,
-            TaskState.FAILED,
-            TaskState.UNKNOWN,
+            TaskState.completed,
+            TaskState.canceled,
+            TaskState.failed,
+            TaskState.unknown,
         ]
-        if task.status.state == TaskState.INPUT_REQUIRED:
+        if task.contextId:
+            state['context_id'] = task.contextId
+        state['task_id'] = task.id
+        if task.status.state == TaskState.input_required:
             # Force user input back
             tool_context.actions.skip_summarization = True
             tool_context.actions.escalate = True
-        elif task.status.state == TaskState.CANCELED:
+        elif task.status.state == TaskState.canceled:
             # Open question, should we return some info for cancellation instead
             raise ValueError(f'Agent {agent_name} task {task.id} is cancelled')
-        elif task.status.state == TaskState.FAILED:
+        elif task.status.state == TaskState.failed:
             # Raise error for failure
             raise ValueError(f'Agent {agent_name} task {task.id} failed')
         response = []
         if task.status.message:
             # Assume the information is in the task message.
             response.extend(
-                convert_parts(task.status.message.parts, tool_context)
+                await convert_parts(task.status.message.parts, tool_context)
             )
         if task.artifacts:
             for artifact in task.artifacts:
-                response.extend(convert_parts(artifact.parts, tool_context))
+                response.extend(
+                    await convert_parts(artifact.parts, tool_context)
+                )
         return response
 
 
-def convert_parts(parts: list[Part], tool_context: ToolContext):
+async def convert_parts(parts: list[Part], tool_context: ToolContext):
     rval = []
     for p in parts:
-        rval.append(convert_part(p, tool_context))
+        rval.append(await convert_part(p, tool_context))
     return rval
 
 
-def convert_part(part: Part, tool_context: ToolContext):
-    if part.type == 'text':
-        return part.text
-    if part.type == 'data':
-        return part.data
-    if part.type == 'file':
+async def convert_part(part: Part, tool_context: ToolContext):
+    if part.root.kind == 'text':
+        return part.root.text
+    elif part.root.kind == 'data':
+        return part.root.data
+    elif part.root.kind == 'file':
         # Repackage A2A FilePart to google.genai Blob
         # Currently not considering plain text as files
-        file_id = part.file.name
-        file_bytes = base64.b64decode(part.file.bytes)
+        file_id = part.root.file.name
+        file_bytes = base64.b64decode(part.root.file.bytes)
         file_part = types.Part(
             inline_data=types.Blob(
-                mime_type=part.file.mimeType, data=file_bytes
+                mime_type=part.root.file.mimeType, data=file_bytes
             )
         )
-        tool_context.save_artifact(file_id, file_part)
+        await tool_context.save_artifact(file_id, file_part)
         tool_context.actions.skip_summarization = True
         tool_context.actions.escalate = True
         return DataPart(data={'artifact-file-id': file_id})
-    return f'Unknown type: {part.type}'
+    return f'Unknown type: {part.kind}'

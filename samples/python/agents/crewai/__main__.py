@@ -9,22 +9,29 @@ import os
 
 import click
 
-from agent import ImageGenerationAgent
-from common.server import A2AServer
-from common.types import (
+from a2a.server.apps import A2AStarletteApplication
+from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.tasks import InMemoryTaskStore
+from a2a.types import (
     AgentCapabilities,
     AgentCard,
     AgentSkill,
-    MissingAPIKeyError,
 )
+from agent import ImageGenerationAgent
+from agent_executor import ImageGenerationAgentExecutor
 from dotenv import load_dotenv
-from task_manager import AgentTaskManager
 
 
 load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+class MissingAPIKeyError(Exception):
+    """Exception for missing API key."""
+
+    pass
 
 
 @click.command()
@@ -68,14 +75,17 @@ def main(host, port):
             skills=[skill],
         )
 
-        server = A2AServer(
-            agent_card=agent_card,
-            task_manager=AgentTaskManager(agent=ImageGenerationAgent()),
-            host=host,
-            port=port,
+        request_handler = DefaultRequestHandler(
+            agent_executor=ImageGenerationAgentExecutor(),
+            task_store=InMemoryTaskStore(),
         )
-        logger.info(f'Starting server on {host}:{port}')
-        server.start()
+        server = A2AStarletteApplication(
+            agent_card=agent_card, http_handler=request_handler
+        )
+        import uvicorn
+
+        uvicorn.run(server.build(), host=host, port=port)
+
     except MissingAPIKeyError as e:
         logger.error(f'Error: {e}')
         exit(1)

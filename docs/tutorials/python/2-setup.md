@@ -1,29 +1,55 @@
-# Set up Your Environment
+# 2. Setup Your Environment
 
-## What You'll Need <!-- {docsify-ignore} -->
+## Prerequisites
 
-- A code editor such as Visual Studio Code (VS Code)
-- A command prompt such as Terminal (Linux), iTerm (Mac) or just the Terminal in VS Code
+- Python 3.13 or higher.
+- Access to a terminal or command prompt.
+- Git, for cloning the repository.
+- A code editor (e.g., VS Code) is recommended.
 
-## Python Environment <!-- {docsify-ignore} -->
+## Clone the Repository
 
-We'll be using [https://docs.astral.sh/uv/](https://docs.astral.sh/uv/getting-started/installation/) as our package manager and to set up our project.
-
-The A2A libraries we'll be using require `python >= 3.12` which [uv can install](https://docs.astral.sh/uv/guides/install-python/) if you don't already have a matching version. We'll be using python 3.12.
-
-## Check <!-- {docsify-ignore} -->
-
-Run the following command to make sure you're ready for the next step.
+If you haven't already, clone the A2A repository and navigate to the Python SDK directory:
 
 ```bash
-echo 'import sys; print(sys.version)' | uv run -
+git clone https://github.com/google/a2a-python.git -b main --depth 1
+cd a2a-python
 ```
 
-If you see something similar to the following, you are ready to proceed!
+## Python Environment & SDK Installation
+
+We recommend using a virtual environment for Python projects. The A2A Python SDK uses `uv` for dependency management, but you can use `pip` with `venv` as well.
+
+1. **Create and activate a virtual environment:**
+
+    Using `venv` (standard library):
+
+    === "Mac/Linux"
+
+        ```sh
+        python -m venv .venv
+        source .venv/bin/activate
+        ```
+
+    === "Windows"
+
+        ```powershell
+        python -m venv .venv
+        .venv\Scripts\activate
+        ```
+
+2. **Install the A2A SDK and its dependencies:**
+
+    ```bash
+    pip install --upgrade a2a-sdk
+    ```
+
+## Verify Installation
+
+After installation, you should be able to import the `a2a` package in a Python interpreter:
 
 ```bash
-3.12.3 (main, Feb  4 2025, 14:48:35) [GCC 13.3.0]
+python -c "import a2a; print('A2A SDK imported successfully')"
 ```
 
-[Prev](./1-introduction.md)
-[Next](./3-create-project.md)
+If this command runs without error and prints the success message, your environment is set up correctly.

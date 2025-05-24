@@ -2,17 +2,18 @@ import logging
 import os
 
 import click
+import httpx
 
-from agents.llama_index_file_chat.agent import ParseAndChat
-from agents.llama_index_file_chat.task_manager import LlamaIndexTaskManager
-from common.server import A2AServer
-from common.types import (
+from a2a.server.apps import A2AStarletteApplication
+from a2a.server.request_handlers import DefaultRequestHandler
+from a2a.server.tasks import InMemoryTaskStore, InMemoryPushNotifier
+from a2a.types import (
     AgentCapabilities,
     AgentCard,
     AgentSkill,
-    MissingAPIKeyError,
 )
-from common.utils.push_notification_auth import PushNotificationSenderAuth
+from agent_executor import LlamaIndexAgentExecutor
+from agents.llama_index_file_chat.agent import ParseAndChat
 from dotenv import load_dotenv
 
 
@@ -20,6 +21,12 @@ load_dotenv()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+class MissingAPIKeyError(Exception):
+    """Exception for missing API key."""
+
+    pass
 
 
 @click.command()
@@ -52,32 +59,26 @@ def main(host, port):
             description='Parses a file and then chats with a user using the parsed content as context.',
             url=f'http://{host}:{port}/',
             version='1.0.0',
-            defaultInputModes=LlamaIndexTaskManager.SUPPORTED_INPUT_TYPES,
-            defaultOutputModes=LlamaIndexTaskManager.SUPPORTED_OUTPUT_TYPES,
+            defaultInputModes=LlamaIndexAgentExecutor.SUPPORTED_INPUT_TYPES,
+            defaultOutputModes=LlamaIndexAgentExecutor.SUPPORTED_OUTPUT_TYPES,
             capabilities=capabilities,
             skills=[skill],
         )
 
-        notification_sender_auth = PushNotificationSenderAuth()
-        notification_sender_auth.generate_jwk()
-        server = A2AServer(
-            agent_card=agent_card,
-            task_manager=LlamaIndexTaskManager(
+        httpx_client = httpx.AsyncClient()
+        request_handler = DefaultRequestHandler(
+            agent_executor=LlamaIndexAgentExecutor(
                 agent=ParseAndChat(),
-                notification_sender_auth=notification_sender_auth,
             ),
-            host=host,
-            port=port,
+            task_store=InMemoryTaskStore(),
+            push_notifier=InMemoryPushNotifier(httpx_client),
         )
-
-        server.app.add_route(
-            '/.well-known/jwks.json',
-            notification_sender_auth.handle_jwks_endpoint,
-            methods=['GET'],
+        server = A2AStarletteApplication(
+            agent_card=agent_card, http_handler=request_handler
         )
+        import uvicorn
 
-        logger.info(f'Starting server on {host}:{port}')
-        server.start()
+        uvicorn.run(server.build(), host=host, port=port)
     except MissingAPIKeyError as e:
         logger.error(f'Error: {e}')
         exit(1)
