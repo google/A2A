@@ -618,7 +618,7 @@ interface FileWithUri {
   // of the file (e.g., "application/pdf", "image/png"). Strongly recommended for proper handling.
   mimeType?: string;
   // URI for the file.
-  uri: string; // URL to file content
+  uri: string; // Base64 string
 }
 ```
 
