@@ -12,6 +12,13 @@ from google.genai import types
 
 
 class AgentRunner:
+    """Manages the execution of an ADK (Agent Development Kit) Agent.
+
+    This class encapsulates the logic for running an agent, handling session
+    management (creation and retrieval), and streaming responses back to the
+    caller. It uses an in-memory session service.
+    """
+
     def __init__(
         self,
         user_id: str = 'user_1',
@@ -21,39 +28,6 @@ class AgentRunner:
         self.session = None
         self.app_name = app_name
         self.user_id = user_id
-
-    async def run_agent(
-        self, agent: Agent, query: str, session_id: str
-    ) -> AsyncGenerator[Event, None]:
-        runner = Runner(
-            agent=agent,
-            app_name=self.app_name,
-            session_service=self.session_service,
-        )
-        if not session_id:
-            session_id = uuid.uuid4().hex
-        else:
-            self.session = self.session_service.get_session(
-                app_name=self.app_name,
-                user_id=self.user_id,
-                session_id=session_id,
-            )
-        if not self.session:
-            self.session = self.session_service.create_session(
-                app_name=self.app_name,
-                user_id=self.user_id,
-                session_id=session_id,
-            )
-
-        content = types.Content(role='user', parts=[types.Part(text=query)])
-
-        async for event in runner.run_async(
-            user_id=self.user_id, session_id=session_id, new_message=content
-        ):
-            if event.is_final_response():
-                if event.content and event.content.parts:
-                    return event
-                break
 
     async def run_stream(
         self, agent: Agent, query: str, session_id: str
@@ -99,19 +73,15 @@ class AgentRunner:
                     event.content
                     and event.content.parts
                     and any(
-                        [
-                            True
-                            for p in event.content.parts
-                            if p.function_response
-                        ]
+                        True for p in event.content.parts if p.function_response
                     )
                 ):
                     response = next(
-                        (
-                            p.function_response.model_dump()
-                            for p in event.content.parts
-                        )
+                        p.function_response.model_dump()
+                        for p in event.content.parts
                     )
+                else:
+                    response = f'Error in running agent: {agent.name}'
                 yield {
                     'type': 'final_result',
                     'response': response,

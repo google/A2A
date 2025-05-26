@@ -5,6 +5,8 @@ from pydantic import BaseModel, Field
 
 
 class BaseAgent(BaseModel, ABC):
+    """Base class for agents."""
+
     model_config = {
         'arbitrary_types_allowed': True,
         'extra': 'allow',

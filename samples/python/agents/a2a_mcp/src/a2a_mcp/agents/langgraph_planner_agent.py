@@ -7,7 +7,7 @@ from typing import Any, AsyncIterable, Dict, Literal
 from a2a_mcp.common import prompts
 from a2a_mcp.common.base_agent import BaseAgent
 from a2a_mcp.common.types import TaskList
-from a2a_mcp.common.utils import config_logger, init_api_key
+from a2a_mcp.common.utils import init_api_key
 from langchain_core.messages import AIMessage
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.checkpoint.memory import MemorySaver
@@ -17,7 +17,6 @@ from pydantic import BaseModel, Field
 
 memory = MemorySaver()
 logger = logging.getLogger(__name__)
-config_logger(logger=logger)
 
 
 class ResponseFormat(BaseModel):
@@ -33,14 +32,15 @@ class ResponseFormat(BaseModel):
 
 
 class LangraphPlannerAgent(BaseAgent):
+    """Planner Agent backed by LangGraph."""
+
     def __init__(self):
         init_api_key()
-        config_logger(logger=logger)
 
         logger.info('Initializing LanggraphPlannerAgent')
 
         super().__init__(
-            agent_name='LanggraphPlannerAgent',
+            agent_name='PlannerAgent',
             description='Breakdown the user request into executable tasks',
             content_types=['text', 'text/plain'],
         )
@@ -63,12 +63,14 @@ class LangraphPlannerAgent(BaseAgent):
         self.graph.invoke({'messages': [('user', query)]}, config)
         return self.get_agent_response(config)
 
-    async def stream(self, query, sessionId) -> AsyncIterable[Dict[str, Any]]:
+    async def stream(
+        self, query, sessionId, task_id
+    ) -> AsyncIterable[Dict[str, Any]]:
         inputs = {'messages': [('user', query)]}
         config = {'configurable': {'thread_id': sessionId}}
 
         logger.info(
-            f'Running LanggraphPlannerAgent stream for session {sessionId} with input {query}'
+            f'Running LanggraphPlannerAgent stream for session {sessionId} {task_id} with input {query}'
         )
 
         for item in self.graph.stream(inputs, config, stream_mode='values'):
@@ -96,7 +98,7 @@ class LangraphPlannerAgent(BaseAgent):
                     'response_type': 'text',
                     'is_task_complete': False,
                     'require_user_input': True,
-                    'content': structured_response.question,  # .tasks[-1].description,
+                    'content': structured_response.question,
                 }
             elif structured_response.status == 'error':
                 return {
@@ -117,9 +119,3 @@ class LangraphPlannerAgent(BaseAgent):
             'require_user_input': True,
             'content': 'We are unable to process your request at the moment. Please try again.',
         }
-
-
-if __name__ == '__main__':
-    agent = LangraphPlannerAgent()
-    resp = agent.invoke('Plan my trip to London', '1')
-    print(resp)

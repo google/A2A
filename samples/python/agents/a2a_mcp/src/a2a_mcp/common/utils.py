@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 def init_api_key():
+    """Initialize the API key for Google Generative AI."""
     if not os.getenv('GOOGLE_API_KEY'):
         logger.error('GOOGLE_API_KEY is not set')
         raise ValueError('GOOGLE_API_KEY is not set')
@@ -19,6 +20,7 @@ def init_api_key():
 
 
 def config_logging():
+    """Configure basic logging."""
     log_level = (
         os.getenv('A2A_LOG_LEVEL') or os.getenv('FASTMCP_LOG_LEVEL') or 'INFO'
     ).upper()
@@ -26,7 +28,7 @@ def config_logging():
 
 
 def config_logger(logger):
-    """Logger specific config, avoiding clutter in enabling all loggging"""
+    """Logger specific config, avoiding clutter in enabling all loggging."""
     # TODO: replace with env
     logger.setLevel(logging.INFO)
     console_handler = logging.StreamHandler()
@@ -40,6 +42,7 @@ def config_logger(logger):
 
 
 def get_mcp_server_config() -> ServerConfig:
+    """Get the MCP server configuration."""
     return ServerConfig(
         host='localhost',
         port=10100,

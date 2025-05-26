@@ -16,17 +16,16 @@ from a2a.server.tasks import InMemoryPushNotifier, InMemoryTaskStore
 from a2a.types import AgentCard
 from a2a_mcp.common import prompts
 from a2a_mcp.common.agent_executor import GenericAgentExecutor
-from a2a_mcp.common.utils import config_logger
 from adk_travel_agent import TravelAgent
 from langgraph_planner_agent import LangraphPlannerAgent
 from orchestrator_agent import OrchestratorAgent
 
 
 logger = logging.getLogger(__name__)
-config_logger(logger=logger)
 
 
 def get_agent(agent_card: AgentCard):
+    """Get the agent, given an agent card."""
     try:
         if agent_card.name == 'Orchestrator Agent':
             return OrchestratorAgent()

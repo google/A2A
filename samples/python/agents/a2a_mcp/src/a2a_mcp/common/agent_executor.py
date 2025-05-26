@@ -1,13 +1,11 @@
-import json
 import logging
 
 from a2a.server.agent_execution import AgentExecutor, RequestContext
-from a2a.server.events import Event, EventQueue
+from a2a.server.events import EventQueue
 from a2a.server.tasks import TaskUpdater
 from a2a.types import (
     DataPart,
     InvalidParamsError,
-    Part,
     SendStreamingMessageSuccessResponse,
     Task,
     TaskArtifactUpdateEvent,
@@ -26,6 +24,8 @@ logger = logging.getLogger(__name__)
 
 
 class GenericAgentExecutor(AgentExecutor):
+    """AgentExecutor used by the tragel agents."""
+
     def __init__(self, agent: BaseAgent):
         self.agent = agent
 
@@ -50,22 +50,17 @@ class GenericAgentExecutor(AgentExecutor):
 
         updater = TaskUpdater(event_queue, task.id, task.contextId)
 
-        async for item in self.agent.stream(query, task.contextId):
+        async for item in self.agent.stream(query, task.contextId, task.id):
             # Agent to Agent call will return events,
             # Update the relevant ids to proxy back.
             if hasattr(item, 'root') and isinstance(
                 item.root, SendStreamingMessageSuccessResponse
             ):
                 event = item.root.result
-                if isinstance(event, TaskStatusUpdateEvent):
-                    event.taskId = task.id
-                    event.contextId = task.contextId
-                    event.status.message.taskId = task.id
-                    event.status.message.contextId = task.contextId
-                    event_queue.enqueue_event(event)
-                elif isinstance(event, TaskArtifactUpdateEvent):
-                    event.taskId = task.id
-                    event.contextId = task.contextId
+                if isinstance(
+                    event,
+                    (TaskStatusUpdateEvent | TaskArtifactUpdateEvent),
+                ):
                     event_queue.enqueue_event(event)
                 continue
 

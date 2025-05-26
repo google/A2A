@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [{ name = "rajeshvelicheti", email = "rvelicheti@google.com" }]
 requires-python = ">=3.13"
 dependencies = [
-    "a2a-sdk>=0.2.1a1",
+    "a2a-sdk>=0.2.1",
     "click>=8.1.8",
     "fastmcp>=1.0",
     "google-adk>=0.4.0",

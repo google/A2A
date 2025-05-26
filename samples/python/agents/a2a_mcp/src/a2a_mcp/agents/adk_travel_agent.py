@@ -9,11 +9,7 @@ from typing import Any, Dict
 
 from a2a_mcp.common.agent_runner import AgentRunner
 from a2a_mcp.common.base_agent import BaseAgent
-from a2a_mcp.common.utils import (
-    config_logger,
-    get_mcp_server_config,
-    init_api_key,
-)
+from a2a_mcp.common.utils import get_mcp_server_config, init_api_key
 from google.adk.agents import Agent
 from google.adk.tools.mcp_tool.mcp_toolset import MCPToolset, SseServerParams
 from google.genai import types as genai_types
@@ -23,9 +19,10 @@ logger = logging.getLogger(__name__)
 
 
 class TravelAgent(BaseAgent):
+    """Travel Agent backed by ADK."""
+
     def __init__(self, agent_name: str, description: str, instructions: str):
         init_api_key()
-        config_logger(logger=logger)
 
         super().__init__(
             agent_name=agent_name,
@@ -66,9 +63,11 @@ class TravelAgent(BaseAgent):
 
         raise NotImplementedError('Please use the streraming function')
 
-    async def stream(self, query, context_id) -> AsyncIterable[Dict[str, Any]]:
+    async def stream(
+        self, query, context_id, task_id
+    ) -> AsyncIterable[Dict[str, Any]]:
         logger.info(
-            f'Running {self.agent_name} stream for session {context_id} - {query}'
+            f'Running {self.agent_name} stream for session {context_id} {task_id} - {query}'
         )
 
         if not query:
