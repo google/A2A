@@ -6,7 +6,7 @@ from typing import Any
 import httpx
 
 from httpx._types import TimeoutTypes
-from httpx_sse import connect_sse
+from httpx_sse import aconnect_sse
 
 from common.types import (
     A2AClientHTTPError,
@@ -51,18 +51,23 @@ class A2AClient:
         self, payload: dict[str, Any]
     ) -> AsyncIterable[SendTaskStreamingResponse]:
         request = SendTaskStreamingRequest(params=payload)
-        with httpx.Client(timeout=None) as client:
-            with connect_sse(
-                client, 'POST', self.url, json=request.model_dump()
-            ) as event_source:
-                try:
-                    for sse in event_source.iter_sse():
-                        yield SendTaskStreamingResponse(**json.loads(sse.data))
-                except json.JSONDecodeError as e:
-                    raise A2AClientJSONError(str(e)) from e
-                except httpx.RequestError as e:
-                    raise A2AClientHTTPError(400, str(e)) from e
-
+        try:
+            with httpx.AsyncClient(timeout=None) as client:
+                with aconnect_sse(
+                    client, 'POST', self.url, json=request.model_dump()
+                ) as event_source:
+                    try:
+                        async for sse in event_source.aiter_sse():
+                            yield SendTaskStreamingResponse(**json.loads(sse.data))
+                    except json.JSONDecodeError as e:
+                        raise A2AClientJSONError(str(e)) from e
+                    except httpx.RequestError as e:
+                        raise A2AClientHTTPError(400, str(e)) from e
+        except httpx.RequestError as e:
+            raise A2AClientHTTPError(400, str(e)) from e
+        except json.JSONDecodeError as e:
+            raise A2AClientJSONError(str(e)) from e
+        
     async def _send_request(self, request: JSONRPCRequest) -> dict[str, Any]:
         async with httpx.AsyncClient() as client:
             try:
