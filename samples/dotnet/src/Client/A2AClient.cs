@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
 using Client.Common.Exceptions;
 using Client.Common.Models;
 
@@ -61,8 +63,32 @@ public class A2AClient : IDisposable
 
         try
         {
+            JsonSerializerOptions options = new()
+            {
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+                IncludeFields = false,
+                TypeInfoResolver = new DefaultJsonTypeInfoResolver()
+            };
+
+            options.TypeInfoResolver = options.TypeInfoResolver.WithAddedModifier(static typeInfo =>
+            {
+                if (typeInfo.Type == typeof(Part))
+                {
+                    typeInfo.PolymorphismOptions = new JsonPolymorphismOptions
+                    {
+                        TypeDiscriminatorPropertyName = "type",
+                        IgnoreUnrecognizedTypeDiscriminators = true,
+                        UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
+                        DerivedTypes =
+                        {
+                            new JsonDerivedType(typeof(TextPart), "TEXT")
+                        }
+                    };
+                }
+            });
+
             StringContent content = new(
-                JsonSerializer.Serialize(request),
+                JsonSerializer.Serialize(request, options),
                 Encoding.UTF8,
                 "application/json");
 
@@ -90,7 +116,7 @@ public class A2AClient : IDisposable
     }
 
     /// <summary>
-    /// Handles a JSON-RPC response.
+    /// Handles a JSON-RPC response with improved error handling and flexible deserialization.
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     /// <param name="response">The HTTP response message.</param>
@@ -103,6 +129,7 @@ public class A2AClient : IDisposable
         CancellationToken cancellationToken = default)
     {
         string responseBody = null!;
+
         try
         {
             if (!response.IsSuccessStatusCode)
@@ -113,7 +140,9 @@ public class A2AClient : IDisposable
                 try
                 {
                     // Try parsing as JSON RPC Error response
-                    JsonRpcResponse<T>? parsedError = JsonSerializer.Deserialize<JsonRpcResponse<T>>(responseBody);
+                    JsonRpcResponse<T>? parsedError =
+                        JsonSerializer.Deserialize<JsonRpcResponse<T>>(responseBody, GetJsonSerializerOptions());
+
                     if (parsedError?.Error != null)
                     {
                         JsonRpcError errorData = parsedError.Error;
@@ -136,27 +165,53 @@ public class A2AClient : IDisposable
 
             // Read and parse the successful JSON response
             responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-            JsonRpcResponse<T>? jsonResponse = JsonSerializer.Deserialize<JsonRpcResponse<T>>(responseBody);
 
-            // Basic validation of the JSON-RPC response structure
-            if (jsonResponse is not { JsonRpc: "2.0" })
+            // First, try to determine if this is a JSON-RPC response or a direct object
+            using JsonDocument document = JsonDocument.Parse(responseBody);
+            JsonElement root = document.RootElement;
+
+            // Check if it has JSON-RPC structure
+            if (root.TryGetProperty("jsonrpc", out JsonElement jsonRpcElement) &&
+                jsonRpcElement.GetString() == "2.0")
             {
-                throw new RpcException(
-                    -32603,
-                    "Invalid JSON-RPC response structure received from server.");
-            }
+                // This is a proper JSON-RPC response
+                JsonRpcResponse<T>? jsonResponse = JsonSerializer.Deserialize<JsonRpcResponse<T>>(responseBody, GetJsonSerializerOptions());
 
-            // Check for application-level errors within the JSON-RPC response
-            if (jsonResponse.Error != null)
+                // Basic validation of the JSON-RPC response structure
+                if (jsonResponse is not { JsonRpc: "2.0" })
+                {
+                    throw new RpcException(
+                        -32603,
+                        "Invalid JSON-RPC response structure received from server.");
+                }
+
+                // Check for application-level errors within the JSON-RPC response
+                if (jsonResponse.Error != null)
+                {
+                    throw new RpcException(
+                        jsonResponse.Error.Code,
+                        jsonResponse.Error.Message,
+                        jsonResponse.Error.Data);
+                }
+
+                // Extract and return only the result payload
+                return jsonResponse.Result;
+            }
+            else
             {
-                throw new RpcException(
-                    jsonResponse.Error.Code,
-                    jsonResponse.Error.Message,
-                    jsonResponse.Error.Data);
-            }
+                // This appears to be a direct object response (not wrapped in JSON-RPC)
+                // Deserialize directly as T
+                T? directResult = JsonSerializer.Deserialize<T>(responseBody, GetJsonSerializerOptions());
 
-            // Extract and return only the result payload
-            return jsonResponse.Result;
+                if (directResult == null)
+                {
+                    throw new RpcException(
+                        -32603,
+                        "Received null result from server.");
+                }
+
+                return directResult;
+            }
         }
         catch (Exception error)
         {
@@ -180,6 +235,131 @@ public class A2AClient : IDisposable
     }
 
     /// <summary>
+    /// Gets the configured JSON serializer options.
+    /// </summary>
+    /// <returns>JsonSerializerOptions configured for the client.</returns>
+    private JsonSerializerOptions GetJsonSerializerOptions()
+    {
+        JsonSerializerOptions options = new()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            IncludeFields = false,
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
+            PropertyNameCaseInsensitive = true // Add this for more flexible parsing
+        };
+
+        options.TypeInfoResolver = options.TypeInfoResolver.WithAddedModifier(static typeInfo =>
+        {
+            if (typeInfo.Type == typeof(Part))
+            {
+                typeInfo.PolymorphismOptions = new JsonPolymorphismOptions
+                {
+                    TypeDiscriminatorPropertyName = "type",
+                    IgnoreUnrecognizedTypeDiscriminators = true,
+                    UnknownDerivedTypeHandling = JsonUnknownDerivedTypeHandling.FailSerialization,
+                    DerivedTypes =
+                    {
+                        new JsonDerivedType(typeof(TextPart), "TEXT")
+                    }
+                };
+            }
+        });
+
+        return options;
+    }
+
+    /// <summary>
+    /// Alternative method specifically for extracting text content from message parts
+    /// </summary>
+    /// <param name="jsonContent">The JSON content containing message parts</param>
+    /// <returns>Extracted text content</returns>
+    public static string ExtractMessageText(string jsonContent)
+    {
+        try
+        {
+            using JsonDocument document = JsonDocument.Parse(jsonContent);
+            JsonElement root = document.RootElement;
+
+            // Navigate through the structure to find text parts
+            List<string> textParts = new();
+
+            // Check if this is a Task object with Status.Message.Parts
+            if (root.TryGetProperty("Status", out JsonElement statusElement) &&
+                statusElement.TryGetProperty("Message", out JsonElement messageElement) &&
+                messageElement.TryGetProperty("Parts", out JsonElement partsElement) &&
+                partsElement.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement part in partsElement.EnumerateArray())
+                {
+                    if (part.TryGetProperty("Type", out JsonElement typeElement) &&
+                        typeElement.GetString()?.Equals("text", StringComparison.OrdinalIgnoreCase) == true &&
+                        part.TryGetProperty("Text", out JsonElement textElement))
+                    {
+                        string? text = textElement.GetString();
+
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            textParts.Add(text);
+                        }
+                    }
+                }
+            }
+            // Check if this is a direct message with parts
+            else if (root.TryGetProperty("Parts", out JsonElement directPartsElement) &&
+                     directPartsElement.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement part in directPartsElement.EnumerateArray())
+                {
+                    if (part.TryGetProperty("Type", out JsonElement typeElement) &&
+                        typeElement.GetString()?.Equals("text", StringComparison.OrdinalIgnoreCase) == true &&
+                        part.TryGetProperty("Text", out JsonElement textElement))
+                    {
+                        string? text = textElement.GetString();
+
+                        if (!string.IsNullOrEmpty(text))
+                        {
+                            textParts.Add(text);
+                        }
+                    }
+                }
+            }
+            // Check for History array (fallback)
+            else if (root.TryGetProperty("History", out JsonElement historyElement) &&
+                     historyElement.ValueKind == JsonValueKind.Array)
+            {
+                foreach (JsonElement historyItem in historyElement.EnumerateArray())
+                {
+                    if (historyItem.ValueKind != JsonValueKind.Null &&
+                        historyItem.TryGetProperty("Parts", out JsonElement historyPartsElement) &&
+                        historyPartsElement.ValueKind == JsonValueKind.Array)
+                    {
+                        foreach (JsonElement part in historyPartsElement.EnumerateArray())
+                        {
+                            if (part.TryGetProperty("Type", out JsonElement typeElement) &&
+                                typeElement.GetString()?.Equals("text", StringComparison.OrdinalIgnoreCase) == true &&
+                                part.TryGetProperty("Text", out JsonElement textElement))
+                            {
+                                string? text = textElement.GetString();
+
+                                if (!string.IsNullOrEmpty(text))
+                                {
+                                    textParts.Add(text);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return string.Join(" ", textParts);
+        }
+        catch (JsonException)
+        {
+            return string.Empty;
+        }
+    }
+
+    /// <summary>
     /// Handles a streaming Server-Sent Events (SSE) response.
     /// </summary>
     /// <typeparam name="T">The type of the events.</typeparam>
@@ -197,6 +377,7 @@ public class A2AClient : IDisposable
         if (!response.IsSuccessStatusCode)
         {
             string errorText = null!;
+
             try
             {
                 errorText = await response.Content.ReadAsStringAsync(cancellationToken);
@@ -223,6 +404,7 @@ public class A2AClient : IDisposable
             while (!cancellationToken.IsCancellationRequested)
             {
                 string? line = await reader.ReadLineAsync(cancellationToken);
+
                 if (line == null)
                 {
                     // End of stream
@@ -230,6 +412,7 @@ public class A2AClient : IDisposable
                     {
                         // Console.Warning($"SSE stream ended with partial data in buffer for method {expectedMethod}: {buffer}");
                     }
+
                     break;
                 }
 
@@ -242,6 +425,7 @@ public class A2AClient : IDisposable
                     if (message.StartsWith("data:"))
                     {
                         string dataLine = message.Substring("data:".Length).Trim();
+
                         if (!string.IsNullOrEmpty(dataLine))
                         {
                             try
@@ -251,14 +435,16 @@ public class A2AClient : IDisposable
                                 // Basic validation of streamed data structure
                                 if (parsedData is not { JsonRpc: "2.0" })
                                 {
-                                    await Console.Error.WriteLineAsync($"Invalid SSE data structure received for method {expectedMethod}: {dataLine}");
+                                    await Console.Error.WriteLineAsync(
+                                        $"Invalid SSE data structure received for method {expectedMethod}: {dataLine}");
                                     continue; // Skip invalid data
                                 }
 
                                 // Check for errors within the streamed message
                                 if (parsedData.Error != null)
                                 {
-                                    await Console.Error.WriteLineAsync($"Error received in SSE stream for method {expectedMethod}: {parsedData.Error}");
+                                    await Console.Error.WriteLineAsync(
+                                        $"Error received in SSE stream for method {expectedMethod}: {parsedData.Error}");
                                     // Throw an error to terminate the stream
                                     throw new RpcException(
                                         parsedData.Error.Code,
@@ -354,7 +540,7 @@ public class A2AClient : IDisposable
     /// <param name="parameters">The parameters for the tasks/send method.</param>
     /// <param name="cancellationToken">A cancellation token.</param>
     /// <returns>The task object or null.</returns>
-    public async Task<System.Threading.Tasks.Task> SendTaskAsync(
+    public async Task<Client.Common.Models.Task> SendTaskAsync(
         TaskSendParams parameters,
         CancellationToken cancellationToken = default)
     {
@@ -363,7 +549,7 @@ public class A2AClient : IDisposable
             parameters,
             cancellationToken: cancellationToken);
 
-        return await HandleJsonResponseAsync<System.Threading.Tasks.Task>(
+        return await HandleJsonResponseAsync<Client.Common.Models.Task>(
             response,
             "tasks/send",
             cancellationToken);
@@ -392,7 +578,8 @@ public class A2AClient : IDisposable
         // Handle both types of events with a router function
         await HandleStreamingResponseAsync<object>(
             response,
-            eventObj => {
+            eventObj =>
+            {
                 if (eventObj is JsonElement jsonElement)
                 {
                     // Need to determine the type of the event
@@ -403,7 +590,8 @@ public class A2AClient : IDisposable
                     }
                     else if (jsonElement.TryGetProperty("artifact", out _))
                     {
-                        TaskArtifactUpdateEvent? artifactEvent = JsonSerializer.Deserialize<TaskArtifactUpdateEvent>(jsonElement.GetRawText());
+                        TaskArtifactUpdateEvent? artifactEvent =
+                            JsonSerializer.Deserialize<TaskArtifactUpdateEvent>(jsonElement.GetRawText());
                         artifactUpdateHandler?.Invoke(artifactEvent!);
                     }
                 }
@@ -519,7 +707,8 @@ public class A2AClient : IDisposable
         // Handle both types of events with a router function
         await HandleStreamingResponseAsync<object>(
             response,
-            eventObj => {
+            eventObj =>
+            {
                 if (eventObj is JsonElement jsonElement)
                 {
                     // Need to determine the type of the event
@@ -530,7 +719,8 @@ public class A2AClient : IDisposable
                     }
                     else if (jsonElement.TryGetProperty("artifact", out _))
                     {
-                        TaskArtifactUpdateEvent? artifactEvent = JsonSerializer.Deserialize<TaskArtifactUpdateEvent>(jsonElement.GetRawText());
+                        TaskArtifactUpdateEvent? artifactEvent =
+                            JsonSerializer.Deserialize<TaskArtifactUpdateEvent>(jsonElement.GetRawText());
                         artifactUpdateHandler?.Invoke(artifactEvent!);
                     }
                 }

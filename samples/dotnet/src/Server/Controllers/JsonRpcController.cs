@@ -2,6 +2,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Client.Common.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Server.Services.Interfaces;
 
 namespace Server.Controllers;
@@ -14,29 +16,18 @@ namespace Server.Controllers;
 public class JsonRpcController : ControllerBase
 {
     private readonly ILogger<JsonRpcController> _logger;
-    private readonly ITaskStore _taskStore;
     private readonly ITaskProcessor _taskProcessor;
-
-    private static readonly JsonSerializerOptions _jsonOptions = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        Converters = { new JsonStringEnumConverter() }
-    };
 
     /// <summary>
     /// Initializes a new instance of the <see cref="JsonRpcController"/> class.
     /// </summary>
     /// <param name="logger">The logger.</param>
-    /// <param name="taskStore">The task store.</param>
     /// <param name="taskProcessor">The task processor.</param>
     public JsonRpcController(
         ILogger<JsonRpcController> logger,
-        ITaskStore taskStore,
         ITaskProcessor taskProcessor)
     {
         _logger = logger;
-        _taskStore = taskStore;
         _taskProcessor = taskProcessor;
     }
 
@@ -76,9 +67,8 @@ public class JsonRpcController : ControllerBase
     {
         try
         {
-            TaskSendParams? parameters = JsonSerializer.Deserialize<TaskSendParams>(
-                JsonSerializer.Serialize(request.Params),
-                _jsonOptions
+            TaskSendParams? parameters = JsonConvert.DeserializeObject<TaskSendParams>(
+                request.Params.ToString()!
             );
 
             if (parameters == null || string.IsNullOrEmpty(parameters.Id))
@@ -91,14 +81,39 @@ public class JsonRpcController : ControllerBase
                 return new ObjectResult(new JsonRpcError(-32602, "Invalid parameters: 'message.parts' is required"));
             }
 
-            Client.Common.Models.Task task = await _taskProcessor.ProcessTaskAsync(parameters);
+            Client.Common.Models.Task task =
+                await _taskProcessor.ProcessTaskAsync(parameters, ExtractTextFromParams(request.Params.ToString()!));
 
-            return Ok((request.Id, task));
+            return Ok(JsonConvert.SerializeObject(task));
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing tasks/send: {Message}", ex.Message);
             return new ObjectResult(new JsonRpcError(-32603, $"Error processing tasks/send: {ex.Message}"));
         }
+    }
+
+    /// <summary>
+    ///     Dummy function only for this sample.
+    /// </summary>
+    private string ExtractTextFromParams(string data)
+    {
+        JObject jsonObject = JObject.Parse(data);
+
+        if (jsonObject["message"]?["parts"] is JArray parts)
+        {
+            foreach (JToken part in parts)
+            {
+                string? type = part["type"]?.ToString();
+                string? text = part["text"]?.ToString();
+
+                if (type == "TEXT" && !string.IsNullOrEmpty(text))
+                {
+                    return text;
+                }
+            }
+        }
+
+        return string.Empty;
     }
 }

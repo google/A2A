@@ -27,6 +27,7 @@ builder.Services.AddSingleton<ITaskStore, TaskStore>();
 
 builder.Services.AddSingleton<IMcpClientFactory, McpClientFactory>();
 builder.Services.AddSingleton<McpClientService>();
+builder.Services.AddSingleton<IMcpClient>(_ => builder.Services.BuildServiceProvider().GetRequiredService<McpClientService>().CreateClient().Result!);
 builder.Services.AddSingleton<ToolService>();
 
 builder.Services.AddSingleton(sp =>

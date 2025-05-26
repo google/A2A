@@ -14,7 +14,7 @@ public class DefaultTaskProcessor(
 {
     private readonly Dictionary<string, CancellationTokenSource> _taskCancellations = new();
 
-    public async Task<Task> ProcessTaskAsync(TaskSendParams parameters)
+    public async Task<Task> ProcessTaskAsync(TaskSendParams parameters, string content)
     {
         Task task = taskStore.CreateTask(parameters.Id, parameters.SessionId);
 
@@ -34,7 +34,7 @@ public class DefaultTaskProcessor(
                 _taskCancellations[parameters.Id] = cts;
             }
 
-            ChatMessageContent result = await agentService.ProcessQuery("test", cts.Token);
+            ChatMessageContent result = await agentService.ProcessQuery(content, cts.Token);
 
             Message? agentMessage = new()
             {
@@ -42,13 +42,6 @@ public class DefaultTaskProcessor(
                 Parts = [new TextPart { Text = result.Content! }]
             };
 
-
-            Artifact? artifact = new()
-            {
-                Name = "response",
-                Parts = [new TextPart { Text = result.Content! }],
-                Index = 0
-            };
 
             taskStore.UpdateTaskStatus(parameters.Id, TaskState.COMPLETED, agentMessage);
         }

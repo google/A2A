@@ -5,8 +5,12 @@ namespace Client.Common.Models;
 /// <summary>
 /// Base class for parts of a message.
 /// </summary>
-public abstract class Part
+public class Part
 {
+    protected Part()
+    {
+    }
+
     [JsonPropertyName("type")]
     public string Type { get; set; } = null!;
 

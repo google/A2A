@@ -10,7 +10,5 @@ public interface ITaskProcessor
     /// <summary>
     /// Processes a task synchronously.
     /// </summary>
-    /// <param name="parameters">The task parameters.</param>
-    /// <returns>The processed task.</returns>
-    Task<Client.Common.Models.Task> ProcessTaskAsync(TaskSendParams parameters);
+    Task<Client.Common.Models.Task> ProcessTaskAsync(TaskSendParams parameters, string content);
 }

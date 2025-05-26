@@ -38,9 +38,9 @@ public class A2ACardService
             DocumentationUrl = "https://github.com/microsoft/semantic-kernel",
             Capabilities = new AgentCapabilities
             {
-                Streaming = true,
+                Streaming = false,
                 PushNotifications = false,
-                StateTransitionHistory = true
+                StateTransitionHistory = false
             },
             Authentication = null!,
             DefaultInputModes = ["text/plain"],
