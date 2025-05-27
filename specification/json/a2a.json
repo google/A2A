@@ -274,7 +274,7 @@
             "type": "object"
         },
         "Artifact": {
-            "description": "Represents an artifact generated for a task task.",
+            "description": "Represents an artifact generated for a task.",
             "properties": {
                 "artifactId": {
                     "description": "Unique identifier for the artifact.",
