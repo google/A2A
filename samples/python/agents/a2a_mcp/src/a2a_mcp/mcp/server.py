@@ -212,16 +212,16 @@ def serve(host, port, transport):  # noqa: PLR0915
         """
         "name": "query_travel_data",
         "description": "Retrieves the most up-to-date, ariline, hotel and car rental availability. Helps with the booking.
-        This tool should be used when a user asks for the airline ticket booking, hotel or accommodation booking, or car rental reservations.”,
+        This tool should be used when a user asks for the airline ticket booking, hotel or accommodation booking, or car rental reservations.",
         "parameters": {
             "type": "object",
             "properties": {
-            “query": {
+            "query": {
                 "type": "string",
-                "description": “A SQL to run against the travel database.”
+                "description": "A SQL to run against the travel database."
             }
             },
-            "required": [“query”]
+            "required": ["query"]
         }
         """
         # The above is to influence gemini to pickup the tool.
@@ -243,7 +243,7 @@ def serve(host, port, transport):  # noqa: PLR0915
             logger.error(traceback.format_exc())
             if 'no such column' in e:
                 return {
-                    'error': f'Please check your query, {e}. Use the table schema to regnerate the query'
+                    'error': f'Please check your query, {e}. Use the table schema to regenerate the query'
                 }
             return {'error': {e}}
 
