@@ -13,10 +13,12 @@ AServer
 AStarlette
 Autogen
 CAs
+CLIs
 Camry
 Cjava
 DDo
 DGT
+EBFF
 EUR
 EUg
 FBT
@@ -44,6 +46,7 @@ PLW
 PTH
 RUF
 SLF
+TMDB
 URLTo
 Upserting
 Urke
@@ -93,6 +96,7 @@ dde
 direnv
 efaab
 efbd
+embeddings
 evt
 excinfo
 fafd
