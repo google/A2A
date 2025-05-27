@@ -138,10 +138,10 @@ flowchart LR
     3.  For each step in the plan:
         1.  Invokes an MCP tool (e.g., `find_agent`) to fetch the Agent Card of the best Task Agent.
         2.  Invokes the selected Task Agent via A2A to execute the task:
-            *   _Book Air Tickets:_ Task Agent will use a helper tool from the MCP server. The tool queries a SQLLite database to find the flights.
-            *   _Book Hotels:_ Task Agent will use a helper tool from the MCP server.
+            *   _Air Tickets:_ Task Agent will use a helper tool from the MCP server. The tool queries a SQLLite database to find the flights.
+            *   _Hotels:_ Task Agent will use a helper tool from the MCP server.
             The tool queries a SQLLite database to find the hotels.
-            *   _Book Car Rental:_ Task Agent will use a helper tool from the MCP server.
+            *   _Car Rental:_ Task Agent will use a helper tool from the MCP server.
             The tool queries a SQLLite database to find the rental cars.
         3.  Stores the results in memory
     4.  Aggregates results and summarizes them for the client.
@@ -208,8 +208,7 @@ All the 3 ADK agents use the same python code but are instantiated with differen
 
     Note: Change the host and port as needed.
 
-7. Follow the steps in demo/ui to start the demo app.
-8. Add the Orchestrator Agent URL as an agent in the demo app.
+7. Follow the steps in hosts/cli to start the cli app.
 
 
 ### File/Directory Descriptions:
@@ -222,18 +221,17 @@ All the 3 ADK agents use the same python code but are instantiated with differen
         *   `__main__.py`: Main script to start up the agent services.
         *   `adk_travel_agent.py`: This is the core travel agent built using ADK, different agent cards are used to instantiate the agent. 
         *   `langgraph_planner_agent.py`: The implementation of the "Planner Agent" using LangGraph, responsible for breaking down user requests into structured plans.
-        *   `task_executor_agent.py`: The implementation of the "Orchestrator Agent," which takes the plan from the Planner, discovers appropriate Task Agents via MCP, and invokes them using A2A.
+        *   `orchestrator_agent.py`: The implementation of the "Orchestrator Agent," which takes the plan from the Planner, discovers appropriate Task Agents via MCP, and invokes them using A2A.
     *   **`common/`**: Holds shared code used by multiple agents or parts of the system.
+        *   `agent_executor.py`: An A2A module to manage the state, dependencies, and execution of tasks within the orchestration flow.
         *   `agent_runner.py`: A utility or framework component for running ADK agent instances, managing their lifecycle, and exposing their services.
         *   `base_agent.py`: An abstract base class or interface defining common methods and properties for all agents in this project.
         *   `prompts.py`: Contains predefined prompt templates used for interacting with Large Language Models (LLMs) within the agents (e.g., for planning or summarization).
-        *   `task_manager.py`: An A2A module to manage the state, dependencies, and execution of tasks within the orchestration flow.
         *   `types.py`: Defines custom Python data types, Pydantic models, or Enums used across the project (e.g., for representing tasks, agent card structures, or API requests/responses).
         *   `utils.py`: A collection of general-purpose utility functions.
+        *   `workflow.py`: Workflow to manage the processs flow.
     *   **`mcp/`**: Contains the implementation related to the Model Context Protocol.
         *   `client.py`: A helper MCP client library that used to query the MCP server for agent cards or tools. This is a test utility and not used by the agents.
-        *   `server.py`: The implementation of the MCP server itself. This server hosts the agent cards as resources and exposes tools like `find_agent`.
-
-*   **`pyproject.toml`**: A standard file for configuring Python projects, introduced by PEP 518. It typically defines project dependencies, build system requirements (like Poetry or Flit), and other project metadata.
+        *   `server.py`: The implementation of the MCP server itself. This server hosts the agent cards as resources.
 
 *   **`travel_agency.db`**: A light weight SQLLite DB that hosts the demo data.
