@@ -104,8 +104,13 @@ class SemanticKernelTravelAgent:
             endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
             chat_deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
             api_version = os.getenv('AZURE_OPENAI_API_VERSION')
-            # Use Azure OpenAI
-            chat_service = AzureChatCompletion()
+            # Use Azure OpenAI with required parameters
+            chat_service = AzureChatCompletion(
+                endpoint=endpoint,
+                api_key=api_key,
+                deployment_name=chat_deployment_name,
+                api_version=api_version
+            )
         # Check OpenAI environment variables and create variables if both are set
         elif all([
             os.getenv('OPENAI_API_KEY'),
@@ -113,8 +118,11 @@ class SemanticKernelTravelAgent:
         ]):
             api_key = os.getenv('OPENAI_API_KEY')
             model_id = os.getenv('OPENAI_CHAT_MODEL_ID')
-            # Use standard OpenAI
-            chat_service = OpenAIChatCompletion()
+            # Use standard OpenAI with required parameters
+            chat_service = OpenAIChatCompletion(
+                ai_model_id=model_id,
+                api_key=api_key
+            )
         else:
             raise ValueError(
                 'Either Azure OpenAI environment variables (AZURE_OPENAI_ENDPOINT, '
