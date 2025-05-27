@@ -13,13 +13,13 @@ The `RequestContext` provides information about the incoming request, such as th
 
 ## Helloworld Agent Executor
 
-Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAgentExecutor`.
+Let's look at `samples/helloworld/agent_executor.py`. It defines `HelloWorldAgentExecutor`.
 
 1. **The Agent (`HelloWorldAgent`)**:
     This is a simple helper class that encapsulates the actual "business logic".
 
     ```python { .no-copy }
-    # examples/helloworld/agent_executor.py
+    # samples/helloworld/agent_executor.py
     class HelloWorldAgent:
         """Hello World Agent."""
 
@@ -35,7 +35,7 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
     - **`__init__`**:
 
         ```python { .no-copy }
-        # examples/helloworld/agent_executor.py
+        # samples/helloworld/agent_executor.py
         from typing_extensions import override
 
         from a2a.server.agent_execution import AgentExecutor, RequestContext
@@ -55,7 +55,7 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
     - **`execute`**:
 
         ```python { .no-copy }
-        # examples/helloworld/agent_executor.py
+        # samples/helloworld/agent_executor.py
             @override
             async def execute(
                 self,
@@ -76,7 +76,7 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
         The Helloworld example's `cancel` method simply raises an exception, indicating that cancellation is not supported for this basic agent.
 
         ```python { .no-copy }
-        # examples/helloworld/agent_executor.py
+        # samples/helloworld/agent_executor.py
             @override
             async def cancel(
                 self, context: RequestContext, event_queue: EventQueue
