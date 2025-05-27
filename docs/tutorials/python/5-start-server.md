@@ -6,10 +6,10 @@ The A2A Python SDK provides an `A2AStarletteApplication` class that simplifies r
 
 ## Server Setup in Helloworld
 
-Let's look at `examples/helloworld/__main__.py` again to see how the server is initialized and started.
+Let's look at `samples/helloworld/__main__.py` again to see how the server is initialized and started.
 
 ```python { .no-copy }
-# examples/helloworld/__main__.py
+# samples/helloworld/__main__.py
 from agent_executor import HelloWorldAgentExecutor
 
 from a2a.server.apps import A2AStarletteApplication
@@ -80,13 +80,13 @@ Let's break this down:
 
 ## Running the Helloworld Server
 
-Navigate to the `a2a-python` directory in your terminal (if you're not already there) and ensure your virtual environment is activated.
+Navigate to the `a2a-samples` directory in your terminal (if you're not already there) and ensure your virtual environment is activated.
 
 To run the Helloworld server:
 
 ```bash
-# from the a2a-python directory
-python examples/helloworld/__main__.py
+# from the a2a-samples directory
+python samples/helloworld/__main__.py
 ```
 
 You should see output similar to this, indicating the server is running:

@@ -9,11 +9,11 @@
 
 ## Clone the Repository
 
-If you haven't already, clone the A2A repository and navigate to the Python SDK directory:
+If you haven't already, clone the A2A Samples repository:
 
 ```bash
-git clone https://github.com/google-a2a/A2A-python.git -b main --depth 1
-cd a2a-python
+git clone https://github.com/google-a2a/a2a-samples.git -b main --depth 1
+cd a2a-samples
 ```
 
 ## Python Environment & SDK Installation

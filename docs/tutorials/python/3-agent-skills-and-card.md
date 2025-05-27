@@ -2,7 +2,7 @@
 
 Before an A2A agent can do anything, it needs to define what it _can_ do (its skills) and how other agents or clients can find out about these capabilities (its Agent Card).
 
-We'll use the `helloworld` example located in `a2a-python/examples/helloworld/`.
+We'll use the `helloworld` example located in `a2a-samples/samples/helloworld/`.
 
 ## Agent Skills
 
@@ -17,10 +17,10 @@ Key attributes of an `AgentSkill` (defined in `a2a.types`):
 - `examples`: Sample prompts or use cases.
 - `inputModes` / `outputModes`: Supported MIME types for input and output (e.g., "text/plain", "application/json").
 
-In `examples/helloworld/__main__.py`, you can see how a skill for the Helloworld agent is defined:
+In `samples/helloworld/__main__.py`, you can see how a skill for the Helloworld agent is defined:
 
 ```python { .no-copy }
-# examples/helloworld/__main__.py
+# samples/helloworld/__main__.py
 # ...
     skill = AgentSkill(
         id='hello_world',
@@ -49,7 +49,7 @@ Key attributes of an `AgentCard` (defined in `a2a.types`):
 The `helloworld` example defines its Agent Card like this:
 
 ```python { .no-copy }
-# examples/helloworld/__main__.py
+# samples/helloworld/__main__.py
 # ...
     agent_card = AgentCard(
         name='Hello World Agent',
