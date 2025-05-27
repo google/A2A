@@ -1,9 +1,8 @@
 [project]
 name = "a2a-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "A2A - MCP Sample"
 readme = "README.md"
-authors = [{ name = "rajeshvelicheti", email = "rvelicheti@google.com" }]
 requires-python = ">=3.13"
 dependencies = [
     "a2a-sdk>=0.2.1",

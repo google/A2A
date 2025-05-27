@@ -148,7 +148,7 @@ flowchart LR
     5. If the agent discovers budget mismatch or failures in booking, a re-planning task is kicked off.
 
 ## Steps to execute the example
-This sample is built using 3 ADK agents to excute the tasks and a Langgraph agent that works as a planner.
+This sample is built using 3 ADK agents to execute the tasks and a LangGraph agent that works as a planner.
 All the 3 ADK agents use the same python code but are instantiated with different agent cards. 
 1. Start the MCP Server:
     ```bash
@@ -229,7 +229,7 @@ All the 3 ADK agents use the same python code but are instantiated with differen
         *   `prompts.py`: Contains predefined prompt templates used for interacting with Large Language Models (LLMs) within the agents (e.g., for planning or summarization).
         *   `types.py`: Defines custom Python data types, Pydantic models, or Enums used across the project (e.g., for representing tasks, agent card structures, or API requests/responses).
         *   `utils.py`: A collection of general-purpose utility functions.
-        *   `workflow.py`: Workflow to manage the processs flow.
+        *   `workflow.py`: Workflow to manage the process flow.
     *   **`mcp/`**: Contains the implementation related to the Model Context Protocol.
         *   `client.py`: A helper MCP client library that used to query the MCP server for agent cards or tools. This is a test utility and not used by the agents.
         *   `server.py`: The implementation of the MCP server itself. This server hosts the agent cards as resources.
