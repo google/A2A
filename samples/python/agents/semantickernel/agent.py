@@ -94,40 +94,28 @@ class SemanticKernelTravelAgent:
 
     def __init__(self):
         # Check Azure OpenAI environment variables and create variables if all are set
-        if all([
-            os.getenv('AZURE_OPENAI_API_KEY'),
-            os.getenv('AZURE_OPENAI_ENDPOINT'), 
-            os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME'),
+        azure_vars = [
+            os.getenv('AZURE_OPENAI_ENDPOINT'),
+            os.getenv('AZURE_OPENAI_API_KEY'), 
+            os.getenv('AZURE_OPENAI_CHAT_DEPLOYMENT_NAME'),
             os.getenv('AZURE_OPENAI_API_VERSION')
-        ]):
-            api_key = os.getenv('AZURE_OPENAI_API_KEY')
-            endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
-            chat_deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
-            api_version = os.getenv('AZURE_OPENAI_API_VERSION')
-            # Use Azure OpenAI with required parameters
-            chat_service = AzureChatCompletion(
-                endpoint=endpoint,
-                api_key=api_key,
-                deployment_name=chat_deployment_name,
-                api_version=api_version
-            )
-        # Check OpenAI environment variables and create variables if both are set
-        elif all([
+        ]
+        
+        # Check if OpenAI environment variables are available
+        openai_vars = [
             os.getenv('OPENAI_API_KEY'),
-            os.getenv('OPENAI_CHAT_MODEL_ID')
-        ]):
-            api_key = os.getenv('OPENAI_API_KEY')
-            model_id = os.getenv('OPENAI_CHAT_MODEL_ID')
-            # Use standard OpenAI with required parameters
-            chat_service = OpenAIChatCompletion(
-                ai_model_id=model_id,
-                api_key=api_key
-            )
+            os.getenv('OPENAI_MODEL_ID')
+        ]
+        
+        if all(azure_vars):            
+           chat_service = AzureChatCompletion()
+        elif all(openai_vars):            
+            chat_service = OpenAIChatCompletion()
         else:
             raise ValueError(
                 'Either Azure OpenAI environment variables (AZURE_OPENAI_ENDPOINT, '
-                'AZURE_OPENAI_API_KEY, AZURE_OPENAI_DEPLOYMENT_NAME, AZURE_OPENAI_API_VERSION) or OpenAI '
-                'environment variables (OPENAI_API_KEY, OPENAI_CHAT_MODEL_ID) must be set.'
+                'AZURE_OPENAI_API_KEY, AZURE_OPENAI_CHAT_DEPLOYMENT_NAME, AZURE_OPENAI_API_VERSION) or OpenAI '
+                'environment variables (OPENAI_API_KEY, OPENAI_MODEL_ID) must be set.'
             )
             
         currency_exchange_agent = ChatCompletionAgent(

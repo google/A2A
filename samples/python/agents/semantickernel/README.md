@@ -67,7 +67,7 @@ OPENAI_CHAT_MODEL_ID="your-model-id"
 ```bash
 AZURE_OPENAI_API_KEY="your-azure-api-key-here"
 AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com/"
-AZURE_OPENAI_DEPLOYMENT_NAME="your-deployment-name"
+AZURE_OPENAI_CHAT_DEPLOYMENT_NAME="your-deployment-name"
 AZURE_OPENAI_API_VERSION="2024-12-01-preview"
 ```
 
