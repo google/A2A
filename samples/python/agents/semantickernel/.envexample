@@ -1,10 +1,9 @@
-# OpenAI configurations
-OPENAI_API_KEY="<example>"
-OPENAI_CHAT_MODEL_ID="gpt-4o"
+# For OpenAI (standard)
+OPENAI_API_KEY="sk-your-openai-api-key-here"
+OPENAI_CHAT_MODEL_ID="gpt-4.1"
 
-# Azure OpenAI configuration (defaults to Azure OpenAI)
-ENABLE_AZURE_OPENAI="true"
-AZURE_OPENAI_API_KEY="your_azure_api_key_here"
-AZURE_OPENAI_ENDPOINT="<https://your-resource.openai.azure.com/>"
+# For Azure OpenAI
+AZURE_OPENAI_API_KEY="your-azure-api-key-here"
+AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com/"
 AZURE_OPENAI_DEPLOYMENT_NAME="your-deployment-name"
-AZURE_OPENAI_API_VERSION="2024-12-01-preview"  # Set to your desired API version
+AZURE_OPENAI_API_VERSION="2024-12-01-preview"

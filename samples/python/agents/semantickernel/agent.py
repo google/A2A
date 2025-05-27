@@ -93,49 +93,23 @@ class SemanticKernelTravelAgent:
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
 
     def __init__(self):
-        # Check if Azure OpenAI should be used
-        use_azure = os.getenv('ENABLE_AZURE_OPENAI', 'false').lower() == 'true'
-        
-        # Get API key based on selected service type
-        if use_azure:
-            api_key = os.getenv('AZURE_OPENAI_API_KEY', None)
-            if not api_key:
-                raise ValueError('AZURE_OPENAI_API_KEY environment variable must be set when using Azure OpenAI.')
-            
-            endpoint = os.getenv('AZURE_OPENAI_ENDPOINT', None)
-            if not endpoint:
-                raise ValueError('AZURE_OPENAI_ENDPOINT environment variable must be set when using Azure OpenAI.')
-            
-            deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME', None)
-            if not deployment_name:
-                raise ValueError('AZURE_OPENAI_DEPLOYMENT_NAME environment variable must be set when using Azure OpenAI.')
-                
-            # API version is recommended but not required (will use default if not specified)
-            api_version = os.getenv('AZURE_OPENAI_API_VERSION', None)
-            if not api_version:
-                logger.warning('AZURE_OPENAI_API_VERSION not set, using default API version.')
+        # Automatically detect Azure vs OpenAI based on environment variables
+        # Check if Azure OpenAI environment variables are available
+        if (os.getenv('AZURE_OPENAI_ENDPOINT') and 
+            os.getenv('AZURE_OPENAI_API_KEY') and 
+            os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME') and
+            os.getenv('AZURE_OPENAI_API_VERSION')):
+            # Use Azure OpenAI
+            chat_service = AzureChatCompletion()
+        elif (os.getenv('OPENAI_API_KEY') and 
+              os.getenv('OPENAI_CHAT_MODEL_ID')):
+            # Use standard OpenAI
+            chat_service = OpenAIChatCompletion()
         else:
-            api_key = os.getenv('OPENAI_API_KEY', None)
-            if not api_key:
-                raise ValueError('OPENAI_API_KEY environment variable must be set when not using Azure OpenAI.')
-            
-            model_id = os.getenv('OPENAI_CHAT_MODEL_ID', 'gpt-4.1')
-
-        # Define a CurrencyExchangeAgent to handle currency-related tasks
-        # Configure AzureChatCompletion service based on our settings
-        chat_service = None
-        if use_azure:
-            chat_service = AzureChatCompletion(
-                deployment_name=deployment_name,
-                api_key=api_key,
-                endpoint=endpoint,
-                api_version=api_version,
-            )
-        else:
-            # For standard OpenAI, use OpenAIChatCompletion with the correct model name
-            chat_service = OpenAIChatCompletion(
-                ai_model_id=model_id,
-                api_key=api_key,
+            raise ValueError(
+                'Either Azure OpenAI environment variables (AZURE_OPENAI_ENDPOINT, '
+                'AZURE_OPENAI_API_KEY, AZURE_OPENAI_DEPLOYMENT_NAME, AZURE_OPENAI_API_VERSION) or OpenAI '
+                'environment variables (OPENAI_API_KEY, OPENAI_CHAT_MODEL_ID) must be set.'
             )
             
         currency_exchange_agent = ChatCompletionAgent(
@@ -194,7 +168,8 @@ class SemanticKernelTravelAgent:
             session_id (str): Unique identifier for the session.
 
         Returns:
-            dict: A dictionary containing the content, task completion status, and user input requirement.
+            dict: A dictionary containing the content, task completion status,
+            and user input requirement.
         """
         await self._ensure_thread_exists(session_id)
 
@@ -206,55 +181,74 @@ class SemanticKernelTravelAgent:
         return self._get_agent_response(response.content)
 
     async def stream(
-        self, user_input: str, session_id: str
+        self,
+        user_input: str,
+        session_id: str,
     ) -> AsyncIterable[dict[str, Any]]:
-        """For streaming tasks (like tasks/sendSubscribe), we yield partial progress using SK agent's invoke_stream.
+        """For streaming tasks we yield the SK agent's invoke_stream progress.
 
         Args:
             user_input (str): User input message.
             session_id (str): Unique identifier for the session.
 
         Yields:
-            dict: A dictionary containing the content, task completion status, and user input requirement.
+            dict: A dictionary containing the content, task completion status,
+            and user input requirement.
         """
         await self._ensure_thread_exists(session_id)
 
+        plugin_notice_seen = False
+        plugin_event = asyncio.Event()
+
+        text_notice_seen = False
         chunks: list[StreamingChatMessageContent] = []
 
-        # For the sample, to avoid too many messages, only show one "in-progress" message for each task
-        tool_call_in_progress = False
-        message_in_progress = False
-        async for response_chunk in self.agent.invoke_stream(
+        async def _handle_intermediate_message(
+            message: 'ChatMessageContent',
+        ) -> None:
+            """Handle intermediate messages from the agent."""
+            nonlocal plugin_notice_seen
+            if not plugin_notice_seen:
+                plugin_notice_seen = True
+                plugin_event.set()
+            # An example of handling intermediate messages during function calling
+            for item in message.items or []:
+                if isinstance(item, FunctionResultContent):
+                    print(
+                        f'SK Function Result:> {item.result} for function: {item.name}'
+                    )
+                elif isinstance(item, FunctionCallContent):
+                    print(
+                        f'SK Function Call:> {item.name} with arguments: {item.arguments}'
+                    )
+                else:
+                    print(f'SK Message:> {item}')
+
+        async for chunk in self.agent.invoke_stream(
             messages=user_input,
             thread=self.thread,
+            on_intermediate_message=_handle_intermediate_message,
         ):
-            if any(
-                isinstance(item, (FunctionCallContent, FunctionResultContent))
-                for item in response_chunk.items
-            ):
-                if not tool_call_in_progress:
+            if plugin_event.is_set():
+                yield {
+                    'is_task_complete': False,
+                    'require_user_input': False,
+                    'content': 'Processing function calls...',
+                }
+                plugin_event.clear()
+
+            if any(isinstance(i, StreamingTextContent) for i in chunk.items):
+                if not text_notice_seen:
                     yield {
                         'is_task_complete': False,
                         'require_user_input': False,
-                        'content': 'Processing the trip plan (with plugins)...',
+                        'content': 'Building the output...',
                     }
-                    tool_call_in_progress = True
-            elif any(
-                isinstance(item, StreamingTextContent)
-                for item in response_chunk.items
-            ):
-                if not message_in_progress:
-                    yield {
-                        'is_task_complete': False,
-                        'require_user_input': False,
-                        'content': 'Building the trip plan...',
-                    }
-                    message_in_progress = True
+                    text_notice_seen = True
+                chunks.append(chunk.message)
 
-                chunks.append(response_chunk.message)
-
-        full_message = sum(chunks[1:], chunks[0])
-        yield self._get_agent_response(full_message)
+        if chunks:
+            yield self._get_agent_response(sum(chunks[1:], chunks[0]))
 
     def _get_agent_response(
         self, message: 'ChatMessageContent'
@@ -305,9 +299,7 @@ class SemanticKernelTravelAgent:
         Args:
             session_id (str): Unique identifier for the session.
         """
-        # Replace check with self.thread.id when
-        # https://github.com/microsoft/semantic-kernel/issues/11535 is fixed
-        if self.thread is None or self.thread._thread_id != session_id:
+        if self.thread is None or self.thread.id != session_id:
             await self.thread.delete() if self.thread else None
             self.thread = ChatHistoryAgentThread(thread_id=session_id)
 

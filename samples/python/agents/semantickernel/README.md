@@ -53,12 +53,25 @@ sequenceDiagram
 cd samples/python/agents/semantickernel
 ```
 
-2. **Create an environment file (.env) with your API key and the model ID (e.g., "gpt-4.1"):**:
+2. **Configure environment variables**:
 
+Create a `.env` file based on `.envexample`. The agent automatically detects whether to use Azure OpenAI or standard OpenAI based on which environment variables are set.
+
+**For OpenAI (standard):**
 ```bash
-OPENAI_API_KEY="your_api_key_here"
-OPENAI_CHAT_MODEL_ID="your-model-id"
+OPENAI_API_KEY="sk-your-openai-api-key-here"
+OPENAI_CHAT_MODEL_ID="gpt-4.1"
 ```
+
+**For Azure OpenAI:**
+```bash
+AZURE_OPENAI_API_KEY="your-azure-api-key-here"
+AZURE_OPENAI_ENDPOINT="https://your-resource.openai.azure.com/"
+AZURE_OPENAI_DEPLOYMENT_NAME="your-deployment-name"
+AZURE_OPENAI_API_VERSION="2024-12-01-preview"
+```
+
+> Note: The agent will use Azure OpenAI if all four Azure variables are set, otherwise it will use standard OpenAI if both OpenAI variables are set.
 
 3. **Set up the Python Environment**:
 
