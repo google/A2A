@@ -30,6 +30,7 @@ class OrchestratorAgent(BaseAgent):
         )
         self.graph = None
         self.results = []
+        self.travel_context = {}
 
     async def generate_summary(self) -> str:
         client = genai.Client()
@@ -73,6 +74,11 @@ class OrchestratorAgent(BaseAgent):
             self.graph.add_edge(node_id, node.id)
         self.set_node_attributes(node.id, task_id, context_id, query)
         return node
+
+    def process_complete_state(self):
+        self.results.clear()
+        self.graph = None
+        self.travel_context.clear()
 
     async def stream(
         self, query, context_id, task_id
@@ -138,6 +144,8 @@ class OrchestratorAgent(BaseAgent):
                         if artifact.name == 'PlannerAgent-result':
                             # Planning agent returned data, update graph.
                             artifact_data = artifact.parts[0].root.data
+                            if 'trip_info' in artifact_data:
+                                self.travel_context = artifact_data['trip_info']
                             logger.info(
                                 f'Updating workflow with {len(artifact_data["tasks"])} task nodes'
                             )
@@ -154,6 +162,7 @@ class OrchestratorAgent(BaseAgent):
                                 )
                                 current_node_id = node.id
                                 # Restart graph from the newly inserted subgraph state
+                                # Start from the new node just created.
                                 if idx == 0:
                                     resume_workflow = True
                                     start_node_id = node.id
@@ -176,8 +185,8 @@ class OrchestratorAgent(BaseAgent):
             # All individual actions complete, now generate the summary
             logger.info(f'Generating summary for {len(self.results)} results')
             summary = await self.generate_summary()
+            self.process_complete_state()
             logger.info(f'Summary: {summary}')
-            self.results.clear()
             yield {
                 'response_type': 'text',
                 'is_task_complete': True,
