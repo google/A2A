@@ -1,0 +1,15 @@
+[project]
+name = "shibuya-cafe-agent"
+version = "0.1.0"
+dependencies = [
+    "starlette",
+    "pydantic",
+    "click",
+    "python-dotenv",
+    "sse-starlette",
+    "uvicorn",
+    "google-generativeai",
+    "pillow",
+    "google-genai>=1.9.0",
+    "requests"
+]
