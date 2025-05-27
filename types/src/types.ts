@@ -764,7 +764,7 @@ export interface GetTaskSuccessResponse extends JSONRPCSuccessResponse {
 
 // --8<-- [start:GetTaskResponse]
 /**
- * JSON-RPC success response for the 'tasks/get' method.
+ * JSON-RPC response for the 'tasks/get' method.
  */
 export type GetTaskResponse = GetTaskSuccessResponse | JSONRPCErrorResponse;
 // --8<-- [end:GetTaskResponse]
