@@ -1,9 +1,8 @@
-# type:ignore
-import asyncio
+"""Convience methods to start servers."""
 
 import click
 
-from a2a_mcp.mcp import client, server
+from a2a_mcp.mcp import server
 
 
 @click.command()
@@ -26,20 +25,9 @@ from a2a_mcp.mcp import client, server
     default='stdio',
     help='MCP Transport',
 )
-@click.option('--find_agent', 'query', help='Query to find an agent')
-@click.option(
-    '--resource', 'resource_name', help='URI of the resource to locate'
-)
-@click.option('--prompt', 'prompt', help='Prompt to the agent')
-@click.option('--tool', 'tool_name', help='Tool to execute')
-def main(
-    command, host, port, transport, query, resource_name, prompt, tool_name
-) -> None:
+def main(command, host, port, transport) -> None:
+    # TODO: Add other servers, perhaps dynamic port allocation
     if command == 'mcp-server':
         server.serve(host, port, transport)
-    elif command == 'mcp-client':
-        asyncio.run(
-            client.main(host, port, transport, query, resource_name, tool_name)
-        )
     else:
         raise ValueError(f'Unknown run option: {command}')
