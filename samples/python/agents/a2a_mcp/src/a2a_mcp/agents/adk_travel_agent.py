@@ -38,25 +38,26 @@ class TravelAgent(BaseAgent):
     async def init_agent(self):
         logger.info(f'Initializing {self.agent_name} metadata')
         config = get_mcp_server_config()
-        async with MCPToolset(
+        logger.info(f'MCP Server url={config.url}')
+        tools = await MCPToolset(
             connection_params=SseServerParams(url=config.url)
-        ) as toolset:
-            tools = await toolset.load_tools()
-            for tool in tools:
-                logger.info(f'Loaded tools {tool.name}')
-            generate_content_config = genai_types.GenerateContentConfig(
-                temperature=0.0
-            )
-            self.agent = Agent(
-                name=self.agent_name,
-                instruction=self.instructions,
-                model='gemini-2.0-flash',
-                disallow_transfer_to_parent=True,
-                disallow_transfer_to_peers=True,
-                generate_content_config=generate_content_config,
-                tools=tools,
-            )
-            self.runner = AgentRunner()
+        ).get_tools()
+
+        for tool in tools:
+            logger.info(f'Loaded tools {tool.name}')
+        generate_content_config = genai_types.GenerateContentConfig(
+            temperature=0.0
+        )
+        self.agent = Agent(
+            name=self.agent_name,
+            instruction=self.instructions,
+            model='gemini-2.0-flash',
+            disallow_transfer_to_parent=True,
+            disallow_transfer_to_peers=True,
+            generate_content_config=generate_content_config,
+            tools=tools,
+        )
+        self.runner = AgentRunner()
 
     async def invoke(self, query, session_id) -> dict:
         logger.info(f'Running {self.agent_name} for session {session_id}')

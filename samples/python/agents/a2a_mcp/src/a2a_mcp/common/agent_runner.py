@@ -40,18 +40,17 @@ class AgentRunner:
         if not session_id:
             session_id = uuid.uuid4().hex
         else:
-            self.session = self.session_service.get_session(
+            self.session = await self.session_service.get_session(
                 app_name=self.app_name,
                 user_id=self.user_id,
                 session_id=session_id,
             )
         if not self.session:
-            self.session = self.session_service.create_session(
+            self.session = await self.session_service.create_session(
                 app_name=self.app_name,
                 user_id=self.user_id,
                 session_id=session_id,
             )
-
         content = types.Content(role='user', parts=[types.Part(text=query)])
 
         async for event in runner.run_async(
