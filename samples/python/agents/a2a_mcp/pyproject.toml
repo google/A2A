@@ -1,0 +1,31 @@
+[project]
+name = "a2a-mcp"
+version = "0.1.0"
+description = "A2A - MCP Sample"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "a2a-sdk>=0.2.1",
+    "click>=8.1.8",
+    "fastmcp>=1.0",
+    "google-adk>=1.0.0",
+    "google-cloud-aiplatform>=1.91.0",
+    "google-generativeai>=0.8.5",
+    "httpx>=0.28.1",
+    "langchain-google-genai>=2.0.10",
+    "langchain-mcp-adapters>=0.0.9",
+    "langgraph>=0.4.1",
+    "mcp[cli]>=1.5.0",
+    "nest-asyncio>=1.6.0",
+    "networkx>=3.4.2",
+    "numpy>=2.2.5",
+    "pandas>=2.2.3",
+    "pydantic>=2.11.4",
+]
+
+[project.scripts]
+a2a-mcp = "a2a_mcp:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
