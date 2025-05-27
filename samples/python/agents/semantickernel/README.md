@@ -59,8 +59,8 @@ Create a `.env` file based on `.envexample`. The agent automatically detects whe
 
 **For OpenAI (standard):**
 ```bash
-OPENAI_API_KEY="sk-your-openai-api-key-here"
-OPENAI_CHAT_MODEL_ID="gpt-4.1"
+OPENAI_API_KEY="your_api_key_here"
+OPENAI_CHAT_MODEL_ID="your-model-id"
 ```
 
 **For Azure OpenAI:**
