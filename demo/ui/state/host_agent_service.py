@@ -272,7 +272,7 @@ def extract_content(
         elif p.kind == 'data':
             try:
                 jsonData = json.dumps(p.data)
-                if 'kind' in p.data and p.data['kind'] == 'form':
+                if 'type' in p.data and p.data['type'] == 'form':
                     parts.append((p.data, 'form'))
                 else:
                     parts.append((jsonData, 'application/json'))

@@ -86,8 +86,8 @@ class ConversationServer:
         if isinstance(self.manager, ADKHostManager):
             self.manager.update_api_key(api_key)
 
-    def _create_conversation(self):
-        c = self.manager.create_conversation()
+    async def _create_conversation(self):
+        c = await self.manager.create_conversation()
         return CreateConversationResponse(result=c)
 
     async def _send_message(self, request: Request):

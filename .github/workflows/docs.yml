@@ -1,31 +1,54 @@
-name: Publish Docs
+name: Docs Build and Deploy
+
 on:
   push:
     branches:
       - main
-permissions:
-  contents: write
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "mkdocs.yml"
+      - "docs/**"
+
 jobs:
-  deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
-    # if on repo to avoid failing runs on forks
-    if: |
-      github.repository == 'google/A2A'
+    permissions:
+      contents: write
+      actions: read
+
+    if: github.repository == 'google/A2A'
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-      - uses: actions/setup-python@v5
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
         with:
-          python-version: 3.x
-      - run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
+          python-version: 3.13
+
+      - name: Restore cache
+        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
       - uses: actions/cache@v4
         with:
           key: mkdocs-material-${{ env.cache_id }}
           path: .cache
           restore-keys: |
             mkdocs-material-
-      - run: pip install -r requirements-docs.txt
-      - run: mkdocs gh-deploy --force
+
+      - name: Install documentation dependencies
+        run: pip install -r requirements-docs.txt && pip install a2a-sdk
+
+      - name: Build Documentation (PR Check)
+        if: github.event_name == 'pull_request'
+        run: mkdocs build
+
+      - name: Build and Deploy Documentation (Push to main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: mkdocs gh-deploy --force
