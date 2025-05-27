@@ -234,4 +234,5 @@ All the 3 ADK agents use the same python code but are instantiated with differen
         *   `client.py`: A helper MCP client library that used to query the MCP server for agent cards or tools. This is a test utility and not used by the agents.
         *   `server.py`: The implementation of the MCP server itself. This server hosts the agent cards as resources.
 
+
 *   **`travel_agency.db`**: A light weight SQLLite DB that hosts the demo data.

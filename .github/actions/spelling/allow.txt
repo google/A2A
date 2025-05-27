@@ -13,6 +13,7 @@ AServer
 AStarlette
 Autogen
 CAs
+CLIs
 Camry
 Cjava
 DDo
@@ -44,6 +45,7 @@ PLW
 PTH
 RUF
 SLF
+TMDB
 URLTo
 Upserting
 Urke
