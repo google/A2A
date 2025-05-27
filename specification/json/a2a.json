@@ -683,7 +683,7 @@
                     "$ref": "#/definitions/GetTaskSuccessResponse"
                 }
             ],
-            "description": "JSON-RPC success response for the 'tasks/get' method."
+            "description": "JSON-RPC response for the 'tasks/get' method."
         },
         "GetTaskSuccessResponse": {
             "description": "JSON-RPC success response for the 'tasks/get' method.",
