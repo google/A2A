@@ -13,7 +13,6 @@ from a2a_mcp.common.base_agent import BaseAgent
 from a2a_mcp.common.utils import init_api_key
 from a2a_mcp.common.workflow import Status, WorkflowGraph, WorkflowNode
 from google import genai
-from pydantic import BaseModel
 
 
 logger = logging.getLogger(__name__)
@@ -130,6 +129,7 @@ class OrchestratorAgent(BaseAgent):
                         ):
                             ## yeild??
                             continue
+                        # TODO: Handle cases where orchestrator can respond to agents
                     # The graph node retured TaskArtifactUpdateEvent
                     # Store the node and continue.
                     if isinstance(chunk.root.result, TaskArtifactUpdateEvent):
@@ -160,7 +160,10 @@ class OrchestratorAgent(BaseAgent):
                         else:
                             # Not planner but artifacts from other tasks,
                             # continue to the next node in the workflow.
+                            # client does not get the artifact,
+                            # a summary is shown at the end of the workflow.
                             continue
+                # When the workflow needs to be resumed, do not yield partial.
                 if not resume_workflow:
                     logger.info('No workflow resume, yielding chunk')
                     # Yield partial execution
