@@ -1,6 +1,6 @@
 # Python SDK Reference
 
-This page contains SDK documentation for the [`a2a-sdk`](https://github.com/google/a2a-python) Python package.
+This page contains SDK documentation for the [`a2a-sdk`](https://github.com/google-a2a/A2A-python) Python package.
 
 ```sh
 pip install a2a-sdk
