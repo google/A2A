@@ -93,16 +93,26 @@ class SemanticKernelTravelAgent:
     SUPPORTED_CONTENT_TYPES = ['text', 'text/plain']
 
     def __init__(self):
-        # Automatically detect Azure vs OpenAI based on environment variables
-        # Check if Azure OpenAI environment variables are available
-        if (os.getenv('AZURE_OPENAI_ENDPOINT') and 
-            os.getenv('AZURE_OPENAI_API_KEY') and 
-            os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME') and
-            os.getenv('AZURE_OPENAI_API_VERSION')):
+        # Check Azure OpenAI environment variables and create variables if all are set
+        if all([
+            os.getenv('AZURE_OPENAI_API_KEY'),
+            os.getenv('AZURE_OPENAI_ENDPOINT'), 
+            os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME'),
+            os.getenv('AZURE_OPENAI_API_VERSION')
+        ]):
+            api_key = os.getenv('AZURE_OPENAI_API_KEY')
+            endpoint = os.getenv('AZURE_OPENAI_ENDPOINT')
+            chat_deployment_name = os.getenv('AZURE_OPENAI_DEPLOYMENT_NAME')
+            api_version = os.getenv('AZURE_OPENAI_API_VERSION')
             # Use Azure OpenAI
             chat_service = AzureChatCompletion()
-        elif (os.getenv('OPENAI_API_KEY') and 
-              os.getenv('OPENAI_CHAT_MODEL_ID')):
+        # Check OpenAI environment variables and create variables if both are set
+        elif all([
+            os.getenv('OPENAI_API_KEY'),
+            os.getenv('OPENAI_CHAT_MODEL_ID')
+        ]):
+            api_key = os.getenv('OPENAI_API_KEY')
+            model_id = os.getenv('OPENAI_CHAT_MODEL_ID')
             # Use standard OpenAI
             chat_service = OpenAIChatCompletion()
         else:
