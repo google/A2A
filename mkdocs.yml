@@ -31,8 +31,8 @@ nav:
     - Next Steps: tutorials/python/8-next-steps.md
 
 # Repository
-repo_name: google/A2A
-repo_url: https://github.com/google/A2A
+repo_name: google-a2a/A2A
+repo_url: https://github.com/google-a2a/A2A
 
 # Copyright
 copyright: Copyright Google 2025
@@ -113,7 +113,7 @@ plugins:
   - search
   - redirects:
       redirect_maps:
-        "spec-json.md": https://raw.githubusercontent.com/google/A2A/refs/heads/main/specification/json/a2a.json
+        "spec-json.md": https://raw.githubusercontent.com/google-a2a/A2A/refs/heads/main/specification/json/a2a.json
         "specification/overview.md": "specification.md"
         "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
         "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
@@ -146,3 +146,7 @@ plugins:
           options:
             show_root_heading: false
             show_object_full_path: false
+            show_value: true
+            show_if_no_docstring: true
+            filters: ["!^_"]
+            show_qualifiers: false

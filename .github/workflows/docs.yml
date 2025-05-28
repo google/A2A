@@ -18,7 +18,7 @@ jobs:
       contents: write
       actions: read
 
-    if: github.repository == 'google/A2A'
+    if: github.repository == 'google-a2a/A2A'
 
     steps:
       - name: Checkout Code
