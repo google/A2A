@@ -589,6 +589,7 @@ export interface JSONRPCMessage {
   /**
    * An identifier established by the Client that MUST contain a String, Number.
    * Numbers SHOULD NOT contain fractional parts.
+   * @nullable true
    */
   id?: number | string | null;
 }
@@ -637,9 +638,13 @@ export interface JSONRPCError {
 
 // --8<-- [start:JSONRPCResult]
 /**
- * Represents a JSON-RPC 2.0 Result object.
+ * Represents a JSON-RPC 2.0 Success Response object.
  */
-interface JSONRPCResult extends JSONRPCMessage {
+export interface JSONRPCSuccessResponse extends JSONRPCMessage {
+  /**
+   * @nullable true
+   */
+  id: number | string | null;
   /**
    * The result object on success
    */
@@ -654,6 +659,10 @@ interface JSONRPCResult extends JSONRPCMessage {
  * Represents a JSON-RPC 2.0 Error Response object.
  */
 export interface JSONRPCErrorResponse extends JSONRPCMessage {
+  /**
+   * @nullable true
+   */
+  id: number | string | null;
   result?: never; // Optional 'never' helps enforce exclusivity
   error: JSONRPCError | A2AError;
 }
@@ -677,6 +686,7 @@ export type JSONRPCResponse =
  * JSON-RPC request model for the 'message/send' method.
  */
 export interface SendMessageRequest extends JSONRPCRequest {
+  id: number | string;
   method: "message/send";
   params: MessageSendParams;
 }
@@ -686,7 +696,7 @@ export interface SendMessageRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response model for the 'message/send' method.
  */
-export interface SendMessageSuccessResponse extends JSONRPCResult {
+export interface SendMessageSuccessResponse extends JSONRPCSuccessResponse {
   result: Message | Task;
 }
 // --8<-- [end:SendMessageSuccessResponse]
@@ -705,6 +715,7 @@ export type SendMessageResponse =
  * JSON-RPC request model for the 'message/stream' method.
  */
 export interface SendStreamingMessageRequest extends JSONRPCRequest {
+  id: number | string;
   method: "message/stream";
   params: MessageSendParams;
 }
@@ -714,7 +725,7 @@ export interface SendStreamingMessageRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response model for the 'message/stream' method.
  */
-export interface SendStreamingMessageSuccessResponse extends JSONRPCResult {
+export interface SendStreamingMessageSuccessResponse extends JSONRPCSuccessResponse {
   result: Message | Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent;
 }
 // --8<-- [end:SendStreamingMessageSuccessResponse]
@@ -733,6 +744,7 @@ export type SendStreamingMessageResponse =
  * JSON-RPC request model for the 'tasks/get' method.
  */
 export interface GetTaskRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/get";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -744,7 +756,7 @@ export interface GetTaskRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response for the 'tasks/get' method.
  */
-export interface GetTaskSuccessResponse extends JSONRPCResult {
+export interface GetTaskSuccessResponse extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: Task;
 }
@@ -752,7 +764,7 @@ export interface GetTaskSuccessResponse extends JSONRPCResult {
 
 // --8<-- [start:GetTaskResponse]
 /**
- * JSON-RPC success response for the 'tasks/get' method.
+ * JSON-RPC response for the 'tasks/get' method.
  */
 export type GetTaskResponse = GetTaskSuccessResponse | JSONRPCErrorResponse;
 // --8<-- [end:GetTaskResponse]
@@ -762,6 +774,7 @@ export type GetTaskResponse = GetTaskSuccessResponse | JSONRPCErrorResponse;
  * JSON-RPC request model for the 'tasks/cancel' method.
  */
 export interface CancelTaskRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/cancel";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -773,7 +786,7 @@ export interface CancelTaskRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response model for the 'tasks/cancel' method.
  */
-export interface CancelTaskSuccessResponse extends JSONRPCResult {
+export interface CancelTaskSuccessResponse extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: Task;
 }
@@ -793,6 +806,7 @@ export type CancelTaskResponse =
  * JSON-RPC request model for the 'tasks/pushNotificationConfig/set' method.
  */
 export interface SetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/set";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -805,7 +819,7 @@ export interface SetTaskPushNotificationConfigRequest extends JSONRPCRequest {
  * JSON-RPC success response model for the 'tasks/pushNotificationConfig/set' method.
  */
 export interface SetTaskPushNotificationConfigSuccessResponse
-  extends JSONRPCResult {
+  extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: TaskPushNotificationConfig;
 }
@@ -825,6 +839,7 @@ export type SetTaskPushNotificationConfigResponse =
  * JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.
  */
 export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/get";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
@@ -837,7 +852,7 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
  * JSON-RPC success response model for the 'tasks/pushNotificationConfig/get' method.
  */
 export interface GetTaskPushNotificationConfigSuccessResponse
-  extends JSONRPCResult {
+  extends JSONRPCSuccessResponse {
   /** The result object on success. */
   result: TaskPushNotificationConfig;
 }
@@ -857,6 +872,7 @@ export type GetTaskPushNotificationConfigResponse =
  * JSON-RPC request model for the 'tasks/resubscribe' method.
  */
 export interface TaskResubscriptionRequest extends JSONRPCRequest {
+  id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/resubscribe";
   /** A Structured value that holds the parameter values to be used during the invocation of the method. */
