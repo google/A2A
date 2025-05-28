@@ -18,6 +18,7 @@ Camry
 Cjava
 DDo
 DGT
+EBFF
 EUR
 EUg
 FBT
@@ -95,6 +96,7 @@ dde
 direnv
 efaab
 efbd
+embeddings
 evt
 excinfo
 fafd

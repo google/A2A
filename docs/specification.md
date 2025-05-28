@@ -398,9 +398,9 @@ For conveying file-based content.
 ```
 
 | Field Name | Type                  | Required    | Description                                   |
-| :--------- | :-------------------- | :---------- | :-------------------------------------------- | --------------------------------------------- |
+| :--------- | :-------------------- | :---------- | :-------------------------------------------- |
 | `kind`     | `"file"` (literal)    | Yes         | Identifies this part as file content.         |
-| `file`     | FileWithBytes         | FileWithUri | Yes                                           | Contains the file details and data/reference. |
+| `file`     | `FileWithBytes` \| `FileWithUri` | Yes  | Contains the file details and data/reference. |
 | `metadata` | `Record<string, any>` | No          | Optional metadata specific to this file part. |
 
 #### 6.5.3. `DataPart` Object

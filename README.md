@@ -39,30 +39,18 @@ As AI agents become more prevalent, their ability to interoperate is crucial for
 
 ## Getting Started
 
-- 📚 **Explore the Documentation:** Visit the [Agent2Agent Protocol Documentation Site](https://google.github.io/A2A/) for a complete overview, the full protocol specification, tutorials, and guides.
-- 📝 **View the Specification:** [A2A Protocol Specification](https://google.github.io/A2A/specification/)
-- 🐍 Use the [A2A Python SDK](https://github.com/google/a2a-python)
+- 📚 **Explore the Documentation:** Visit the [Agent2Agent Protocol Documentation Site](https://goo.gle/a2a) for a complete overview, the full protocol specification, tutorials, and guides.
+- 📝 **View the Specification:** [A2A Protocol Specification](https://google-a2a.github.io/A2A/specification/)
+- 🐍 Use the [A2A Python SDK](https://github.com/google-a2a/a2a-python)
   - `pip install a2a-sdk`
-- 🎬 Use our [samples](/samples) to see A2A in action
-  - [Multi-Agent Web App](/demo/README.md)
-  - CLI ([Python](/samples/python/hosts/cli/README.md), [JS](/samples/js/README.md))
-- 🤖 Use our [sample agents](/samples/python/agents/README.md) to see how to bring A2A to agent frameworks
-  - [Agent Development Kit (ADK)](/samples/python/agents/google_adk/README.md)
-  - [CrewAI](/samples/python/agents/crewai/README.md)
-  - [Enterprise Data Agent (Gemini + Mindsdb)](/samples/python/agents/mindsdb/README.md)
-  - [LangGraph](/samples/python/agents/langgraph/README.md)
-  - [Genkit](/samples/js/src/agents/README.md)
-  - [LlamaIndex](/samples/python/agents/llama_index_file_chat/README.md)
-  - [Marvin](/samples/python/agents/marvin/README.md)
-  - [Semantic Kernel](/samples/python/agents/semantickernel/README.md)
-  - [AG2 + MCP](/samples/python/agents/ag2/README.md)
+- 🎬 Use our [samples](https://github.com/google-a2a/a2a-samples) to see A2A in action
 
 ## Contributing
 
 We welcome community contributions to enhance and evolve the A2A protocol!
 
-- **Questions & Discussions:** Join our [GitHub Discussions](https://github.com/google/A2A/discussions).
-- **Issues & Feedback:** Report issues or suggest improvements via [GitHub Issues](https://github.com/google/A2A/issues).
+- **Questions & Discussions:** Join our [GitHub Discussions](https://github.com/google-a2a/A2A/discussions).
+- **Issues & Feedback:** Report issues or suggest improvements via [GitHub Issues](https://github.com/google-a2a/A2A/issues).
 - **Contribution Guide:** See our [CONTRIBUTING.md](CONTRIBUTING.md) for details on how to contribute.
 - **Private Feedback:** Use this [Google Form](https://goo.gle/a2a-feedback).
 - **Partner Program:** Google Cloud customers can join our partner program via this [form](https://goo.gle/a2a-partner).

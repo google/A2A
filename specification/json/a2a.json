@@ -363,6 +363,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -387,7 +388,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -401,6 +403,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -592,6 +595,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -616,7 +620,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -630,6 +635,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -661,6 +667,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -676,7 +683,7 @@
                     "$ref": "#/definitions/GetTaskSuccessResponse"
                 }
             ],
-            "description": "JSON-RPC success response for the 'tasks/get' method."
+            "description": "JSON-RPC response for the 'tasks/get' method."
         },
         "GetTaskSuccessResponse": {
             "description": "JSON-RPC success response for the 'tasks/get' method.",
@@ -685,7 +692,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -699,6 +707,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -938,7 +947,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -949,6 +959,7 @@
             },
             "required": [
                 "error",
+                "id",
                 "jsonrpc"
             ],
             "type": "object"
@@ -960,7 +971,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -981,7 +993,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1031,14 +1044,15 @@
             ],
             "description": "Represents a JSON-RPC 2.0 Response object."
         },
-        "JSONRPCResult": {
-            "description": "Represents a JSON-RPC 2.0 Result object.",
+        "JSONRPCSuccessResponse": {
+            "description": "Represents a JSON-RPC 2.0 Success Response object.",
             "properties": {
                 "id": {
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1051,6 +1065,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1417,6 +1432,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -1441,7 +1457,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1462,6 +1479,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1493,6 +1511,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -1517,7 +1536,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1544,6 +1564,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1575,6 +1596,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -1599,7 +1621,8 @@
                     "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1613,6 +1636,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1834,6 +1858,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
