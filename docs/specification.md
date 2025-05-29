@@ -170,6 +170,7 @@ Agent Cards themselves might contain information that is considered sensitive.
 | `defaultInputModes`                 | `string[]`                                                         | Yes      | Input MIME types accepted by the agent.                                                                                                     |
 | `defaultOutputModes`                | `string[]`                                                         | Yes      | Output MIME types produced by the agent.                                                                                                    |
 | `skills`                            | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                                                      |
+| `extensions`                        | [`AgentExtension[]`](#555-agentextension-object)                   | No       | Array of custom API extensions available for this agent.                                                                                    |
 | `supportsAuthenticatedExtendedCard` | `boolean`                                                          | No       | Indicates support for retrieving a more detailed Agent Card via an authenticated endpoint.                                                  |
 
 #### 5.5.1. `AgentProvider` Object
@@ -224,6 +225,26 @@ Describes a specific capability, function, or area of expertise the agent can pe
 | `examples`    | `string[]` | No       | Example prompts or use cases demonstrating skill usage.                        |
 | `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted MIME types.    |
 | `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced MIME types.   |
+
+#### 5.5.5. `AgentExtension` Object
+
+Describes an API extension that provides additional methods on top of the core functionality of the A2A protocol.
+
+Note that, unlike agent ["skills"](#554-agentskill-object) and ["capabilities"](#552-agentcapabilities-object), **individual extensions are not part of the A2A specification**. Therefore, when adding extensions to their A2A servers, developers should carefully consider potential security, performance, and other impl
+ications.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:AgentExtension"
+```
+
+| Field Name    | Type                  | Required | Description                                                                    |
+| :------------ | :-------------------- | :------- | :----------------------------------------------------------------------------- |
+| `id`          | `string`              | Yes      | Unique identifier of the API extension.                                        |
+| `name`        | `string`              | Yes      | Human-readable name of the API extension.                                      |
+| `description` | `string`              | No       | Description of the API extension.                                              |
+| `prefix`      | `string`              | Yes      | Prefix added in front of the extension's JSON-RPC methods. `prefix` SHOULD NOT start with "message" or "tasks". It is recommended to put all extensions under a common prefix, for example `extensions/first/`, `extensions/second/`. |
+| `methods`     | `string[]`            | Yes      | The list of method names (without prefix) provided by the API extension.       |
+| `metadata`    | `Record<string, any>` | No       | Metadata can be used to supply API-extension-specific docs, request-response schemas, and other relevant information. |
 
 ### 5.6. Sample Agent Card
 
