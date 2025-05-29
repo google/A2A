@@ -86,6 +86,8 @@ export interface AgentCard {
   description: string;
   /** A URL to the address the agent is hosted at. */
   url: string;
+  /** A URL to an icon for the agent. */
+  iconUrl?: string;
   /** The service provider of the agent */
   provider?: AgentProvider;
   /**

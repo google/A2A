@@ -143,6 +143,10 @@
                     "description": "A URL to documentation for the agent.",
                     "type": "string"
                 },
+                "iconUrl": {
+                    "description": "A URL to an icon for the agent.",
+                    "type": "string"
+                },
                 "name": {
                     "description": "Human readable name of the agent.",
                     "type": "string"
@@ -1988,4 +1992,3 @@
         }
     }
 }
-

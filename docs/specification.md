@@ -162,6 +162,7 @@ Agent Cards themselves might contain information that is considered sensitive.
 | `description`                       | `string`                                                           | Yes      | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                                              |
 | `url`                               | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                                               |
 | `provider`                          | [`AgentProvider`](#551-agentprovider-object)                       | No       | Information about the agent's provider.                                                                                                     |
+| `iconUrl`                           | `string`                                                           | No       | A URL to an icon for the agent.                                                                                                             |
 | `version`                           | `string`                                                           | Yes      | Agent or A2A implementation version string.                                                                                                 |
 | `documentationUrl`                  | `string`                                                           | No       | URL to human-readable documentation for the agent.                                                                                          |
 | `capabilities`                      | [`AgentCapabilities`](#552-agentcapabilities-object)               | Yes      | Specifies optional A2A protocol features supported (e.g., streaming, push notifications).                                                   |
@@ -236,6 +237,7 @@ Describes a specific capability, function, or area of expertise the agent can pe
     "organization": "Example Geo Services Inc.",
     "url": "https://www.examplegeoservices.com"
   },
+  "iconUrl": "https://georoute-agent.example.com/icon.png",
   "version": "1.2.0",
   "documentationUrl": "https://docs.examplegeoservices.com/georoute-agent/api",
   "capabilities": {
