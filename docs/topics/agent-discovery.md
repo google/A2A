@@ -76,7 +76,7 @@ The Agent Registrar can be implemented as an Agent, with its Agent Card describe
   "url": "https://discovery-agent.google.com",
   "provider": {
     "organization": "Google",
-    "url": https://google.com"
+    "url": "https://google.com"
   },
   "version": "1.0.0",
   "documentationUrl": "https://discovery-agent.google.com/docs",
