@@ -4,7 +4,7 @@ With the Helloworld A2A server running, let's send some requests to it. The SDK 
 
 ## The Helloworld Test Client
 
-The `samples/helloworld/test_client.py` script demonstrates how to:
+The `test_client.py` script demonstrates how to:
 
 1. Fetch the Agent Card from the server.
 2. Create an `A2AClient` instance.
@@ -30,48 +30,25 @@ Run the test client:
 
 ```bash
 # from the a2a-samples directory
-python samples/helloworld/test_client.py
+python samples/python/agents/helloworld/test_client.py
 ```
 
 ## Understanding the Client Code
 
-Let's look at key parts of `samples/helloworld/test_client.py`:
+Let's look at key parts of `test_client.py`:
 
 1. **Fetching the Agent Card & Initializing the Client**:
 
     ```python { .no-copy }
-    # samples/helloworld/test_client.py
-    async with httpx.AsyncClient() as httpx_client:
-        client = await A2AClient.get_client_from_agent_card_url(
-            httpx_client, 'http://localhost:9999'
-        )
+    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:A2ACardResolver"
     ```
 
-    The `A2AClient.get_client_from_agent_card_url` class method is a convenience. It first fetches the `AgentCard` from the server's `/.well-known/agent.json` endpoint (based on the provided base URL) and then initializes the client with it.
+    The `A2ACardResolver` class is a convenience. It first fetches the `AgentCard` from the server's `/.well-known/agent.json` endpoint (based on the provided base URL) and then initializes the client with it.
 
 2. **Sending a Non-Streaming Message (`send_message`)**:
 
     ```python { .no-copy }
-    # samples/helloworld/test_client.py
-    from a2a.types import (
-        MessageSendParams,
-        SendMessageRequest,
-        SendStreamingMessageRequest,
-    )
-    # ...
-    send_message_payload: dict[str, Any] = {
-        'message': {
-            'role': 'user',
-            'parts': [{'type': 'text', 'text': 'how much is 10 USD in INR?'}], # Content doesn't matter for Helloworld
-            'messageId': uuid4().hex,
-        },
-    }
-    request = SendMessageRequest(
-        params=MessageSendParams(**send_message_payload)
-    )
-
-    response = await client.send_message(request)
-    print(response.model_dump(mode='json', exclude_none=True))
+    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message"
     ```
 
     - The `send_message_payload` constructs the data for `MessageSendParams`.
@@ -81,19 +58,12 @@ Let's look at key parts of `samples/helloworld/test_client.py`:
     - The `response` will be a `SendMessageResponse` object, which contains either a `SendMessageSuccessResponse` (with the agent's `Message` as the result) or a `JSONRPCErrorResponse`.
 
 3. **Handling Task IDs (Illustrative Note for Helloworld)**:
-    The Helloworld client (`samples/helloworld/test_client.py`) doesn't attempt `get_task` or `cancel_task` directly because the simple Helloworld agent's `execute` method, when called via `message/send`, results in the `DefaultRequestHandler` returning a direct `Message` response rather than a `Task` object. More complex agents that explicitly manage tasks (like the LangGraph example) would return a `Task` object from `message/send`, and its `id` could then be used for `get_task` or `cancel_task`.
+    The Helloworld client (`test_client.py`) doesn't attempt `get_task` or `cancel_task` directly because the simple Helloworld agent's `execute` method, when called via `message/send`, results in the `DefaultRequestHandler` returning a direct `Message` response rather than a `Task` object. More complex agents that explicitly manage tasks (like the LangGraph example) would return a `Task` object from `message/send`, and its `id` could then be used for `get_task` or `cancel_task`.
 
 4. **Sending a Streaming Message (`send_message_streaming`)**:
 
     ```python { .no-copy }
-    # samples/helloworld/test_client.py
-    streaming_request = SendStreamingMessageRequest(
-        params=MessageSendParams(**send_message_payload) # Same payload can be used
-    )
-
-    stream_response = client.send_message_streaming(streaming_request)
-    async for chunk in stream_response:
-        print(chunk.model_dump(mode='json', exclude_none=True))
+    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message_streaming"
     ```
 
     - This method calls the agent's `message/stream` endpoint. The `DefaultRequestHandler` will invoke the `HelloWorldAgentExecutor.execute` method.

@@ -1,6 +1,6 @@
 # 7. Streaming & Multi-Turn Interactions (LangGraph Example)
 
-The Helloworld example demonstrates the basic mechanics of A2A. For more advanced features like robust streaming, task state management, and multi-turn conversations powered by an LLM, we'll turn to the `langgraph` example located in `a2a-samples/samples/langgraph/`.
+The Helloworld example demonstrates the basic mechanics of A2A. For more advanced features like robust streaming, task state management, and multi-turn conversations powered by an LLM, we'll turn to the LangGraph example located in [`a2a-samples/samples/python/agents/langgraph/`](https://github.com/google-a2a/a2a-samples/tree/main/samples/python/agents/langgraph).
 
 This example features a "Currency Agent" that uses the Gemini model via LangChain and LangGraph to answer currency conversion questions.
 
@@ -10,26 +10,25 @@ This example features a "Currency Agent" that uses the Gemini model via LangChai
 
 2. **Environment Variable:**
 
-    Create a `.env` file in the `a2a-samples/samples/langgraph/` directory:
+    Create a `.env` file in the `a2a-samples/samples/python/agents/langgraph/` directory:
 
     ```bash
-    # In a2a-samples/samples/langgraph/
     echo "GOOGLE_API_KEY=YOUR_API_KEY_HERE" > .env
     ```
 
     Replace `YOUR_API_KEY_HERE` with your actual Gemini API key.
 
 3. **Install Dependencies (if not already covered):**
+
     The `langgraph` example has its own `pyproject.toml` which includes dependencies like `langchain-google-genai` and `langgraph`. When you installed the SDK from the `a2a-samples` root using `pip install -e .[dev]`, this should have also installed the dependencies for the workspace examples, including `langgraph-example`. If you encounter import errors, ensure your primary SDK installation from the root directory was successful.
 
 ## Running the LangGraph Server
 
-Navigate to the `a2a-samples/samples/langgraph/` directory in your terminal and ensure your virtual environment (from the SDK root) is activated.
+Navigate to the `a2a-samples/samples/python/agents/langgraph/` directory in your terminal and ensure your virtual environment (from the SDK root) is activated.
 
 Start the LangGraph agent server:
 
 ```bash
-# From a2a-samples/samples/langgraph/
 python __main__.py
 ```
 
@@ -37,12 +36,11 @@ This will start the server, usually on `http://localhost:10000`.
 
 ## Interacting with the LangGraph Agent
 
-Open a **new terminal window**, activate your virtual environment, and navigate to `a2a-samples/samples/langgraph/`.
+Open a **new terminal window**, activate your virtual environment, and navigate to `a2a-samples/samples/python/agents/langgraph/`.
 
 Run its test client:
 
 ```bash
-# From a2a-samples/samples/langgraph/
 python test_client.py
 ```
 
@@ -54,19 +52,17 @@ The `langgraph` example showcases several important A2A concepts:
 
 1. **LLM Integration**:
 
-    - `samples/langgraph/agent.py` defines `CurrencyAgent`. It uses `ChatGoogleGenerativeAI` and LangGraph's `create_react_agent` to process user queries.
+    - `agent.py` defines `CurrencyAgent`. It uses `ChatGoogleGenerativeAI` and LangGraph's `create_react_agent` to process user queries.
     - This demonstrates how a real LLM can power the agent's logic.
 
 2. **Task State Management**:
 
     - `samples/langgraph/__main__.py` initializes a `DefaultRequestHandler` with an `InMemoryTaskStore`.
+
         ```python { .no-copy }
-        # samples/langgraph/__main__.py
-        request_handler = DefaultRequestHandler(
-            agent_executor=CurrencyAgentExecutor(),
-            task_store=InMemoryTaskStore(),
-        )
+        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/langgraph/__main__.py:DefaultRequestHandler"
         ```
+
     - The `CurrencyAgentExecutor` (in `samples/langgraph/agent_executor.py`), when its `execute` method is called by the `DefaultRequestHandler`, interacts with the `RequestContext` which contains the current task (if any).
     - For `message/send`, the `DefaultRequestHandler` uses the `TaskStore` to persist and retrieve task state across interactions. The response to `message/send` will be a full `Task` object if the agent's execution flow involves multiple steps or results in a persistent task.
     - The `test_client.py`'s `run_single_turn_test` demonstrates getting a `Task` object back and then querying it using `get_task`.
@@ -91,7 +87,7 @@ The `langgraph` example showcases several important A2A concepts:
 
 ## Exploring the Code
 
-Take some time to look through these files in `samples/langgraph/`:
+Take some time to look through these files:
 
 - `__main__.py`: Server setup using `A2AStarletteApplication` and `DefaultRequestHandler`. Note the `AgentCard` definition includes `capabilities.streaming=True`.
 - `agent.py`: The `CurrencyAgent` with LangGraph, LLM model, and tool definitions.
