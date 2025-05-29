@@ -38,10 +38,10 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
         .venv\Scripts\activate
         ```
 
-2. **Install the A2A SDK and its dependencies:**
+2. **Install needed Python dependencies along with the A2A SDK and its dependencies:**
 
     ```bash
-    pip install --upgrade a2a-sdk
+    pip install -r requirements.txt
     ```
 
 ## Verify Installation
