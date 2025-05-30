@@ -72,7 +72,7 @@ service A2AService {
   rpc CreateTaskPushNotification(CreateTaskPushNotificationRequest)
       returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
-      post: "/v1/{name=task/*/pushNotification}"
+      post: "/v1/{parent=task/*/pushNotifications}"
       body: "config"
     };
     option (google.api.method_signature) = "parent,config";
@@ -523,6 +523,7 @@ message GetTaskRequest {
   string name = 1 [
       (google.api.field_behavior) = REQUIRED
   ];
+  int history_length = 2;
 }
 
 message CancelTaskRequest {
@@ -531,7 +532,7 @@ message CancelTaskRequest {
 }
 
 message GetTaskPushNotificationRequest {
-  // name=tasks/{id}/pushNotification/{push_id}
+  // name=tasks/{id}/pushNotifications/{push_id}
   string name = 1;
 }
 
