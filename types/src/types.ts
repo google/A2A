@@ -389,6 +389,8 @@ export interface PushNotificationAuthenticationInfo {
 // --8<-- [start:PushNotificationConfig]
 /**Configuration for setting up push notifications for task updates. */
 export interface PushNotificationConfig {
+  /** Push Notificaiton Id - created by server to support multiple callbacks **/
+  id: string
   /** URL for sending the push notifications. */
   url: string;
   /** Token unique to this task/session. */
