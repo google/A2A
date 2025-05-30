@@ -1346,6 +1346,10 @@
                 "authentication": {
                     "$ref": "#/definitions/PushNotificationAuthenticationInfo"
                 },
+                "id": {
+                    "description": "Push Notificaiton Id - created by server to support multiple callbacks *",
+                    "type": "string"
+                },
                 "token": {
                     "description": "Token unique to this task/session.",
                     "type": "string"
@@ -1356,6 +1360,7 @@
                 }
             },
             "required": [
+                "id",
                 "url"
             ],
             "type": "object"
