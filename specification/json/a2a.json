@@ -1699,6 +1699,7 @@
                 }
             },
             "required": [
+                "id",
                 "url"
             ],
             "type": "object"
