@@ -1,4 +1,4 @@
-// edition = "2023";
+// Older protoc compilers don't understand edition yet.
 syntax = "proto3";
 package a2a.v1;
 
@@ -562,10 +562,13 @@ message GetTaskPushNotificationRequest {
 message CreateTaskPushNotificationRequest {
   // The task resource for this config.
   // Format: tasks/{id}
-  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
   string config_id = 2 [(google.api.field_behavior) = REQUIRED];
-  TaskPushNotificationConfig config = 3
-      [(google.api.field_behavior) = REQUIRED];
+  TaskPushNotificationConfig config = 3  [
+    (google.api.field_behavior) = REQUIRED
+  ];
 }
 
 message TaskSubscriptionRequest {
@@ -592,6 +595,7 @@ message ListTaskPushNotificationRequest {
 message GetAgentCardRequest {
   // Empty. Added to fix linter violation.
 }
+
 
 //////// Response Messages ///////////
 message SendMessageResponse {
