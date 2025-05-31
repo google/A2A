@@ -578,7 +578,6 @@ export interface PasswordOAuthFlow {
 }
 // --8<-- [end:PasswordOAuthFlow]
 
-// --8<-- [start:JSONRPCMessage]
 /**
  * Represents a Linkset document as defined in RFC 9264.
  * See: https://www.rfc-editor.org/rfc/rfc9264
@@ -677,6 +676,7 @@ export interface AgentLinkTarget extends LinkTarget {
   readonly type: "application/json";
 }
 
+// --8<-- [start:JSONRPCMessage]
 /**
  * Base interface for any JSON-RPC 2.0 request or response.
  */
