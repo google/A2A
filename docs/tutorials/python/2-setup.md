@@ -44,9 +44,6 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
 pip install -r samples/python/requirements.txt
 ```
 
-Let me know if you'd like the entire section recompiled with this change!
-
-
 ## Verify Installation
 
 After installation, you should be able to import the `a2a` package in a Python interpreter:
