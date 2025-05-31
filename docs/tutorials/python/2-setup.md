@@ -40,9 +40,9 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
 
 2. **Install needed Python dependencies along with the A2A SDK and its dependencies:**
 
-```bash
-pip install -r samples/python/requirements.txt
-```
+    ```bash
+    pip install -r samples/python/requirements.txt
+    ```
 
 ## Verify Installation
 
