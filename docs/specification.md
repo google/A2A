@@ -369,7 +369,7 @@ Represents a [Link Target (RFC 9264 §4.2.3.)](https://datatracker.ietf.org/doc/
         {
           "href": "https://georoute-agent.example.com/a2a/v1/route_planner/agent.json",
           "type": "application/json",
-          "title": "GeoSpatial Route Planner Agent Card",
+          "title": "GeoSpatial Route Planner Agent Card"
         }
       ]
     },
