@@ -313,7 +313,7 @@ Clients can discover Agent endpoints and Agent Cards through the following mecha
 
 The Agent Catalog follows the [API Catalog format](https://datatracker.ietf.org/doc/draft-ietf-httpapi-api-catalog/), which is based on the [Linkset](https://datatracker.ietf.org/doc/rfc9264/) specification. This format allows a server to expose a collection of agent endpoints in a standardized structure, where each entry consists of:
 
-- **An anchor:** The base URI for an individual agent (e.g., `https://example.org/a2a/agent1`)
+- **An `anchor`:** The base URI for an individual agent (e.g., `https://example.org/a2a/agent1`)
 - **A `describedby` link:** Pointing to the agent’s own Agent Card, which describes its capabilities and interface (e.g., `https://example.org/a2a/agent1/agent.json`)
 
 This mechanism enables clients to enumerate all available agents under a shared origin and fetch their respective Agent Cards dynamically. It makes agent discovery interoperable, extensible, and well-suited for federated or platform-hosted environments.
