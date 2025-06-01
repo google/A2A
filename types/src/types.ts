@@ -580,6 +580,7 @@ export interface PasswordOAuthFlow {
 }
 // --8<-- [end:PasswordOAuthFlow]
 
+// --8<-- [start:Linkset]
 /**
  * Represents a Linkset document as defined in RFC 9264.
  * See: https://www.rfc-editor.org/rfc/rfc9264
@@ -591,7 +592,9 @@ export interface Linkset {
    */
   linkset: LinkContext[];
 }
+// --8<-- [end:Linkset]
 
+// --8<-- [start:LinkContext]
 /**
  * Represents a Link Context Object as defined in RFC 9264 Section 4.2.2.
  * See: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.2
@@ -610,7 +613,9 @@ export interface LinkContext {
    */
   [relationType: string]: LinkTarget[] | string | undefined;
 }
+// --8<-- [end:LinkContext]
 
+// --8<-- [start:LinkTarget]
 /**
  * Represents a Link Target Object as defined in RFC 9264 Section 4.2.3.
  * See: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.3
@@ -632,7 +637,9 @@ export interface LinkTarget {
    */
   [key: string]: unknown;
 }
+// --8<-- [end:LinkTarget]
 
+// --8<-- [start:AgentCatalog]
 /**
  * Represents an API Catalog document, extending the Linkset structure defined in RFC 9264.
  * This specialized catalog uses AgentLinkContext objects to describe agent-specific metadata.
@@ -646,7 +653,9 @@ export interface AgentCatalog extends Linkset {
    */
   linkset: AgentLinkContext[];
 }
+// --8<-- [end:AgentCatalog]
 
+// --8<-- [start:AgentLinkContext]
 /**
  * Represents a Link Context object specifically for agents.
  * Extends the general LinkContext structure by requiring an `anchor` field
@@ -664,7 +673,9 @@ export interface AgentLinkContext extends LinkContext {
    */
   describedby: AgentLinkTarget[];
 }
+// --8<-- [end:AgentLinkContext]
 
+// --8<-- [start:AgentLinkTarget]
 /**
  * Represents a Link Target Object that specifically points to an agent card
  * in JSON format. This is a specialization of the generic LinkTarget,
@@ -677,6 +688,7 @@ export interface AgentLinkTarget extends LinkTarget {
    */
   readonly type: "application/json";
 }
+// --8<-- [end:AgentLinkTarget]
 
 // --8<-- [start:JSONRPCMessage]
 /**
