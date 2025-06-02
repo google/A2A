@@ -148,7 +148,7 @@ enum TaskState {
   TASK_STATE_WORKING = 2;
   // Represents the status a task is finished. This is a terminal state
   TASK_STATE_COMPLETED = 3;
-  // Represents the statas a task is done but failed. This is a terminal state
+  // Represents the status a task is done but failed. This is a terminal state
   TASK_STATE_FAILED = 4;
   // Represents the status a task was cancelled before it finished.
   // This is a terminal state.
