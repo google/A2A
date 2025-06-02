@@ -60,7 +60,7 @@ The `langgraph` example showcases several important A2A concepts:
     - `samples/langgraph/__main__.py` initializes a `DefaultRequestHandler` with an `InMemoryTaskStore`.
 
         ```python { .no-copy }
-        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/langgraph/__main__.py:DefaultRequestHandler"
+        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/langgraph/app/__main__.py:DefaultRequestHandler"
         ```
 
     - The `CurrencyAgentExecutor` (in `samples/langgraph/agent_executor.py`), when its `execute` method is called by the `DefaultRequestHandler`, interacts with the `RequestContext` which contains the current task (if any).
