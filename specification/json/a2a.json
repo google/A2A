@@ -1347,7 +1347,7 @@
                     "$ref": "#/definitions/PushNotificationAuthenticationInfo"
                 },
                 "id": {
-                    "description": "Push Notification Id - created by server to support multiple callbacks *",
+                    "description": "Push Notification ID - created by server to support multiple callbacks *",
                     "type": "string"
                 },
                 "token": {
