@@ -1,6 +1,6 @@
 edition = "2023";
 
-package a2a;
+package a2a.v1;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
@@ -9,6 +9,11 @@ import "google/api/field_behavior.proto";
 import "google/api/client.proto";
 
 option java_multiple_files = true;
+option csharp_namespace = "A2a.V1";
+option go_package = "google.golang.org/a2a/v1";
+option java_multiple_files = true;
+option java_outer_classname = "A2A";
+option java_package = "com.google.a2a.v1";
 
 // A2AService defines the gRPC version of the A2A protocol. This has a slightly
 // different shape than the JSONRPC version to better conform to AIP-127,
@@ -523,7 +528,7 @@ message GetTaskRequest {
   string name = 1 [
       (google.api.field_behavior) = REQUIRED
   ];
-  int history_length = 2;
+  int32 history_length = 2;
 }
 
 message CancelTaskRequest {
