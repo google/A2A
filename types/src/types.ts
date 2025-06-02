@@ -389,7 +389,7 @@ export interface PushNotificationAuthenticationInfo {
 // --8<-- [start:PushNotificationConfig]
 /**Configuration for setting up push notifications for task updates. */
 export interface PushNotificationConfig {
-  /** Push Notification ID - created by server to support multiple callbacks **/
+  /** Push Notification ID - created by server to support multiple callbacks */
   id?: string
   /** URL for sending the push notifications. */
   url: string;
