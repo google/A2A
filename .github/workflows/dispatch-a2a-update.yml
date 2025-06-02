@@ -11,6 +11,16 @@ jobs:
   dispatch:
     runs-on: ubuntu-latest
     steps:
+      - name: Extract first line of commit message
+        id: get_commit_message
+        run: |
+          FULL_MESSAGE=${{ github.event.head_commit.message }}
+          # Extract the first line
+          FIRST_LINE=$(echo "$FULL_MESSAGE" | head -n 1)
+          echo "message_first_line<<EOF" >> $GITHUB_OUTPUT
+          echo "$FIRST_LINE" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Dispatch repository_dispatch to a2a-python
         uses: peter-evans/repository-dispatch@v3
         with:
