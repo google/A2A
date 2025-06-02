@@ -323,7 +323,7 @@ message AgentCard {
   AgentProvider provider = 4;
   // The version of the agent.
   string version = 5;
-  // A url to provide additional documentation about thea agent.
+  // A url to provide additional documentation about the agent.
   string documentation_url = 6;
   // A2A Capability set supported by the agent.
   AgentCapabilities capabilities = 7;
