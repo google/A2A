@@ -812,7 +812,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
          "role": "user",
          "parts": [
            {
-             "type": "text",
+             "kind": "text",
              "text": "tell me a joke"
            }
          ],
@@ -841,7 +841,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
            "name": "joke",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "Why did the chicken cross the road? To get to the other side!"
              }
            ]
@@ -852,7 +852,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
            "role": "user",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "tell me a joke"
              }
            ],
@@ -881,7 +881,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
          "role": "user",
          "parts": [
            {
-             "type": "text",
+             "kind": "text",
              "text": "tell me a joke"
            }
          ],
@@ -903,7 +903,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
        "parts": [
          {
-           "type": "text",
+           "kind": "text",
            "text": "Why did the chicken cross the road? To get to the other side!"
          }
        ],
@@ -929,11 +929,11 @@ _If the task were longer-running, the server might initially respond with `statu
          "role": "user",
          "parts": [
            {
-             "type": "text",
+             "kind": "text",
              "text": "write a long paper describing the attached pictures"
            },
            {
-             "type": "file",
+             "kind": "file",
              "file": {
                "mimeType": "image/png",
                "data": "<base64-encoded-content>"
@@ -967,11 +967,11 @@ _If the task were longer-running, the server might initially respond with `statu
            "role": "user",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "write a long paper describing the attached pictures"
              },
              {
-               "type": "file",
+               "kind": "file",
                "file": {
                  "mimeType": "image/png",
                  "data": "<base64-encoded-content>"
@@ -1075,7 +1075,7 @@ _If the task were longer-running, the server might initially respond with `statu
      "params": {
        "message": {
          "role": "user",
-         "parts": [{ "type": "text", "text": "I'd like to book a flight." }]
+         "parts": [{ "kind": "text", "text": "I'd like to book a flight." }]
        },
        "messageId": "c53ba666-3f97-433c-a87b-6084276babe2"
      }
@@ -1097,7 +1097,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "role": "agent",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
              }
            ],
@@ -1112,7 +1112,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "role": "user",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "I'd like to book a flight."
              }
            ],
@@ -1138,7 +1138,7 @@ _If the task were longer-running, the server might initially respond with `statu
          "role": "user",
          "parts": [
            {
-             "type": "text",
+             "kind": "text",
              "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
            }
          ],
@@ -1168,7 +1168,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "role": "agent",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "Okay, I've found a flight for you. Confirmation XYZ123. Details are in the artifact."
              }
            ]
@@ -1180,7 +1180,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "name": "FlightItinerary.json",
            "parts": [
              {
-               "type": "data",
+               "kind": "data",
                "data": {
                  "confirmationId": "XYZ123",
                  "from": "JFK",
@@ -1198,7 +1198,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "role": "user",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "I'd like to book a flight."
              }
            ],
@@ -1210,7 +1210,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "role": "agent",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "Sure, I can help with that! Where would you like to fly to, and from where? Also, what are your preferred travel dates?"
              }
            ],
@@ -1222,7 +1222,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "role": "user",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "I want to fly from New York (JFK) to London (LHR) around October 10th, returning October 17th."
              }
            ],
@@ -1253,7 +1253,7 @@ _If the task were longer-running, the server might initially respond with `statu
          "role": "user",
          "parts": [
            {
-             "type": "text",
+             "kind": "text",
              "text": "Generate the Q1 sales report. This usually takes a while. Notify me when it's ready."
            }
          ],
@@ -1331,11 +1331,11 @@ _If the task were longer-running, the server might initially respond with `statu
          "role": "user",
          "parts": [
            {
-             "type": "text",
+             "kind": "text",
              "text": "Analyze this image and highlight any faces."
            },
            {
-             "type": "file",
+             "kind": "file",
              "file": {
                "name": "input_image.png",
                "mimeType": "image/png",
@@ -1365,7 +1365,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "name": "processed_image_with_faces.png",
            "parts": [
              {
-               "type": "file",
+               "kind": "file",
                "file": {
                  "name": "output.png",
                  "mimeType": "image/png",
@@ -1400,7 +1400,7 @@ _If the task were longer-running, the server might initially respond with `statu
          "role": "user",
          "parts": [
            {
-             "type": "text",
+             "kind": "text",
              "text": "Show me a list of my open IT tickets",
              "metadata": {
                "mimeType": "application/json",
@@ -1442,7 +1442,7 @@ _If the task were longer-running, the server might initially respond with `statu
            "artifactId": "c5e0382f-b57f-4da7-87d8-b85171fad17c",
            "parts": [
              {
-               "type": "text",
+               "kind": "text",
                "text": "[{\"ticketNumber\":\"REQ12312\",\"description\":\"request for VPN access\"},{\"ticketNumber\":\"REQ23422\",\"description\":\"Add to DL - team-gcp-onboarding\"}]"
              }
            ]
