@@ -165,6 +165,7 @@ octicons
 ollama
 oneof
 prefecthq
+protolint
 pyguide
 pymdownx
 pypackages
