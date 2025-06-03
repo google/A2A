@@ -314,7 +314,7 @@ Clients can discover Agent endpoints and Agent Cards through the following mecha
 The Agent Catalog follows the [API Catalog format](https://datatracker.ietf.org/doc/draft-ietf-httpapi-api-catalog/), which is based on the [Linkset](https://datatracker.ietf.org/doc/rfc9264/) specification. This format allows a server to expose a collection of agent endpoints in a standardized structure, where each entry consists of:
 
 - **An `anchor`:** The base URI for an individual agent (e.g., `https://example.org/a2a/agent1`)
-- **A `describedby` link:** Pointing to the agent’s own Agent Card, which describes its capabilities and interface (e.g., `https://example.org/a2a/agent1/agent.json`)
+- **A `describedby` link:** Pointing to the agent's own Agent Card, which describes its capabilities and interface (e.g., `https://example.org/a2a/agent1/agent.json`)
 
 This mechanism enables clients to enumerate all available agents under a shared origin and fetch their respective Agent Cards dynamically. It makes agent discovery interoperable, extensible, and well-suited for federated or platform-hosted environments.
 
@@ -354,7 +354,7 @@ Represents a [Link Target (RFC 9264 §4.2.3.)](https://datatracker.ietf.org/doc/
 
 | Field Name              | Type                 | Required | Description                                                                                                                   |
 | :---------------------- | :------------------- | :------- | :---------------------------------------------------------------------------------------------------------------------------- |
-| `href`                  | `string`             | Yes      | A URI pointing to the agent’s metadata (Agent Card). MUST be absolute.                                                        |
+| `href`                  | `string`             | Yes      | A URI pointing to the agent's metadata (Agent Card). MUST be absolute.                                                        |
 | `type`                  | `"application/json"` | Yes      | The media type of the Agent Card. MUST be `"application/json"` to conform to A2A expectations.                                |
 | _Additional properties_ | `unknown`            | No       | Extension attributes may be included, as defined in [RFC 9264 §4.2.4.](https://www.rfc-editor.org/rfc/rfc9264#section-4.2.4). |
 

@@ -648,7 +648,7 @@ export interface LinkTarget {
 export interface AgentCatalog extends Linkset {
   /**
    * An array of AgentLinkContext objects.
-   * Each object uses the `anchor` to specify the agent’s endpoint and the `describedby` link to
+   * Each object uses the `anchor` to specify the agent's endpoint and the `describedby` link to
    * indicate the endpoint of its agent card.
    */
   linkset: AgentLinkContext[];
