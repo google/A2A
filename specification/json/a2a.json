@@ -211,7 +211,7 @@
             "description": "Represents an API Catalog document, extending the Linkset structure defined in RFC 9264.\nThis specialized catalog uses AgentLinkContext objects to describe agent-specific metadata.\nSee: https://www.ietf.org/archive/id/draft-ietf-httpapi-api-catalog-08.html",
             "properties": {
                 "linkset": {
-                    "description": "An array of AgentLinkContext objects.\nEach object uses the `anchor` to specify the agent’s endpoint and the `describedby` link to\nindicate the endpoint of its agent card.",
+                    "description": "An array of AgentLinkContext objects.\nEach object uses the `anchor` to specify the agent's endpoint and the `describedby` link to\nindicate the endpoint of its agent card.",
                     "items": {
                         "$ref": "#/definitions/AgentLinkContext"
                     },
