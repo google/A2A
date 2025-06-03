@@ -43,6 +43,13 @@ plugins:
   - local: protoc-gen-grpc-java
     out: gen/java
 ```
+
+Alternatively use protoc commandline for code generation
+
+```bash
+protoc --java_out=./src/java --grpc-java_out=./src/java -I. a2a.proto
+```
+
 ### Generating for Specific Languages
 
 If you do not need to generate code for all the languages listed above, you can comment out the unwanted language sections in your `buf.gen.yaml` file.
