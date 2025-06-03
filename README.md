@@ -42,7 +42,7 @@ As AI agents become more prevalent, their ability to interoperate is crucial for
 - 📚 **Explore the Documentation:** Visit the [Agent2Agent Protocol Documentation Site](https://goo.gle/a2a) for a complete overview, the full protocol specification, tutorials, and guides.
 - 📝 **View the Specification:** [A2A Protocol Specification](https://google-a2a.github.io/A2A/specification/)
 - 🐍 Use the [A2A Python SDK](https://github.com/google-a2a/a2a-python)
-  - `pip install a2a-sdk`
+    - `pip install a2a-sdk`
 - 🎬 Use our [samples](https://github.com/google-a2a/a2a-samples) to see A2A in action
 
 ## Contributing
@@ -60,14 +60,14 @@ We welcome community contributions to enhance and evolve the A2A protocol!
 ### Protocol Enhancements
 
 - **Agent Discovery:**
-  - Formalize inclusion of authorization schemes and optional credentials directly within the `AgentCard`.
+    - Formalize inclusion of authorization schemes and optional credentials directly within the `AgentCard`.
 - **Agent Collaboration:**
-  - Investigate a `QuerySkill()` method for dynamically checking unsupported or unanticipated skills.
+    - Investigate a `QuerySkill()` method for dynamically checking unsupported or unanticipated skills.
 - **Task Lifecycle & UX:**
-  - Support for dynamic UX negotiation _within_ a task (e.g., agent adding audio/video mid-conversation).
+    - Support for dynamic UX negotiation _within_ a task (e.g., agent adding audio/video mid-conversation).
 - **Client Methods & Transport:**
-  - Explore extending support to client-initiated methods (beyond task management).
-  - Improvements to streaming reliability and push notification mechanisms.
+    - Explore extending support to client-initiated methods (beyond task management).
+    - Improvements to streaming reliability and push notification mechanisms.
 
 ## About
 
