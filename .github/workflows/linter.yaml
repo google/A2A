@@ -68,7 +68,6 @@ jobs:
           MARKDOWN_CONFIG_FILE: ".markdownlint.json"
           VALIDATE_MARKDOWN_PRETTIER: false
           TYPESCRIPT_ES_CONFIG_FILE: ".eslintrc.js"
-          VALIDATE_TYPESCRIPT_ES: true
           VALIDATE_JAVASCRIPT_PRETTIER: false
           VALIDATE_JSON_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
