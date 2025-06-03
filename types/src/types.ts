@@ -390,7 +390,7 @@ export interface PushNotificationAuthenticationInfo {
 /**Configuration for setting up push notifications for task updates. */
 export interface PushNotificationConfig {
   /** Push Notification ID - created by server to support multiple callbacks */
-  id?: string
+  id?: string;
   /** URL for sending the push notifications. */
   url: string;
   /** Token unique to this task/session. */
@@ -729,7 +729,8 @@ export interface SendStreamingMessageRequest extends JSONRPCRequest {
 /**
  * JSON-RPC success response model for the 'message/stream' method.
  */
-export interface SendStreamingMessageSuccessResponse extends JSONRPCSuccessResponse {
+export interface SendStreamingMessageSuccessResponse
+  extends JSONRPCSuccessResponse {
   result: Message | Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent;
 }
 // --8<-- [end:SendStreamingMessageSuccessResponse]
