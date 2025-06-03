@@ -14,7 +14,7 @@ https://github.com/bufbuild/buf/
 To validate your protobuf definitions and ensure they adhere to linting rules and are free of breaking changes (if configured), run the following command from the root of this folder:
 
 ```sh
-buf validate
+buf build
 ```
 
 Modify `buf.yaml` to suit your specific requirements.
@@ -39,9 +39,9 @@ buf generate
 ```yaml
 plugins:
   - local: protoc-gen-java
-    out: gen/java
+    out: src/java
   - local: protoc-gen-grpc-java
-    out: gen/java
+    out: src/java
 ```
 
 Alternatively use `protoc` commandline for code generation
