@@ -10,7 +10,7 @@ plugins:
   - remote: buf.build/grpc/python
     out: src/python
 
-# GO
+# Go
   - remote: buf.build/protocolbuffers/go
     out: src/go
 

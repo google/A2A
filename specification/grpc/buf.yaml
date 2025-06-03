@@ -5,7 +5,7 @@ deps:
   - buf.build/googleapis/googleapis # Common protos
 lint:
   use:
-    - DEFAULT # Indicates that all the default rules should be used.
+    - STANDARD # Indicates that all the default rules should be used.
 
 breaking:
   use:
