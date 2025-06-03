@@ -2,11 +2,11 @@ edition = "2023";
 
 package a2a.v1;
 
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
-import "google/api/annotations.proto";
-import "google/api/field_behavior.proto";
-import "google/api/client.proto";
 
 option java_multiple_files = true;
 option csharp_namespace = "A2a.V1";
@@ -139,7 +139,7 @@ message Task {
   // A set of output artifacts for a Task.
   repeated Artifact artifacts = 4;
   // The history of interactions from a task.
-  repeated Message history = 5;
+  repeated Message histories = 5;
   // A key/value object to store custom metadata about a task.
   google.protobuf.Struct metadata = 6;
 }
@@ -237,7 +237,7 @@ message Message {
   // A role for the message.
   Role role = 4;
   // Content is the container of the message content.
-  repeated Part content = 5;
+  repeated Part contents = 5;
   // Any optional metadata to provide along with the message.
   google.protobuf.Struct metadata = 6;
 }
@@ -335,7 +335,7 @@ message AgentCard {
   // The security scheme details used for authenticating with this agent.
   map<string, SecurityScheme> security_schemes = 8;
   // Security requirements for contacting the agent.
-  repeated Security security = 9;
+  repeated Security securities = 9;
   // The set of interaction modes that the agent supports across all skills.
   // This can be overridden per skill. Defined as mime types.
   repeated string default_input_modes = 10;
@@ -399,7 +399,7 @@ message TaskPushNotificationConfig {
 }
 
 message StringList {
-  repeated string list = 1;
+  repeated string lists = 1;
 }
 
 message Security {
@@ -575,7 +575,8 @@ message ListTaskPushNotificationRequest {
   string page_token = 3;
 }
 
-message GetAgentCardRequest {}
+message GetAgentCardRequest {
+}
 
 
 //////// Response Messages ///////////
