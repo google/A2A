@@ -17,16 +17,16 @@ To validate your protobuf definitions and ensure they adhere to linting rules an
 buf validate
 ```
 
-Modify buf.yaml to suit your specific requirements.
+Modify `buf.yaml` to suit your specific requirements.
 
 ## Code Generation
 
 buf.gen.yaml is configured to generate code for the following languages:
 
-*   Go
-*   Java
-*   Python
-*   TypeScript
+- Go
+- Java
+- Python
+- TypeScript
 
 To generate code for all configured languages, run the following command from the root of this folder:
 
@@ -34,7 +34,7 @@ To generate code for all configured languages, run the following command from th
 buf generate
 ```
 
-buf.gen.yaml uses remote plugins for generation, if you wish to use local plugins change remote to local
+`buf.gen.yaml` uses remote plugins for generation, if you wish to use local plugins change remote to local
 
 ```yaml
 plugins:
@@ -44,7 +44,7 @@ plugins:
     out: gen/java
 ```
 
-Alternatively use protoc commandline for code generation
+Alternatively use `protoc` commandline for code generation
 
 ```bash
 protoc --java_out=./src/java --grpc-java_out=./src/java -I. a2a.proto
