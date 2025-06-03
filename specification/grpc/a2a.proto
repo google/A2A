@@ -1,5 +1,5 @@
-edition = "2023";
-
+//edition = "2023";
+syntax = "proto3";
 package a2a.v1;
 
 import "google/protobuf/struct.proto";
@@ -11,7 +11,6 @@ import "google/api/client.proto";
 option java_multiple_files = true;
 option csharp_namespace = "A2a.V1";
 option go_package = "google.golang.org/a2a/v1";
-option java_multiple_files = true;
 option java_outer_classname = "A2A";
 option java_package = "com.google.a2a.v1";
 
