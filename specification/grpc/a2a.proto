@@ -1,4 +1,4 @@
-//edition = "2023";
+// edition = "2023";
 syntax = "proto3";
 package a2a.v1;
 
