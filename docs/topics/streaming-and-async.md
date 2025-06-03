@@ -41,10 +41,11 @@ For very long-running tasks (e.g., lasting minutes, hours, or even days) or when
 - **Configuration:** The client provides a [`PushNotificationConfig`](../specification.md#68-pushnotificationconfig-object) to the server. This configuration can be supplied:
     - Within the initial `message/send` or `message/stream` request (via the optional `pushNotification` parameter in `TaskSendParams`).
     - Separately, using the `tasks/pushNotificationConfig/set` RPC method for an existing task.
+
     The `PushNotificationConfig` includes:
     - `url`: The absolute HTTPS webhook URL where the A2A Server should send (POST) task update notifications.
     - `token` (optional): A client-generated opaque string (e.g., a secret or task-specific identifier). The server SHOULD include this token in the notification request (e.g., in a custom header like `X-A2A-Notification-Token`) for validation by the client's webhook receiver.
-    - `authentication` (optional): An [`AuthenticationInfo`](../specification.md#69-pushnotificationauthenticationinfo-object) object specifying how the A2A Server should authenticate itself *to the client's webhook URL*. The client (receiver of the webhook) defines these authentication requirements.
+    - `authentication` (optional): An [`AuthenticationInfo`](../specification.md#69-pushnotificationauthenticationinfo-object) object specifying how the A2A Server should authenticate itself _to the client's webhook URL_. The client (receiver of the webhook) defines these authentication requirements.
 - **Notification Trigger:** The A2A Server decides when to send a push notification. Typically, this happens when a task reaches a significant state change, such as transitioning to a terminal state (`completed`, `failed`, `canceled`, `rejected`) or an `input-required` or `auth-required` state, particularly after its associated message and artifacts are fully generated and stable.
 - **Notification Payload:** The A2A protocol itself does **not** strictly define the HTTP body payload of the push notification sent by the server to the client's webhook. However, the notification **SHOULD** contain sufficient information for the client to identify the `Task ID` and understand the general nature of the update (e.g., the new `TaskState`). Servers might send a minimal payload (just `Task ID` and new state) or a more comprehensive one (e.g., a summary or even the full [`Task`](../specification.md#61-task-object) object).
 - **Client Action:** Upon receiving a push notification (and successfully verifying its authenticity and relevance), the client typically uses the `tasks/get` RPC method with the `task ID` from the notification to retrieve the complete, updated `Task` object, including any new artifacts or detailed messages.
@@ -66,6 +67,7 @@ Security is paramount for push notifications due to their asynchronous and serve
 #### A2A Server Security (When Sending Notifications to Client Webhook)
 
 1. **Webhook URL Validation:**
+
     - Servers **SHOULD NOT** blindly trust and send POST requests to any `url` provided by a client in `PushNotificationConfig`. Malicious clients could provide URLs pointing to internal services or unrelated third-party systems to cause harm (Server-Side Request Forgery - SSRF attacks) or act as Distributed Denial of Service (DDoS) amplifiers.
     - **Mitigation Strategies:**
         - **Allowlisting:** Maintain an allowlist of trusted domains or IP ranges for webhook URLs, if feasible.
@@ -83,6 +85,7 @@ Security is paramount for push notifications due to their asynchronous and serve
 #### Client Webhook Receiver Security (When Receiving Notifications from A2A Server)
 
 1. **Authenticating the A2A Server:**
+
     - The webhook endpoint **MUST** rigorously verify the authenticity of incoming notification requests to ensure they originate from the legitimate A2A Server and not an imposter.
     - **Verify Signatures/Tokens:**
         - If using JWTs (e.g., as Bearer tokens), validate the JWT's signature against the A2A Server's trusted public keys (e.g., fetched from a JWKS endpoint provided by the A2A Server, if applicable). Also, validate claims like `iss` (issuer), `aud` (audience - should identify your webhook), `iat` (issued at), and `exp` (expiration time).
@@ -91,6 +94,7 @@ Security is paramount for push notifications due to their asynchronous and serve
     - **Validate `PushNotificationConfig.token`:** If the client provided an opaque `token` in its `PushNotificationConfig` when setting up notifications for the task, the webhook should check that the incoming notification includes this exact token (e.g., in a custom header like `X-A2A-Notification-Token`). This helps ensure the notification is intended for this specific client context and task, adding a layer of authorization.
 
 2. **Preventing Replay Attacks:**
+
     - **Timestamps:** Notifications should ideally include a timestamp (e.g., `iat` - issued at - claim in a JWT, or a custom timestamp header). The webhook should reject notifications that are too old (e.g., older than a few minutes) to prevent attackers from replaying old, captured notifications. The timestamp should be part of the signed payload (if using signatures) to ensure its integrity.
     - **Nonces/Unique IDs:** For critical notifications, consider using unique, single-use identifiers (nonces or event IDs) for each notification. The webhook should track received IDs (for a reasonable window) to prevent processing duplicate notifications. A JWT's `jti` (JWT ID) claim can serve this purpose.
 

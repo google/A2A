@@ -15,11 +15,13 @@ Let's look at `__main__.py` again to see how the server is initialized and start
 Let's break this down:
 
 1. **`DefaultRequestHandler`**:
+
     - The SDK provides `DefaultRequestHandler`. This handler takes your `AgentExecutor` implementation (here, `HelloWorldAgentExecutor`) and a `TaskStore` (here, `InMemoryTaskStore`).
     - It routes incoming A2A RPC calls to the appropriate methods on your executor (like `execute` or `cancel`).
     - The `TaskStore` is used by the `DefaultRequestHandler` to manage the lifecycle of tasks, especially for stateful interactions, streaming, and resubscription. Even if your agent executor is simple, the handler needs a task store.
 
 2. **`A2AStarletteApplication`**:
+
     - The `A2AStarletteApplication` class is instantiated with the `agent_card` and the `request_handler` (referred to as `http_handler` in its constructor).
     - The `agent_card` is crucial because the server will expose it at the `/.well-known/agent.json` endpoint (by default).
     - The `request_handler` is responsible for processing all incoming A2A method calls by interacting with your `AgentExecutor`.

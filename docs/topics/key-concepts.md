@@ -13,24 +13,28 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
 ## Fundamental Communication Elements
 
 - **Agent Card:**
+
     - A JSON metadata document, typically discoverable at a well-known URL (e.g., `/.well-known/agent.json`), that describes an A2A Server.
     - It details the agent's identity (name, description), service endpoint URL, version, supported A2A capabilities (like streaming or push notifications), specific skills it offers, default input/output modalities, and authentication requirements.
     - Clients use the Agent Card to discover agents and understand how to interact with them securely and effectively.
     - See details in the [Protocol Specification: Agent Card](../specification.md#5-agent-discovery-the-agent-card).
 
 - **Task:**
+
     - When a client sends a message to an agent, the agent might determine that fulfilling the request requires a stateful task to be completed (e.g., "generate a report," "book a flight," "answer a question").
     - Each task has a unique ID defined by the agent and progresses through a defined lifecycle (e.g., `submitted`, `working`, `input-required`, `completed`, `failed`).
     - Tasks are stateful and can involve multiple exchanges (messages) between the client and the server.
     - See details in the [Protocol Specification: Task Object](../specification.md#61-task-object).
 
 - **Message:**
+
     - Represents a single turn or unit of communication between a client and an agent.
     - Messages have a `role` (either `"user"` for client-sent messages or `"agent"` for server-sent messages) and contain one or more `Part` objects that carry the actual content. `messageId` part of the Message object is a unique identifier for each message set by the sender of the message.
     - Used for conveying instructions, context, questions, answers, or status updates that are not necessarily formal `Artifacts`.
     - See details in the [Protocol Specification: Message Object](../specification.md#64-message-object).
 
 - **Part:**
+
     - The fundamental unit of content within a `Message` or an `Artifact`. Each part has a specific `type` and can carry different kinds of data:
         - `TextPart`: Contains plain textual content.
         - `FilePart`: Represents a file, which can be transmitted as inline base64-encoded bytes or referenced via a URI. Includes metadata like filename and Media Type.
@@ -46,10 +50,12 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
 ## Interaction Mechanisms
 
 - **Request/Response (Polling):**
+
     - The client sends a request (e.g., using the `message/send` RPC method) and receives a response from the server.
     - If the interaction requires a stateful long-running task, the server might initially respond with a `working` status. The client would then periodically call `tasks/get` to poll for updates until the task reaches a terminal state (e.g., `completed`, `failed`).
 
 - **Streaming (Server-Sent Events - SSE):**
+
     - For tasks that produce results incrementally or provide real-time progress updates.
     - The client initiates an interaction with the server using `message/stream`.
     - The server responds with an HTTP connection that remains open, over which it sends a stream of Server-Sent Events (SSE).
