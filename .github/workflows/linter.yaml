@@ -67,3 +67,4 @@ jobs:
           VALIDATE_NATURAL_LANGUAGE: false
           MARKDOWN_CONFIG_FILE: ".markdownlint.json"
           VALIDATE_MARKDOWN_PRETTIER: false
+          TYPESCRIPT_ES_CONFIG_FILE: "eslint.config.js"
