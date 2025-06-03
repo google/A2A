@@ -21,7 +21,7 @@ Modify `buf.yaml` to suit your specific requirements.
 
 ## Code Generation
 
-buf.gen.yaml is configured to generate code for the following languages:
+`buf.gen.yaml` is configured to generate code for the following languages:
 
 - Go
 - Java
