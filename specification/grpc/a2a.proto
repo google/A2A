@@ -10,6 +10,7 @@ import "google/protobuf/timestamp.proto";
 
 option csharp_namespace = "A2a.V1";
 option go_package = "google.golang.org/a2a/v1";
+option java_multiple_files = true;
 option java_outer_classname = "A2A";
 option java_package = "com.google.a2a.v1";
 
@@ -571,8 +572,7 @@ message ListTaskPushNotificationRequest {
   string page_token = 3;
 }
 
-message GetAgentCardRequest {
-}
+message GetAgentCardRequest {}
 
 //////// Response Messages ///////////
 message SendMessageResponse {
