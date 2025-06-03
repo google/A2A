@@ -13,3 +13,9 @@ pip install a2a-sdk
         show_submodules: true
         members_order: alphabetical
         inherited_members: true
+
+<style>
+  nav.md-nav--secondary > ul.md-nav__list {
+    font-family: 'Roboto Mono', monospace
+  }
+</style>
