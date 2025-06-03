@@ -8,7 +8,6 @@ import "google/api/field_behavior.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
-option java_multiple_files = true;
 option csharp_namespace = "A2a.V1";
 option go_package = "google.golang.org/a2a/v1";
 option java_multiple_files = true;
