@@ -332,7 +332,7 @@ For further considerations and best practices regarding the publication and prot
 
 | Field Name    | Type                                                  | Required | Description                                      |
 | :------------ | :---------------------------------------------------- | :------- | :----------------------------------------------- |
-| `linkset`     | [`AgentLinkContext[]`](#5A41-agentlinkcontext-object) | Yes      | An array of agent-specific link context objects. |
+| `linkset`     | [`AgentLinkContext[]`](#5a41-agentlinkcontext-object) | Yes      | An array of agent-specific link context objects. |
 
 ### 5A.4.1. `AgentLinkContext` Object
 
