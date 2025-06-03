@@ -138,8 +138,10 @@ message Task {
   TaskStatus status = 3;
   // A set of output artifacts for a Task.
   repeated Artifact artifacts = 4;
+  // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
   // The history of interactions from a task.
-  repeated Message histories = 5;
+  repeated Message history = 5;
+  // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
   // A key/value object to store custom metadata about a task.
   google.protobuf.Struct metadata = 6;
 }
@@ -236,8 +238,10 @@ message Message {
   string task_id = 3;
   // A role for the message.
   Role role = 4;
+  // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
   // Content is the container of the message content.
-  repeated Part contents = 5;
+  repeated Part content = 5;
+  // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
   // Any optional metadata to provide along with the message.
   google.protobuf.Struct metadata = 6;
 }
@@ -257,7 +261,6 @@ message Artifact {
   // Optional metadata included with the artifact.
   google.protobuf.Struct metadata = 6;
 }
-
 
 // TaskStatusUpdateEvent is a delta even on a task indicating that a task
 // has changed.
@@ -311,7 +314,6 @@ message AuthenticationInfo {
   string credentials = 2;
 }
 
-
 // AgentCard conveys key information:
 // - Overall details (version, name, description, uses)
 // - Skills; a set of actions/solutions the agent can perform
@@ -334,8 +336,10 @@ message AgentCard {
   AgentCapabilities capabilities = 7;
   // The security scheme details used for authenticating with this agent.
   map<string, SecurityScheme> security_schemes = 8;
+  // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
   // Security requirements for contacting the agent.
-  repeated Security securities = 9;
+  repeated Security security = 9;
+  // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
   // The set of interaction modes that the agent supports across all skills.
   // This can be overridden per skill. Defined as mime types.
   repeated string default_input_modes = 10;
@@ -398,9 +402,11 @@ message TaskPushNotificationConfig {
   PushNotificationConfig push_notification_config = 2;
 }
 
+// protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
 message StringList {
-  repeated string lists = 1;
+  repeated string list = 1;
 }
+// protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
 
 message Security {
   map<string, StringList> schemes = 1;
@@ -515,19 +521,14 @@ message PasswordOAuthFlow {
 
 ///////////// Request Messages ///////////
 message SendMessageRequest {
-  Message request = 1 [
-      (google.api.field_behavior) = REQUIRED
-  ];
+  Message request = 1 [(google.api.field_behavior) = REQUIRED];
   SendMessageConfiguration configuration = 2;
   google.protobuf.Struct metadata = 3;
 }
 
-
 message GetTaskRequest {
   // name=tasks/{id}
-  string name = 1 [
-      (google.api.field_behavior) = REQUIRED
-  ];
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
   int32 history_length = 2;
 }
 
@@ -544,13 +545,10 @@ message GetTaskPushNotificationRequest {
 message CreateTaskPushNotificationRequest {
   // The task resource for this config.
   // Format: tasks/{id}
-  string parent = 1 [
-    (google.api.field_behavior) = REQUIRED
-  ];
+  string parent = 1 [(google.api.field_behavior) = REQUIRED];
   string config_id = 2 [(google.api.field_behavior) = REQUIRED];
-  TaskPushNotificationConfig config = 3  [
-    (google.api.field_behavior) = REQUIRED
-  ];
+  TaskPushNotificationConfig config = 3
+      [(google.api.field_behavior) = REQUIRED];
 }
 
 message TaskSubscriptionRequest {
@@ -577,7 +575,6 @@ message ListTaskPushNotificationRequest {
 
 message GetAgentCardRequest {
 }
-
 
 //////// Response Messages ///////////
 message SendMessageResponse {
