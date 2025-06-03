@@ -19,9 +19,11 @@
 .md-grid {
   max-width: 80%;
 }
+
 .footer {
   padding-bottom: 30vh;
 }
+
 .centered-logo-text-group {
   display: inline-flex;
   align-items: center;
@@ -29,13 +31,16 @@
   margin-bottom: 0.5em;
   vertical-align: middle;
 }
+
 .centered-logo-text-group img {
   height: auto;
 }
+
 .centered-logo-text-group h1 {
   margin: 0;
   text-align: left;
 }
+
 .install-command-container {
   max-width: 600px;
   margin: 2.5em auto;
@@ -43,16 +48,18 @@
   background-color: var(--md-code-bg-color, #f5f5f5);
   border-radius: 8px;
   text-align: center;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 3px 6px rgb(0 0 0 / 5%);
   border-left: 5px solid var(--md-primary-fg-color, #526cfe);
   margin-top: 30px;
 }
+
 .install-command-container p {
   font-size: 1.1em;
   color: var(--md-default-fg-color);
   margin-bottom: -10px;
   margin-top: -10px;
 }
+
 .install-command-container p code {
   font-size: 1.1em;
   font-weight: 600;

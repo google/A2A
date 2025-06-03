@@ -38,14 +38,16 @@ For very long-running tasks (e.g., lasting minutes, hours, or even days) or when
 **Key Characteristics:**
 
 - **Server Capability:** The A2A Server must indicate its support for this feature by setting `capabilities.pushNotifications: true` in its [Agent Card](../specification.md#552-agentcapabilities-object).
-- **Configuration:** The client provides a [`PushNotificationConfig`](../specification.md#68-pushnotificationconfig-object) to the server. This configuration can be supplied:
-    - Within the initial `message/send` or `message/stream` request (via the optional `pushNotification` parameter in `TaskSendParams`).
-    - Separately, using the `tasks/pushNotificationConfig/set` RPC method for an existing task.
+- **Configuration:** The client provides a [`PushNotificationConfig`](../specification.md#68-pushnotificationconfig-object) to the server.
+    - This configuration can be supplied:
+        - Within the initial `message/send` or `message/stream` request (via the optional `pushNotification` parameter in `TaskSendParams`).
+        - Separately, using the `tasks/pushNotificationConfig/set` RPC method for an existing task.
 
-    The `PushNotificationConfig` includes:
-    - `url`: The absolute HTTPS webhook URL where the A2A Server should send (POST) task update notifications.
-    - `token` (optional): A client-generated opaque string (e.g., a secret or task-specific identifier). The server SHOULD include this token in the notification request (e.g., in a custom header like `X-A2A-Notification-Token`) for validation by the client's webhook receiver.
-    - `authentication` (optional): An [`AuthenticationInfo`](../specification.md#69-pushnotificationauthenticationinfo-object) object specifying how the A2A Server should authenticate itself _to the client's webhook URL_. The client (receiver of the webhook) defines these authentication requirements.
+    - The `PushNotificationConfig` includes:
+        - `url`: The absolute HTTPS webhook URL where the A2A Server should send (POST) task update notifications.
+        - `token` (optional): A client-generated opaque string (e.g., a secret or task-specific identifier). The server SHOULD include this token in the notification request (e.g., in a custom header like `X-A2A-Notification-Token`) for validation by the client's webhook receiver.
+        - `authentication` (optional): An [`AuthenticationInfo`](../specification.md#69-pushnotificationauthenticationinfo-object) object specifying how the A2A Server should authenticate itself _to the client's webhook URL_. The client (receiver of the webhook) defines these authentication requirements.
+
 - **Notification Trigger:** The A2A Server decides when to send a push notification. Typically, this happens when a task reaches a significant state change, such as transitioning to a terminal state (`completed`, `failed`, `canceled`, `rejected`) or an `input-required` or `auth-required` state, particularly after its associated message and artifacts are fully generated and stable.
 - **Notification Payload:** The A2A protocol itself does **not** strictly define the HTTP body payload of the push notification sent by the server to the client's webhook. However, the notification **SHOULD** contain sufficient information for the client to identify the `Task ID` and understand the general nature of the update (e.g., the new `TaskState`). Servers might send a minimal payload (just `Task ID` and new state) or a more comprehensive one (e.g., a summary or even the full [`Task`](../specification.md#61-task-object) object).
 - **Client Action:** Upon receiving a push notification (and successfully verifying its authenticity and relevance), the client typically uses the `tasks/get` RPC method with the `task ID` from the notification to retrieve the complete, updated `Task` object, including any new artifacts or detailed messages.
