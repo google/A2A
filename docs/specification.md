@@ -168,8 +168,8 @@ Agent Cards themselves might contain information that is considered sensitive.
 | `capabilities`                      | [`AgentCapabilities`](#552-agentcapabilities-object)               | Yes      | Specifies optional A2A protocol features supported (e.g., streaming, push notifications).                                                   |
 | `securitySchemes`                   | { [scheme: string]: [SecurityScheme](#553-securityscheme-object) } | No       | Security scheme details used for authenticating with this agent. undefined implies no A2A-advertised auth (not recommended for production). |
 | `security`                          | `{ [scheme: string]: string[]; }[]`                                | No       | Security requirements for contacting the agent.                                                                                             |
-| `defaultInputModes`                 | `string[]`                                                         | Yes      | Input MIME types accepted by the agent.                                                                                                     |
-| `defaultOutputModes`                | `string[]`                                                         | Yes      | Output MIME types produced by the agent.                                                                                                    |
+| `defaultInputModes`                 | `string[]`                                                         | Yes      | Input Media Types accepted by the agent.                                                                                                    |
+| `defaultOutputModes`                | `string[]`                                                         | Yes      | Output Media Types produced by the agent.                                                                                                   |
 | `skills`                            | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                                                      |
 | `supportsAuthenticatedExtendedCard` | `boolean`                                                          | No       | Indicates support for retrieving a more detailed Agent Card via an authenticated endpoint.                                                  |
 
@@ -223,8 +223,8 @@ Describes a specific capability, function, or area of expertise the agent can pe
 | `description` | `string`   | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
 | `tags`        | `string[]` | Yes      | Keywords/categories for discoverability.                                       |
 | `examples`    | `string[]` | No       | Example prompts or use cases demonstrating skill usage.                        |
-| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted MIME types.    |
-| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced MIME types.   |
+| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted Media Types.    |
+| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced Media Types.   |
 
 ### 5.6. Sample Agent Card
 
@@ -430,7 +430,7 @@ Represents the data for a file, used within a `FilePart`.
 | Field Name | Type     | Required | Description                                                                                                                         |
 | :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
 | `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
-| `mimeType` | `string` | No       | [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
+| `mimeType` | `string` | No       | [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
 | `bytes`    | `string` | Yes      | Base64 encoded file content.                                                                                                        |
 
 ### 6.6.2 `FileWithUri` Object
@@ -444,7 +444,7 @@ Represents the URI for a file, used within a `FilePart`.
 | Field Name | Type     | Required | Description                                                                                                                         |
 | :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
 | `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
-| `mimeType` | `string` | No       | [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
+| `mimeType` | `string` | No       | [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
 | `uri`      | `string` | Yes      | URI (absolute URL strongly recommended) to file content. Accessibility is context-dependent.                                        |
 
 ### 6.7. `Artifact` Object
@@ -760,7 +760,7 @@ These are custom error codes defined within the JSON-RPC server error range (`-3
 | `-32002` | `TaskNotCancelableError`            | Task cannot be canceled            | An attempt was made to cancel a task that is not in a cancelable state (e.g., it has already reached a terminal state like `completed`, `failed`, or `canceled`).                                                                    |
 | `-32003` | `PushNotificationNotSupportedError` | Push Notification is not supported | Client attempted to use push notification features (e.g., `tasks/pushNotificationConfig/set`) but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                              |
 | `-32004` | `UnsupportedOperationError`         | This operation is not supported    | The requested operation or a specific aspect of it (perhaps implied by parameters) is not supported by this server agent implementation. Broader than just method not found.                                                         |
-| `-32005` | `ContentTypeNotSupportedError`      | Incompatible content types         | A [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) provided in the request's `message.parts` (or implied for an artifact) is not supported by the agent or the specific skill being invoked. |
+| `-32005` | `ContentTypeNotSupportedError`      | Incompatible content types         | A [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) provided in the request's `message.parts` (or implied for an artifact) is not supported by the agent or the specific skill being invoked. |
 | `-32006` | `InvalidAgentResponseError`         | Invalid agent response type        | Agent generated an invalid response for the requested method                                                                                                                                                                         |
 
 Servers MAY define additional error codes within the `-32000` to `-32099` range for more specific scenarios not covered above, but they **SHOULD** document these clearly. The `data` field of the `JSONRPCError` object can be used to provide more structured details for any error.
@@ -1065,7 +1065,7 @@ _If the task were longer-running, the server might initially respond with `statu
 
 **Scenario:** Client wants to book a flight, and the agent needs more information.
 
-1. **Client `message/send` (initial request):**
+1. **Client sends a message using `message/send`:**
 
    ```json
    {
@@ -1313,7 +1313,7 @@ _If the task were longer-running, the server might initially respond with `statu
    - Receives the POST.
    - Validates the `Authorization` header (if applicable).
    - Validates the `X-A2A-Notification-Token`.
-   - Internally processes the notification (e.g., updates application state, notifies end-user).
+   - Internally processes the notification (e.g., updates application state, notifies end user).
 
 ### 9.6. File Exchange (Upload and Download)
 
@@ -1387,7 +1387,7 @@ _If the task were longer-running, the server might initially respond with `statu
 
 **Scenario:** Client asks for a list of open support tickets in a specific JSON format.
 
-1. **Client `message/send`, `Part.metadata` hints at desired output schema/MIME type:**
+1. **Client `message/send`, `Part.metadata` hints at desired output schema/Media Type:**
    _(Note: A2A doesn't formally standardize schema negotiation in v0.2.0, but `metadata` can be used for such hints by convention between client/server)._
 
    ```json

@@ -15,7 +15,7 @@ Key attributes of an `AgentSkill` (defined in `a2a.types`):
 - `description`: A more detailed explanation of what the skill does.
 - `tags`: Keywords for categorization and discovery.
 - `examples`: Sample prompts or use cases.
-- `inputModes` / `outputModes`: Supported MIME types for input and output (e.g., "text/plain", "application/json").
+- `inputModes` / `outputModes`: Supported Media Types for input and output (e.g., "text/plain", "application/json").
 
 In `__main__.py`, you can see how a skill for the Helloworld agent is defined:
 
@@ -34,7 +34,7 @@ Key attributes of an `AgentCard` (defined in `a2a.types`):
 - `name`, `description`, `version`: Basic identity information.
 - `url`: The endpoint where the A2A service can be reached.
 - `capabilities`: Specifies supported A2A features like `streaming` or `pushNotifications`.
-- `defaultInputModes` / `defaultOutputModes`: Default MIME types for the agent.
+- `defaultInputModes` / `defaultOutputModes`: Default Media Types for the agent.
 - `skills`: A list of `AgentSkill` objects that the agent offers.
 
 The `helloworld` example defines its Agent Card like this:

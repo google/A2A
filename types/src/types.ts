@@ -56,10 +56,10 @@ export interface AgentSkill {
   /**
    * The set of interaction modes that the skill supports
    * (if different than the default).
-   * Supported mime types for input.
+   * Supported media types for input.
    */
   inputModes?: string[];
-  /** Supported mime types for output. */
+  /** Supported media types for output. */
   outputModes?: string[];
 }
 // --8<-- [end:AgentSkill]
@@ -105,10 +105,10 @@ export interface AgentCard {
   security?: { [scheme: string]: string[] }[];
   /**
    * The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.
-   * Supported mime types for input.
+   * Supported media types for input.
    */
   defaultInputModes: string[];
-  /** Supported mime types for output. */
+  /** Supported media types for output. */
   defaultOutputModes: string[];
   /** Skills are a unit of capability that an agent can perform. */
   skills: AgentSkill[];
