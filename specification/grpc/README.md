@@ -58,7 +58,7 @@ For example, if you only want to generate Java exclude the rest, your `buf.gen.y
 
 ```yaml
 # buf.gen.yaml
-version: v1
+version: v2
 plugins:
 #  - plugin: buf.build/protocolbuffers/go
 #    out: src/go
