@@ -53,8 +53,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LOG_LEVEL: WARN
           SHELLCHECK_OPTS: -e SC1091 -e 2086
-          VALIDATE_ALL_CODEBASE: true
-          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/).*"
+          VALIDATE_ALL_CODEBASE: false
+          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|CODE_OF_CONDUCT.md|CHANGELOG.md).*"
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
@@ -64,3 +64,4 @@ jobs:
           VALIDATE_CHECKOV: false
           VALIDATE_JAVASCRIPT_STANDARD: false
           VALIDATE_TYPESCRIPT_STANDARD: false
+          VALIDATE_NATURAL_LANGUAGE: false

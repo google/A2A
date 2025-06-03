@@ -32,7 +32,7 @@ A2A delegates authentication to standard web mechanisms, primarily relying on HT
 
 Once a client is authenticated, the A2A Server is responsible for authorizing the request. Authorization logic is specific to the agent's implementation, the data it handles, and applicable enterprise policies.
 
-- **Granular Control:** Authorization **SHOULD** be applied based on the authenticated identity (which could represent an end-user, a client application, or both).
+- **Granular Control:** Authorization **SHOULD** be applied based on the authenticated identity (which could represent an end user, a client application, or both).
 - **Skill-Based Authorization:** Access can be controlled on a per-skill basis, as advertised in the Agent Card. For example, specific OAuth scopes might grant an authenticated client access to invoke certain skills but not others.
 - **Data and Action-Level Authorization:** Agents that interact with backend systems, databases, or tools **MUST** enforce appropriate authorization before performing sensitive actions or accessing sensitive data through those underlying resources. The agent acts as a gatekeeper.
 - **Principle of Least Privilege:** Grant only the necessary permissions required for a client or user to perform their intended operations via the A2A interface.

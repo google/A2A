@@ -1313,7 +1313,7 @@ _If the task were longer-running, the server might initially respond with `statu
    - Receives the POST.
    - Validates the `Authorization` header (if applicable).
    - Validates the `X-A2A-Notification-Token`.
-   - Internally processes the notification (e.g., updates application state, notifies end-user).
+   - Internally processes the notification (e.g., updates application state, notifies end user).
 
 ### 9.6. File Exchange (Upload and Download)
 

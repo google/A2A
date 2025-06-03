@@ -6,7 +6,7 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
 
 ## Core Actors
 
-- **User:** The end-user (human or automated service) who initiates a request or goal that requires agent assistance.
+- **User:** The end user (human or automated service) who initiates a request or goal that requires agent assistance.
 - **A2A Client (Client Agent):** An application, service, or another AI agent that acts on behalf of the user to request actions or information from a remote agent. The client initiates communication using the A2A protocol.
 - **A2A Server (Remote Agent):** An AI agent or agentic system that exposes an HTTP endpoint implementing the A2A protocol. It receives requests from clients, processes tasks, and returns results or status updates. The remote agent operates as an "opaque" system from the client's perspective, meaning the client doesn't need to know its internal workings, memory, or tools.
 
