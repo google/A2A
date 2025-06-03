@@ -619,7 +619,7 @@ export interface LinkContext {
 /**
  * Represents a Link Target Object as defined in RFC 9264 Section 4.2.3.
  * See: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.3
- * 
+ *
  * While not a complete implementation of all target attributes defined in
  * RFC 8288, this interface captures the minimal structure required for the
  * current use case and leaves room for extension.
