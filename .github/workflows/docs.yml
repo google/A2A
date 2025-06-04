@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+    paths:
+      - "mkdocs.yml"
+      - "docs/**"
   pull_request:
     branches:
       - main
@@ -43,7 +46,7 @@ jobs:
             mkdocs-material-
 
       - name: Install documentation dependencies
-        run: pip install -r requirements-docs.txt && pip install a2a-sdk
+        run: pip install -r requirements-docs.txt
 
       - name: Build Documentation (PR Check)
         if: github.event_name == 'pull_request'
