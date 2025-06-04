@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CARDIO AI Multi Agents System</title>
+    <style>
+      h1 {
+        text-align: center;
+ margin-bottom: 30px;
+        padding: 10px;
+        border-bottom: 2px solid blue;
+        color: blue;
+        background-color: white;
+      }
+      #analysis-form {
+        padding: 20px;
+ margin-bottom: 20px;
+ border: 1px solid #ccc; /* Optional: add a border to visualize padding/margin */
+      }
+      #results-area {
+        margin-top: 20px;
+        padding: 20px;
+      }
+ body {
+ font-family: sans-serif;
+ background-color: #f4f4f4;
+ padding: 20px;
+ margin: 0;
+      }
+      label {
+ display: block;
+ margin-bottom: 5px;
+ font-weight: bold;
+      }
+      input[type="text"], input[type="file"], button {
+ padding: 10px;
+ margin-bottom: 10px;
+ border: 1px solid #ccc;
+ border-radius: 4px;
+ font-size: 1em;
+      }
+      button {
+ background-color: #007bff;
+ color: white;
+ cursor: pointer;
+ border: none;
+      }
+ button:hover {
+ background-color: #0056b3;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Heart Health Analysis Results</h1>
+
+ <form id="analysis-form">
+<label for="symptoms">Enter Symptoms:</label>
+      <input type="text" id="symptoms" name="symptoms">
+<label for="patient-name">Enter Patient Name:</label>
+      <input type="text" id="patient-name" name="patient-name">
+      <button type="submit" id="analyze-button">Analyze</button>
+ <label for="patient-address">Enter Patient Address:</label>
+      <input type="text" id="patient-address" name="patient-address">
+      <button type="submit" id="analyze-button">Analyze</button>
+  <label for="patient-age">Enter Patient Age:</label>
+      <input type="text" id="patient-age" name="patient-age">
+      <button type="submit" id="analyze-button">Analyze</button>
+  <label for="patient-gender">Enter Patient Gender:</label>
+      <input type="text" id="patient-gender" name="patient-gender">
+      <button type="submit" id="analyze-button">Analyze</button>
+<lable for="family-history">Enter Family History:</lable>
+      <input type="text" id="family-history" name="family-history">
+      <button type="submit" id="analyze-button">Analyze</button>
+<label for="medication-history">Enter Medication History:</label>
+      <input type="text" id="medication-history" name="medication-history">
+      <button type="submit" id="analyze-button">Analyze</button>
+      <input type="text" id="medical-history" name="medical-history">
+      <button type="submit" id="analyze-button">Analyze</button>
+<label for="allergies">Enter Allergies:</label>
+      <input type="text" id="allergies" name="allergies">
+      <button type="submit" id="analyze-button">Analyze</button>
+"
+ <label for labs-results">Enter Lab Results:</label>
+      <input type="text" id="labs-results" name="labs-results">
+      <button type="submit" id="analyze-button">Analyze</button>
+ <label for="biomarker-results">Enter Biomarker Results:</label>
+      <input type="text" id="biomarker-results" name="biomarker-results">
+      <button type="submit" id="analyze-button">Analyze</button>
+ <label for="electrolytes-results">Enter Electrolytes Results:</label>
+      <input type="text" id="electrolytes-results" name="electrolytes-results">
+      <button type="submit" id="analyze-button">Analyze</button>
+ <label for="ecg-file">Upload ECG Data:</label>
+      <input type="file" id="ecg-file" name="ecg-file">
+ <label for="echo-file">Upload Echo Data:</label>
+      <input type="file" id="echo-file" name="echo-file">
+      <button type="submit" id="analyze-button">Analyze</button>
+ <label for="mri-file">Upload MRI Data:</label>
+      <input type="file" id="mri-file" name="mri-file">
+      <button type="submit" id="analyze-button">Analyze</button>"
+  <label for="ct-scan-file">Upload CT Scan Data:</label>
+      <input type="file" id="ct-scan-file" name="ct-scan-file">
+      <button type="submit" id="analyze-button">Analyze</button>
+  <label for="genetic-variants">Enter Genetic Variants (comma-separated):</label>
+      <input type="text" id="genetic-variants" name="genetic-variants">
+      <button type="submit" id="analyze-button">Analyze</button>
+<label for="diagnostic-results">Enter Diagnostic Report:</label>
+      <input type="text" id="diagnostic-report" name="diagnostic-report">
+      <button type="submit" id="analyze-button">Analyze</button>
+<label for="decommended-treatment">Enter Recommended Treatment:</label>
+      <input type="text" id="recommended-treatment" name="recommended-treatment">
+      <button type="submit" id="analyze-button">Analyze</button>
+      
+    </form>
+    <div id="results-area"></div>
+    <script>
+ document.getElementById('analysis-form').addEventListener('submit', async (event) => {
+ event.preventDefault(); // Prevent the default form submission
+        const form = event.target;
+        const symptoms = document.getElementById('symptoms').value;
+        const ecgFile = document.getElementById('ecg-file').files[0];
+        const echoFile = document.getElementById('echo-file').files[0];
+        const resultsArea = document.getElementById('results-area');
+        const analyzeButton = document.getElementById('analyze-button');
+
+        // Frontend validation: Check if symptoms are entered
+        if (!symptoms) {
+          alert('Please enter symptoms.');
+          return; // Prevent form submission
+        }
+
+        const formData = new FormData();
+        formData.append('symptoms', symptoms);
+        if (ecgFile) formData.append('ecg-file', ecgFile);
+        if (echoFile) formData.append('echo-file', echoFile);
+
+        analyzeButton.disabled = true;
+        analyzeButton.textContent = 'Analyzing...';
+
+        try {
+          const response = await fetch('/analyze', { method: 'POST', body: formData });
+          const results = await response.json();
+          resultsArea.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
+        } catch (error) {
+          let errorMessage = `An error occurred: ${error.message || error}`;
+          if (error.response) {
+            errorMessage = `HTTP error! Status: ${error.response.status}`;
+          }
+          resultsArea.innerHTML = `<p>Error: ${errorMessage}</p>`;
+        }
+ finally {
+ analyzeButton.disabled = false;
+ analyzeButton.textContent = 'Analyze';
+        }
+      });
+    </script>
+  </body>
+</html>
