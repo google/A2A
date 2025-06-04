@@ -27,15 +27,15 @@ The **Agent2Agent (A2A) Protocol** is an open standard designed to enable seamle
 
 - :material-account-group-outline:{ .lg .middle } **Interoperability**
 
-    Connect agents built on different platforms (LangGraph, CrewAI, Semantic Kernel, custom solutions) to create powerful, composite AI systems.
+  Connect agents built on different platforms (LangGraph, CrewAI, Semantic Kernel, custom solutions) to create powerful, composite AI systems.
 
 - :material-lan-connect:{ .lg .middle } **Complex Workflows**
 
-    Enable agents to delegate sub-tasks, exchange information, and coordinate actions to solve complex problems that a single agent cannot.
+  Enable agents to delegate sub-tasks, exchange information, and coordinate actions to solve complex problems that a single agent cannot.
 
 - :material-shield-key-outline:{ .lg .middle } **Secure & Opaque**
 
-    Agents interact without needing to share internal memory, tools, or proprietary logic, ensuring security and preserving intellectual property.
+  Agents interact without needing to share internal memory, tools, or proprietary logic, ensuring security and preserving intellectual property.
 
 </div>
 
@@ -61,28 +61,28 @@ A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are
 
 - :material-book-open:{ .lg .middle } **Read the Introduction**
 
-    Understand the core ideas behind A2A.
+  Understand the core ideas behind A2A.
 
-    [:octicons-arrow-right-24: What is A2A?](./topics/what-is-a2a.md)
+  [:octicons-arrow-right-24: What is A2A?](./topics/what-is-a2a.md)
 
-    [:octicons-arrow-right-24: Key Concepts](./topics/key-concepts.md)
+  [:octicons-arrow-right-24: Key Concepts](./topics/key-concepts.md)
 
 - :material-file-document-outline:{ .lg .middle } **Dive into the Specification**
 
-    Explore the detailed technical definition of the A2A protocol.
+  Explore the detailed technical definition of the A2A protocol.
 
-    [:octicons-arrow-right-24: Protocol Specification](./specification.md)
+  [:octicons-arrow-right-24: Protocol Specification](./specification.md)
 
 - :material-application-cog-outline:{ .lg .middle } **Follow the Tutorials**
 
-    Build your first A2A-compliant agent with our step-by-step Python quickstart.
+  Build your first A2A-compliant agent with our step-by-step Python quickstart.
 
-    [:octicons-arrow-right-24: Python Tutorial](./tutorials/python/1-introduction.md)
+  [:octicons-arrow-right-24: Python Tutorial](./tutorials/python/1-introduction.md)
 
 - :material-code-braces:{ .lg .middle } **Explore Code Samples**
 
-    See A2A in action with sample clients, servers, and agent framework integrations.
+  See A2A in action with sample clients, servers, and agent framework integrations.
 
-    [:fontawesome-brands-github: GitHub Samples](https://github.com/google-a2a/a2a-samples)
+  [:fontawesome-brands-github: GitHub Samples](https://github.com/google-a2a/a2a-samples)
 
 </div>

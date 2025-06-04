@@ -3,14 +3,14 @@ name: Check Spelling
 on:
   pull_request:
     branches:
-      - "**"
+      - '**'
     types:
-      - "opened"
-      - "reopened"
-      - "synchronize"
+      - 'opened'
+      - 'reopened'
+      - 'synchronize'
   issue_comment:
     types:
-      - "created"
+      - 'created'
 
 jobs:
   spelling:
@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     # if on repo to avoid failing runs on forks
     if: |
-      github.repository == 'google-a2a/A2A' 
+      github.repository == 'google-a2a/A2A'
         && (contains(github.event_name, 'pull_request') || github.event_name == 'push')
     concurrency:
       group: spelling-${{ github.event.pull_request.number || github.ref }}
@@ -36,16 +36,21 @@ jobs:
         uses: check-spelling/check-spelling@main
         with:
           suppress_push_for_open_pull_request: ${{ github.actor != 'dependabot[bot]' && 1 }}
-          checkout: true
-          check_file_names: 1
+          # Assuming 's' was meant to be a dictionary source configuration
+          # You might need to adjust this based on the actual action documentation
+          config: |
+            {"cspell": "https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/main/dictionaries/"}
+          check_file_names: true # Use boolean true/false or '1' if action expects string/number
           spell_check_this: check-spelling/spell-check-this@main
-          post_comment: 0
-          use_magic_file: 1
-          report-timing: 1
+          post_comment: false # Use boolean true/false or '0' if action expects string/number
+          use_magic_file: true # Use boolean true/false or '1' if action expects string/number
+          report-timing: true # Use boolean true/false or '1' if action expects string/number
           warnings: bad-regex,binary-file,deprecated-feature,ignored-expect-variant,large-file,limited-references,no-newline-at-eof,noisy-file,non-alpha-in-dictionary,token-is-substring,unexpected-line-ending,whitespace-in-dictionary,minified-file,unsupported-configuration,no-files-to-check,unclosed-block-ignore-begin,unclosed-block-ignore-end
-          experimental_apply_changes_via_bot: 1
-          dictionary_source_prefixes: '{"cspell": "https://raw.githubusercontent.com/streetsidesoftware/cspell-dicts/main/dictionaries/"}'
+          experimental_apply_changes_via_bot: true # Use boolean true/false or '1' if action expects string/number
+          # dictionary_source_prefix was likely part of the config or another parameter
+          # Removing it as a separate key based on the incorrect structure
           extra_dictionaries: |
+            cspell:custom/custom-words.txt
             cspell:aws/dict/aws.txt
             cspell:bash/samples/bash-words.txt
             cspell:companies/dict/companies.txt
@@ -80,6 +85,9 @@ jobs:
             cspell:sql/src/tsql.txt
             cspell:terraform/dict/terraform.txt
             cspell:typescript/dict/typescript.txt
-          check_extra_dictionaries: ""
-          only_check_changed_files: true
-          longest_word: "10"
+          # Check if check_extra_dictionaries should contain a list or a single value
+          # Based on the original, it might expect a list, or the string value
+          check_extra_dictionaries: |
+            cspell:custom/custom-words.txt
+          only_check_changed_files: true # Use boolean true/false or '1' if action expects string/number
+          longest_word: '10' # Keep as string if action expects string

@@ -25,9 +25,9 @@ This is a recommended approach for public agents or agents intended for broad di
 - **Mechanism:** A2A Servers host their Agent Card at a standardized, "well-known" path on their domain.
 - **Standard Path:** `https://{agent-server-domain}/.well-known/agent.json` (following the principles of [RFC 8615](https://www.ietf.org/rfc/rfc8615.txt) for well-known URIs).
 - **Process:**
-    1. A client agent knows or programmatically discovers the domain of a potential A2A Server (e.g., `smart-thermostat.example.com`).
-    2. The client performs an HTTP `GET` request to `https://smart-thermostat.example.com/.well-known/agent.json`.
-    3. If the Agent Card exists and is accessible, the server returns it as a JSON response.
+  1. A client agent knows or programmatically discovers the domain of a potential A2A Server (e.g., `smart-thermostat.example.com`).
+  2. The client performs an HTTP `GET` request to `https://smart-thermostat.example.com/.well-known/agent.json`.
+  3. If the Agent Card exists and is accessible, the server returns it as a JSON response.
 - **Advantages:** Simple, standardized, and enables automated discovery by crawlers or systems that can resolve domains. Effectively reduces the discovery problem to "find the agent's domain."
 - **Considerations:** Best suited for agents intended for open discovery or discovery within an organization that controls the domain. The endpoint serving the Agent Card may itself require authentication if the card contains sensitive information.
 
@@ -37,14 +37,14 @@ For enterprise environments, marketplaces, or specialized ecosystems, Agent Card
 
 - **Mechanism:** An intermediary service (the registry) maintains a collection of Agent Cards. Clients query this registry to find agents based on various criteria (e.g., skills offered, tags, provider name, desired capabilities).
 - **Process:**
-    1. A2A Servers (or their administrators) register their Agent Cards with the registry service. The mechanism for this registration is outside the scope of the A2A protocol itself.
-    2. Client agents query the registry's API (e.g., "find agents with 'image-generation' skill that support streaming").
-    3. The registry returns a list of matching Agent Cards or references to them.
+  1. A2A Servers (or their administrators) register their Agent Cards with the registry service. The mechanism for this registration is outside the scope of the A2A protocol itself.
+  2. Client agents query the registry's API (e.g., "find agents with 'image-generation' skill that support streaming").
+  3. The registry returns a list of matching Agent Cards or references to them.
 - **Advantages:**
-    - Centralized management, curation, and governance of available agents.
-    - Facilitates discovery based on functional capabilities rather than just domain names.
-    - Can implement access controls, policies, and trust mechanisms at the registry level.
-    - Enables scenarios like company-specific or team-specific agent catalogs, or public marketplaces of A2A-compliant agents.
+  - Centralized management, curation, and governance of available agents.
+  - Facilitates discovery based on functional capabilities rather than just domain names.
+  - Can implement access controls, policies, and trust mechanisms at the registry level.
+  - Enables scenarios like company-specific or team-specific agent catalogs, or public marketplaces of A2A-compliant agents.
 - **Considerations:** Requires an additional registry service. The A2A protocol does not currently define a standard API for such registries, though this is an area of potential future exploration and community standardization.
 
 ### 3. Direct Configuration / Private Discovery
@@ -67,9 +67,9 @@ Agent Cards themselves can sometimes contain information that should be protecte
 **Protection Mechanisms:**
 
 - **Access Control on the Endpoint:** The HTTP endpoint serving the Agent Card (whether it's the `/.well-known/agent.json` path, a registry API, or a custom URL) should be secured using standard web practices if the card is not intended for public, unauthenticated access.
-    - **mTLS:** Require mutual TLS for client authentication if appropriate for the trust model.
-    - **Network Restrictions:** Limit access to specific IP ranges, VPCs, or private networks.
-    - **Authentication:** Require standard HTTP authentication (e.g., OAuth 2.0 Bearer token, API Key) to access the Agent Card itself.
+  - **mTLS:** Require mutual TLS for client authentication if appropriate for the trust model.
+  - **Network Restrictions:** Limit access to specific IP ranges, VPCs, or private networks.
+  - **Authentication:** Require standard HTTP authentication (e.g., OAuth 2.0 Bearer token, API Key) to access the Agent Card itself.
 - **Selective Disclosure by Registries:** Agent registries can implement logic to return different Agent Cards or varying levels of detail based on the authenticated client's identity and permissions. For example, a public query might return a limited card, while an authenticated partner query might receive a card with more details.
 
 It's crucial to remember that if an Agent Card were to contain sensitive data (again, **not recommended** for secrets), the card itself **must never** be available without strong authentication and authorization. The A2A protocol encourages authentication schemes where the client obtains dynamic credentials out-of-band, rather than relying on static secrets embedded in the Agent Card.

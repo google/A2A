@@ -16,42 +16,42 @@ The `RequestContext` provides information about the incoming request, such as th
 Let's look at `agent_executor.py`. It defines `HelloWorldAgentExecutor`.
 
 1. **The Agent (`HelloWorldAgent`)**:
-    This is a simple helper class that encapsulates the actual "business logic".
+   This is a simple helper class that encapsulates the actual "business logic".
 
-    ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgent"
-    ```
+   ```python { .no-copy }
+   --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgent"
+   ```
 
-    It has a simple `invoke` method that returns the string "Hello World".
+   It has a simple `invoke` method that returns the string "Hello World".
 
 2. **The Executor (`HelloWorldAgentExecutor`)**:
-    This class implements the `AgentExecutor` interface.
+   This class implements the `AgentExecutor` interface.
 
-    - **`__init__`**:
+   - **`__init__`**:
 
-        ```python { .no-copy }
-        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_init"
-        ```
+     ```python { .no-copy }
+     --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_init"
+     ```
 
-        It instantiates the `HelloWorldAgent`.
+     It instantiates the `HelloWorldAgent`.
 
-    - **`execute`**:
+   - **`execute`**:
 
-        ```python { .no-copy }
-        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_execute"
-        ```
+     ```python { .no-copy }
+     --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_execute"
+     ```
 
-        When a `message/send` or `message/stream` request comes in (both are handled by `execute` in this simplified executor):
+     When a `message/send` or `message/stream` request comes in (both are handled by `execute` in this simplified executor):
 
-        1. It calls `self.agent.invoke()` to get the "Hello World" string.
-        2. It creates an A2A `Message` object using the `new_agent_text_message` utility function.
-        3. It enqueues this message onto the `event_queue`. The underlying `DefaultRequestHandler` will then process this queue to send the response(s) to the client. For a single message like this, it will result in a single response for `message/send` or a single event for `message/stream` before the stream closes.
+     1. It calls `self.agent.invoke()` to get the "Hello World" string.
+     2. It creates an A2A `Message` object using the `new_agent_text_message` utility function.
+     3. It enqueues this message onto the `event_queue`. The underlying `DefaultRequestHandler` will then process this queue to send the response(s) to the client. For a single message like this, it will result in a single response for `message/send` or a single event for `message/stream` before the stream closes.
 
-    - **`cancel`**:
-        The Helloworld example's `cancel` method simply raises an exception, indicating that cancellation is not supported for this basic agent.
+   - **`cancel`**:
+     The Helloworld example's `cancel` method simply raises an exception, indicating that cancellation is not supported for this basic agent.
 
-        ```python { .no-copy }
-        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_cancel"
-        ```
+     ```python { .no-copy }
+     --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_cancel"
+     ```
 
 The `AgentExecutor` acts as the bridge between the A2A protocol (managed by the request handler and server application) and your agent's specific logic. It receives context about the request and uses an event queue to communicate results or updates back.

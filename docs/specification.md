@@ -223,8 +223,8 @@ Describes a specific capability, function, or area of expertise the agent can pe
 | `description` | `string`   | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
 | `tags`        | `string[]` | Yes      | Keywords/categories for discoverability.                                       |
 | `examples`    | `string[]` | No       | Example prompts or use cases demonstrating skill usage.                        |
-| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted Media Types.    |
-| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced Media Types.   |
+| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted Media Types.   |
+| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced Media Types.  |
 
 ### 5.6. Sample Agent Card
 
@@ -265,11 +265,7 @@ Describes a specific capability, function, or area of expertise the agent can pe
         "{\"origin\": {\"lat\": 37.422, \"lng\": -122.084}, \"destination\": {\"lat\": 37.7749, \"lng\": -122.4194}, \"preferences\": [\"avoid_ferries\"]}"
       ],
       "inputModes": ["application/json", "text/plain"],
-      "outputModes": [
-        "application/json",
-        "application/vnd.geo+json",
-        "text/html"
-      ]
+      "outputModes": ["application/json", "application/vnd.geo+json", "text/html"]
     },
     {
       "id": "custom-map-generator",
@@ -281,12 +277,7 @@ Describes a specific capability, function, or area of expertise the agent can pe
         "Show me a map visualizing all coffee shops within a 1-mile radius of my current location."
       ],
       "inputModes": ["application/json"],
-      "outputModes": [
-        "image/png",
-        "image/jpeg",
-        "application/json",
-        "text/html"
-      ]
+      "outputModes": ["image/png", "image/jpeg", "application/json", "text/html"]
     }
   ],
   "supportsAuthenticatedExtendedCard": true
@@ -399,11 +390,11 @@ For conveying file-based content.
 --8<-- "types/src/types.ts:FilePart"
 ```
 
-| Field Name | Type                  | Required    | Description                                   |
-| :--------- | :-------------------- | :---------- | :-------------------------------------------- |
-| `kind`     | `"file"` (literal)    | Yes         | Identifies this part as file content.         |
-| `file`     | `FileWithBytes` \| `FileWithUri` | Yes  | Contains the file details and data/reference. |
-| `metadata` | `Record<string, any>` | No          | Optional metadata specific to this file part. |
+| Field Name | Type                             | Required | Description                                   |
+| :--------- | :------------------------------- | :------- | :-------------------------------------------- |
+| `kind`     | `"file"` (literal)               | Yes      | Identifies this part as file content.         |
+| `file`     | `FileWithBytes` \| `FileWithUri` | Yes      | Contains the file details and data/reference. |
+| `metadata` | `Record<string, any>`            | No       | Optional metadata specific to this file part. |
 
 #### 6.5.3. `DataPart` Object
 
@@ -427,11 +418,11 @@ Represents the data for a file, used within a `FilePart`.
 --8<-- "types/src/types.ts:FileWithBytes"
 ```
 
-| Field Name | Type     | Required | Description                                                                                                                         |
-| :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
+| Field Name | Type     | Required | Description                                                                                                                          |
+| :--------- | :------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                              |
 | `mimeType` | `string` | No       | [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
-| `bytes`    | `string` | Yes      | Base64 encoded file content.                                                                                                        |
+| `bytes`    | `string` | Yes      | Base64 encoded file content.                                                                                                         |
 
 ### 6.6.2 `FileWithUri` Object
 
@@ -441,11 +432,11 @@ Represents the URI for a file, used within a `FilePart`.
 --8<-- "types/src/types.ts:FileWithUri"
 ```
 
-| Field Name | Type     | Required | Description                                                                                                                         |
-| :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
+| Field Name | Type     | Required | Description                                                                                                                          |
+| :--------- | :------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                              |
 | `mimeType` | `string` | No       | [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
-| `uri`      | `string` | Yes      | URI (absolute URL strongly recommended) to file content. Accessibility is context-dependent.                                        |
+| `uri`      | `string` | Yes      | URI (absolute URL strongly recommended) to file content. Accessibility is context-dependent.                                         |
 
 ### 6.7. `Artifact` Object
 
@@ -471,10 +462,10 @@ Configuration provided by the client to the server for sending asynchronous push
 --8<-- "types/src/types.ts:PushNotificationConfig"
 ```
 
-| Field Name       | Type                                                                  | Required | Description                                                                                                                                                               |
-| :--------------- | :-------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `url`            | `string`                                                              | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
-| `token`          | `string`                                                              | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
+| Field Name       | Type                                                                                  | Required | Description                                                                                                                                                               |
+| :--------------- | :------------------------------------------------------------------------------------ | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `url`            | `string`                                                                              | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
+| `token`          | `string`                                                                              | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
 | `authentication` | [`PushNotificationAuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                                        |
 
 ### 6.9. `PushNotificationAuthenticationInfo` Object
@@ -562,11 +553,11 @@ Sends a message to an agent to initiate a new interaction or to continue an exis
 --8<-- "types/src/types.ts:MessageSendConfiguration"
 ```
 
-| Field Name      | Type                                                            | Required | Description                                                        |
-| :-------------- | :-------------------------------------------------------------- | :------- | :----------------------------------------------------------------- |
-| `message`       | [`Message`](#64-message-object)                                 | Yes      | The message content to send. `Message.role` is typically `"user"`. |
+| Field Name      | Type                                                        | Required | Description                                                        |
+| :-------------- | :---------------------------------------------------------- | :------- | :----------------------------------------------------------------- |
+| `message`       | [`Message`](#64-message-object)                             | Yes      | The message content to send. `Message.role` is typically `"user"`. |
 | `configuration` | [`MessageSendConfiguration`](#711-messagesendparams-object) | No       | Optional: additional message configuration                         |
-| `metadata`      | `Record<string, any>`                                           | No       | Request-specific metadata.                                         |
+| `metadata`      | `Record<string, any>`                                       | No       | Request-specific metadata.                                         |
 
 ### 7.2. `message/stream`
 
@@ -574,12 +565,12 @@ Sends a message to an agent to initiate/continue a task AND subscribes the clien
 
 - **Request `params` type**: [`MessageSendParams`](#711-messagesendparams-object) (same as `message/send`).
 - **Response (on successful subscription)**:
-    - HTTP Status: `200 OK`.
-    - HTTP `Content-Type`: `text/event-stream`.
-    - HTTP Body: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) JSON object.
+  - HTTP Status: `200 OK`.
+  - HTTP `Content-Type`: `text/event-stream`.
+  - HTTP Body: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) JSON object.
 - **Response (on initial subscription failure)**:
-    - Standard HTTP error code (e.g., 4xx, 5xx).
-    - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object detailing the failure.
+  - Standard HTTP error code (e.g., 4xx, 5xx).
+  - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object detailing the failure.
 
 #### 7.2.1. `SendStreamingMessageResponse` Object
 
@@ -697,12 +688,12 @@ The purpose is to resume receiving _subsequent_ updates. The server's behavior r
 
 - **Request `params` type**: [`TaskIdParams`](#731-taskqueryparams-object)
 - **Response (on successful resubscription)**:
-    - HTTP Status: `200 OK`.
-    - HTTP `Content-Type`: `text/event-stream`.
-    - HTTP Body: A stream of Server-Sent Events, identical in format to `message/stream`, carrying _subsequent_ [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) events for the task.
+  - HTTP Status: `200 OK`.
+  - HTTP `Content-Type`: `text/event-stream`.
+  - HTTP Body: A stream of Server-Sent Events, identical in format to `message/stream`, carrying _subsequent_ [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) events for the task.
 - **Response (on resubscription failure)**:
-    - Standard HTTP error code (e.g., 4xx, 5xx).
-    - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
+  - Standard HTTP error code (e.g., 4xx, 5xx).
+  - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
 
 ### 7.8. `agent/authenticatedExtendedCard`
 
@@ -714,10 +705,10 @@ Retrieves a potentially more detailed version of the Agent Card after the client
 - **Request `params`**: None (HTTP GET request).
 - **Response `result` type (on success)**: `AgentCard` (A complete Agent Card object, which may contain additional details or skills not present in the public card).
 - **Response `error` type (on failure)**: Standard HTTP error codes.
-    - `401 Unauthorized`: Authentication failed (missing or invalid credentials). The server **SHOULD** include a `WWW-Authenticate` header.
-    - `403 Forbidden`: Authentication succeeded, but the client/user is not authorized to access the extended card.
-    - `404 Not Found`: The `supportsAuthenticatedExtendedCard` capability is declared, but the server has not implemented this endpoint at the specified path.
-    - `5xx Server Error`: An internal server error occurred.
+  - `401 Unauthorized`: Authentication failed (missing or invalid credentials). The server **SHOULD** include a `WWW-Authenticate` header.
+  - `403 Forbidden`: Authentication succeeded, but the client/user is not authorized to access the extended card.
+  - `404 Not Found`: The `supportsAuthenticatedExtendedCard` capability is declared, but the server has not implemented this endpoint at the specified path.
+  - `5xx Server Error`: An internal server error occurred.
 
 Clients retrieving this authenticated card **SHOULD** replace their cached public Agent Card with the content received from this endpoint for the duration of their authenticated session or until the card's version changes.
 
@@ -754,14 +745,14 @@ These are standard codes defined by the JSON-RPC 2.0 specification.
 
 These are custom error codes defined within the JSON-RPC server error range (`-32000` to `-32099`) to provide more specific feedback about A2A-related issues. Servers **SHOULD** use these codes where applicable.
 
-| Code     | Error Name (Conceptual)             | Typical `message` string           | Description                                                                                                                                                                                                                          |
-| :------- | :---------------------------------- | :--------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-32001` | `TaskNotFoundError`                 | Task not found                     | The specified task `id` does not correspond to an existing or active task. It might be invalid, expired, or already completed and purged.                                                                                            |
-| `-32002` | `TaskNotCancelableError`            | Task cannot be canceled            | An attempt was made to cancel a task that is not in a cancelable state (e.g., it has already reached a terminal state like `completed`, `failed`, or `canceled`).                                                                    |
-| `-32003` | `PushNotificationNotSupportedError` | Push Notification is not supported | Client attempted to use push notification features (e.g., `tasks/pushNotificationConfig/set`) but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                              |
-| `-32004` | `UnsupportedOperationError`         | This operation is not supported    | The requested operation or a specific aspect of it (perhaps implied by parameters) is not supported by this server agent implementation. Broader than just method not found.                                                         |
+| Code     | Error Name (Conceptual)             | Typical `message` string           | Description                                                                                                                                                                                                                           |
+| :------- | :---------------------------------- | :--------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-32001` | `TaskNotFoundError`                 | Task not found                     | The specified task `id` does not correspond to an existing or active task. It might be invalid, expired, or already completed and purged.                                                                                             |
+| `-32002` | `TaskNotCancelableError`            | Task cannot be canceled            | An attempt was made to cancel a task that is not in a cancelable state (e.g., it has already reached a terminal state like `completed`, `failed`, or `canceled`).                                                                     |
+| `-32003` | `PushNotificationNotSupportedError` | Push Notification is not supported | Client attempted to use push notification features (e.g., `tasks/pushNotificationConfig/set`) but the server agent does not support them (i.e., `AgentCard.capabilities.pushNotifications` is `false`).                               |
+| `-32004` | `UnsupportedOperationError`         | This operation is not supported    | The requested operation or a specific aspect of it (perhaps implied by parameters) is not supported by this server agent implementation. Broader than just method not found.                                                          |
 | `-32005` | `ContentTypeNotSupportedError`      | Incompatible content types         | A [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) provided in the request's `message.parts` (or implied for an artifact) is not supported by the agent or the specific skill being invoked. |
-| `-32006` | `InvalidAgentResponseError`         | Invalid agent response type        | Agent generated an invalid response for the requested method                                                                                                                                                                         |
+| `-32006` | `InvalidAgentResponseError`         | Invalid agent response type        | Agent generated an invalid response for the requested method                                                                                                                                                                          |
 
 Servers MAY define additional error codes within the `-32000` to `-32099` range for more specific scenarios not covered above, but they **SHOULD** document these clearly. The `data` field of the `JSONRPCError` object can be used to provide more structured details for any error.
 
@@ -1475,19 +1466,19 @@ Security is a paramount concern in A2A. Key considerations include:
 
 - **Transport Security:** Always use HTTPS with strong TLS configurations in production environments.
 - **Authentication:**
-    - Handled via standard HTTP mechanisms (e.g., `Authorization` header with Bearer tokens, API keys).
-    - Requirements are declared in the `AgentCard`.
-    - Credentials MUST be obtained out-of-band by the client.
-    - A2A Servers MUST authenticate every request.
+  - Handled via standard HTTP mechanisms (e.g., `Authorization` header with Bearer tokens, API keys).
+  - Requirements are declared in the `AgentCard`.
+  - Credentials MUST be obtained out-of-band by the client.
+  - A2A Servers MUST authenticate every request.
 - **Authorization:**
-    - A server-side responsibility based on the authenticated identity.
-    - Implement the principle of least privilege.
-    - Can be granular, based on skills, actions, or data.
+  - A server-side responsibility based on the authenticated identity.
+  - Implement the principle of least privilege.
+  - Can be granular, based on skills, actions, or data.
 - **Push Notification Security:**
-    - Webhook URL validation (by the A2A Server sending notifications) is crucial to prevent SSRF.
-    - Authentication of the A2A Server to the client's webhook is essential.
-    - Authentication of the notification by the client's webhook receiver (verifying it came from the legitimate A2A Server and is relevant) is critical.
-    - See the [Streaming & Asynchronous Operations guide](./topics/streaming-and-async.md#security-considerations-for-push-notifications) for detailed push notification security.
+  - Webhook URL validation (by the A2A Server sending notifications) is crucial to prevent SSRF.
+  - Authentication of the A2A Server to the client's webhook is essential.
+  - Authentication of the notification by the client's webhook receiver (verifying it came from the legitimate A2A Server and is relevant) is critical.
+  - See the [Streaming & Asynchronous Operations guide](./topics/streaming-and-async.md#security-considerations-for-push-notifications) for detailed push notification security.
 - **Input Validation:** Servers MUST rigorously validate all RPC parameters and the content/structure of data in `Message` and `Artifact` parts to prevent injection attacks or processing errors.
 - **Resource Management:** Implement rate limiting, concurrency controls, and resource limits to protect agents from abuse or overload.
 - **Data Privacy:** Adhere to all applicable privacy regulations for data exchanged in `Message` and `Artifact` parts. Minimize sensitive data transfer.

@@ -1,7 +1,7 @@
 name: 💡 Feature Request
 description: Suggest an idea for this repository
-title: "[Feat]: "
-type: "Feature"
+title: '[Feat]: '
+type: 'Feature'
 body:
   - type: markdown
     attributes:

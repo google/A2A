@@ -4,31 +4,30 @@ site_url: https://google.github.io/A2A/
 site_description: >-
   An open protocol enabling communication and interoperability between opaque agentic applications.
 site_dir: site
-
 # Navigation
 nav:
   - Home: index.md
   - Topics:
-    - What is A2A?: topics/what-is-a2a.md
-    - Key Concepts: topics/key-concepts.md
-    - A2A and MCP: topics/a2a-and-mcp.md
-    - Agent Discovery: topics/agent-discovery.md
-    - Enterprise-Ready Features: topics/enterprise-ready.md
-    - Streaming & Asynchronous Operations: topics/streaming-and-async.md
+      - What is A2A?: topics/what-is-a2a.md
+      - Key Concepts: topics/key-concepts.md
+      - A2A and MCP: topics/a2a-and-mcp.md
+      - Agent Discovery: topics/agent-discovery.md
+      - Enterprise-Ready Features: topics/enterprise-ready.md
+      - Streaming & Asynchronous Operations: topics/streaming-and-async.md
   - Specification: specification.md
   - Community: community.md
   - Partners: partners.md
   - SDK Reference:
-    - Python: sdk/python/index.md
+      - Python: sdk/python/index.md
   - Tutorial (Python):
-    - Introduction: tutorials/python/1-introduction.md
-    - Setup: tutorials/python/2-setup.md
-    - Agent Skills & Agent Card: tutorials/python/3-agent-skills-and-card.md
-    - Agent Executor: tutorials/python/4-agent-executor.md
-    - Start Server: tutorials/python/5-start-server.md
-    - Interact with Server: tutorials/python/6-interact-with-server.md
-    - Streaming & Multiturn: tutorials/python/7-streaming-and-multiturn.md
-    - Next Steps: tutorials/python/8-next-steps.md
+      - Introduction: tutorials/python/1-introduction.md
+      - Setup: tutorials/python/2-setup.md
+      - Agent Skills & Agent Card: tutorials/python/3-agent-skills-and-card.md
+      - Agent Executor: tutorials/python/4-agent-executor.md
+      - Start Server: tutorials/python/5-start-server.md
+      - Interact with Server: tutorials/python/6-interact-with-server.md
+      - Streaming & Multiturn: tutorials/python/7-streaming-and-multiturn.md
+      - Next Steps: tutorials/python/8-next-steps.md
 
 # Repository
 repo_name: google-a2a/A2A
@@ -115,33 +114,33 @@ plugins:
   - search
   - redirects:
       redirect_maps:
-        "spec-json.md": https://raw.githubusercontent.com/google-a2a/A2A/refs/heads/main/specification/json/a2a.json
-        "specification/overview.md": "specification.md"
-        "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
-        "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
-        "specification/sample-messages.md": "specification.md#9-common-workflows-examples"
-        "specification/details.md": "specification.md"
-        "documentation.md": "topics/key-concepts.md"
-        "resources.md": "index.md"
-        "topics/push-notifications.md": "topics/streaming-and-async.md"
-        "specification/topics/a2a_and_mcp.md": "topics/a2a-and-mcp.md"
-        "specification/topics/agent_discovery.md": "topics/agent-discovery.md"
-        "specification/topics/enterprise_ready.md": "topics/enterprise-ready.md"
-        "specification/topics/push_notification.md": "topics/streaming-and-async.md"
-        "specification/topics/push_notifications.md": "topics/streaming-and-async.md"
-        "topics/index.md": "topics/what-is-a2a.md"
+        'spec-json.md': https://raw.githubusercontent.com/google-a2a/A2A/refs/heads/main/specification/json/a2a.json
+        'specification/overview.md': 'specification.md'
+        'specification/agent-card.md': 'specification.md#5-agent-discovery-the-agent-card'
+        'specification/agent-to-agent-communication.md': 'specification.md#6-protocol-data-objects'
+        'specification/sample-messages.md': 'specification.md#9-common-workflows-examples'
+        'specification/details.md': 'specification.md'
+        'documentation.md': 'topics/key-concepts.md'
+        'resources.md': 'index.md'
+        'topics/push-notifications.md': 'topics/streaming-and-async.md'
+        'specification/topics/a2a_and_mcp.md': 'topics/a2a-and-mcp.md'
+        'specification/topics/agent_discovery.md': 'topics/agent-discovery.md'
+        'specification/topics/enterprise_ready.md': 'topics/enterprise-ready.md'
+        'specification/topics/push_notification.md': 'topics/streaming-and-async.md'
+        'specification/topics/push_notifications.md': 'topics/streaming-and-async.md'
+        'topics/index.md': 'topics/what-is-a2a.md'
         # Tutorial
-        "tutorials/index.md": "tutorials/python/1-introduction.md"
-        "tutorials/python/index.md": "tutorials/python/1-introduction.md"
-        "tutorials/python/1_introduction.md": "tutorials/python/1-introduction.md"
-        "tutorials/python/3-create-project.md": "tutorials/python/2-setup.md"
-        "tutorials/python/4-agent-skills.md": "tutorials/python/3-agent-skills-and-card.md"
-        "tutorials/python/5-add-agent-card.md": "tutorials/python/3-agent-skills-and-card.md"
-        "tutorials/python/6-start-server.md": "tutorials/python/5-start-server.md"
-        "tutorials/python/7-interact-with-server.md": "tutorials/python/6-interact-with-server.md"
-        "tutorials/python/8-agent-capabilities.md": "tutorials/python/7-streaming-and-multiturn.md"
-        "tutorials/python/9-ollama-agent.md": "tutorials/python/7-streaming-and-multiturn.md"
-        "tutorials/python/10-next-steps.md": "tutorials/python/8-next-steps.md"
+        'tutorials/index.md': 'tutorials/python/1-introduction.md'
+        'tutorials/python/index.md': 'tutorials/python/1-introduction.md'
+        'tutorials/python/1_introduction.md': 'tutorials/python/1-introduction.md'
+        'tutorials/python/3-create-project.md': 'tutorials/python/2-setup.md'
+        'tutorials/python/4-agent-skills.md': 'tutorials/python/3-agent-skills-and-card.md'
+        'tutorials/python/5-add-agent-card.md': 'tutorials/python/3-agent-skills-and-card.md'
+        'tutorials/python/6-start-server.md': 'tutorials/python/5-start-server.md'
+        'tutorials/python/7-interact-with-server.md': 'tutorials/python/6-interact-with-server.md'
+        'tutorials/python/8-agent-capabilities.md': 'tutorials/python/7-streaming-and-multiturn.md'
+        'tutorials/python/9-ollama-agent.md': 'tutorials/python/7-streaming-and-multiturn.md'
+        'tutorials/python/10-next-steps.md': 'tutorials/python/8-next-steps.md'
   - mkdocstrings:
       handlers:
         python:
@@ -150,5 +149,5 @@ plugins:
             show_object_full_path: false
             show_value: true
             show_if_no_docstring: true
-            filters: ["!^_"]
+            filters: ['!^_']
             show_qualifiers: false

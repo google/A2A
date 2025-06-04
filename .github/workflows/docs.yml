@@ -8,8 +8,8 @@ on:
     branches:
       - main
     paths:
-      - "mkdocs.yml"
-      - "docs/**"
+      - 'mkdocs.yml'
+      - 'docs/**'
 
 jobs:
   build_and_deploy:

@@ -20,7 +20,7 @@ cd a2a-samples
 
 We recommend using a virtual environment for Python projects. The A2A Python SDK uses `uv` for dependency management, but you can use `pip` with `venv` as well.
 
-1. **Create and activate a virtual environment:**
+1.  **Create and activate a virtual environment:**
 
     Using `venv` (standard library):
 
@@ -38,7 +38,7 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
         .venv\Scripts\activate
         ```
 
-2. **Install needed Python dependencies along with the A2A SDK and its dependencies:**
+2.  **Install needed Python dependencies along with the A2A SDK and its dependencies:**
 
     ```bash
     pip install -r samples/python/requirements.txt

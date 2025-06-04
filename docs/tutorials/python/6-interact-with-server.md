@@ -39,38 +39,41 @@ Let's look at key parts of `test_client.py`:
 
 1. **Fetching the Agent Card & Initializing the Client**:
 
-    ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:A2ACardResolver"
-    ```
+   ```python { .no-copy }
+   --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:A2ACardResolver"
+   ```
 
-    The `A2ACardResolver` class is a convenience. It first fetches the `AgentCard` from the server's `/.well-known/agent.json` endpoint (based on the provided base URL) and then initializes the client with it.
+   The `A2ACardResolver` class is a convenience. It first fetches the `AgentCard` from the server's `/.well-known/agent.json` endpoint (based on the provided base URL) and then initializes the client with it.
 
 2. **Sending a Non-Streaming Message (`send_message`)**:
 
-    ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message"
-    ```
+   ```python { .no-copy }
+   --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message"
+   ```
 
-    - The `send_message_payload` constructs the data for `MessageSendParams`.
-    - This is wrapped in a `SendMessageRequest`.
-    - It includes a `message` object with the `role` set to "user" and the content in `parts`.
-    - The Helloworld agent's `execute` method will enqueue a single "Hello World" message. The `DefaultRequestHandler` will retrieve this and send it as the response.
-    - The `response` will be a `SendMessageResponse` object, which contains either a `SendMessageSuccessResponse` (with the agent's `Message` as the result) or a `JSONRPCErrorResponse`.
+   - The `send_message_payload` constructs the data for `MessageSendParams`.
+   - This is wrapped in a `SendMessageRequest`.
+   - It includes a `message` object with the `role` set to "user" and the content in `parts`.
+   - The Helloworld agent's `execute` method will enqueue a single "Hello World" message. The `DefaultRequestHandler` will retrieve this and send it as the response.
+   - The `response` will be a `SendMessageResponse` object, which contains either a `SendMessageSuccessResponse` (with the agent's `Message` as the result) or a `JSONRPCErrorResponse`.
 
 3. **Handling Task IDs (Illustrative Note for Helloworld)**:
+   feat/taskstatus-metadata-support
+   The Helloworld client (`test_client.py`) doesn't attempt `get_task` or `cancel_task` directly because the simple Helloworld agent's `execute` method, when called via `message/send`, results in the `DefaultRequestHandler` returning a direct `Message` response rather than a `Task` object. More complex agents that explicitly manage tasks (like the LangGraph example) would return a `Task` object from `message/send`, and its `id` could then be used for `get_task` or `cancel_task`.
 
-    The Helloworld client (`test_client.py`) doesn't attempt `get_task` or `cancel_task` directly because the simple Helloworld agent's `execute` method, when called via `message/send`, results in the `DefaultRequestHandler` returning a direct `Message` response rather than a `Task` object. More complex agents that explicitly manage tasks (like the LangGraph example) would return a `Task` object from `message/send`, and its `id` could then be used for `get_task` or `cancel_task`.
+   The Helloworld client (`test_client.py`) doesn't attempt `get_task` or `cancel_task` directly because the simple Helloworld agent's `execute` method, when called via `message/send`, results in the `DefaultRequestHandler` returning a direct `Message` response rather than a `Task` object. More complex agents that explicitly manage tasks (like the LangGraph example) would return a `Task` object from `message/send`, and its `id` could then be used for `get_task` or `cancel_task`.
+   main
 
 4. **Sending a Streaming Message (`send_message_streaming`)**:
 
-    ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message_streaming"
-    ```
+   ```python { .no-copy }
+   --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message_streaming"
+   ```
 
-    - This method calls the agent's `message/stream` endpoint. The `DefaultRequestHandler` will invoke the `HelloWorldAgentExecutor.execute` method.
-    - The `execute` method enqueues one "Hello World" message, and then the event queue is closed.
-    - The client will receive this single message as one `SendStreamingMessageResponse` event, and then the stream will terminate.
-    - The `stream_response` is an `AsyncGenerator`.
+   - This method calls the agent's `message/stream` endpoint. The `DefaultRequestHandler` will invoke the `HelloWorldAgentExecutor.execute` method.
+   - The `execute` method enqueues one "Hello World" message, and then the event queue is closed.
+   - The client will receive this single message as one `SendStreamingMessageResponse` event, and then the stream will terminate.
+   - The `stream_response` is an `AsyncGenerator`.
 
 ## Expected Output
 
