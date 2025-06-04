@@ -7,7 +7,7 @@ This folder contains the a2a specification in Protocol Buffer (protobuf) format
 Before you can validate or generate code from these protobuf definitions, you need to install `buf`.
 
 Follow the installation instructions on the official `buf` GitHub repository:
-https://github.com/bufbuild/buf/
+<https://github.com/bufbuild/buf/>
 
 ## Validation
 
