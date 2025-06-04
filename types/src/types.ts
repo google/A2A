@@ -25,8 +25,26 @@ export interface AgentCapabilities {
   pushNotifications?: boolean;
   /** true if the agent exposes status change history for tasks. */
   stateTransitionHistory?: boolean;
+  /** extensions supported by this agent. */
+  extensions?: AgentExtension[];
 }
 // --8<-- [end:AgentCapabilities]
+
+// --8<-- [start:AgentExtension]
+/**
+ * A declaration of an extension supported by an Agent.
+ */
+export interface AgentExtension {
+  /** The URI of the extension. */
+  uri: string;
+  /** A description of how this agent uses this extension. */
+  description?: string;
+  /** Whether the client must follow specific requirements of the extension. */
+  required?: boolean;
+  /** Optional configuration for the extension. */
+  params?: { [key: string]: any };
+}
+// --8<-- [end:AgentExtension]
 
 // --8<-- [start:AgentSkill]
 /**
@@ -273,6 +291,8 @@ export interface Artifact {
   metadata?: {
     [key: string]: any;
   };
+  /** The URIs of extensions that are present or contributed to this Artifact. */
+  extensions?: string[];
 }
 // --8<-- [end:Artifact]
 
@@ -287,6 +307,8 @@ export interface Message {
   metadata?: {
     [key: string]: any;
   };
+  /** The URIs of extensions that are present or contributed to this Message. */
+  extensions?: string[];
   /** List of tasks referenced as context by this message.*/
   referenceTaskIds?: string[];
   /** Identifier created by the message creator*/

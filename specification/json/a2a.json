@@ -99,6 +99,13 @@
         "AgentCapabilities": {
             "description": "Defines optional capabilities supported by an agent.",
             "properties": {
+                "extensions": {
+                    "description": "extensions supported by this agent.",
+                    "items": {
+                        "$ref": "#/definitions/AgentExtension"
+                    },
+                    "type": "array"
+                },
                 "pushNotifications": {
                     "description": "true if the agent can notify updates to client.",
                     "type": "boolean"
@@ -207,6 +214,32 @@
             ],
             "type": "object"
         },
+        "AgentExtension": {
+            "description": "A declaration of an extension supported by an Agent.",
+            "properties": {
+                "description": {
+                    "description": "A description of how this agent uses this extension.",
+                    "type": "string"
+                },
+                "params": {
+                    "additionalProperties": {},
+                    "description": "Optional configuration for the extension.",
+                    "type": "object"
+                },
+                "required": {
+                    "description": "Whether the client must follow specific requirements of the extension.",
+                    "type": "boolean"
+                },
+                "uri": {
+                    "description": "The URI of the extension.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "uri"
+            ],
+            "type": "object"
+        },
         "AgentProvider": {
             "description": "Represents the service provider of an agent.",
             "properties": {
@@ -287,6 +320,13 @@
                 "description": {
                     "description": "Optional description for the artifact.",
                     "type": "string"
+                },
+                "extensions": {
+                    "description": "The URIs of extensions that are present or contributed to this Artifact.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "metadata": {
                     "additionalProperties": {},
@@ -1081,6 +1121,13 @@
                 "contextId": {
                     "description": "The context the message is associated with",
                     "type": "string"
+                },
+                "extensions": {
+                    "description": "The URIs of extensions that are present or contributed to this Message.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "kind": {
                     "const": "message",
