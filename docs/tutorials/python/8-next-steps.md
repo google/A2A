@@ -15,7 +15,7 @@ You now have a solid foundation for building and integrating your own A2A-compli
 Here are some ideas and resources to continue your A2A journey:
 
 - **Explore Other Examples:**
-    - Check out the other examples in the `a2a-samples/samples/` directory in the [A2A GitHub repository](https://github.com/google-a2a/a2a-samples/tree/main/examples) for more complex agent integrations and features.
+    - Check out the other examples in the `a2a-samples/samples/` directory in the [A2A GitHub repository](https://github.com/google-a2a/a2a-samples/tree/main/samples) for more complex agent integrations and features.
     - The main A2A repository also has [samples for other languages and frameworks](https://github.com/google-a2a/A2A/tree/main/samples).
 - **Deepen Your Protocol Understanding:**
     - 📚 Read the complete [A2A Protocol Documentation site](https://google.github.io/A2A/) for a comprehensive overview.

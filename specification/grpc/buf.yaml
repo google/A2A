@@ -1,0 +1,12 @@
+version: v1
+
+# Google protos dependency for a2.proto
+deps:
+  - buf.build/googleapis/googleapis # Common protos
+lint:
+  use:
+    - STANDARD # Indicates that all the default rules should be used.
+
+breaking:
+  use:
+    - FILE # Indicates that breaking change detection should be done on a file level.

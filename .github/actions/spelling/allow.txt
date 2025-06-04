@@ -87,6 +87,7 @@ autouse
 backstory
 backticks
 bbb
+bufbuild
 bzr
 cae
 ccc
@@ -149,6 +150,7 @@ langgraph
 linenums
 linkedin
 linkset
+linting
 llm
 llms
 lng
@@ -169,6 +171,7 @@ octicons
 ollama
 oneof
 prefecthq
+protoc
 protolint
 pyguide
 pymdownx
@@ -185,6 +188,7 @@ squidfunk
 srcs
 sse
 stateclass
+stephenh
 styleguide
 svn
 systemctl
