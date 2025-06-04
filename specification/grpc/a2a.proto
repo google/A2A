@@ -1,5 +1,5 @@
-edition = "2023";
-
+// edition = "2023";
+syntax = "proto3";
 package a2a.v1;
 
 import "google/api/annotations.proto";
@@ -565,7 +565,6 @@ message ListTaskPushNotificationRequest {
 
   // A page token, received from a previous `ListTaskPushNotificationRequest
   //  call. Provide this to retrieve the subsequent page.
-  //
   // When paginating, all other parameters provided to
   // `ListTaskPushNotificationRequest` must match the call that provided
   // the page token.
@@ -573,6 +572,7 @@ message ListTaskPushNotificationRequest {
 }
 
 message GetAgentCardRequest {
+  // Empty. Added to fix linter violation.
 }
 
 //////// Response Messages ///////////
