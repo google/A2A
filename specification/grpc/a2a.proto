@@ -571,7 +571,9 @@ message ListTaskPushNotificationRequest {
   string page_token = 3;
 }
 
-message GetAgentCardRequest {}
+message GetAgentCardRequest {
+  // Empty. Added to fix linter violation.
+}
 
 //////// Response Messages ///////////
 message SendMessageResponse {
