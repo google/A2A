@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- Python 3.13 or higher.
+- Python 3.10 or higher.
 - Access to a terminal or command prompt.
 - Git, for cloning the repository.
 - A code editor (e.g., Visual Studio Code) is recommended.
