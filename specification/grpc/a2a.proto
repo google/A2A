@@ -243,6 +243,8 @@ message Message {
   // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
   // Any optional metadata to provide along with the message.
   google.protobuf.Struct metadata = 6;
+  // The URIs of extensions that are present or contributed to this Message.
+  repeated string extensions = 7;
 }
 
 // Artifacts are the container for task completed results. These are similar
@@ -259,6 +261,8 @@ message Artifact {
   repeated Part parts = 5;
   // Optional metadata included with the artifact.
   google.protobuf.Struct metadata = 6;
+  // The URIs of extensions that are present or contributed to this Artifact.
+  repeated string extensions = 7;
 }
 
 // TaskStatusUpdateEvent is a delta even on a task indicating that a task
@@ -368,6 +372,20 @@ message AgentCapabilities {
   bool streaming = 1;
   // If the agent can send push notifications to the clients webhook
   bool push_notifications = 2;
+  // Extensions supported by this agent.
+  repeated AgentExtension extensions = 3;
+}
+
+// A declaration of an extension supported by an Agent.
+message AgentExtension {
+  // The URI of the extension.
+  string uri = 1;
+  // A description of how this agent uses this extension.
+  string description = 2;
+  // Whether the client must follow specific requirements of the extension.
+  bool required = 3;
+  // Optional configuration for the extension.
+  google.protobuf.Struct params = 4;
 }
 
 // AgentSkill represents a unit of action/solution that the agent can perform.
