@@ -16,11 +16,9 @@ With A2A, agents can:
 - Securely collaborate on long running tasks.
 - Operate without exposing their internal state, memory, or tools.
 
-<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7336822404003807232?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="A2A Protocol Intro Video" style="text-align: center; margin-bottom:1em; margin-top:1em;"></iframe>
+## Intro to A2A Video
 
-## See A2A in Action
-
-Watch [this demo video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4) to see how A2A enables seamless communication between different agent frameworks.
+[![A2A Intro Video](docs/assets/A2AVideoThumbnail.png)](https://goo.gle/a2a-video)
 
 ## Why A2A?
 

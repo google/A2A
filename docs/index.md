@@ -16,9 +16,9 @@ The **Agent2Agent (A2A) Protocol** is an open standard designed to enable seamle
 - [Blog Post: Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
 - [Watch the A2A Demo Video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4)
 
-### Intro to A2A Protocol
+### Intro to A2A Video
 
-<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7336822404003807232?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="A2A Protocol Intro Video" style="text-align: center; margin-bottom:1em; margin-top:1em;"></iframe>
+<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7336822404003807232?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="A2A Protocol Intro Video"></iframe>
 
 ---
 
