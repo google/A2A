@@ -18,7 +18,7 @@ With A2A, agents can:
 
 ## Intro to A2A Video
 
-[![A2A Intro Video](docs/assets/A2AVideoThumbnail.png)](https://goo.gle/a2a-video)
+[![A2A Intro Video](docs/assets/a2a-video-thumbnail.png)](https://goo.gle/a2a-video)
 
 ## Why A2A?
 
