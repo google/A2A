@@ -11,6 +11,7 @@
     "typescript-json-schema": "^0.65.1"
   },
   "devDependencies": {
+    "prettier": "3.5.3",
     "typescript": "^5.3.3"
   }
 }

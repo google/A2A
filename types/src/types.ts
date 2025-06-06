@@ -881,7 +881,7 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
 export interface GetTaskPushNotificationConfigSuccessResponse
   extends JSONRPCSuccessResponse {
   /** The result object on success. */
-  result: TaskPushNotificationConfig;
+  result: TaskPushNotificationConfig[];
 }
 // --8<-- [end:GetTaskPushNotificationConfigSuccessResponse]
 

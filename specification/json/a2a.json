@@ -674,8 +674,11 @@
                     "type": "string"
                 },
                 "result": {
-                    "$ref": "#/definitions/TaskPushNotificationConfig",
-                    "description": "The result object on success."
+                    "description": "The result object on success.",
+                    "items": {
+                        "$ref": "#/definitions/TaskPushNotificationConfig"
+                    },
+                    "type": "array"
                 }
             },
             "required": [
