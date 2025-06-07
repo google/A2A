@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "H2A Payload",
+  "type": "object",
+  "properties": {
+    "user_input": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "value"
+      ]
+    },
+    "interaction_goals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "_acl": {
+      "type": "object",
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
+      }
+    },
+    "_sig": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_input",
+    "interaction_goals",
+    "_acl",
+    "_sig"
+  ]
+}
