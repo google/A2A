@@ -273,6 +273,7 @@ export enum TaskState {
   Rejected = "rejected",
   AuthRequired = "auth-required",
   Unknown = "unknown",
+  UserConsentRequired = "user-consent-required"
 }
 // --8<-- [end:TaskState]
 
