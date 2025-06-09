@@ -3,3 +3,4 @@ mkdocs-redirects==1.2.2
 mkdocstrings[python]
 a2a-sdk
 mike
+mkdocs-macros-plugin

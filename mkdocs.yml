@@ -1,9 +1,12 @@
 # Project information
-site_name: Agent2Agent Protocol (A2A)
+site_name: Agent2Agent (A2A) Protocol
 site_url: https://google-a2a.github.io/A2A/
 site_description: >-
   An open protocol enabling communication and interoperability between opaque agentic applications.
 site_dir: site
+
+extra:
+  a2a_version: !ENV [MIKE_VERSION, 'local-dev']
 
 # Navigation
 nav:
@@ -115,6 +118,7 @@ markdown_extensions:
 # Plugins
 plugins:
   - search
+  - macros
   - redirects:
       redirect_maps:
         "spec-json.md": https://raw.githubusercontent.com/google-a2a/A2A/refs/heads/main/specification/json/a2a.json
