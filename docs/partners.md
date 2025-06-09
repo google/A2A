@@ -12,7 +12,7 @@ collaborate effectively with each other and with users.
 
 !!! note
 
-    If you're interested in becoming a partner of A2A and getting your listing added to or updated on this page, let us know by [submitting this form](https://forms.gle/BuQQ2zvXfFUA1bu98), and we'll contact you soon!
+    If you're interested in becoming a partner of A2A and getting your listing added to or updated on this page, let us know by [submitting this form](https://goo.gle/a2a-partner-form), and we'll contact you soon!
 
 - [Accelirate Inc](https://www.accelirate.com)
 - [Accenture](https://www.accenture.com)
