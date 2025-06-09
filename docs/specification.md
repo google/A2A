@@ -5,7 +5,7 @@ hide:
 
 # Agent2Agent (A2A) Protocol Specification
 
-**Version:** `0.2.1`
+**Version:** `0.2.2`
 
 ## 1. Introduction
 
