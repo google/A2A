@@ -79,6 +79,8 @@ theme:
     - navigation.top
     - navigation.tracking
     - toc.follow
+    - versioning:
+        provider: mike
 
 # Extensions
 markdown_extensions:
