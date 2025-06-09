@@ -753,14 +753,7 @@
                     "type": "string"
                 },
                 "params": {
-                    "anyOf": [
-                        {
-                            "$ref": "#/definitions/TaskIdParams"
-                        },
-                        {
-                            "$ref": "#/definitions/GetTaskPushNotificationConfigParams"
-                        }
-                    ],
+                    "$ref": "#/definitions/GetTaskPushNotificationConfigParams",
                     "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
                 }
             },
