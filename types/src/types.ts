@@ -242,8 +242,7 @@ export interface GetTaskPushNotificationConfigParams extends TaskIdParams {
 
 // --8<-- [start:ListTaskPushNotificationConfigParams]
 /** Parameters for getting list of pushNotificationConfigurations associated with a Task */
-export interface ListTaskPushNotificationConfigParams extends TaskIdParams {
-}
+export interface ListTaskPushNotificationConfigParams extends TaskIdParams {}
 // --8<-- [end:ListTaskPushNotificationConfigParams]
 
 // --8<-- [start:DeleteTaskPushNotificationConfigParams]
@@ -964,7 +963,8 @@ export type ListTaskPushNotificationConfigResponse =
 /**
  * JSON-RPC request model for the 'tasks/pushNotificationConfig/delete' method.
  */
-export interface DeleteTaskPushNotificationConfigRequest extends JSONRPCRequest {
+export interface DeleteTaskPushNotificationConfigRequest
+  extends JSONRPCRequest {
   id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/delete";
