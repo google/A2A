@@ -5,7 +5,7 @@ hide:
 
 # Agent2Agent (A2A) Protocol Specification
 
-**Version:** `0.2.2`
+**Version:** `{{ a2a_version }}`
 
 ## 1. Introduction
 

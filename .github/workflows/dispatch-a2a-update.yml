@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "specification/json/a2a.json"
+      - "specification/**/*"
 
 jobs:
   dispatch:
