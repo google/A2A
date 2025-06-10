@@ -1,6 +1,6 @@
 # Agent2Agent (A2A) Protocol
 
-![PyPI - Version](https://img.shields.io/pypi/v/a2a-sdk)
+[![PyPI - Version](https://img.shields.io/pypi/v/a2a-sdk)](https://pypi.org/project/a2a-sdk)
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 ![A2A Banner](docs/assets/a2a-banner.png)

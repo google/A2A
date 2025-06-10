@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.2](https://github.com/google-a2a/A2A/compare/v0.2.1...v0.2.2) (2025-06-09)
+
+
+### ⚠ BREAKING CHANGES
+
+* Resolve spec inconsistencies with JSON-RPC 2.0
+
+### Features
+
+* Add gRPC and REST definitions to A2A protocol specifications ([#695](https://github.com/google-a2a/A2A/issues/695)) ([89bb5b8](https://github.com/google-a2a/A2A/commit/89bb5b82438b74ff7bb0fafbe335db7100a0ac57))
+* Add protocol support for extensions ([#716](https://github.com/google-a2a/A2A/issues/716)) ([70f1e2b](https://github.com/google-a2a/A2A/commit/70f1e2b0c68a3631888091ce9460a9f7fbfbdff2))
+* **spec:** Add an optional iconUrl field to the AgentCard ([#687](https://github.com/google-a2a/A2A/issues/687)) ([9f3bb51](https://github.com/google-a2a/A2A/commit/9f3bb51257f008bd878d85e00ec5e88357016039))
+
+
+### Bug Fixes
+
+* Protocol should released as 0.2.2 ([22e7541](https://github.com/google-a2a/A2A/commit/22e7541be082c4f0845ff7fa044992cda05b437e))
+* Resolve spec inconsistencies with JSON-RPC 2.0 ([628380e](https://github.com/google-a2a/A2A/commit/628380e7e392bc8f1778ae991d4719bd787c17a9))
+
 ## [0.2.1](https://github.com/google-a2a/A2A/compare/v0.2.0...v0.2.1) (2025-05-27)
 
 ### Features
