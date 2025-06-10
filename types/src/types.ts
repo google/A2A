@@ -369,7 +369,7 @@ export interface FileWithUri extends FileBase {
   // The [MIME type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types)
   // of the file (e.g., "application/pdf", "image/png"). Strongly recommended for proper handling.
   mimeType?: string;
-  // URI for the file.
+  /** URL for the File content */
   uri: string; // e.g., "https://files.example.com/document.pdf" or "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
 }
 // --8<-- [end:FileWithUri]
