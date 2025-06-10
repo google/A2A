@@ -22,8 +22,8 @@ option java_package = "com.google.a2a.v1";
 // - Messages are not a standard resource so there is no get/delete/update/list
 //   interface, only a send and stream custom methods.
 // - Tasks have a get interface and custom cancel and subscribe methods.
-// - TaskPushNotificationConfig are a resource whose parent is a task. They have get,
-//   list and create methods.
+// - TaskPushNotificationConfig are a resource whose parent is a task. 
+//   They have get, list and create methods.
 // - AgentCard is a static resource with only a get method.
 // Of particular note of deviation from JSONRPC approach the request metadata
 // fields are not present as they don't comply with AIP rules, and the
@@ -595,8 +595,9 @@ message ListTaskPushNotificationConfigRequest {
   // If unspecified, all configs will be returned.
   int32 page_size = 2;
 
-  // A page token, received from a previous `ListTaskPushNotificationConfigRequest
-  //  call. Provide this to retrieve the subsequent page.
+  // A page token received from a previous 
+  // ListTaskPushNotificationConfigRequest call. 
+  // Provide this to retrieve the subsequent page.
   // When paginating, all other parameters provided to
   // `ListTaskPushNotificationConfigRequest` must match the call that provided
   // the page token.
