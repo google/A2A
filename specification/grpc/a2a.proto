@@ -32,7 +32,7 @@ service A2AService {
   // task once it is completed, or a LRO if requested.
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
     option (google.api.http) = {
-      post: "/v1//message:send"
+      post: "/v1/message:send"
       body: "*"
     };
   }
@@ -56,7 +56,7 @@ service A2AService {
   // more task updates for the task.
   rpc CancelTask(CancelTaskRequest) returns (Task) {
     option (google.api.http) = {
-      post: "/v1/tasks/{id}:cancel"
+      post: "/v1/{name=tasks/*}:cancel"
       body: "*"
     };
   }
