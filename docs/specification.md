@@ -704,9 +704,24 @@ Sets or updates the push notification configuration for a specified task. This a
 
 Retrieves the current push notification configuration for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+- **Request `params` type**: [`GetTaskPushNotificationConfigParams`](#761-gettaskpushnotificationconfigparams-object-taskspushnotificationconfigget) | [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+_(Note: TaskIdParams type is deprecated for this method. Use GetTaskPushNotificationConfigParams instead.)_
 - **Response `result` type (on success)**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object) (The current push notification configuration for the task. Server may return an error if no push notification configuration is associated with the task).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
+
+#### 7.6.1. `GetTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/get`)
+
+A object for fetching the push notification configuration for a task.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:GetTaskPushNotificationConfigParams"
+```
+
+| Field Name | Type                  | Required | Description                |
+| :--------- | :-------------------- | :------- | :------------------------- |
+| `id`       | `string`              | Yes      | The ID of the task.        |
+| `pushNotificationConfigId`       | `string`              | No      | Push notification configuration id        |
+| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
 
 ### 7.7. `tasks/resubscribe`
 

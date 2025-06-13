@@ -242,7 +242,7 @@ export interface GetTaskPushNotificationConfigParams extends TaskIdParams {
 
 // --8<-- [start:ListTaskPushNotificationConfigParams]
 /** Parameters for getting list of pushNotificationConfigurations associated with a Task */
-export interface ListTaskPushNotificationConfigParams extends TaskIdParams {}
+export interface ListTaskPushNotificationConfigParams extends TaskIdParams { }
 // --8<-- [end:ListTaskPushNotificationConfigParams]
 
 // --8<-- [start:DeleteTaskPushNotificationConfigParams]
@@ -888,8 +888,10 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
   id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/get";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
-  params: GetTaskPushNotificationConfigParams;
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. 
+   * TaskIdParams type is deprecated for this method
+  */
+  params: GetTaskPushNotificationConfigParams | TaskIdParams;
 }
 // --8<-- [end:GetTaskPushNotificationConfigRequest]
 
