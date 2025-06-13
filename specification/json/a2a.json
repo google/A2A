@@ -130,7 +130,7 @@
         "AgentCard": {
             "description": "An AgentCard conveys key information:\n- Overall details (version, name, description, uses)\n- Skills: A set of capabilities the agent can perform\n- Default modalities/content types supported by the agent.\n- Authentication requirements",
             "properties": {
-                "additionalInterfaces": {
+                "additional_interfaces": {
                     "description": "Announcement of additional supported transports. Client can use any of\nthe supported transports.",
                     "items": {
                         "$ref": "#/definitions/AgentInterface"
@@ -186,6 +186,9 @@
                     "description": "The version of the A2A protocol this agent supports.",
                     "type": "string"
                 },
+                "preferred_transport": {
+                    "type": "string"
+                },
                 "provider": {
                     "$ref": "#/definitions/AgentProvider",
                     "description": "The service provider of the agent"
@@ -234,6 +237,7 @@
                 }
             },
             "required": [
+                "additional_interfaces",
                 "capabilities",
                 "defaultInputModes",
                 "defaultOutputModes",
