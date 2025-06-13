@@ -1,0 +1,23 @@
+{
+  "h2a": {
+    "user_input": {
+      "type": "text",
+      "value": "I'd like to find a new doctor in my area"
+    },
+    "interaction_goals": [
+      "provider_search",
+      "followup"
+    ],
+    "_acl": {
+      "user_input": [
+        "agent-healthfinder"
+      ],
+      "user_zipcode": [
+        "agent-healthfinder",
+        "agent-geolocation"
+      ],
+      "user_preferences": "public"
+    },
+    "_sig": "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+}
