@@ -761,7 +761,7 @@
                             "$ref": "#/definitions/GetTaskPushNotificationConfigParams"
                         }
                     ],
-                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method. \nTaskIdParams type is deprecated for this method"
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method.\nTaskIdParams type is deprecated for this method"
                 }
             },
             "required": [
