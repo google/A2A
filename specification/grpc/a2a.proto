@@ -1,4 +1,4 @@
-// edition = "2023";
+// Older protoc compilers don't understand edition yet.
 syntax = "proto3";
 package a2a.v1;
 
@@ -24,7 +24,6 @@ option java_package = "com.google.a2a.v1";
 // - TaskPushNotification are a resource whose parent is a task. They have get,
 //   list and create methods.
 // - AgentCard is a static resource with only a get method.
-// Of particular note of deviation from JSONRPC approach the request metadata
 // fields are not present as they don't comply with AIP rules, and the
 // optional history_length on the get task method is not present as it also
 // violates AIP-127 and AIP-131.
@@ -33,7 +32,7 @@ service A2AService {
   // task once it is completed, or a LRO if requested.
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
     option (google.api.http) = {
-      post: "/v1//message:send"
+      post: "/v1/message:send"
       body: "*"
     };
   }
@@ -57,7 +56,7 @@ service A2AService {
   // more task updates for the task.
   rpc CancelTask(CancelTaskRequest) returns (Task) {
     option (google.api.http) = {
-      post: "/v1/tasks/{id}:cancel"
+      post: "/v1/{name=tasks/*}:cancel"
       body: "*"
     };
   }
@@ -562,10 +561,13 @@ message GetTaskPushNotificationRequest {
 message CreateTaskPushNotificationRequest {
   // The task resource for this config.
   // Format: tasks/{id}
-  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
   string config_id = 2 [(google.api.field_behavior) = REQUIRED];
-  TaskPushNotificationConfig config = 3
-      [(google.api.field_behavior) = REQUIRED];
+  TaskPushNotificationConfig config = 3  [
+    (google.api.field_behavior) = REQUIRED
+  ];
 }
 
 message TaskSubscriptionRequest {
@@ -592,6 +594,7 @@ message ListTaskPushNotificationRequest {
 message GetAgentCardRequest {
   // Empty. Added to fix linter violation.
 }
+
 
 //////// Response Messages ///////////
 message SendMessageResponse {

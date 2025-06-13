@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/google-a2a/A2A/compare/v0.2.2...v0.2.3) (2025-06-12)
+
+
+### Bug Fixes
+
+* Address some typos in gRPC annotations ([#747](https://github.com/google-a2a/A2A/issues/747)) ([f506881](https://github.com/google-a2a/A2A/commit/f506881c9b8ff0632d7c7107d5c426646ae31592))
+
 ## [0.2.2](https://github.com/google-a2a/A2A/compare/v0.2.1...v0.2.2) (2025-06-09)
 
 
