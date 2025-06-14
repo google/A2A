@@ -705,11 +705,69 @@ Sets or updates the push notification configuration for a specified task. This a
 
 Retrieves the current push notification configuration for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+- **Request `params` type**: [`GetTaskPushNotificationConfigParams`](#761-gettaskpushnotificationconfigparams-object-taskspushnotificationconfigget) | [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+_(Note: TaskIdParams type is deprecated for this method. Use GetTaskPushNotificationConfigParams instead.)_
 - **Response `result` type (on success)**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object) (The current push notification configuration for the task. Server may return an error if no push notification configuration is associated with the task).
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
 
-### 7.7. `tasks/resubscribe`
+#### 7.6.1. `GetTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/get`)
+
+A object for fetching the push notification configuration for a task.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:GetTaskPushNotificationConfigParams"
+```
+
+| Field Name | Type                  | Required | Description                |
+| :--------- | :-------------------- | :------- | :------------------------- |
+| `id`       | `string`              | Yes      | The ID of the task.        |
+| `pushNotificationConfigId`       | `string` | No      | Push notification configuration id. Server will return one of the associated configurations if config id is not specified |
+| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
+
+### 7.7. `tasks/pushNotificationConfig/list`
+
+Retrieves the associated push notification configurations for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
+
+- **Request `params` type**: [`ListTaskPushNotificationConfigParams`](#771-listtaskpushnotificationconfigparams-object-taskspushnotificationconfiglist)
+- **Response `result` type (on success)**: [`TaskPushNotificationConfig[]`](#610-taskpushnotificationconfig-object) (The push notification configurations associated with the task.).
+- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
+
+#### 7.7.1. `ListTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/list`)
+
+A object for fetching the push notification configurations for a task.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:ListTaskPushNotificationConfigRequest"
+```
+
+| Field Name | Type                  | Required | Description                |
+| :--------- | :-------------------- | :------- | :------------------------- |
+| `id`       | `string`              | Yes      | The ID of the task.        |
+| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
+
+### 7.8. `tasks/pushNotificationConfig/delete`
+
+Deletes an associated push notification configuration for a task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
+
+- **Request `params` type**: [`DeleteTaskPushNotificationConfigParams`](#781-deletetaskpushnotificationconfigparams-object-taskspushnotificationconfigdelete)
+- **Response `result` type (on success)**: [`null`]
+- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
+
+#### 7.8.1. `DeleteTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/delete`)
+
+A object for deleting an associated push notification configuration for a task.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:DeleteTaskPushNotificationConfigParams"
+```
+
+| Field Name | Type                  | Required | Description                |
+| :--------- | :-------------------- | :------- | :------------------------- |
+| `id`       | `string`              | Yes      | The ID of the task.        |
+| `pushNotificationConfigId` | `string`   | Yes | Push notification configuration id |
+| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
+
+### 7.9. `tasks/resubscribe`
 
 Allows a client to reconnect to an SSE stream for an ongoing task after a previous connection (from `message/stream` or an earlier `tasks/resubscribe`) was interrupted. Requires the server to have `AgentCard.capabilities.streaming: true`.
 
@@ -724,7 +782,7 @@ The purpose is to resume receiving _subsequent_ updates. The server's behavior r
     - Standard HTTP error code (e.g., 4xx, 5xx).
     - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
 
-### 7.8. `agent/authenticatedExtendedCard`
+### 7.10. `agent/authenticatedExtendedCard`
 
 Retrieves a potentially more detailed version of the Agent Card after the client has authenticated. This endpoint is available only if `AgentCard.supportsAuthenticatedExtendedCard` is `true`. This is an HTTP GET endpoint, not a JSON-RPC method.
 
@@ -741,11 +799,11 @@ Retrieves a potentially more detailed version of the Agent Card after the client
 
 Clients retrieving this authenticated card **SHOULD** replace their cached public Agent Card with the content received from this endpoint for the duration of their authenticated session or until the card's version changes.
 
-#### 7.8.1. `AuthenticatedExtendedCardParams` Object
+#### 7.10.1. `AuthenticatedExtendedCardParams` Object
 
 This endpoint does not use JSON-RPC `params`. Any parameters would be included as HTTP query parameters if needed (though none are defined by the standard).
 
-#### 7.8.2. `AuthenticatedExtendedCardResponse` Object
+#### 7.10.2. `AuthenticatedExtendedCardResponse` Object
 
 The successful response body is a JSON object conforming to the `AgentCard` interface.
 

@@ -5,6 +5,7 @@ package a2a.v1;
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -17,12 +18,12 @@ option java_package = "com.google.a2a.v1";
 // A2AService defines the gRPC version of the A2A protocol. This has a slightly
 // different shape than the JSONRPC version to better conform to AIP-127,
 // where appropriate. The nouns are AgentCard, Message, Task and
-// TaskPushNotification.
+// TaskPushNotificationConfig.
 // - Messages are not a standard resource so there is no get/delete/update/list
 //   interface, only a send and stream custom methods.
 // - Tasks have a get interface and custom cancel and subscribe methods.
-// - TaskPushNotification are a resource whose parent is a task. They have get,
-//   list and create methods.
+// - TaskPushNotificationConfig are a resource whose parent is a task. 
+//   They have get, list and create methods.
 // - AgentCard is a static resource with only a get method.
 // fields are not present as they don't comply with AIP rules, and the
 // optional history_length on the get task method is not present as it also
@@ -72,27 +73,27 @@ service A2AService {
   }
 
   // Set a push notification config for a task.
-  rpc CreateTaskPushNotification(CreateTaskPushNotificationRequest)
+  rpc CreateTaskPushNotificationConfig(CreateTaskPushNotificationConfigRequest)
       returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
-      post: "/v1/{parent=task/*/pushNotifications}"
+      post: "/v1/{parent=task/*/pushNotificationConfigs}"
       body: "config"
     };
     option (google.api.method_signature) = "parent,config";
   }
   // Get a push notification config for a task.
-  rpc GetTaskPushNotification(GetTaskPushNotificationRequest)
+  rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest)
       returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
-      get: "/v1/{name=tasks/*/pushNotifications/*}"
+      get: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
     };
     option (google.api.method_signature) = "name";
   }
   // Get a list of push notifications configured for a task.
-  rpc ListTaskPushNotification(ListTaskPushNotificationRequest)
-      returns (ListTaskPushNotificationResponse) {
+  rpc ListTaskPushNotificationConfig(ListTaskPushNotificationConfigRequest)
+      returns (ListTaskPushNotificationConfigResponse) {
     option (google.api.http) = {
-      get: "/v1/{parent=tasks/*}/pushNotifications"
+      get: "/v1/{parent=tasks/*}/pushNotificationConfigs"
     };
     option (google.api.method_signature) = "parent";
   }
@@ -101,6 +102,14 @@ service A2AService {
     option (google.api.http) = {
       get: "/v1/card"
     };
+  }
+  // Delete a push notification config for a task.
+  rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest)
+      returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/{name=tasks/*/pushNotificationConfig/*}"
+    };
+    option (google.api.method_signature) = "name";
   }
 }
 
@@ -430,7 +439,7 @@ message AgentSkill {
 }
 
 message TaskPushNotificationConfig {
-  // name=tasks/{id}/pushNotifications/{id}
+  // name=tasks/{id}/pushNotificationConfigs/{id}
   string name = 1;
   PushNotificationConfig push_notification_config = 2;
 }
@@ -570,12 +579,17 @@ message CancelTaskRequest {
   string name = 1;
 }
 
-message GetTaskPushNotificationRequest {
-  // name=tasks/{id}/pushNotifications/{push_id}
+message GetTaskPushNotificationConfigRequest {
+  // name=tasks/{id}/pushNotificationConfigs/{push_id}
   string name = 1;
 }
 
-message CreateTaskPushNotificationRequest {
+message DeleteTaskPushNotificationConfigRequest {
+  // name=tasks/{id}/pushNotificationConfigs/{push_id}
+  string name = 1;
+}
+
+message CreateTaskPushNotificationConfigRequest {
   // The task resource for this config.
   // Format: tasks/{id}
   string parent = 1 [
@@ -592,7 +606,7 @@ message TaskSubscriptionRequest {
   string name = 1;
 }
 
-message ListTaskPushNotificationRequest {
+message ListTaskPushNotificationConfigRequest {
   // parent=tasks/{id}
   string parent = 1;
   // For AIP-158 these fields are present. Usually not used/needed.
@@ -600,10 +614,11 @@ message ListTaskPushNotificationRequest {
   // If unspecified, all configs will be returned.
   int32 page_size = 2;
 
-  // A page token, received from a previous `ListTaskPushNotificationRequest
-  //  call. Provide this to retrieve the subsequent page.
+  // A page token received from a previous 
+  // ListTaskPushNotificationConfigRequest call. 
+  // Provide this to retrieve the subsequent page.
   // When paginating, all other parameters provided to
-  // `ListTaskPushNotificationRequest` must match the call that provided
+  // `ListTaskPushNotificationConfigRequest` must match the call that provided
   // the page token.
   string page_token = 3;
 }
@@ -639,7 +654,7 @@ message StreamResponse {
   }
 }
 
-message ListTaskPushNotificationResponse {
+message ListTaskPushNotificationConfigResponse {
   repeated TaskPushNotificationConfig configs = 1;
   // A token, which can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
