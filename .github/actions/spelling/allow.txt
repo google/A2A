@@ -26,6 +26,7 @@ EBFF
 EUR
 EUg
 FBT
+FHIR
 GAPI
 GAPIC
 GBP
@@ -142,6 +143,7 @@ iss
 jherr
 jti
 jwks
+konami
 kty
 langgraph
 linenums
@@ -154,6 +156,7 @@ marvin
 mcp
 mesop
 mindsdb
+motherlode
 mozilla
 msword
 multiagent

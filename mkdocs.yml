@@ -18,6 +18,7 @@ nav:
     - Agent Discovery: topics/agent-discovery.md
     - Enterprise-Ready Features: topics/enterprise-ready.md
     - Streaming & Asynchronous Operations: topics/streaming-and-async.md
+    - Extensions: topics/extensions.md
   - Specification: specification.md
   - Community: community.md
   - Partners: partners.md
