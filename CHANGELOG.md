@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/google-a2a/A2A/compare/v0.2.3...v0.2.4) (2025-06-14)
+
+
+### Features
+
+* Support for multiple pushNotification config per task ([#738](https://github.com/google-a2a/A2A/issues/738)) ([f355d3e](https://github.com/google-a2a/A2A/commit/f355d3e922de61ba97873fe2989a8987fc89eec2))
+
 ## [0.2.3](https://github.com/google-a2a/A2A/compare/v0.2.2...v0.2.3) (2025-06-12)
 
 
