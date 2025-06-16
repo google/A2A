@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "types/"
+      - "types/**"
     types:
       - opened
       - synchronize
