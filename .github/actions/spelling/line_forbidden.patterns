@@ -295,7 +295,7 @@
 (?!'")[‘’“”]
 
 # "an" should only be before vowels.
-\ban\s+(?![FHLMNRSX][A-Z0-9]+\b)(?!hour\b)(?!honest\b)([b-df-hj-np-tv-zB-DF-HJ-NP-TV-Z]{1}\w*)
+\ban\s+(?![FHLMNRSX][A-Z0-9]+\b)(?!hour\b)(?!honest\b)(?!npm\b)([b-df-hj-np-tv-zB-DF-HJ-NP-TV-Z]{1}\w*)
 
 # Don't use Google internal links
 ((corp|prod|sandbox).google.com|googleplex.com|https?://(?!localhost/)[0-9a-z][0-9a-z-]+/|(?:^|[^/.-])\b(?:go|b|cl|cr)/[a-z0-9_.-]+\b)
