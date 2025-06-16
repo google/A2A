@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "types/src/types.ts"
+      - "types/"
     types:
       - opened
       - synchronize
