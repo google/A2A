@@ -123,13 +123,15 @@ export interface AgentCard {
    * preferred endpoint as declared by the agent.
    */
   url: string;
-  /* The transport of the preferred endpoint. If empty, defaults to JSONRPC.*/
-  preferred_transport?: string;
+  /**
+   * The transport of the preferred endpoint. If empty, defaults to JSONRPC.
+   */
+  preferredTransport?: string;
   /**
    * Announcement of additional supported transports. Client can use any of
    * the supported transports.
    */
-  additional_interfaces: AgentInterface[];
+  additionalInterfaces: AgentInterface[];
   /** A URL to an icon for the agent. */
   iconUrl?: string;
   /** The service provider of the agent */
