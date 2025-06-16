@@ -349,7 +349,6 @@ message AgentCard {
   // preferred endpoint as declared by the agent.
   string url = 3;
   // The transport of the preferred endpoint. If empty, defaults to JSONRPC.
-  // Information about the service provider of the agent.
   string preferred_transport = 14;
   // Announcement of additional supported transports. Client can use any of
   // the supported transports.
