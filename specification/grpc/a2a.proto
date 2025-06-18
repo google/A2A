@@ -325,6 +325,16 @@ message AuthenticationInfo {
   string credentials = 2;
 }
 
+// Defines additional transport information for the agent.
+message AgentInterface {
+  // The url this interface is found at.
+  string url = 1;
+  // The transport supported this url. This is an open form string, to be
+  // easily extended for many transport protocols. The core ones officially
+  // supported are JSONRPC, GRPC and HTTP+JSON.
+  string transport = 2;
+}
+
 // AgentCard conveys key information:
 // - Overall details (version, name, description, uses)
 // - Skills; a set of actions/solutions the agent can perform
@@ -335,9 +345,15 @@ message AgentCard {
   string name = 1;
   // A description of the agents domain of action/solution space.
   string description = 2;
-  // The base url to interact with the agent at.
+  // A URL to the address the agent is hosted at. This represents the
+  // preferred endpoint as declared by the agent.
   string url = 3;
-  // Information about the service provider of the agent.
+  // The transport of the preferred endpoint. If empty, defaults to JSONRPC.
+  string preferred_transport = 14;
+  // Announcement of additional supported transports. Client can use any of
+  // the supported transports.
+  repeated AgentInterface additional_interfaces = 15;
+  // The service provider of the agent.
   AgentProvider provider = 4;
   // The version of the agent.
   string version = 5;
