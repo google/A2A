@@ -316,7 +316,7 @@ These objects define the structure of data exchanged within the JSON-RPC methods
 
 ### 6.1. `Task` Object
 
-Represents the stateful unit of work being processed by the A2A Server for an A2A Client. A task encapsulates the entire interaction related to a specific goal or request. A task which has reached a terminal state (completed, canceled, rejected, or failed) can not be restarted. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
+Represents the stateful unit of work being processed by the A2A Server for an A2A Client. A task encapsulates the entire interaction related to a specific goal or request. A task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
 
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:Task"
@@ -568,7 +568,7 @@ The A2A Server's HTTP response body **MUST** be a `JSONRPCResponse` object (or, 
 
 ### 7.1. `message/send`
 
-Sends a message to an agent to initiate a new interaction or to continue an existing one. This method is suitable for synchronous request/response interactions or when client-side polling (using `tasks/get`) is acceptable for monitoring longer-running tasks. A task which has reached a terminal state (completed, canceled, rejected, or failed) can not be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
+Sends a message to an agent to initiate a new interaction or to continue an existing one. This method is suitable for synchronous request/response interactions or when client-side polling (using `tasks/get`) is acceptable for monitoring longer-running tasks. A task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
 
 - **Request `params` type**: [`MessageSendParams`](#711-messagesendparams-object)
 - **Response `result` type (on success)**: [`Task` | `Message`](#61-task-object) (A message object or the current or final state of the task after processing the message).
@@ -590,7 +590,7 @@ Sends a message to an agent to initiate a new interaction or to continue an exis
 
 ### 7.2. `message/stream`
 
-Sends a message to an agent to initiate/continue a task AND subscribes the client to real-time updates for that task via Server-Sent Events (SSE). This method requires the server to have `AgentCard.capabilities.streaming: true`. Just like `message/send`, a task which has reached a terminal state (completed, canceled, rejected, or failed) can not be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
+Sends a message to an agent to initiate/continue a task AND subscribes the client to real-time updates for that task via Server-Sent Events (SSE). This method requires the server to have `AgentCard.capabilities.streaming: true`. Just like `message/send`, a task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
 
 - **Request `params` type**: [`MessageSendParams`](#711-messagesendparams-object) (same as `message/send`).
 - **Response (on successful subscription)**:

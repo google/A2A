@@ -64,3 +64,125 @@ For follow-up or refinement tasks, the client is best suited to refer to the "la
 Use context to figure out the latest artifact.
 Or in case of ambiguity or context not supported, agent can use "input-required".
 
+### Example Follow-up
+**Client sends message to agent**
+```
+{
+  "jsonrpc": "2.0",
+  "id": "req-001",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "parts": [
+        {
+          "kind": "text",
+          "text": "Generate an image of a sailboat on the ocean."
+        }
+      ],
+      "messageId": "msg-user-001"
+    }
+  }
+}
+```
+**Agent responds with boat image:**
+```
+{
+  "jsonrpc": "2.0",
+  "id": "req-001",
+  "result": {
+    "id": "task-boat-gen-123",
+    "contextId": "ctx-conversation-abc",
+    "status": {
+      "state": "completed",
+    },
+    "artifacts": [
+      {
+        "artifactId": "artifact-boat-v1-xyz",
+        "name": "sailboat_image.png",
+        "description": "A generated image of a sailboat on the ocean.",
+        "parts": [
+          {
+            "kind": "file",
+            "file": {
+              "name": "sailboat_image.png",
+              "mimeType": "image/png",
+              "bytes": "<base64_encoded_png_data_of_a_sailboat>"
+            }
+          }
+        ]
+      }
+    ],
+    "kind": "task"
+  }
+}
+```
+**Client asks for coloring the boat red:** Refers to previous taskID and uses same contextId.
+```
+// 
+{
+  "jsonrpc": "2.0",
+  "id": "req-002",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "messageId": "msg-user-002",
+      "contextId": "ctx-conversation-abc", // Same contextId
+      "referenceTaskIds": ["task-boat-gen-123"] // Optional: Referencing the previous task
+      "parts": [
+        {
+          "kind": "text",
+          "text": "That's great! Can you make the sailboat red?"
+          // Optional: In case the agent asked for actual relevant artifact.
+          // Client could provide the artifact data in parts.
+          // Also it could add metadata to the part to
+          // reference the specific artifact.
+          // "metadata": {
+          //   "referenceArtifacts: [
+          //      {
+          //        "artifactId": "artifact-boat-v1-xyz",
+          //        "taskId": "task-boat-gen-123"
+          //      }
+          //   ]
+          // }
+        }
+      ],
+    }
+  }
+}
+```
+**Agent responds with new image artifact**: 
+* Creates new task in same contextId.
+* Boat image artifact has same name. but a new artifactId.
+```
+{
+  "jsonrpc": "2.0",
+  "id": "req-002",
+  "result": {
+    "id": "task-boat-color-456", // New task ID
+    "contextId": "ctx-conversation-abc", // Same contextId
+    "status": {
+      "state": "completed",
+    },
+    "artifacts": [
+      {
+        "artifactId": "artifact-boat-v2-red-pqr", // New artifactId
+        "name": "sailboat_image.png", // Same name as the original artifact
+        "description": "A generated image of a red sailboat on the ocean.",
+        "parts": [
+          {
+            "kind": "file",
+            "file": {
+              "name": "sailboat_image.png",
+              "mimeType": "image/png",
+              "bytes": "<base64_encoded_png_data_of_a_RED_sailboat>"
+            }
+          }
+        ]
+      }
+    ],
+    "kind": "task"
+  }
+}
+```
