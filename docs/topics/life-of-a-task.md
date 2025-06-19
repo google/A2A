@@ -18,20 +18,20 @@ Messages can be used for trivial interactions which do not require long-running 
 
 So conceptually there can be three levels of agents:
 
-1. Always responds with Messages only. Doesn't do complex state managment, no long running execution and uses contextID to tie messages together. Agent most probably directly wraps around an LLM invocation and simple tools.
+1. Always responds with Messages only. Doesn't do complex state management, no long running execution and uses contextID to tie messages together. Agent most probably directly wraps around an LLM invocation and simple tools.
 2. Generates a task, does more substantial work that can be tracked and runs over extended life time.
 3. Generates messages and tasks. Uses messages to negotiate agent capability and scope of work for a task. Then sends task to track its execution and collaborate over task states like more input-needed, error handling, etc.
 
 An agent can choose to always reply back with task objects and model simple responses as tasks in `completed` state.
 
-## Task refinements & followups
+## Task Refinements & Follow-ups
 Client may want to follow up with new asks based on the results of a task, refine upon the task results. This can be modeled by starting another interaction using the same contextID as the original task. Client can further hint the agent by providing the reference to the original task using `referenceTaskIds` in `Message` object. Agent would then either create a new `Task` or a `Message`.
 
-Once a task has reached a terminal state (`completed`, `cancelled`, `rejected` or `failed`), it can not be restarted. There are some benefits to this: 
+Once a task has reached a terminal state (`completed`, `cancelled`, `rejected` or `failed`), it can't be restarted. There are some benefits to this: 
 * **Task Immutability**: Clients can reliably reference tasks and their associated state, artifacts, and messages. This provides a clean mapping of inputs to outputs. Useful for mapping client planner nodes to task execution.
 * **Clear Unit of Work**: Every new request, refinement, or follow-up becomes a distinct task, simplifying bookkeeping and allowing for granular tracking of an agent's work.
   * Each artifact can be traced to a unit task.
-  * This unit of work can be referenced much more granularly by parent agents or other systems like agent optimisers. Instead of restartable tasks, where all the subsequent refinements are clubbed together and would need to resort to some kind of message index range.
+  * This unit of work can be referenced much more granularly by parent agents or other systems like agent optimizers. Instead of restartable tasks, where all the subsequent refinements are clubbed together and would need to resort to some kind of message index range.
 * **Easier Implementation**: Agent developers follow a simple rule: always create a new task for a request referring a task in terminal state.
 
 ### Parallel Follow-ups
@@ -59,8 +59,8 @@ A follow up or refinement can result in an older artifact being modified and new
 
 But the client is best suited, as well as is the real decider of what it considers as a result. And in fact can reject the mutation as well. Hence, the serving agent should not own this linkage and hence does not need to be part of A2A protocol spec. The serving agent should maintain the same artifact-name when generating a refinement on the original artifact.
 
-For follow-up or refinement tasks, the client is best suited to refer to the “latest” or what it considers to be the intended artifact to be refined upon. If artifact reference is not explicitly specified, the serving agent can:
+For follow-up or refinement tasks, the client is best suited to refer to the "latest" or what it considers to be the intended artifact to be refined upon. If artifact reference is not explicitly specified, the serving agent can:
 
 Use context to figure out the latest artifact.
-Or in case of ambiguity or context not supported, agent can use “input-required”.
+Or in case of ambiguity or context not supported, agent can use "input-required".
 
