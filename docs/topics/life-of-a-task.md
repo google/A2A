@@ -1,0 +1,66 @@
+# Life of a Task
+
+When a message is sent to an agent, it can choose to reply with either:
+* A stateless `Message`.
+* A stateful `Task` and zero or more `TaskStatusUpdateEvent` or `TaskArtifactUpdateEvent`.
+
+If the response is a `Message`, the interaction is completed. On the other hand, A `Task` will keep getting updated until it is in a interrupted state ()`input-required` or `auth-required`) or a terminal state (`completed`, `cancelled`, `rejected` or `failed`).
+
+## Context
+A contextId logically composes many Tasks and independent Messages. Agent implementor can manage the llm context based on these interactions, utilising the `contextId`.
+
+For the first time a message is sent, agent replies back with a contextId. If the agent responded with a task, then it will also have a taskId. Clients can send subsequent messages and attach the same contextID to indicate to the agent that they are continuing their previous interaction within the same context. Client also optionally attach the taskID to indicate that the message is in continuation of that specific task.
+
+ContextId allows collaboration over a goal or share one session across multiple tasks.
+
+## Agent: Message or a Task
+Messages can be used for trivial interactions which do not require long-running processing or collaboration. An agent can use messages to negotiate the acceptance of a task. Once an agent maps the intent of an incoming message to a supported capability, it can reply back with a `Task`.
+
+So conceptually there can be three levels of agents:
+
+1. Always responds with Messages only. Doesn't do complex state managment, no long running execution and uses contextID to tie messages together. Agent most probably directly wraps around an LLM invocation and simple tools.
+2. Generates a task, does more substantial work that can be tracked and runs over extended life time.
+3. Generates messages and tasks. Uses messages to negotiate agent capability and scope of work for a task. Then sends task to track its execution and collaborate over task states like more input-needed, error handling, etc.
+
+An agent can choose to always reply back with task objects and model simple responses as tasks in `completed` state.
+
+## Task refinements & followups
+Client may want to follow up with new asks based on the results of a task, refine upon the task results. This can be modeled by starting another interaction using the same contextID as the original task. Client can further hint the agent by providing the reference to the original task using `referenceTaskIds` in `Message` object. Agent would then either create a new `Task` or a `Message`.
+
+Once a task has reached a terminal state (`completed`, `cancelled`, `rejected` or `failed`), it can not be restarted. There are some benefits to this: 
+* **Task Immutability**: Clients can reliably reference tasks and their associated state, artifacts, and messages. This provides a clean mapping of inputs to outputs. Useful for mapping client planner nodes to task execution.
+* **Clear Unit of Work**: Every new request, refinement, or follow-up becomes a distinct task, simplifying bookkeeping and allowing for granular tracking of an agent's work.
+  * Each artifact can be traced to a unit task.
+  * This unit of work can be referenced much more granularly by parent agents or other systems like agent optimisers. Instead of restartable tasks, where all the subsequent refinements are clubbed together and would need to resort to some kind of message index range.
+* **Easier Implementation**: Agent developers follow a simple rule: always create a new task for a request referring a task in terminal state.
+
+### Parallel Follow-ups
+Parallel work is supported by having the agent create distinct, parallel tasks for each follow-up message sent within the same contextId. This allows clients to track individual sub-tasks and create new dependent tasks as soon as a prerequisite task is complete.
+
+For example:
+```
+Task 1: Book a flight to Helsinki.
+(After Task 1 finishes)
+Task 2: Based on Task 1, book a hotel.
+Task 3: Based on Task 1, book a snowmobile activity.
+(After Task 2 finishes, while Task 3 is still in progress)
+Task 4: Based on Task 2, add a spa reservation to the hotel booking.
+```
+### Referencing Previous Artifacts
+The agent is responsible for inferring the relevant artifact from the referenced task or from the contextID. The serving agent is best suited to resolve ambiguity or identify missing information.
+
+If there is ambiguity (e.g., multiple artifacts could fit the request), the agent will ask the client for clarification by returning an input-required state. The client can then specify the artifact in its response. Client can optionally populate artifact reference {artifactId, taskId} in part metadata. This allows for linkage between inputs for follow-up tasks and previous generated artifacts.
+
+This approach allows for the client implementation to be simple.
+
+
+### Tracking Artifact Mutation
+A follow up or refinement can result in an older artifact being modified and newer artifacts being generated. It would be good to know this linkage and maybe track all mutations of the artifact to make sure only the latest copy is used for future context. Something like a linked list, with a head as the latest.
+
+But the client is best suited, as well as is the real decider of what it considers as a result. And in fact can reject the mutation as well. Hence, the serving agent should not own this linkage and hence does not need to be part of A2A protocol spec. The serving agent should maintain the same artifact-name when generating a refinement on the original artifact.
+
+For follow-up or refinement tasks, the client is best suited to refer to the “latest” or what it considers to be the intended artifact to be refined upon. If artifact reference is not explicitly specified, the serving agent can:
+
+Use context to figure out the latest artifact.
+Or in case of ambiguity or context not supported, agent can use “input-required”.
+
