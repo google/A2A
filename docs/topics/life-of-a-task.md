@@ -75,7 +75,7 @@ Or in case of ambiguity or context not supported, agent can use "input-required"
 
 ### Example Follow-up
 
-**Client sends message to agent**
+#### Client sends message to agent
 
 ```json
 {
@@ -97,7 +97,7 @@ Or in case of ambiguity or context not supported, agent can use "input-required"
 }
 ```
 
-**Agent responds with boat image:**
+#### Agent responds with boat image
 
 ```json
 {
@@ -131,7 +131,9 @@ Or in case of ambiguity or context not supported, agent can use "input-required"
 }
 ```
 
-**Client asks for coloring the boat red:** Refers to previous taskID and uses same contextId.
+#### Client asks for coloring the boat red
+
+Refers to previous taskID and uses same contextId.
 
 ```json
 {
@@ -167,7 +169,7 @@ Or in case of ambiguity or context not supported, agent can use "input-required"
 }
 ```
 
-**Agent responds with new image artifact**:
+#### Agent responds with new image artifact
 
 - Creates new task in same contextId.
 - Boat image artifact has same name. but a new artifactId.
