@@ -72,6 +72,7 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
     - Learn more about [Streaming & Asynchronous Operations](./streaming-and-async.md).
 
 ## Agent Response: Task or Message
+
 See details in the [Life of a Task](./life-of-a-task.md).
 
 ## Other Important Concepts
