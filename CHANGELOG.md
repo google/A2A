@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.3.0](https://github.com/google-a2a/A2A/compare/v0.2.3...v0.3.0) (2025-06-20)
+
+
+### ⚠ BREAKING CHANGES
+
+* update spec & doc topic with non-restartable tasks ([#770](https://github.com/google-a2a/A2A/issues/770))
+
+### Features
+
+* Add support for multiple transport announcement in AgentCard ([#749](https://github.com/google-a2a/A2A/issues/749)) ([b35485e](https://github.com/google-a2a/A2A/commit/b35485e02e796d15232dec01acfab93fc858c3ec))
+* Support for multiple pushNotification config per task ([#738](https://github.com/google-a2a/A2A/issues/738)) ([f355d3e](https://github.com/google-a2a/A2A/commit/f355d3e922de61ba97873fe2989a8987fc89eec2))
+
+
+### Bug Fixes
+
+* **spec:** Fix casing of `types.ts` from [#749](https://github.com/google-a2a/A2A/issues/749) ([#759](https://github.com/google-a2a/A2A/issues/759)) ([14424a6](https://github.com/google-a2a/A2A/commit/14424a69d5435f70e86484b3888ef15817b3ce58))
+* **spec:** Make `AgentCard.additionalInterfaces` Optional for backwards compatibility ([#760](https://github.com/google-a2a/A2A/issues/760)) ([4a5e970](https://github.com/google-a2a/A2A/commit/4a5e970ec2c4d92439536e01ea649082b177b8b7))
+
+
+### Documentation
+
+* update spec & doc topic with non-restartable tasks ([#770](https://github.com/google-a2a/A2A/issues/770)) ([ebc4157](https://github.com/google-a2a/A2A/commit/ebc4157ca87ae08d1c55e38e522a1a17201f2854))
+
 ## [0.2.3](https://github.com/google-a2a/A2A/compare/v0.2.2...v0.2.3) (2025-06-12)
 
 
