@@ -372,6 +372,8 @@ export interface Message {
 // --8<-- [start:PartBase]
 /** Base properties common to all message parts. */
 export interface PartBase {
+  /** Optional part name */
+  name?: string;
   /** Optional metadata associated with the part. */
   metadata?: {
     [key: string]: any;
