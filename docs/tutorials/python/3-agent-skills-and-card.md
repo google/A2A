@@ -2,7 +2,7 @@
 
 Before an A2A agent can do anything, it needs to define what it _can_ do (its skills) and how other agents or clients can find out about these capabilities (its Agent Card).
 
-We'll use the `helloworld` example located in [`a2a-samples/samples/python/agents/helloworld/`](https://github.com/google-a2a/a2a-samples/tree/main/samples/python/agents/helloworld).
+We'll use the `helloworld` example located in [`a2a-samples/samples/python/agents/helloworld/`](https://github.com/a2aproject/a2a-samples/tree/main/samples/python/agents/helloworld).
 
 ## Agent Skills
 
@@ -20,7 +20,7 @@ Key attributes of an `AgentSkill` (defined in `a2a.types`):
 In `__main__.py`, you can see how a skill for the Helloworld agent is defined:
 
 ```python { .no-copy }
---8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/__main__.py:AgentSkill"
+--8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/__main__.py:AgentSkill"
 ```
 
 This skill is very simple: it's named "Returns hello world" and primarily deals with text.
@@ -40,7 +40,7 @@ Key attributes of an `AgentCard` (defined in `a2a.types`):
 The `helloworld` example defines its Agent Card like this:
 
 ```python { .no-copy }
---8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/__main__.py:AgentCard"
+--8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/__main__.py:AgentCard"
 ```
 
 This card tells us the agent is named "Hello World Agent", runs at `http://localhost:9999/`, supports text interactions, and has the `hello_world` skill. It also indicates public authentication, meaning no specific credentials are required.

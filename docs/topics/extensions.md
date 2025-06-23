@@ -16,7 +16,7 @@ The exact set of possible ways to use extensions is intentionally not defined. T
 
 - Overlaying additional structure and state change requirements on the core request/response messages. An extension could, for example, require that all messages use `DataPart`s that adhere to a specific schema. This type of extension effectively acts as a profile on the core A2A protocol, narrowing the space of allowed values. We refer to these as *profile extensions*. For example, a healthcare extension could mandate that all `Message` parts containing patient information must be encrypted and placed within a `DataPart` that conforms to a FHIR standard.
 
-- Adding new RPC methods entirely. Extensions may define that the agent implements more than the core set of protocol methods. We refer to these as *method extensions*. For example, a ['task-history' extension](https://github.com/google-a2a/A2A/issues/585#:~:text=Details%20with%20an%20example) might add a `tasks/search` RPC method to retrieve a list of previous tasks.
+- Adding new RPC methods entirely. Extensions may define that the agent implements more than the core set of protocol methods. We refer to these as *method extensions*. For example, a ['task-history' extension](https://github.com/a2aproject/A2A/issues/585#:~:text=Details%20with%20an%20example) might add a `tasks/search` RPC method to retrieve a list of previous tasks.
 
 There are some changes to the protocol that extensions *do not* allow. These are:
 

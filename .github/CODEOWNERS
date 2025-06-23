@@ -4,4 +4,4 @@
 # For syntax help see:
 # https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
-*   @google-a2a/googlers
+*   @a2aproject/google

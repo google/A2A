@@ -1,6 +1,6 @@
 # Project information
 site_name: Agent2Agent (A2A) Protocol
-site_url: https://google-a2a.github.io/A2A/
+site_url: https://a2aproject.github.io/A2A/
 site_description: >-
   An open protocol enabling communication and interoperability between opaque agentic applications.
 site_dir: site
@@ -36,8 +36,8 @@ nav:
     - Next Steps: tutorials/python/8-next-steps.md
 
 # Repository
-repo_name: google-a2a/A2A
-repo_url: https://github.com/google-a2a/A2A
+repo_name: a2aproject/A2A
+repo_url: https://github.com/a2aproject/A2A
 
 # Copyright
 copyright: Copyright Google 2025
@@ -123,7 +123,7 @@ plugins:
   - macros
   - redirects:
       redirect_maps:
-        "spec-json.md": https://raw.githubusercontent.com/google-a2a/A2A/refs/heads/main/specification/json/a2a.json
+        "spec-json.md": https://raw.githubusercontent.com/a2aproject/A2A/refs/heads/main/specification/json/a2a.json
         "specification/overview.md": "specification.md"
         "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
         "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
