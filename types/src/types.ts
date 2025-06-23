@@ -5,7 +5,7 @@
 // --8<-- [start:AgentProvider]
 /**
  * Represents the service provider of an agent.
- * @example { organization: "Google", url: "https://ai.google.dev" }
+ * @TJS-examples [{ "organization": "Google", "url": "https://ai.google.dev" }]
  */
 export interface AgentProvider {
   /** Agent provider's organization name. */
@@ -34,7 +34,7 @@ export interface AgentCapabilities {
 // --8<-- [start:AgentExtension]
 /**
  * A declaration of an extension supported by an Agent.
- * @example { uri: "https://developers.google.com/identity/protocols/oauth2", description: "Google OAuth 2.0 authentication", required: false }
+ * @TJS-examples [{"uri": "https://developers.google.com/identity/protocols/oauth2", "description": "Google OAuth 2.0 authentication", "required": false}]
  */
 export interface AgentExtension {
   /** The URI of the extension. */
