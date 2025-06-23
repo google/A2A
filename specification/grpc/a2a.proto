@@ -107,7 +107,7 @@ service A2AService {
   rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest)
       returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/{name=tasks/*/pushNotificationConfig/*}"
+      delete: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
     };
     option (google.api.method_signature) = "name";
   }
