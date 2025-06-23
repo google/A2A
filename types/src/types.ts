@@ -84,6 +84,22 @@ export interface AgentSkill {
 }
 // --8<-- [end:AgentSkill]
 
+// --8<-- [start:AgentInterface]
+/**
+ * AgentInterface provides a declaration of a combination of the
+ * target url and the supported transport to interact with the agent.
+ */
+export interface AgentInterface {
+  url: string; // the url this interface is found at
+  /**
+   * The transport supported this url. This is an open form string, to be
+   * easily extended for many transport protocols. The core ones officially
+   * supported are JSONRPC, GRPC and HTTP+JSON.
+   */
+  transport: string;
+}
+// --8<-- [end:AgentInterface]
+
 // --8<-- [start:AgentCard]
 /**
  * An AgentCard conveys key information:
@@ -104,8 +120,20 @@ export interface AgentCard {
    * @example "Agent that helps users with recipes and cooking."
    */
   description: string;
-  /** A URL to the address the agent is hosted at. */
+  /**
+   * A URL to the address the agent is hosted at. This represents the
+   * preferred endpoint as declared by the agent.
+   */
   url: string;
+  /**
+   * The transport of the preferred endpoint. If empty, defaults to JSONRPC.
+   */
+  preferredTransport?: string;
+  /**
+   * Announcement of additional supported transports. Client can use any of
+   * the supported transports.
+   */
+  additionalInterfaces?: AgentInterface[];
   /** A URL to an icon for the agent. */
   iconUrl?: string;
   /** The service provider of the agent */

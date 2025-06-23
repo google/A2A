@@ -19,6 +19,7 @@ nav:
     - Enterprise-Ready Features: topics/enterprise-ready.md
     - Streaming & Asynchronous Operations: topics/streaming-and-async.md
     - Extensions: topics/extensions.md
+    - Life of a Task: topics/life-of-a-task.md
   - Specification: specification.md
   - Community: community.md
   - Partners: partners.md

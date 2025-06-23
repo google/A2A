@@ -170,6 +170,7 @@ objc
 octicons
 ollama
 oneof
+pqr
 prefecthq
 protoc
 protolint

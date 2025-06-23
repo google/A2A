@@ -130,6 +130,13 @@
         "AgentCard": {
             "description": "An AgentCard conveys key information:\n- Overall details (version, name, description, uses)\n- Skills: A set of capabilities the agent can perform\n- Default modalities/content types supported by the agent.\n- Authentication requirements",
             "properties": {
+                "additionalInterfaces": {
+                    "description": "Announcement of additional supported transports. Client can use any of\nthe supported transports.",
+                    "items": {
+                        "$ref": "#/definitions/AgentInterface"
+                    },
+                    "type": "array"
+                },
                 "capabilities": {
                     "$ref": "#/definitions/AgentCapabilities",
                     "description": "Optional capabilities supported by the agent."
@@ -162,6 +169,10 @@
                 },
                 "name": {
                     "description": "Human readable name of the agent.",
+                    "type": "string"
+                },
+                "preferredTransport": {
+                    "description": "The transport of the preferred endpoint. If empty, defaults to JSONRPC.",
                     "type": "string"
                 },
                 "provider": {
@@ -200,7 +211,7 @@
                     "type": "boolean"
                 },
                 "url": {
-                    "description": "A URL to the address the agent is hosted at.",
+                    "description": "A URL to the address the agent is hosted at. This represents the\npreferred endpoint as declared by the agent.",
                     "type": "string"
                 },
                 "version": {
@@ -250,6 +261,23 @@
             },
             "required": [
                 "uri"
+            ],
+            "type": "object"
+        },
+        "AgentInterface": {
+            "description": "AgentInterface provides a declaration of a combination of the\ntarget url and the supported transport to interact with the agent.",
+            "properties": {
+                "transport": {
+                    "description": "The transport supported this url. This is an open form string, to be\neasily extended for many transport protocols. The core ones officially\nsupported are JSONRPC, GRPC and HTTP+JSON.",
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "transport",
+                "url"
             ],
             "type": "object"
         },
