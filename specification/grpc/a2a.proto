@@ -1,0 +1,661 @@
+// Older protoc compilers don't understand edition yet.
+syntax = "proto3";
+package a2a.v1;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option csharp_namespace = "A2a.V1";
+option go_package = "google.golang.org/a2a/v1";
+option java_multiple_files = true;
+option java_outer_classname = "A2A";
+option java_package = "com.google.a2a.v1";
+
+// A2AService defines the gRPC version of the A2A protocol. This has a slightly
+// different shape than the JSONRPC version to better conform to AIP-127,
+// where appropriate. The nouns are AgentCard, Message, Task and
+// TaskPushNotificationConfig.
+// - Messages are not a standard resource so there is no get/delete/update/list
+//   interface, only a send and stream custom methods.
+// - Tasks have a get interface and custom cancel and subscribe methods.
+// - TaskPushNotificationConfig are a resource whose parent is a task. 
+//   They have get, list and create methods.
+// - AgentCard is a static resource with only a get method.
+// fields are not present as they don't comply with AIP rules, and the
+// optional history_length on the get task method is not present as it also
+// violates AIP-127 and AIP-131.
+service A2AService {
+  // Send a message to the agent. This is a blocking call that will return the
+  // task once it is completed, or a LRO if requested.
+  rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
+    option (google.api.http) = {
+      post: "/v1/message:send"
+      body: "*"
+    };
+  }
+  // SendStreamingMessage is a streaming call that will return a stream of
+  // task update events until the Task is in an interrupted or terminal state.
+  rpc SendStreamingMessage(SendMessageRequest) returns (stream StreamResponse) {
+    option (google.api.http) = {
+      post: "/v1/message:stream"
+      body: "*"
+    };
+  }
+
+  // Get the current state of a task from the agent.
+  rpc GetTask(GetTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      get: "/v1/{name=tasks/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // Cancel a task from the agent. If supported one should expect no
+  // more task updates for the task.
+  rpc CancelTask(CancelTaskRequest) returns (Task) {
+    option (google.api.http) = {
+      post: "/v1/{name=tasks/*}:cancel"
+      body: "*"
+    };
+  }
+  // TaskSubscription is a streaming call that will return a stream of task
+  // update events. This attaches the stream to an existing in process task.
+  // If the task is complete the stream will return the completed task (like
+  // GetTask) and close the stream.
+  rpc TaskSubscription(TaskSubscriptionRequest)
+      returns (stream StreamResponse) {
+    option (google.api.http) = {
+      get: "/v1/{name=tasks/*}:subscribe"
+    };
+  }
+
+  // Set a push notification config for a task.
+  rpc CreateTaskPushNotificationConfig(CreateTaskPushNotificationConfigRequest)
+      returns (TaskPushNotificationConfig) {
+    option (google.api.http) = {
+      post: "/v1/{parent=task/*/pushNotificationConfigs}"
+      body: "config"
+    };
+    option (google.api.method_signature) = "parent,config";
+  }
+  // Get a push notification config for a task.
+  rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest)
+      returns (TaskPushNotificationConfig) {
+    option (google.api.http) = {
+      get: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+  // Get a list of push notifications configured for a task.
+  rpc ListTaskPushNotificationConfig(ListTaskPushNotificationConfigRequest)
+      returns (ListTaskPushNotificationConfigResponse) {
+    option (google.api.http) = {
+      get: "/v1/{parent=tasks/*}/pushNotificationConfigs"
+    };
+    option (google.api.method_signature) = "parent";
+  }
+  // GetAgentCard returns the agent card for the agent.
+  rpc GetAgentCard(GetAgentCardRequest) returns (AgentCard) {
+    option (google.api.http) = {
+      get: "/v1/card"
+    };
+  }
+  // Delete a push notification config for a task.
+  rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest)
+      returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
+    };
+    option (google.api.method_signature) = "name";
+  }
+}
+
+///////// Data Model ////////////
+
+// Configuration of a send message request.
+message SendMessageConfiguration {
+  // The output modes that the agent is expected to respond with.
+  repeated string accepted_output_modes = 1;
+  // A configuration of a webhook that can be used to receive updates
+  PushNotificationConfig push_notification = 2;
+  // The maximum number of messages to include in the history. if 0, the
+  // history will be unlimited.
+  int32 history_length = 3;
+  // If true, the message will be blocking until the task is completed. If
+  // false, the message will be non-blocking and the task will be returned
+  // immediately. It is the caller's responsibility to check for any task
+  // updates.
+  bool blocking = 4;
+}
+
+// Task is the core unit of action for A2A. It has a current status
+// and when results are created for the task they are stored in the
+// artifact. If there are multiple turns for a task, these are stored in
+// history.
+message Task {
+  // Unique identifer for a task, created by the A2A server.
+  string id = 1;
+  // Unique identifer for the contextual collection of interactions (tasks
+  // and messages). Created by the A2A server.
+  string context_id = 2;
+  // The current status of a Task, including state and a message.
+  TaskStatus status = 3;
+  // A set of output artifacts for a Task.
+  repeated Artifact artifacts = 4;
+  // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+  // The history of interactions from a task.
+  repeated Message history = 5;
+  // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+  // A key/value object to store custom metadata about a task.
+  google.protobuf.Struct metadata = 6;
+}
+
+// The set of states a Task can be in.
+enum TaskState {
+  TASK_STATE_UNSPECIFIED = 0;
+  // Represents the status that acknowledges a task is created
+  TASK_STATE_SUBMITTED = 1;
+  // Represents the status that a task is actively being processed
+  TASK_STATE_WORKING = 2;
+  // Represents the status a task is finished. This is a terminal state
+  TASK_STATE_COMPLETED = 3;
+  // Represents the status a task is done but failed. This is a terminal state
+  TASK_STATE_FAILED = 4;
+  // Represents the status a task was cancelled before it finished.
+  // This is a terminal state.
+  TASK_STATE_CANCELLED = 5;
+  // Represents the status that the task requires information to complete.
+  // This is an interrupted state.
+  TASK_STATE_INPUT_REQUIRED = 6;
+  // Represents the status that the agent has decided to not perform the task.
+  // This may be done during initial task creation or later once an agent
+  // has determined it can't or won't proceed. This is a terminal state.
+  TASK_STATE_REJECTED = 7;
+  // Represents the state that some authentication is needed from the upstream
+  // client. Authentication is expected to come out-of-band thus this is not
+  // an interrupted or terminal state.
+  TASK_STATE_AUTH_REQUIRED = 8;
+}
+
+// A container for the status of a task
+message TaskStatus {
+  // The current state of this task
+  TaskState state = 1;
+  // A message associated with the status.
+  Message update = 2;
+  // Timestamp when the status was recorded.
+  google.protobuf.Timestamp timestamp = 3;
+}
+
+// Part represents a container for a section of communication content.
+// Parts can be purely textual, some sort of file (image, video, etc) or
+// a structured data blob (i.e. JSON).
+message Part {
+  oneof part {
+    string text = 1;
+    FilePart file = 2;
+    DataPart data = 3;
+  }
+}
+
+// FilePart represents the different ways files can be provided. If files are
+// small, directly feeding the bytes is supported via file_with_bytes. If the
+// file is large, the agent should read the content as appropriate directly
+// from the file_with_uri source.
+message FilePart {
+  oneof file {
+    string file_with_uri = 1;
+    bytes file_with_bytes = 2;
+  }
+  string mime_type = 3;
+}
+
+// DataPart represents a structured blob. This is most commonly a JSON payload.
+message DataPart {
+  google.protobuf.Struct data = 1;
+}
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  // USER role refers to communication from the client to the server.
+  ROLE_USER = 1;
+  // AGENT role refers to communication from the server to the client.
+  ROLE_AGENT = 2;
+}
+
+// Message is one unit of communication between client and server. It is
+// associated with a context and optionally a task. Since the server is
+// responsible for the context definition, it must always provide a context_id
+// in its messages. The client can optionally provide the context_id if it
+// knows the context to associate the message to. Similarly for task_id,
+// except the server decides if a task is created and whether to include the
+// task_id.
+message Message {
+  // The message id of the message. This is required and created by the
+  // message creator.
+  string message_id = 1;
+  // The context id of the message. This is optional and if set, the message
+  // will be associated with the given context.
+  string context_id = 2;
+  // The task id of the message. This is optional and if set, the message
+  // will be associated with the given task.
+  string task_id = 3;
+  // A role for the message.
+  Role role = 4;
+  // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+  // Content is the container of the message content.
+  repeated Part content = 5;
+  // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+  // Any optional metadata to provide along with the message.
+  google.protobuf.Struct metadata = 6;
+  // The URIs of extensions that are present or contributed to this Message.
+  repeated string extensions = 7;
+}
+
+// Artifacts are the container for task completed results. These are similar
+// to Messages but are intended to be the product of a task, as opposed to
+// point-to-point communication.
+message Artifact {
+  // Unique id for the artifact. It must be at least unique within a task.
+  string artifact_id = 1;
+  // A human readable name for the artifact.
+  string name = 3;
+  // A human readable description of the artifact, optional.
+  string description = 4;
+  // The content of the artifact.
+  repeated Part parts = 5;
+  // Optional metadata included with the artifact.
+  google.protobuf.Struct metadata = 6;
+  // The URIs of extensions that are present or contributed to this Artifact.
+  repeated string extensions = 7;
+}
+
+// TaskStatusUpdateEvent is a delta even on a task indicating that a task
+// has changed.
+message TaskStatusUpdateEvent {
+  // The id of the task that is changed
+  string task_id = 1;
+  // The id of the context that the task belongs to
+  string context_id = 2;
+  // The new status of the task.
+  TaskStatus status = 3;
+  // Whether this is the last status update expected for this task.
+  bool final = 4;
+  // Optional metadata to associate with the task update.
+  google.protobuf.Struct metadata = 5;
+}
+
+// TaskArtifactUpdateEvent represents a task delta where an artifact has
+// been generated.
+message TaskArtifactUpdateEvent {
+  // The id of the task for this artifact
+  string task_id = 1;
+  // The id of the context that this task belongs too
+  string context_id = 2;
+  // The artifact itself
+  Artifact artifact = 3;
+  //  Whether this should be appended to a prior one produced
+  bool append = 4;
+  // Whether this represents the last part of an artifact
+  bool last_chunk = 5;
+  // Optional metadata associated with the artifact update.
+  google.protobuf.Struct metadata = 6;
+}
+
+// Configuration for setting up push notifications for task updates.
+message PushNotificationConfig {
+  // A unique id for this push notification.
+  string id = 1;
+  // Url to send the notification too
+  string url = 2;
+  // Token unique for this task/session
+  string token = 3;
+  // Information about the authentication to sent with the notification
+  AuthenticationInfo authentication = 4;
+}
+
+// Defines authentication details, used for push notifications.
+message AuthenticationInfo {
+  // Supported authentication schemes - e.g. Basic, Bearer, etc
+  repeated string schemes = 1;
+  // Optional credentials
+  string credentials = 2;
+}
+
+// Defines additional transport information for the agent.
+message AgentInterface {
+  // The url this interface is found at.
+  string url = 1;
+  // The transport supported this url. This is an open form string, to be
+  // easily extended for many transport protocols. The core ones officially
+  // supported are JSONRPC, GRPC and HTTP+JSON.
+  string transport = 2;
+}
+
+// AgentCard conveys key information:
+// - Overall details (version, name, description, uses)
+// - Skills; a set of actions/solutions the agent can perform
+// - Default modalities/content types supported by the agent.
+// - Authentication requirements
+message AgentCard {
+  // A human readable name for the agent.
+  string name = 1;
+  // A description of the agents domain of action/solution space.
+  string description = 2;
+  // A URL to the address the agent is hosted at. This represents the
+  // preferred endpoint as declared by the agent.
+  string url = 3;
+  // The transport of the preferred endpoint. If empty, defaults to JSONRPC.
+  string preferred_transport = 14;
+  // Announcement of additional supported transports. Client can use any of
+  // the supported transports.
+  repeated AgentInterface additional_interfaces = 15;
+  // The service provider of the agent.
+  AgentProvider provider = 4;
+  // The version of the agent.
+  string version = 5;
+  // A url to provide additional documentation about the agent.
+  string documentation_url = 6;
+  // A2A Capability set supported by the agent.
+  AgentCapabilities capabilities = 7;
+  // The security scheme details used for authenticating with this agent.
+  map<string, SecurityScheme> security_schemes = 8;
+  // protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+  // Security requirements for contacting the agent.
+  repeated Security security = 9;
+  // protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+  // The set of interaction modes that the agent supports across all skills.
+  // This can be overridden per skill. Defined as mime types.
+  repeated string default_input_modes = 10;
+  // The mime types supported as outputs from this agent.
+  repeated string default_output_modes = 11;
+  // Skills represent a unit of ability an agent can perform. This may
+  // somewhat abstract but represents a more focused set of actions that the
+  // agent is highly likely to succeed at.
+  repeated AgentSkill skills = 12;
+  // Whether the agent supports providing an extended agent card when
+  // the user is authenticated, i.e. is the card from .well-known
+  // different than the card from GetAgentCard.
+  bool supports_authenticated_extended_card = 13;
+}
+
+// Represents information about the service provider of an agent.
+message AgentProvider {
+  // The providers reference url
+  string url = 1;
+  // The providers organization name
+  string organization = 2;
+}
+
+// Defines the A2A feature set supported by the agent
+message AgentCapabilities {
+  // If the agent will support streaming responses
+  bool streaming = 1;
+  // If the agent can send push notifications to the clients webhook
+  bool push_notifications = 2;
+  // Extensions supported by this agent.
+  repeated AgentExtension extensions = 3;
+}
+
+// A declaration of an extension supported by an Agent.
+message AgentExtension {
+  // The URI of the extension.
+  string uri = 1;
+  // A description of how this agent uses this extension.
+  string description = 2;
+  // Whether the client must follow specific requirements of the extension.
+  bool required = 3;
+  // Optional configuration for the extension.
+  google.protobuf.Struct params = 4;
+}
+
+// AgentSkill represents a unit of action/solution that the agent can perform.
+// One can think of this as a type of highly reliable solution that an agent
+// can be tasked to provide. Agents have the autonomy to choose how and when
+// to use specific skills, but clients should have confidence that if the
+// skill is defined that unit of action can be reliably performed.
+message AgentSkill {
+  // Unique id of the skill within this agent.
+  string id = 1;
+  // A human readable name for the skill.
+  string name = 2;
+  // A human (or llm) readable description of the skill
+  // details and behaviors.
+  string description = 3;
+  // A set of tags for the skill to enhance categorization/utilization.
+  repeated string tags = 4;
+  // A set of example queries that this skill is designed to address.
+  // These examples should help the caller to understand how to craft requests
+  // to the agent to achieve specific goals.
+  repeated string examples = 5;
+  // Possible input modalities supported.
+  repeated string input_modes = 6;
+  // Possible output modalities produced
+  repeated string output_modes = 7;
+}
+
+message TaskPushNotificationConfig {
+  // name=tasks/{id}/pushNotificationConfigs/{id}
+  string name = 1;
+  PushNotificationConfig push_notification_config = 2;
+}
+
+// protolint:disable REPEATED_FIELD_NAMES_PLURALIZED
+message StringList {
+  repeated string list = 1;
+}
+// protolint:enable REPEATED_FIELD_NAMES_PLURALIZED
+
+message Security {
+  map<string, StringList> schemes = 1;
+}
+
+message SecurityScheme {
+  oneof scheme {
+    APIKeySecurityScheme api_key_security_scheme = 1;
+    HTTPAuthSecurityScheme http_auth_security_scheme = 2;
+    OAuth2SecurityScheme oauth2_security_scheme = 3;
+    OpenIdConnectSecurityScheme open_id_connect_security_scheme = 4;
+  }
+}
+
+message APIKeySecurityScheme {
+  // Description of this security scheme.
+  string description = 1;
+  // Location of the API key, valid values are "query", "header", or "cookie"
+  string location = 2;
+  // Name of the header, query or cookie parameter to be used.
+  string name = 3;
+}
+
+message HTTPAuthSecurityScheme {
+  // Description of this security scheme.
+  string description = 1;
+  // The name of the HTTP Authentication scheme to be used in the
+  // Authorization header as defined in RFC7235. The values used SHOULD be
+  // registered in the IANA Authentication Scheme registry.
+  // The value is case-insensitive, as defined in RFC7235.
+  string scheme = 2;
+  // A hint to the client to identify how the bearer token is formatted.
+  // Bearer tokens are usually generated by an authorization server, so
+  // this information is primarily for documentation purposes.
+  string bearer_format = 3;
+}
+
+message OAuth2SecurityScheme {
+  // Description of this security scheme.
+  string description = 1;
+  // An object containing configuration information for the flow types supported
+  OAuthFlows flows = 2;
+}
+
+message OpenIdConnectSecurityScheme {
+  // Description of this security scheme.
+  string description = 1;
+  // Well-known URL to discover the [[OpenID-Connect-Discovery]] provider
+  // metadata.
+  string open_id_connect_url = 2;
+}
+
+message OAuthFlows {
+  oneof flow {
+    AuthorizationCodeOAuthFlow authorization_code = 1;
+    ClientCredentialsOAuthFlow client_credentials = 2;
+    ImplicitOAuthFlow implicit = 3;
+    PasswordOAuthFlow password = 4;
+  }
+}
+
+message AuthorizationCodeOAuthFlow {
+  // The authorization URL to be used for this flow. This MUST be in the
+  // form of a URL. The OAuth2 standard requires the use of TLS
+  string authorization_url = 1;
+  // The token URL to be used for this flow. This MUST be in the form of a URL.
+  // The OAuth2 standard requires the use of TLS.
+  string token_url = 2;
+  // The URL to be used for obtaining refresh tokens. This MUST be in the
+  // form of a URL. The OAuth2 standard requires the use of TLS.
+  string refresh_url = 3;
+  // The available scopes for the OAuth2 security scheme. A map between the
+  // scope name and a short description for it. The map MAY be empty.
+  map<string, string> scopes = 4;
+}
+
+message ClientCredentialsOAuthFlow {
+  // The token URL to be used for this flow. This MUST be in the form of a URL.
+  // The OAuth2 standard requires the use of TLS.
+  string token_url = 1;
+  // The URL to be used for obtaining refresh tokens. This MUST be in the
+  // form of a URL. The OAuth2 standard requires the use of TLS.
+  string refresh_url = 2;
+  // The available scopes for the OAuth2 security scheme. A map between the
+  // scope name and a short description for it. The map MAY be empty.
+  map<string, string> scopes = 3;
+}
+
+message ImplicitOAuthFlow {
+  // The authorization URL to be used for this flow. This MUST be in the
+  // form of a URL. The OAuth2 standard requires the use of TLS
+  string authorization_url = 1;
+  // The URL to be used for obtaining refresh tokens. This MUST be in the
+  // form of a URL. The OAuth2 standard requires the use of TLS.
+  string refresh_url = 2;
+  // The available scopes for the OAuth2 security scheme. A map between the
+  // scope name and a short description for it. The map MAY be empty.
+  map<string, string> scopes = 3;
+}
+
+message PasswordOAuthFlow {
+  // The token URL to be used for this flow. This MUST be in the form of a URL.
+  // The OAuth2 standard requires the use of TLS.
+  string token_url = 1;
+  // The URL to be used for obtaining refresh tokens. This MUST be in the
+  // form of a URL. The OAuth2 standard requires the use of TLS.
+  string refresh_url = 2;
+  // The available scopes for the OAuth2 security scheme. A map between the
+  // scope name and a short description for it. The map MAY be empty.
+  map<string, string> scopes = 3;
+}
+
+///////////// Request Messages ///////////
+message SendMessageRequest {
+  Message request = 1 [(google.api.field_behavior) = REQUIRED];
+  SendMessageConfiguration configuration = 2;
+  google.protobuf.Struct metadata = 3;
+}
+
+message GetTaskRequest {
+  // name=tasks/{id}
+  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  int32 history_length = 2;
+}
+
+message CancelTaskRequest {
+  // name=tasks/{id}
+  string name = 1;
+}
+
+message GetTaskPushNotificationConfigRequest {
+  // name=tasks/{id}/pushNotificationConfigs/{push_id}
+  string name = 1;
+}
+
+message DeleteTaskPushNotificationConfigRequest {
+  // name=tasks/{id}/pushNotificationConfigs/{push_id}
+  string name = 1;
+}
+
+message CreateTaskPushNotificationConfigRequest {
+  // The task resource for this config.
+  // Format: tasks/{id}
+  string parent = 1 [
+    (google.api.field_behavior) = REQUIRED
+  ];
+  string config_id = 2 [(google.api.field_behavior) = REQUIRED];
+  TaskPushNotificationConfig config = 3  [
+    (google.api.field_behavior) = REQUIRED
+  ];
+}
+
+message TaskSubscriptionRequest {
+  // name=tasks/{id}
+  string name = 1;
+}
+
+message ListTaskPushNotificationConfigRequest {
+  // parent=tasks/{id}
+  string parent = 1;
+  // For AIP-158 these fields are present. Usually not used/needed.
+  // The maximum number of configurations to return.
+  // If unspecified, all configs will be returned.
+  int32 page_size = 2;
+
+  // A page token received from a previous 
+  // ListTaskPushNotificationConfigRequest call. 
+  // Provide this to retrieve the subsequent page.
+  // When paginating, all other parameters provided to
+  // `ListTaskPushNotificationConfigRequest` must match the call that provided
+  // the page token.
+  string page_token = 3;
+}
+
+message GetAgentCardRequest {
+  // Empty. Added to fix linter violation.
+}
+
+
+//////// Response Messages ///////////
+message SendMessageResponse {
+  oneof payload {
+    Task task = 1;
+    Message msg = 2;
+  }
+}
+
+// The stream response for a message. The stream should be one of the following
+// sequences:
+// If the response is a message, the stream should contain one, and only one,
+// message and then close
+// If the response is a task lifecycle, the first response should be a Task
+// object followed by zero or more TaskStatusUpdateEvents and
+// TaskArtifactUpdateEvents. The stream should complete when the Task
+// if in an interrupted or terminal state. A stream that ends before these
+// conditions are met are
+message StreamResponse {
+  oneof payload {
+    Task task = 1;
+    Message msg = 2;
+    TaskStatusUpdateEvent status_update = 3;
+    TaskArtifactUpdateEvent artifact_update = 4;
+  }
+}
+
+message ListTaskPushNotificationConfigResponse {
+  repeated TaskPushNotificationConfig configs = 1;
+  // A token, which can be sent as `page_token` to retrieve the next page.
+  // If this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+}

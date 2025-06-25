@@ -1,0 +1,4 @@
+releaseType: simple
+handleGHRelease: true
+bumpMinorPreMajor: true
+bumpPatchForMinorPreMajor: true

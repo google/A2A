@@ -10,7 +10,7 @@ jobs:
   linkChecker:
     runs-on: ubuntu-latest
     if: |
-      github.repository == 'google/A2A'
+      github.repository == 'a2aproject/A2A'
 
     steps:
       - uses: actions/checkout@v4

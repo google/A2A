@@ -8,9 +8,6 @@ on:
       - "opened"
       - "reopened"
       - "synchronize"
-  issue_comment:
-    types:
-      - "created"
 
 jobs:
   spelling:
@@ -24,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     # if on repo to avoid failing runs on forks
     if: |
-      github.repository == 'google/A2A' 
+      github.repository == 'a2aproject/A2A' 
         && (contains(github.event_name, 'pull_request') || github.event_name == 'push')
     concurrency:
       group: spelling-${{ github.event.pull_request.number || github.ref }}

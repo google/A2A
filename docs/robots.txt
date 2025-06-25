@@ -1,0 +1,38 @@
+# robots.txt for the A2A open-source project documentation site on Google GitHub Pages
+# This file guides web crawlers on which parts of the site to crawl and index.
+
+# Apply these rules to all web crawlers for maximum discoverability
+User-agent: *
+
+# Allow crawling of all public content by default.
+# We'll explicitly disallow specific paths below that aren't meant for public indexing.
+
+# Disallow common build, temporary, and configuration directories/files
+Disallow: /_site/          # Common Jekyll build directory
+Disallow: /_temp/          # General temporary directory
+Disallow: /build/          # General build output directory
+Disallow: /dist/           # Distribution/output directory
+Disallow: /.cache/         # Caching directory
+Disallow: /.git/           # Git repository files (if somehow exposed by accident)
+Disallow: /.github/        # GitHub Actions workflows and internal configuration files
+Disallow: /node_modules/   # Node.js dependencies (often large and irrelevant for indexing)
+Disallow: /vendor/         # Third-party libraries or assets
+
+# Disallow common configuration files that are not part of the public documentation
+Disallow: /_config.yml     # Jekyll configuration file
+Disallow: /package.json    # Node.js package configuration
+Disallow: /package-lock.json # Node.js package lock file
+Disallow: /yarn.lock       # Yarn package lock file
+
+# Disallow specific file types that are often internal, temporary, or not meant for indexing
+Disallow: /*.bak$          # Backup files
+Disallow: /*.tmp$          # Temporary files
+Disallow: /*.log$          # Log files
+Disallow: /*.swp$          # Vim swap files
+
+# Disallow draft content if your static site generator supports it and these are not published
+Disallow: /_drafts/
+
+# Specify the location of your XML sitemap.
+# This helps search engines discover all the pages on your site.
+Sitemap: https://a2aproject.github.io/A2A/sitemap.xml

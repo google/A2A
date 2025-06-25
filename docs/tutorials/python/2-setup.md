@@ -2,18 +2,18 @@
 
 ## Prerequisites
 
-- Python 3.13 or higher.
+- Python 3.10 or higher.
 - Access to a terminal or command prompt.
 - Git, for cloning the repository.
-- A code editor (e.g., VS Code) is recommended.
+- A code editor (e.g., Visual Studio Code) is recommended.
 
 ## Clone the Repository
 
-If you haven't already, clone the A2A repository and navigate to the Python SDK directory:
+If you haven't already, clone the A2A Samples repository:
 
 ```bash
-git clone https://github.com/google/a2a-python.git -b main --depth 1
-cd a2a-python
+git clone https://github.com/a2aproject/a2a-samples.git -b main --depth 1
+cd a2a-samples
 ```
 
 ## Python Environment & SDK Installation
@@ -38,10 +38,10 @@ We recommend using a virtual environment for Python projects. The A2A Python SDK
         .venv\Scripts\activate
         ```
 
-2. **Install the A2A SDK and its dependencies:**
+2. **Install needed Python dependencies along with the A2A SDK and its dependencies:**
 
     ```bash
-    pip install --upgrade a2a-sdk
+    pip install -r samples/python/requirements.txt
     ```
 
 ## Verify Installation

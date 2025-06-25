@@ -13,18 +13,13 @@ The `RequestContext` provides information about the incoming request, such as th
 
 ## Helloworld Agent Executor
 
-Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAgentExecutor`.
+Let's look at `agent_executor.py`. It defines `HelloWorldAgentExecutor`.
 
 1. **The Agent (`HelloWorldAgent`)**:
     This is a simple helper class that encapsulates the actual "business logic".
 
     ```python { .no-copy }
-    # examples/helloworld/agent_executor.py
-    class HelloWorldAgent:
-        """Hello World Agent."""
-
-        async def invoke(self) -> str:
-            return 'Hello World'
+    --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgent"
     ```
 
     It has a simple `invoke` method that returns the string "Hello World".
@@ -35,19 +30,7 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
     - **`__init__`**:
 
         ```python { .no-copy }
-        # examples/helloworld/agent_executor.py
-        from typing_extensions import override
-
-        from a2a.server.agent_execution import AgentExecutor, RequestContext
-        from a2a.server.events import EventQueue
-        from a2a.utils import new_agent_text_message
-
-
-        class HelloWorldAgentExecutor(AgentExecutor):
-            """Test AgentProxy Implementation."""
-
-            def __init__(self):
-                self.agent = HelloWorldAgent()
+        --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_init"
         ```
 
         It instantiates the `HelloWorldAgent`.
@@ -55,15 +38,7 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
     - **`execute`**:
 
         ```python { .no-copy }
-        # examples/helloworld/agent_executor.py
-            @override
-            async def execute(
-                self,
-                context: RequestContext,
-                event_queue: EventQueue,
-            ) -> None:
-                result = await self.agent.invoke()
-                event_queue.enqueue_event(new_agent_text_message(result))
+        --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_execute"
         ```
 
         When a `message/send` or `message/stream` request comes in (both are handled by `execute` in this simplified executor):
@@ -76,12 +51,7 @@ Let's look at `examples/helloworld/agent_executor.py`. It defines `HelloWorldAge
         The Helloworld example's `cancel` method simply raises an exception, indicating that cancellation is not supported for this basic agent.
 
         ```python { .no-copy }
-        # examples/helloworld/agent_executor.py
-            @override
-            async def cancel(
-                self, context: RequestContext, event_queue: EventQueue
-            ) -> None:
-                raise Exception('cancel not supported')
+        --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_cancel"
         ```
 
 The `AgentExecutor` acts as the bridge between the A2A protocol (managed by the request handler and server application) and your agent's specific logic. It receives context about the request and uses an event queue to communicate results or updates back.

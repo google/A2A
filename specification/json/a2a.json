@@ -60,6 +60,12 @@
                 },
                 {
                     "$ref": "#/definitions/TaskResubscriptionRequest"
+                },
+                {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigRequest"
+                },
+                {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigRequest"
                 }
             ],
             "description": "A2A supported request types"
@@ -99,6 +105,13 @@
         "AgentCapabilities": {
             "description": "Defines optional capabilities supported by an agent.",
             "properties": {
+                "extensions": {
+                    "description": "extensions supported by this agent.",
+                    "items": {
+                        "$ref": "#/definitions/AgentExtension"
+                    },
+                    "type": "array"
+                },
                 "pushNotifications": {
                     "description": "true if the agent can notify updates to client.",
                     "type": "boolean"
@@ -117,19 +130,26 @@
         "AgentCard": {
             "description": "An AgentCard conveys key information:\n- Overall details (version, name, description, uses)\n- Skills: A set of capabilities the agent can perform\n- Default modalities/content types supported by the agent.\n- Authentication requirements",
             "properties": {
+                "additionalInterfaces": {
+                    "description": "Announcement of additional supported transports. Client can use any of\nthe supported transports.",
+                    "items": {
+                        "$ref": "#/definitions/AgentInterface"
+                    },
+                    "type": "array"
+                },
                 "capabilities": {
                     "$ref": "#/definitions/AgentCapabilities",
                     "description": "Optional capabilities supported by the agent."
                 },
                 "defaultInputModes": {
-                    "description": "The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.\nSupported mime types for input.",
+                    "description": "The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.\nSupported media types for input.",
                     "items": {
                         "type": "string"
                     },
                     "type": "array"
                 },
                 "defaultOutputModes": {
-                    "description": "Supported mime types for output.",
+                    "description": "Supported media types for output.",
                     "items": {
                         "type": "string"
                     },
@@ -143,8 +163,16 @@
                     "description": "A URL to documentation for the agent.",
                     "type": "string"
                 },
+                "iconUrl": {
+                    "description": "A URL to an icon for the agent.",
+                    "type": "string"
+                },
                 "name": {
                     "description": "Human readable name of the agent.",
+                    "type": "string"
+                },
+                "preferredTransport": {
+                    "description": "The transport of the preferred endpoint. If empty, defaults to JSONRPC.",
                     "type": "string"
                 },
                 "provider": {
@@ -183,7 +211,7 @@
                     "type": "boolean"
                 },
                 "url": {
-                    "description": "A URL to the address the agent is hosted at.",
+                    "description": "A URL to the address the agent is hosted at. This represents the\npreferred endpoint as declared by the agent.",
                     "type": "string"
                 },
                 "version": {
@@ -203,8 +231,64 @@
             ],
             "type": "object"
         },
+        "AgentExtension": {
+            "description": "A declaration of an extension supported by an Agent.",
+            "examples": [
+                {
+                    "description": "Google OAuth 2.0 authentication",
+                    "required": false,
+                    "uri": "https://developers.google.com/identity/protocols/oauth2"
+                }
+            ],
+            "properties": {
+                "description": {
+                    "description": "A description of how this agent uses this extension.",
+                    "type": "string"
+                },
+                "params": {
+                    "additionalProperties": {},
+                    "description": "Optional configuration for the extension.",
+                    "type": "object"
+                },
+                "required": {
+                    "description": "Whether the client must follow specific requirements of the extension.",
+                    "type": "boolean"
+                },
+                "uri": {
+                    "description": "The URI of the extension.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "uri"
+            ],
+            "type": "object"
+        },
+        "AgentInterface": {
+            "description": "AgentInterface provides a declaration of a combination of the\ntarget url and the supported transport to interact with the agent.",
+            "properties": {
+                "transport": {
+                    "description": "The transport supported this url. This is an open form string, to be\neasily extended for many transport protocols. The core ones officially\nsupported are JSONRPC, GRPC and HTTP+JSON.",
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "transport",
+                "url"
+            ],
+            "type": "object"
+        },
         "AgentProvider": {
             "description": "Represents the service provider of an agent.",
+            "examples": [
+                {
+                    "organization": "Google",
+                    "url": "https://ai.google.dev"
+                }
+            ],
             "properties": {
                 "organization": {
                     "description": "Agent provider's organization name.",
@@ -225,7 +309,7 @@
             "description": "Represents a unit of capability that an agent can perform.",
             "properties": {
                 "description": {
-                    "description": "Description of the skill - will be used by the client or a human \nas a hint to understand what the skill does.",
+                    "description": "Description of the skill - will be used by the client or a human\nas a hint to understand what the skill does.",
                     "type": "string"
                 },
                 "examples": {
@@ -240,7 +324,7 @@
                     "type": "string"
                 },
                 "inputModes": {
-                    "description": "The set of interaction modes that the skill supports\n(if different than the default).\nSupported mime types for input.",
+                    "description": "The set of interaction modes that the skill supports\n(if different than the default).\nSupported media types for input.",
                     "items": {
                         "type": "string"
                     },
@@ -251,7 +335,7 @@
                     "type": "string"
                 },
                 "outputModes": {
-                    "description": "Supported mime types for output.",
+                    "description": "Supported media types for output.",
                     "items": {
                         "type": "string"
                     },
@@ -274,7 +358,7 @@
             "type": "object"
         },
         "Artifact": {
-            "description": "Represents an artifact generated for a task task.",
+            "description": "Represents an artifact generated for a task.",
             "properties": {
                 "artifactId": {
                     "description": "Unique identifier for the artifact.",
@@ -283,6 +367,13 @@
                 "description": {
                     "description": "Optional description for the artifact.",
                     "type": "string"
+                },
+                "extensions": {
+                    "description": "The URIs of extensions that are present or contributed to this Artifact.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "metadata": {
                     "additionalProperties": {},
@@ -311,22 +402,22 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "authorizationUrl": {
-                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS",
+                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS",
                     "type": "string"
                 },
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
                     "type": "object"
                 },
                 "tokenUrl": {
-                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard \nrequires the use of TLS.",
+                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
                     "type": "string"
                 }
             },
@@ -341,7 +432,7 @@
             "description": "JSON-RPC request model for the 'tasks/cancel' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -363,6 +454,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -384,10 +476,11 @@
             "description": "JSON-RPC success response model for the 'tasks/cancel' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -401,6 +494,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -410,18 +504,18 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
                     "type": "object"
                 },
                 "tokenUrl": {
-                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard \nrequires the use of TLS.",
+                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
                     "type": "string"
                 }
             },
@@ -476,6 +570,99 @@
             "required": [
                 "data",
                 "kind"
+            ],
+            "type": "object"
+        },
+        "DeleteTaskPushNotificationConfigParams": {
+            "description": "Parameters for removing pushNotificationConfiguration associated with a Task",
+            "properties": {
+                "id": {
+                    "description": "Task id.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "type": "object"
+                },
+                "pushNotificationConfigId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "pushNotificationConfigId"
+            ],
+            "type": "object"
+        },
+        "DeleteTaskPushNotificationConfigRequest": {
+            "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/delete' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "method": {
+                    "const": "tasks/pushNotificationConfig/delete",
+                    "description": "A String containing the name of the method to be invoked.",
+                    "type": "string"
+                },
+                "params": {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigParams",
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "method",
+                "params"
+            ],
+            "type": "object"
+        },
+        "DeleteTaskPushNotificationConfigResponse": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/JSONRPCErrorResponse"
+                },
+                {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigSuccessResponse"
+                }
+            ],
+            "description": "JSON-RPC response for the 'tasks/pushNotificationConfig/delete' method."
+        },
+        "DeleteTaskPushNotificationConfigSuccessResponse": {
+            "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/delete' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer",
+                        "null"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "result": {
+                    "description": "The result object on success.",
+                    "type": "null"
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "result"
             ],
             "type": "object"
         },
@@ -566,11 +753,31 @@
             ],
             "type": "object"
         },
+        "GetTaskPushNotificationConfigParams": {
+            "description": "Parameters for fetching a pushNotificationConfiguration associated with a Task",
+            "properties": {
+                "id": {
+                    "description": "Task id.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "type": "object"
+                },
+                "pushNotificationConfigId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "type": "object"
+        },
         "GetTaskPushNotificationConfigRequest": {
             "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -587,11 +794,19 @@
                     "type": "string"
                 },
                 "params": {
-                    "$ref": "#/definitions/TaskIdParams",
-                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/TaskIdParams"
+                        },
+                        {
+                            "$ref": "#/definitions/GetTaskPushNotificationConfigParams"
+                        }
+                    ],
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method.\nTaskIdParams type is deprecated for this method"
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -613,10 +828,11 @@
             "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -630,6 +846,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -639,7 +856,7 @@
             "description": "JSON-RPC request model for the 'tasks/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -661,6 +878,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -676,16 +894,17 @@
                     "$ref": "#/definitions/GetTaskSuccessResponse"
                 }
             ],
-            "description": "JSON-RPC success response for the 'tasks/get' method."
+            "description": "JSON-RPC response for the 'tasks/get' method."
         },
         "GetTaskSuccessResponse": {
             "description": "JSON-RPC success response for the 'tasks/get' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -699,6 +918,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -708,7 +928,7 @@
             "description": "HTTP Authentication security scheme.",
             "properties": {
                 "bearerFormat": {
-                    "description": "A hint to the client to identify how the bearer token is formatted. Bearer tokens are usually \ngenerated by an authorization server, so this information is primarily for documentation \npurposes.",
+                    "description": "A hint to the client to identify how the bearer token is formatted. Bearer tokens are usually\ngenerated by an authorization server, so this information is primarily for documentation\npurposes.",
                     "type": "string"
                 },
                 "description": {
@@ -734,18 +954,18 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "authorizationUrl": {
-                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS",
+                    "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS",
                     "type": "string"
                 },
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
                     "type": "object"
                 }
             },
@@ -935,10 +1155,11 @@
                     ]
                 },
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -949,6 +1170,7 @@
             },
             "required": [
                 "error",
+                "id",
                 "jsonrpc"
             ],
             "type": "object"
@@ -957,10 +1179,11 @@
             "description": "Base interface for any JSON-RPC 2.0 request or response.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -978,10 +1201,11 @@
             "description": "Represents a JSON-RPC 2.0 Request object.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1031,14 +1255,15 @@
             ],
             "description": "Represents a JSON-RPC 2.0 Response object."
         },
-        "JSONRPCResult": {
-            "description": "Represents a JSON-RPC 2.0 Result object.",
+        "JSONRPCSuccessResponse": {
+            "description": "Represents a JSON-RPC 2.0 Success Response object.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1051,6 +1276,99 @@
                 }
             },
             "required": [
+                "id",
+                "jsonrpc",
+                "result"
+            ],
+            "type": "object"
+        },
+        "ListTaskPushNotificationConfigParams": {
+            "description": "Parameters for getting list of pushNotificationConfigurations associated with a Task",
+            "properties": {
+                "id": {
+                    "description": "Task id.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "type": "object"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "type": "object"
+        },
+        "ListTaskPushNotificationConfigRequest": {
+            "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/list' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "method": {
+                    "const": "tasks/pushNotificationConfig/list",
+                    "description": "A String containing the name of the method to be invoked.",
+                    "type": "string"
+                },
+                "params": {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigParams",
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "method",
+                "params"
+            ],
+            "type": "object"
+        },
+        "ListTaskPushNotificationConfigResponse": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/JSONRPCErrorResponse"
+                },
+                {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigSuccessResponse"
+                }
+            ],
+            "description": "JSON-RPC response for the 'tasks/pushNotificationConfig/list' method."
+        },
+        "ListTaskPushNotificationConfigSuccessResponse": {
+            "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/list' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer",
+                        "null"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "result": {
+                    "description": "The result object on success.",
+                    "items": {
+                        "$ref": "#/definitions/TaskPushNotificationConfig"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1062,6 +1380,13 @@
                 "contextId": {
                     "description": "The context the message is associated with",
                     "type": "string"
+                },
+                "extensions": {
+                    "description": "The URIs of extensions that are present or contributed to this Message.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
                 },
                 "kind": {
                     "const": "message",
@@ -1280,18 +1605,18 @@
             "description": "Configuration details for a supported OAuth Flow",
             "properties": {
                 "refreshUrl": {
-                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2 \nstandard requires the use of TLS.",
+                    "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
                     "type": "string"
                 },
                 "scopes": {
                     "additionalProperties": {
                         "type": "string"
                     },
-                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short \ndescription for it. The map MAY be empty.",
+                    "description": "The available scopes for the OAuth2 security scheme. A map between the scope name and a short\ndescription for it. The map MAY be empty.",
                     "type": "object"
                 },
                 "tokenUrl": {
-                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard \nrequires the use of TLS.",
+                    "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
                     "type": "string"
                 }
             },
@@ -1326,6 +1651,10 @@
             "properties": {
                 "authentication": {
                     "$ref": "#/definitions/PushNotificationAuthenticationInfo"
+                },
+                "id": {
+                    "description": "Push Notification ID - created by server to support multiple callbacks",
+                    "type": "string"
                 },
                 "token": {
                     "description": "Token unique to this task/session.",
@@ -1395,7 +1724,7 @@
             "description": "JSON-RPC request model for the 'message/send' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1417,6 +1746,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -1438,10 +1768,11 @@
             "description": "JSON-RPC success response model for the 'message/send' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1462,6 +1793,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1471,7 +1803,7 @@
             "description": "JSON-RPC request model for the 'message/stream' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1493,6 +1825,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -1514,10 +1847,11 @@
             "description": "JSON-RPC success response model for the 'message/stream' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1544,6 +1878,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1553,7 +1888,7 @@
             "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/set' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1575,6 +1910,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -1596,10 +1932,11 @@
             "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/set' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
-                        "integer"
+                        "integer",
+                        "null"
                     ]
                 },
                 "jsonrpc": {
@@ -1613,6 +1950,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "result"
             ],
@@ -1665,7 +2003,7 @@
             "type": "object"
         },
         "TaskArtifactUpdateEvent": {
-            "description": "sent by server during sendStream or subscribe requests",
+            "description": "Sent by server during sendStream or subscribe requests",
             "properties": {
                 "append": {
                     "description": "Indicates if this artifact appends to a previous one",
@@ -1812,7 +2150,7 @@
             "description": "JSON-RPC request model for the 'tasks/resubscribe' method.",
             "properties": {
                 "id": {
-                    "description": "An identifier established by the Client that MUST contain a String, Number. \nNumbers SHOULD NOT contain fractional parts.",
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
                     "type": [
                         "string",
                         "integer"
@@ -1834,6 +2172,7 @@
                 }
             },
             "required": [
+                "id",
                 "jsonrpc",
                 "method",
                 "params"
@@ -1876,7 +2215,7 @@
             "type": "object"
         },
         "TaskStatusUpdateEvent": {
-            "description": "sent by server during sendStream or subscribe requests",
+            "description": "Sent by server during sendStream or subscribe requests",
             "properties": {
                 "contextId": {
                     "description": "The context the task is associated with",

@@ -16,12 +16,16 @@ The **Agent2Agent (A2A) Protocol** is an open standard designed to enable seamle
 - [Blog Post: Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
 - [Watch the A2A Demo Video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4)
 
-![A2A Main Graphic](assets/a2a-main.png){width="50%"}
-{style="text-align: center; margin-bottom:1em; margin-top:2em;"}
+### Intro to A2A Video
+
+<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7336822404003807232?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="A2A Protocol Intro Video"></iframe>
 
 ---
 
 ### Why A2A Matters
+
+![A2A Main Graphic](assets/a2a-main.png){width="50%"}
+{style="text-align: center; margin-bottom:1em; margin-top:2em;"}
 
 <div class="grid cards" markdown>
 
@@ -83,6 +87,6 @@ A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are
 
     See A2A in action with sample clients, servers, and agent framework integrations.
 
-    [:fontawesome-brands-github: GitHub Samples](https://github.com/google/A2A/tree/main/samples)
+    [:fontawesome-brands-github: GitHub Samples](https://github.com/a2aproject/a2a-samples)
 
 </div>
