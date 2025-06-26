@@ -565,6 +565,10 @@
                     "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
                     "type": "object"
+                },
+                "name": {
+                    "description": "Optional part name",
+                    "type": "string"
                 }
             },
             "required": [
@@ -703,6 +707,10 @@
                     "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
                     "type": "object"
+                },
+                "name": {
+                    "description": "Optional part name",
+                    "type": "string"
                 }
             },
             "required": [
@@ -1597,6 +1605,10 @@
                     "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
                     "type": "object"
+                },
+                "name": {
+                    "description": "Optional part name",
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -2265,6 +2277,10 @@
                     "additionalProperties": {},
                     "description": "Optional metadata associated with the part.",
                     "type": "object"
+                },
+                "name": {
+                    "description": "Optional part name",
+                    "type": "string"
                 },
                 "text": {
                     "description": "Text content",

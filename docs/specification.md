@@ -408,6 +408,7 @@ For conveying plain textual content.
 | :--------- | :-------------------- | :------- | :-------------------------------------------- |
 | `kind`     | `"text"` (literal)    | Yes      | Identifies this part as textual content.      |
 | `text`     | `string`              | Yes      | The textual content of the part.              |
+| `name`     | `string`              | No       | Optional name for identification              |
 | `metadata` | `Record<string, any>` | No       | Optional metadata specific to this text part. |
 
 #### 6.5.2. `FilePart` Object
@@ -422,6 +423,7 @@ For conveying file-based content.
 | :--------- | :-------------------- | :---------- | :-------------------------------------------- |
 | `kind`     | `"file"` (literal)    | Yes         | Identifies this part as file content.         |
 | `file`     | `FileWithBytes` \| `FileWithUri` | Yes  | Contains the file details and data/reference. |
+| `name`     | `string`              | No          | Optional name for identification              |
 | `metadata` | `Record<string, any>` | No          | Optional metadata specific to this file part. |
 
 #### 6.5.3. `DataPart` Object
@@ -436,6 +438,7 @@ For conveying structured JSON data. Useful for forms, parameters, or any machine
 | :--------- | :-------------------- | :------- | :-------------------------------------------------------------------------- |
 | `kind`     | `"data"` (literal)    | Yes      | Identifies this part as structured data.                                    |
 | `data`     | `Record<string, any>` | Yes      | The structured JSON data payload (an object or an array).                   |
+| `name`     | `string`              | No       | Optional name for identification                                            |
 | `metadata` | `Record<string, any>` | No       | Optional metadata specific to this data part (e.g., reference to a schema). |
 
 ### 6.6.1 `FileWithBytes` Object
