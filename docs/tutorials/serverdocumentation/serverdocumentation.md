@@ -328,13 +328,6 @@ components:
 
   2. In this example for the sake of simplicity, we didn't specify any scope for the security schemes. You can specify according to your needs. For example, you can specify scopes for read and write access to the agent, or any other scopes that are relevant to your implementation.
 
-    ```yaml
-    security:
-    - OAuth2:
-        - read:data
-        - write:data
-    ```
-
   3. Clients can still inspect the authentication.schemes in the AgentCard payload to determine which schemes apply dynamically for the agents methods. Remember that this OpenAPI is specific to the agent card endpoint and does not cover the methods of the agent.
 
 This OpenAPI document provides a structured way to describe the agent card endpoint, including its purpose, responses, security requirements, and the structure of the AgentCard itself. It serves as a useful reference for clients interacting with the A2A protocol. But, in other words, this endpoint is a simple GET request that returns the agent card in JSON format, and it is not required to be documented with OpenAPI. The agent card can be distributed or registered in a registry or in the client host catalog.
