@@ -668,7 +668,7 @@
           },
           "token": {
             "type": "string",
-            "description": "Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an X-A2A-Notification-Token header).",
+            "description": "Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in X-A2A-Notification-Token header).",
             "nullable": true
           },
           "authentication": {

@@ -17,6 +17,7 @@ The A2A protocol is designed to facilitate communication between agents in a sta
 By using OpenRPC and OpenAPI, you can create a clear and structured documentation of your A2A implementation, making it easier for others to understand and integrate with your agent.
 
 ## Introduction
+
 The [Agent2Agent (A2A) Protocol Specification](https://google.github.io/A2A/specification) is a set of standards that define how agents can communicate with each other in a structured and interoperable way. It allows agents to share information, request actions, and respond to queries in a consistent manner.
 The protocol is designed to be flexible and extensible, enabling developers to create agents that can work together seamlessly.
 The protocol uses HTTPS as the transport and JSON-RPC-2.0 as the message payload format. The payloads format are specified in the [protocol specification](https://google.github.io/A2A/specification). It is up to the implementer to document some details such as which authentication and authorization mechanisms are used, which interaction flows (send, sendSubscribe, notification,...) are available, which part types the agent supports or returns and other details.
@@ -35,16 +36,20 @@ Different parts of the protocol can be documented using different standard docum
 8. [**tasks/resubscribe**](https://google.github.io/A2A/specification/#77-tasksresubscribe) - Allows a client to reconnect to an SSE stream for an ongoing task after a previous connection (from tasks/sendSubscribe or an earlier tasks/resubscribe) was interrupted. Requires the server to have AgentCard.capabilities.streaming: true.
 
 ### Standards used in this tutorial
+
 - **[OpenRPC](https://open-rpc.org/)**: A specification for describing JSON-RPC APIs. It provides a way to document the methods, parameters, and responses of your A2A server.
 - **[OpenAPI](https://www.openapis.org/)**: A specification for describing RESTful APIs. It is used to document the HTTP endpoints of your A2A server, including authentication and authorization mechanisms.
 
 ## Getting Started
+
 ### Well-Known URI
+
 This is a recommended approach for public agents or agents intended for broad discoverability within a specific domain.
 The specification determines the standard Path: https://{agent-server-domain}/.well-known/agent.json, following the principles of the [Well-Known URI](https://www.ietf.org/rfc/rfc8615.txt) specification.
 This is a simple GET request that returns the agent card in JSON format.
 Because the agent card dynamic nature, sometimes it is worth documenting it with OpenAPI, so that the client can discover the agent card and its capabilities but it is not required (one can simple publish the agent domain).
 Here is a sample OpenAPI document that describes the agent card endpoint:
+
 ```yaml
 openapi: 3.1.0
 info:
@@ -316,26 +321,30 @@ components:
             Overrides defaultOutputModes for this specific skill. Produced MIME types.
           example: ["text/plain", "application/json"]
 ```
+
 - Notes:
 
   1. The security field under paths allows the endpoint to be protected by one or more specified security schemes. In real-world scenarios, it's best practice to select a minimal set of authentication mechanisms—typically one—that align with your system's security and interoperability requirements. Supporting too many schemes simultaneously can unnecessarily increase the attack surface, add operational complexity, and create inconsistent access control behavior across clients.
 
   2. In this example for the sake of simplicity, we didn't specify any scope for the security schemes. You can specify according to your needs. For example, you can specify scopes for read and write access to the agent, or any other scopes that are relevant to your implementation.
-  ```
-  security:
-  - OAuth2:
-      - read:data
-      - write:data
-  ```
+
+    ```yaml
+    security:
+    - OAuth2:
+        - read:data
+        - write:data
+    ```
 
   3. Clients can still inspect the authentication.schemes in the AgentCard payload to determine which schemes apply dynamically for the agents methods. Remember that this OpenAPI is specific to the agent card endpoint and does not cover the methods of the agent.
 
 This OpenAPI document provides a structured way to describe the agent card endpoint, including its purpose, responses, security requirements, and the structure of the AgentCard itself. It serves as a useful reference for clients interacting with the A2A protocol. But, in other words, this endpoint is a simple GET request that returns the agent card in JSON format, and it is not required to be documented with OpenAPI. The agent card can be distributed or registered in a registry or in the client host catalog.
 
 ### A2A Client/Server Interaction Methods
+
 All agent-to-agent (A2A) client/server interaction methods are documented using OpenRPC. OpenRPC is a specification for describing JSON-RPC APIs, which is the message format used in the A2A protocol.
 Note that the security aspects of the A2A protocol are not covered by OpenRPC. The OpenRPC specification focuses on the methods, parameters, and responses of the A2A server. The security aspects, such as authentication and authorization, are typically documented in the agent card.
 Also note that this OpenRPC specification  is not exhaustive but tries to cover the most common use cases of the A2A protocol. A real agent service does not have to implement all of these methods but it needs to implements methods according to the AgentCapabilities specified in its agent card.
+
 ```json
 {
   "openrpc": "1.3.2",
@@ -1009,7 +1018,7 @@ Also note that this OpenRPC specification  is not exhaustive but tries to cover 
           },
           "token": {
             "type": "string",
-            "description": "Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an X-A2A-Notification-Token header).",
+            "description": "Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in X-A2A-Notification-Token header).",
             "nullable": true
           },
           "authentication": {
@@ -1183,4 +1192,4 @@ Also note that this OpenRPC specification  is not exhaustive but tries to cover 
     }
   }
 }
-``` 
+```
