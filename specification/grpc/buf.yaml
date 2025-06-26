@@ -1,12 +1,19 @@
-version: v1
-
-# Google protos dependency for a2.proto
+version: v2
 deps:
-  - buf.build/googleapis/googleapis # Common protos
+  # Common Protobuf types.
+  - buf.build/googleapis/googleapis
 lint:
   use:
-    - STANDARD # Indicates that all the default rules should be used.
-
+    # Indicates that all the default rules should be used.
+    # See https://buf.build/docs/lint/rules for more details.
+    - STANDARD
+  except:
+    - PACKAGE_DIRECTORY_MATCH
+    - RPC_REQUEST_RESPONSE_UNIQUE
+    - RPC_REQUEST_STANDARD_NAME
+    - RPC_RESPONSE_STANDARD_NAME
 breaking:
   use:
-    - FILE # Indicates that breaking change detection should be done on a file level.
+    # Indicates that breaking change detection should be done on a file level.
+    # See https://buf.build/docs/breaking/rules for more details.
+    - FILE
