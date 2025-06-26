@@ -1376,7 +1376,7 @@
 <li>A stateless <code>Message</code>.</li>
 <li>A stateful <code>Task</code> and zero or more <code>TaskStatusUpdateEvent</code> or <code>TaskArtifactUpdateEvent</code>.</li>
 </ul>
-<p>If the response is a <code>Message</code>, the interaction is completed. On the other hand, A <code>Task</code> will keep getting updated until it is in a interrupted state ()<code>input-required</code> or <code>auth-required</code>) or a terminal state (<code>completed</code>, <code>cancelled</code>, <code>rejected</code> or <code>failed</code>).</p>
+<p>If the response is a <code>Message</code>, the interaction is completed. On the other hand, A <code>Task</code> will keep getting updated until it is in a interrupted state (<code>input-required</code> or <code>auth-required</code>) or a terminal state (<code>completed</code>, <code>cancelled</code>, <code>rejected</code> or <code>failed</code>).</p>
 <h2 id="context">Context<a class="headerlink" href="#context" title="Permanent link">&para;</a></h2>
 <p>A contextId logically composes many Tasks and independent Messages. Agent implementor can manage the llm context based on these interactions, utilizing the <code>contextId</code>.</p>
 <p>For the first time a message is sent, agent replies back with a contextId. If the agent responded with a task, then it will also have a taskId. Clients can send subsequent messages and attach the same contextID to indicate to the agent that they are continuing their previous interaction within the same context. Client also optionally attach the taskID to indicate that the message is in continuation of that specific task.</p>

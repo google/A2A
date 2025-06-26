@@ -2,86 +2,86 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/community/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/partners/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/specification/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/sdk/python/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/a2a-and-mcp/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/agent-discovery/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/enterprise-ready/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/extensions/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/key-concepts/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/life-of-a-task/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/streaming-and-async/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/topics/what-is-a2a/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/1-introduction/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/2-setup/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/3-agent-skills-and-card/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/4-agent-executor/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/5-start-server/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/6-interact-with-server/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/7-streaming-and-multiturn/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
     <url>
          <loc>https://a2aproject.github.io/A2A/dev/tutorials/python/8-next-steps/</loc>
-         <lastmod>2025-06-24</lastmod>
+         <lastmod>2025-06-26</lastmod>
     </url>
 </urlset>
