@@ -26,6 +26,7 @@ EBFF
 EUR
 EUg
 FBT
+FHIR
 GAPI
 GAPIC
 GBP
@@ -55,6 +56,7 @@ RPCs
 RUF
 SLAs
 SLF
+TJS
 TMDB
 URLTo
 Upserting
@@ -142,6 +144,7 @@ iss
 jherr
 jti
 jwks
+konami
 kty
 langgraph
 linenums
@@ -154,6 +157,7 @@ marvin
 mcp
 mesop
 mindsdb
+motherlode
 mozilla
 msword
 multiagent
@@ -166,6 +170,7 @@ objc
 octicons
 ollama
 oneof
+pqr
 prefecthq
 protoc
 protolint

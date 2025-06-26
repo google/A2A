@@ -108,6 +108,6 @@ A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are
 
     See A2A in action with sample clients, servers, and agent framework integrations.
 
-    [:fontawesome-brands-github: GitHub Samples](https://github.com/google-a2a/a2a-samples)
+    [:fontawesome-brands-github: GitHub Samples](https://github.com/a2aproject/a2a-samples)
 
 </div>

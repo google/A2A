@@ -5,6 +5,7 @@
 // --8<-- [start:AgentProvider]
 /**
  * Represents the service provider of an agent.
+ * @TJS-examples [{ "organization": "Google", "url": "https://ai.google.dev" }]
  */
 export interface AgentProvider {
   /** Agent provider's organization name. */
@@ -33,6 +34,7 @@ export interface AgentCapabilities {
 // --8<-- [start:AgentExtension]
 /**
  * A declaration of an extension supported by an Agent.
+ * @TJS-examples [{"uri": "https://developers.google.com/identity/protocols/oauth2", "description": "Google OAuth 2.0 authentication", "required": false}]
  */
 export interface AgentExtension {
   /** The URI of the extension. */
@@ -82,6 +84,22 @@ export interface AgentSkill {
 }
 // --8<-- [end:AgentSkill]
 
+// --8<-- [start:AgentInterface]
+/**
+ * AgentInterface provides a declaration of a combination of the
+ * target url and the supported transport to interact with the agent.
+ */
+export interface AgentInterface {
+  url: string; // the url this interface is found at
+  /**
+   * The transport supported this url. This is an open form string, to be
+   * easily extended for many transport protocols. The core ones officially
+   * supported are JSONRPC, GRPC and HTTP+JSON.
+   */
+  transport: string;
+}
+// --8<-- [end:AgentInterface]
+
 // --8<-- [start:AgentCard]
 /**
  * An AgentCard conveys key information:
@@ -102,8 +120,20 @@ export interface AgentCard {
    * @example "Agent that helps users with recipes and cooking."
    */
   description: string;
-  /** A URL to the address the agent is hosted at. */
+  /**
+   * A URL to the address the agent is hosted at. This represents the
+   * preferred endpoint as declared by the agent.
+   */
   url: string;
+  /**
+   * The transport of the preferred endpoint. If empty, defaults to JSONRPC.
+   */
+  preferredTransport?: string;
+  /**
+   * Announcement of additional supported transports. Client can use any of
+   * the supported transports.
+   */
+  additionalInterfaces?: AgentInterface[];
   /** A URL to an icon for the agent. */
   iconUrl?: string;
   /** The service provider of the agent */
@@ -232,6 +262,25 @@ export interface TaskQueryParams extends TaskIdParams {
   historyLength?: number;
 }
 // --8<-- [end:TaskQueryParams]
+
+// --8<-- [start:GetTaskPushNotificationConfigParams]
+/** Parameters for fetching a pushNotificationConfiguration associated with a Task */
+export interface GetTaskPushNotificationConfigParams extends TaskIdParams {
+  pushNotificationConfigId?: string;
+}
+// --8<-- [end:GetTaskPushNotificationConfigParams]
+
+// --8<-- [start:ListTaskPushNotificationConfigParams]
+/** Parameters for getting list of pushNotificationConfigurations associated with a Task */
+export interface ListTaskPushNotificationConfigParams extends TaskIdParams {}
+// --8<-- [end:ListTaskPushNotificationConfigParams]
+
+// --8<-- [start:DeleteTaskPushNotificationConfigParams]
+/** Parameters for removing pushNotificationConfiguration associated with a Task */
+export interface DeleteTaskPushNotificationConfigParams extends TaskIdParams {
+  pushNotificationConfigId: string;
+}
+// --8<-- [end:DeleteTaskPushNotificationConfigParams]
 
 // --8<-- [start:MessageSendConfiguration]
 /**Configuration for the send message request. */
@@ -869,8 +918,10 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
   id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/get";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
-  params: TaskIdParams;
+  /** A Structured value that holds the parameter values to be used during the invocation of the method.
+   * TaskIdParams type is deprecated for this method
+   */
+  params: GetTaskPushNotificationConfigParams | TaskIdParams;
 }
 // --8<-- [end:GetTaskPushNotificationConfigRequest]
 
@@ -907,6 +958,73 @@ export interface TaskResubscriptionRequest extends JSONRPCRequest {
 }
 // --8<-- [end:TaskResubscriptionRequest]
 
+// --8<-- [start:ListTaskPushNotificationConfigRequest]
+/**
+ * JSON-RPC request model for the 'tasks/pushNotificationConfig/list' method.
+ */
+export interface ListTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  id: number | string;
+  /** A String containing the name of the method to be invoked. */
+  method: "tasks/pushNotificationConfig/list";
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  params: ListTaskPushNotificationConfigParams;
+}
+// --8<-- [end:ListTaskPushNotificationConfigRequest]
+
+// --8<-- [start:ListTaskPushNotificationConfigSuccessResponse]
+/**
+ * JSON-RPC success response model for the 'tasks/pushNotificationConfig/list' method.
+ */
+export interface ListTaskPushNotificationConfigSuccessResponse
+  extends JSONRPCSuccessResponse {
+  /** The result object on success. */
+  result: TaskPushNotificationConfig[];
+}
+// --8<-- [end:ListTaskPushNotificationConfigSuccessResponse]
+
+// --8<-- [start:ListTaskPushNotificationConfigResponse]
+/**
+ * JSON-RPC response for the 'tasks/pushNotificationConfig/list' method.
+ */
+export type ListTaskPushNotificationConfigResponse =
+  | ListTaskPushNotificationConfigSuccessResponse
+  | JSONRPCErrorResponse;
+// --8<-- [end:ListTaskPushNotificationConfigResponse]
+
+// --8<-- [start:DeleteTaskPushNotificationConfigRequest]
+/**
+ * JSON-RPC request model for the 'tasks/pushNotificationConfig/delete' method.
+ */
+export interface DeleteTaskPushNotificationConfigRequest
+  extends JSONRPCRequest {
+  id: number | string;
+  /** A String containing the name of the method to be invoked. */
+  method: "tasks/pushNotificationConfig/delete";
+  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  params: DeleteTaskPushNotificationConfigParams;
+}
+// --8<-- [end:DeleteTaskPushNotificationConfigRequest]
+
+// --8<-- [start:DeleteTaskPushNotificationConfigSuccessResponse]
+/**
+ * JSON-RPC success response model for the 'tasks/pushNotificationConfig/delete' method.
+ */
+export interface DeleteTaskPushNotificationConfigSuccessResponse
+  extends JSONRPCSuccessResponse {
+  /** The result object on success. */
+  result: null;
+}
+// --8<-- [end:DeleteTaskPushNotificationConfigSuccessResponse]
+
+// --8<-- [start:DeleteTaskPushNotificationConfigResponse]
+/**
+ * JSON-RPC response for the 'tasks/pushNotificationConfig/delete' method.
+ */
+export type DeleteTaskPushNotificationConfigResponse =
+  | DeleteTaskPushNotificationConfigSuccessResponse
+  | JSONRPCErrorResponse;
+// --8<-- [end:DeleteTaskPushNotificationConfigResponse]
+
 // --8<-- [start:A2ARequest]
 /**
  * A2A supported request types
@@ -918,7 +1036,9 @@ export type A2ARequest =
   | CancelTaskRequest
   | SetTaskPushNotificationConfigRequest
   | GetTaskPushNotificationConfigRequest
-  | TaskResubscriptionRequest;
+  | TaskResubscriptionRequest
+  | ListTaskPushNotificationConfigRequest
+  | DeleteTaskPushNotificationConfigRequest;
 // --8<-- [end:A2ARequest]
 
 // --8<-- [start:JSONParseError]

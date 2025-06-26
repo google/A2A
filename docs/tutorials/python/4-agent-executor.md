@@ -19,7 +19,7 @@ Let's look at `agent_executor.py`. It defines `HelloWorldAgentExecutor`.
     This is a simple helper class that encapsulates the actual "business logic".
 
     ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgent"
+    --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgent"
     ```
 
     It has a simple `invoke` method that returns the string "Hello World".
@@ -30,7 +30,7 @@ Let's look at `agent_executor.py`. It defines `HelloWorldAgentExecutor`.
     - **`__init__`**:
 
         ```python { .no-copy }
-        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_init"
+        --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_init"
         ```
 
         It instantiates the `HelloWorldAgent`.
@@ -38,7 +38,7 @@ Let's look at `agent_executor.py`. It defines `HelloWorldAgentExecutor`.
     - **`execute`**:
 
         ```python { .no-copy }
-        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_execute"
+        --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_execute"
         ```
 
         When a `message/send` or `message/stream` request comes in (both are handled by `execute` in this simplified executor):
@@ -51,7 +51,7 @@ Let's look at `agent_executor.py`. It defines `HelloWorldAgentExecutor`.
         The Helloworld example's `cancel` method simply raises an exception, indicating that cancellation is not supported for this basic agent.
 
         ```python { .no-copy }
-        --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_cancel"
+        --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/agent_executor.py:HelloWorldAgentExecutor_cancel"
         ```
 
 The `AgentExecutor` acts as the bridge between the A2A protocol (managed by the request handler and server application) and your agent's specific logic. It receives context about the request and uses an event queue to communicate results or updates back.

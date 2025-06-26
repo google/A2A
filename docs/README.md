@@ -2,7 +2,7 @@
 
 ## Published A2A docs
 
-[`https://google-a2a.github.io/A2A`](https://google-a2a.github.io/A2A)
+[`https://a2aproject.github.io/A2A`](https://a2aproject.github.io/A2A)
 
 ## Developing A2A docs
 

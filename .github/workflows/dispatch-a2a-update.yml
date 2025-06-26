@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - "specification/json/a2a.json"
+      - "specification/**/*"
 
 jobs:
   dispatch:
@@ -15,7 +15,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.A2A_BOT_PAT }}
-          repository: google-a2a/a2a-python
+          repository: a2aproject/a2a-python
           event-type: a2a_json_update
           client-payload: |
             {

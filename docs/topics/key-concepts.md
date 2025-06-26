@@ -24,7 +24,8 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
     - When a client sends a message to an agent, the agent might determine that fulfilling the request requires a stateful task to be completed (e.g., "generate a report," "book a flight," "answer a question").
     - Each task has a unique ID defined by the agent and progresses through a defined lifecycle (e.g., `submitted`, `working`, `input-required`, `completed`, `failed`).
     - Tasks are stateful and can involve multiple exchanges (messages) between the client and the server.
-    - See details in the [Protocol Specification: Task Object](../specification.md#61-task-object).
+    - See details in the [Life of a Task](./life-of-a-task.md).
+    - Protocol specification: [Task Object](../specification.md#61-task-object).
 
 - **Message:**
 
@@ -69,6 +70,10 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
     - When the task status changes significantly (e.g., completes, fails, or requires input), the server can send an asynchronous notification (an HTTP POST request) to this client-provided webhook.
     - This requires the server to advertise the `pushNotifications` capability in its Agent Card.
     - Learn more about [Streaming & Asynchronous Operations](./streaming-and-async.md).
+
+## Agent Response: Task or Message
+
+See details in the [Life of a Task](./life-of-a-task.md).
 
 ## Other Important Concepts
 

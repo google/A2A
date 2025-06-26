@@ -5,14 +5,21 @@ on:
     branches:
       - main
     paths:
+      - ".github/workflows/docs.yml"
+      - "requirements-docs.txt"
       - "mkdocs.yml"
       - "docs/**"
   pull_request:
     branches:
       - main
     paths:
+      - ".github/workflows/docs.yml"
+      - "requirements-docs.txt"
       - "mkdocs.yml"
       - "docs/**"
+  release:
+    types:
+      - published
 
 jobs:
   build_and_deploy:
@@ -21,11 +28,14 @@ jobs:
       contents: write
       actions: read
 
-    if: github.repository == 'google-a2a/A2A'
+    if: github.repository == 'a2aproject/A2A'
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Configure Git Credentials
         run: |
           git config user.name github-actions[bot]
@@ -36,14 +46,13 @@ jobs:
         with:
           python-version: 3.13
 
-      - name: Restore cache
-        run: echo "cache_id=$(date --utc '+%V')" >> $GITHUB_ENV
-      - uses: actions/cache@v4
+      - name: Restore pip cache
+        uses: actions/cache@v4
         with:
-          key: mkdocs-material-${{ env.cache_id }}
-          path: .cache
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements-docs.txt') }}
+          path: ~/.cache/pip
           restore-keys: |
-            mkdocs-material-
+            ${{ runner.os }}-pip-
 
       - name: Install documentation dependencies
         run: pip install -r requirements-docs.txt
@@ -52,6 +61,19 @@ jobs:
         if: github.event_name == 'pull_request'
         run: mkdocs build
 
-      - name: Build and Deploy Documentation (Push to main)
+      - name: Deploy development version from main branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: mkdocs gh-deploy --force
+        run: |
+          echo "Deploying docs from main to the 'dev' version..."
+          mike deploy --push --update-aliases dev
+
+      - name: Deploy new release version and set as latest
+        if: github.event_name == 'release'
+        run: |
+          # The release tag (e.g., v0.2.2) is used as the version number
+          VERSION=${{ github.event.release.tag_name }}
+          echo "Deploying docs for version $VERSION and setting it as 'latest'..."
+          mike deploy --push --update-aliases $VERSION latest
+
+          echo "Setting 'latest' as the default version for the site..."
+          mike set-default --push latest
