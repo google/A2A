@@ -52,12 +52,14 @@ Ollama
 PLE
 PLW
 PTH
+Petstore
 RPCs
 RUF
 SLAs
 SLF
 TJS
 TMDB
+Tful
 URLTo
 Upserting
 Urke
@@ -80,6 +82,7 @@ agentic
 agentskill
 ainvoke
 aparse
+aproject
 arxiv
 askmarvin
 asyncclick
@@ -170,6 +173,8 @@ objc
 octicons
 ollama
 oneof
+openapis
+openrpc
 pqr
 prefecthq
 protoc
@@ -194,6 +199,7 @@ styleguide
 svn
 systemctl
 tagwords
+tasksget
 taskssend
 taskstate
 taskstatus
