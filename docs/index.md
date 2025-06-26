@@ -28,12 +28,17 @@ _A2A provides a common language, breaking down silos and fostering interoperabil
     [:octicons-arrow-right-24: Watch the original A2A Demo Video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4)
 
     [:octicons-arrow-right-24: Blog Post: Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
+    
+    [:octicons-arrow-right-24: Blog Post: Google Cloud donates A2A to Linux Foundation](https://developers.googleblog.com/en/google-cloud-donates-a2a-to-linux-foundation/)
+    
 
 -   :material-map-legend:{ .lg .middle } **End-to-end deep dives**
 
-    [:octicons-arrow-right-24: Whitepaper: Agents not Tools](https://medium.com/google-cloud/architecting-a-multi-agent-system-with-google-a2a-and-adk-4ced4502c86a)
+    [:octicons-arrow-right-24: O'Reilly: Designing Collaborative Multi-Agent Systems with the A2A Protocol](https://www.oreilly.com/radar/designing-collaborative-multi-agent-systems-with-the-a2a-protocol/)
 
     [:octicons-arrow-right-24: Medium: Architecting a Multi-Agent System with Google A2A and ADK](https://medium.com/google-cloud/architecting-a-multi-agent-system-with-google-a2a-and-adk-4ced4502c86a)
+
+    [:octicons-arrow-right-24: Python Quickstart Tutorial: Building an A2A Agent](https://a2aproject.github.io/A2A/latest/tutorials/python/1-introduction/)
 
 </div>
 
