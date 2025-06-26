@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     # if on repo to avoid failing runs on forks
     if: |
-      github.repository == 'google/A2A'
+      github.repository == 'a2aproject/A2A'
 
     ##################
     # Load all steps #
@@ -53,7 +53,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LOG_LEVEL: WARN
           SHELLCHECK_OPTS: -e SC1091 -e 2086
-          FILTER_REGEX_INCLUDE: "^(docs/|specification/).*"
+          VALIDATE_ALL_CODEBASE: false
+          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
@@ -63,3 +64,11 @@ jobs:
           VALIDATE_CHECKOV: false
           VALIDATE_JAVASCRIPT_STANDARD: false
           VALIDATE_TYPESCRIPT_STANDARD: false
+          VALIDATE_NATURAL_LANGUAGE: false
+          MARKDOWN_CONFIG_FILE: ".markdownlint.json"
+          VALIDATE_MARKDOWN_PRETTIER: false
+          TYPESCRIPT_ES_CONFIG_FILE: ".eslintrc.js"
+          VALIDATE_JAVASCRIPT_PRETTIER: false
+          VALIDATE_JSON_PRETTIER: false
+          VALIDATE_YAML_PRETTIER: false
+          VALIDATE_GIT_COMMITLINT: false

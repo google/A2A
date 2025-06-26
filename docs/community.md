@@ -17,7 +17,7 @@ saying!
 
 The launch of A2A has sparked lively discussions and positive reactions on various social platforms. Here's a glimpse of the excitement:
 
-- **Rapid Interest and Adoption:** The A2A [GitHub repository](https://github.com/google/a2a) has seen an **explosive surge in popularity**. This rapid interest underscores the industry's eagerness for a standardized agent communication protocol, with many companies collaborating and contributing.
+- **Rapid Interest and Adoption:** The A2A [GitHub repository](https://github.com/a2aproject/A2A) has seen an **explosive surge in popularity**. This rapid interest underscores the industry's eagerness for a standardized agent communication protocol, with many companies collaborating and contributing.
 
 - **Microsoft's interest via Semantic Kernel:** [Asha Sharma](https://www.linkedin.com/in/aboutasha/), Head of AI Platform Product at Microsoft, [announced on LinkedIn](https://www.linkedin.com/posts/aboutasha_a2a-ugcPost-7318649411704602624-0C_8) that "**Semantic Kernel now speaks A2A: a lightweight JSON-RPC protocol that lets agents swap context, not code or credentials, over plain HTTP. Drop it into your Foundry stack for instant, secure, async interoperability with any A2A-compliant agent, regardless of modality**". The post received numerous positive reactions, including "**A2A support in Semantic Kernel is a key unlock — context-level interoperability without sharing code or creds is how agent ecosystems scale securely across clouds**".
 
@@ -34,14 +34,14 @@ The launch of A2A has sparked lively discussions and positive reactions on vario
 
 ## Community Contributions to A2A
 
-- Python Quickstart Tutorial [PR\#202](https://github.com/google/A2A/pull/202)
-- LlamaIndex submitted a sample implementation [PR\#179](https://github.com/google/A2A/pull/179)
-- Autogen sample server [PR\#232](https://github.com/google/A2A/pull/232)
-- AG2 \+ MCP example [PR\#230](https://github.com/google/A2A/pull/230)
-- PydanticAI example [PR\#127](https://github.com/google/A2A/pull/127)
-- Go example [PR\#52](https://github.com/google/A2A/pull/52)
-- Daytona sandbox running agent [PR\#170](https://github.com/google/A2A/pull/170)
-- Server documentation example and template
+- Python Quickstart Tutorial [PR\#202](https://github.com/a2aproject/A2A/pull/202)
+- LlamaIndex submitted a sample implementation [PR\#179](https://github.com/a2aproject/A2A/pull/179)
+- Autogen sample server [PR\#232](https://github.com/a2aproject/A2A/pull/232)
+- AG2 \+ MCP example [PR\#230](https://github.com/a2aproject/A2A/pull/230)
+- PydanticAI example [PR\#127](https://github.com/a2aproject/A2A/pull/127)
+- Go example [PR\#52](https://github.com/a2aproject/A2A/pull/52)
+- Daytona sandbox running agent [PR\#170](https://github.com/a2aproject/A2A/pull/170)
+- Server documentation example and template [PR\#586](https://github.com/a2aproject/A2A/pull/586)
 
 ## What is Driving This Excitement?
 

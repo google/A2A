@@ -14,16 +14,16 @@ Ensuring the confidentiality and integrity of data in transit is fundamental.
 
 ## 2. Authentication
 
-A2A delegates authentication to standard web mechanisms, primarily relying on HTTP headers. Authentication requirements are advertised by the A2A Server in its [Agent Card](../specification.md#5-agent-discovery-the-agent-card).
+A2A delegates authentication to standard web mechanisms, primarily relying on HTTP headers and established standards like OAuth2 and OpenID Connect. Authentication requirements are advertised by the A2A Server in its [Agent Card](../specification.md#5-agent-discovery-the-agent-card).
 
 - **No In-Payload Identity:** A2A protocol payloads (JSON-RPC messages) do **not** carry user or client identity information. Identity is established at the transport/HTTP layer.
-- **Agent Card Declaration:** The A2A Server's `AgentCard` specifies the required authentication `schemes` (e.g., "Bearer", "OAuth2", "ApiKey", "Basic") in its `authentication` object. These scheme names often align with those defined in the [OpenAPI Specification for authentication](https://swagger.io/docs/specification/authentication/).
-- **Out-of-Band Credential Acquisition:** The A2A Client is responsible for obtaining the necessary credential materials (e.g., OAuth 2.0 tokens, API keys, JWTs) through processes external to the A2A protocol itself. This could involve OAuth flows (authorization code, client credentials), secure key distribution, etc.
-- **HTTP Header Transmission:** Credentials **MUST** be transmitted in standard HTTP headers as per the requirements of the chosen authentication scheme (e.g., `Authorization: Bearer <token>`, `X-API-Key: <key_value>`).
+- **Agent Card Declaration:** The A2A Server's `AgentCard` describes the authentication `schemes` it supports in its `security` field. Each named scheme in this field is an identifier specific to the card. The details for each named scheme, including the scheme type, can be provided in the `securitySchemes` field of the Agent Card. The supported names of the scheme types ("apiKey", "http", "oauth2", "openIdConnect") align with those defined in the [OpenAPI Specification for authentication](https://swagger.io/docs/specification/authentication/).
+- **Out-of-Band Credential Acquisition:** The A2A Client is responsible for obtaining the necessary credential materials (e.g., OAuth 2.0 tokens, either in JWT format or some other format; API keys; or other) through processes external to the A2A protocol itself. This could involve OAuth flows (authorization code, client credentials), secure key distribution, etc.
+- **HTTP Header Transmission:** Credentials **MUST** be transmitted in standard HTTP headers as per the requirements of the chosen authentication scheme (e.g., `Authorization: Bearer <token>`, `API-Key: <key_value>`).
 - **Server-Side Validation:** The A2A Server **MUST** authenticate **every** incoming request based on the credentials provided in the HTTP headers and its declared requirements.
     - If authentication fails or is missing, the server **SHOULD** respond with standard HTTP status codes such as `401 Unauthorized` or `403 Forbidden`.
     - A `401 Unauthorized` response **SHOULD** include a `WWW-Authenticate` header indicating the required scheme(s), guiding the client on how to authenticate correctly.
-- **In-Task Authentication (Secondary Credentials):** If an agent, during a task, requires additional credentials for a *different* system (e.g., to access a specific tool on behalf of the user), A2A recommends:
+- **In-Task Authentication (Secondary Credentials):** If an agent, during a task, requires additional credentials for a _different_ system (e.g., to access a specific tool on behalf of the user), A2A recommends:
     1. The A2A Server transitions the A2A task to the `input-required` state.
     2. The `TaskStatus.message` (often using a `DataPart`) should provide details about the required authentication for the secondary system, potentially using an `AuthenticationInfo`-like structure.
     3. The A2A Client then obtains these new credentials out-of-band for the secondary system. These credentials might be provided back to the A2A Server (if it's proxying the request) or used by the client to interact directly with the secondary system.
@@ -32,7 +32,7 @@ A2A delegates authentication to standard web mechanisms, primarily relying on HT
 
 Once a client is authenticated, the A2A Server is responsible for authorizing the request. Authorization logic is specific to the agent's implementation, the data it handles, and applicable enterprise policies.
 
-- **Granular Control:** Authorization **SHOULD** be applied based on the authenticated identity (which could represent an end-user, a client application, or both).
+- **Granular Control:** Authorization **SHOULD** be applied based on the authenticated identity (which could represent an end user, a client application, or both).
 - **Skill-Based Authorization:** Access can be controlled on a per-skill basis, as advertised in the Agent Card. For example, specific OAuth scopes might grant an authenticated client access to invoke certain skills but not others.
 - **Data and Action-Level Authorization:** Agents that interact with backend systems, databases, or tools **MUST** enforce appropriate authorization before performing sensitive actions or accessing sensitive data through those underlying resources. The agent acts as a gatekeeper.
 - **Principle of Least Privilege:** Grant only the necessary permissions required for a client or user to perform their intended operations via the A2A interface.

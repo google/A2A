@@ -85,6 +85,9 @@
 ^\Q.github/workflows/linter.yaml\E$
 ^\Qdemo/ui/service/server/test_image.py\E$
 ^\Qlychee.toml\E$
-\.gitignore\E$
 \.vscode/
 ^\Qdocs/partners.md\E$
+^\Qspecification/json/a2a.json\E$
+CHANGELOG.md
+\.gitignore
+^\Qdocs/robots.txt\E$
