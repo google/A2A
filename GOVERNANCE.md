@@ -27,14 +27,14 @@
 The TSC may choose an alternative approach for determining the voting members of the TSC, and any such alternative approach will be documented in the GOVERNANCE file.  Any meetings of the Technical Steering Committee are intended to be open to the public, and can be conducted electronically, via teleconference, or in person.
 3. TSC projects generally will involve Contributors and Maintainers. The TSC may adopt or modify roles so long as the roles are documented in the CONTRIBUTING file. Unless otherwise documented:
             a. Contributors include anyone in the technical community that contributes code, documentation, or other technical artifacts to the Project;
-            b. Maintainers are Contributors who have earned the ability to modify ("commit") source code, documentation or other technical artifacts in a project’s repository; and
+            b. Maintainers are Contributors who have earned the ability to modify ("commit") source code, documentation or other technical artifacts in a project's repository; and
             c. A Contributor may become a Maintainer by a vote of the TSC. A Maintainer may be removed by a vote of the TSC.
             d. Participation in the Project through becoming a Contributor and Maintainer is open to anyone so long as they abide by the terms of this Charter.
 4. The TSC may (1) establish work flow procedures for the submission, approval, and closure/archiving of projects, (2) set requirements for the promotion of Contributors to Maintainer status, as applicable, and (3) amend, adjust, refine and/or eliminate the roles of Contributors, and Maintainer, and create new roles, and publicly document any TSC roles, as it sees fit.
 5. The TSC may elect a TSC Chair, who will preside over meetings of the TSC and will serve until their resignation or replacement by the TSC.
 6. Responsibilities: The TSC will be responsible for all aspects of oversight relating to the Project, which may include:
    1. coordinating the technical direction of the Project;
-   2. approving project or system proposals (including, but not limited to, incubation, deprecation, and changes to a sub-project’s scope);
+   2. approving project or system proposals (including, but not limited to, incubation, deprecation, and changes to a sub-project's scope);
    3. organizing sub-projects and removing sub-projects;
    4. creating sub-committees or working groups to focus on cross-project technical issues and requirements;
    5. appointing representatives to work with other open source or open standards communities;
