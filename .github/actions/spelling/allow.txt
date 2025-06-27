@@ -43,6 +43,7 @@ JWTs
 KGgo
 KRW
 LHR
+Linkset
 LLM
 LLMs
 MWpm
@@ -136,6 +137,8 @@ googleblog
 gpt
 gstatic
 gweb
+httpapi
+iana
 iat
 ietf
 inbox
@@ -150,6 +153,7 @@ langgraph
 linenums
 linkedin
 linting
+linkset
 llm
 llms
 lng
