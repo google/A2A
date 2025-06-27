@@ -159,6 +159,7 @@ Agent Cards themselves might contain information that is considered sensitive.
 
 | Field Name                          | Type                                                               | Required | Description                                                                                                                                 |
 | :---------------------------------- | :----------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `protocolVersion`                   | `string`                                                           | Yes      | The version of the A2A protocol this agent supports.                                                                                        |
 | `name`                              | `string`                                                           | Yes      | Human-readable name of the agent.                                                                                                           |
 | `description`                       | `string`                                                           | Yes      | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                                              |
 | `url`                               | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                                               |
@@ -247,6 +248,7 @@ Describes a specific capability, function, or area of expertise the agent can pe
 
 ```json
 {
+  "protocolVersion": "0.2.9",
   "name": "GeoSpatial Route Planner Agent",
   "description": "Provides advanced route planning, traffic analysis, and custom map generation services. This agent can calculate optimal routes, estimate travel times considering real-time traffic, and create personalized maps with points of interest.",
   "url": "https://georoute-agent.example.com/a2a/v1",
