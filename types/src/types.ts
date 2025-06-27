@@ -110,6 +110,11 @@ export interface AgentInterface {
  */
 export interface AgentCard {
   /**
+   * The version of the A2A protocol this agent supports.
+   * @example "0.2.9"
+   */
+  protocolVersion: string;
+  /**
    * Human readable name of the agent.
    * @example "Recipe Agent"
    */
@@ -272,7 +277,7 @@ export interface GetTaskPushNotificationConfigParams extends TaskIdParams {
 
 // --8<-- [start:ListTaskPushNotificationConfigParams]
 /** Parameters for getting list of pushNotificationConfigurations associated with a Task */
-export interface ListTaskPushNotificationConfigParams extends TaskIdParams {}
+export interface ListTaskPushNotificationConfigParams extends TaskIdParams { }
 // --8<-- [end:ListTaskPushNotificationConfigParams]
 
 // --8<-- [start:DeleteTaskPushNotificationConfigParams]
