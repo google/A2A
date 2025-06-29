@@ -70,6 +70,12 @@
   line-height: 1.4;
 }
 
+.announce .md-button {
+  font-size: 0.8em;
+  padding: 0.3em 1em;
+  margin-left: 0.5em;
+}
+
 h1#agent2agent-a2a-protocol {
    display: none;
 }

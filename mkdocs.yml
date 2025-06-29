@@ -49,6 +49,7 @@ extra_css:
 # Configuration
 theme:
   name: material
+  custom_dir: .mkdocs/overrides
   font:
     text: Google Sans
     code: Roboto Mono
@@ -83,6 +84,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
+    - announce.dismiss
     - content.code.annotate
     - content.code.copy
     - content.code.select
