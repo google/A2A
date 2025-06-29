@@ -104,6 +104,7 @@ theme:
 
 # Extensions
 markdown_extensions:
+  - footnotes
   - admonition
   - attr_list
   - md_in_html
@@ -187,5 +188,5 @@ plugins:
               - "node_modules"
               - "__pycache__"
             extra:
-              show_value: true
-              show_qualifiers: false
+  #             show_value: true
+  #             show_qualifiers: false

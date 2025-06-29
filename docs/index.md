@@ -16,10 +16,13 @@ hide:
    </figcaption>
 </figure>
 
-Build agents with any agent framework like
-**[![ADK Logo](./assets/adk.svg){class="twemoji lg middle"} ADK](https://google.github.io/adk-docs/)**
-and add tools with MCP or OpenAPI &mdash;
-**![A2A Logo](./assets/a2a-logo-black.svg){class="twemoji sm middle"} A2A** lets you and your agents **use** other agents.
+!!! abstract ""
+    Build with 
+    **[![ADK Logo](./assets/adk.svg){class="twemoji lg middle"} ADK](https://google.github.io/adk-docs/)** _(or any framework)_,
+    equip with **MCP** _(or any tool)_,
+    and communicate with 
+    **![A2A Logo](./assets/a2a-logo-black.svg){class="twemoji sm middle"} A2A**,
+    to remote agents, local agents, and humans.
 
 ### What A2A is
 
