@@ -69,3 +69,17 @@
   display: inline-block;
   line-height: 1.4;
 }
+
+h1#agent2agent-a2a-protocol {
+   display: none;
+}
+figure.hero {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+figure.hero figcaption {
+  max-width: 100%;
+  width: 100%;
+  margin-bottom: 0;
+  text-align: left;
+}

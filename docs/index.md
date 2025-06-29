@@ -6,47 +6,49 @@ hide:
 
 # Agent2Agent (A2A) Protocol
 
-![A2A Banner](assets/a2a-banner.png){width="70%"}
-{style="text-align: center; margin-bottom:1em; margin-top:1em;"}
+<figure class="hero" markdown>
+  ![A2A Banner](assets/a2a-banner.png){width="70%"}
+  <figcaption>
+    The <strong>Agent2Agent (A2A) Protocol</strong> is an open standard
+    designed to enable seamless communication and collaboration between AI agents.<br>
+    In a world where agents are built using diverse frameworks and by different vendors,
+    A2A provides a common language, breaking down silos and fostering interoperability.
+   </figcaption>
+</figure>
 
-## Unlock Collaborative Agent Scenarios
+Build agents with any agent framework like
+**[![ADK Logo](./assets/adk.svg){class="twemoji lg middle"} ADK](https://google.github.io/adk-docs/)**
+and add tools with MCP or OpenAPI &mdash;
+**![A2A Logo](./assets/a2a-logo-black.svg){class="twemoji sm middle"} A2A** lets you and your agents **use** other agents.
 
-The
-&nbsp;![ADK Logo](./assets/a2a-logo-black.svg){class="twemoji md middle"}&nbsp;
-**Agent2Agent (A2A) Protocol** is an open standard designed to enable seamless communication and collaboration between AI agents.
-In a world where agents are built using diverse frameworks (
-[![ADK Logo](./assets/adk.svg){class="twemoji lg middle"} ADK](https://google.github.io/adk-docs/),
-[![AG2 Logo](./assets/ag2-black.svg){class="twemoji sm middle"}AG2](https://github.com/ag2ai/ag2),
-[![LangGraph Logo](./assets/langgraph-color.svg){class="twemoji md middle"} LangGraph](https://www.langchain.com/langgraph),
-...) and by different vendors hosted on different platform,
-_A2A provides a common language, breaking down silos and fostering interoperability_.
+### What A2A is
 
 <div class="grid cards" markdown>
 
--   :material-play-circle:{ .lg .middle } **Overview and rapid context**
+-   :material-lightbulb-outline:{ .lg .middle } **A2A** Anouncements
 
-    [:octicons-arrow-right-24: Watch the original A2A Demo Video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4)
+    Ramp up quickly
 
-    [:octicons-arrow-right-24: Blog Post: Announcing the Agent2Agent Protocol (A2A)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
-    
-    [:octicons-arrow-right-24: Blog Post: Google Cloud donates A2A to Linux Foundation](https://developers.googleblog.com/en/google-cloud-donates-a2a-to-linux-foundation/)
-    
+    [:octicons-arrow-right-24: Announcing the A2A Protocol (Apr)](https://developers.googleblog.com/en/a2a-a-new-era-of-agent-interoperability/)
+    our initial blog
 
--   :material-map-legend:{ .lg .middle } **End-to-end deep dives**
+    [:octicons-arrow-right-24: Agents are not tools (Jun)](https://www.googlecloudcommunity.com/gc/Community-Blogs/Agents-are-not-tools/ba-p/922716)
+    our TL thought peice
 
-    [:octicons-arrow-right-24: O'Reilly: Designing Collaborative Multi-Agent Systems with the A2A Protocol](https://www.oreilly.com/radar/designing-collaborative-multi-agent-systems-with-the-a2a-protocol/)
+    [:octicons-arrow-right-24: Google Cloud donates A2A to Linux Foundation (Jun)](https://developers.googleblog.com/en/google-cloud-donates-a2a-to-linux-foundation/)
+    covered by [Forbes](https://www.forbes.com/sites/janakirammsv/2025/06/25/key-tech-firms-unite-as-google-donates-a2a-to-linux-foundation/)
 
-    [:octicons-arrow-right-24: Medium: Architecting a Multi-Agent System with Google A2A and ADK](https://medium.com/google-cloud/architecting-a-multi-agent-system-with-google-a2a-and-adk-4ced4502c86a)
+    Dive deep with end to end examples
 
-    [:octicons-arrow-right-24: Python Quickstart Tutorial: Building an A2A Agent](https://a2aproject.github.io/A2A/latest/tutorials/python/1-introduction/)
+    [:octicons-arrow-right-24: Designing with A2A (O'Reilly)](https://www.oreilly.com/radar/designing-collaborative-multi-agent-systems-with-the-a2a-protocol/)
+
+    [:octicons-arrow-right-24: Start the Python Tutorial](tutorials/python/1-introduction.md)
+
+-   :material-play-circle:{ .lg .middle } **Video** Intro in <8 min
+
+    <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7336822404003807232?compact=1" style="width: 100%; max-width: 504px;" height="399" frameborder="0" allowfullscreen="" title="A2A Protocol Intro Video"></iframe>
 
 </div>
-
-### Intro to A2A Video
-
-<iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7336822404003807232?compact=1" height="399" width="504" frameborder="0" allowfullscreen="" title="A2A Protocol Intro Video"></iframe>
-
----
 
 ### Why A2A Matters
 
