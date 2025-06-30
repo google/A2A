@@ -8,7 +8,7 @@
             "files": "*.md",
             "options": {
                 "tabWidth": 4,
-                "useTabs": false
+                "useTabs": false,
                 "trailingComma": "es5"
             }
         }
