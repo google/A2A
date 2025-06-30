@@ -1,25 +1,18 @@
 # Changelog
 
-## [0.2.5](https://github.com/a2aproject/A2A/compare/v0.2.3...v0.2.5) (2025-06-30)
+## [0.2.5](https://github.com/a2aproject/A2A/compare/v0.2.4...v0.2.5) (2025-06-30)
 
 
 ### ⚠ BREAKING CHANGES
 
 * **spec:** Add a required protocol version to the agent card. ([#802](https://github.com/a2aproject/A2A/issues/802))
-* update spec & doc topic with non-restartable tasks ([#770](https://github.com/a2aproject/A2A/issues/770))
-
-### Features
-
-* Add support for multiple transport announcement in AgentCard ([#749](https://github.com/a2aproject/A2A/issues/749)) ([b35485e](https://github.com/a2aproject/A2A/commit/b35485e02e796d15232dec01acfab93fc858c3ec))
-* **spec:** Add a required protocol version to the agent card. ([#802](https://github.com/a2aproject/A2A/issues/802)) ([90fa642](https://github.com/a2aproject/A2A/commit/90fa64209498948b329a7b2ac6ec38942369157a))
 * Support for multiple pushNotification config per task ([#738](https://github.com/a2aproject/A2A/issues/738)) ([f355d3e](https://github.com/a2aproject/A2A/commit/f355d3e922de61ba97873fe2989a8987fc89eec2))
 
 
-### Bug Fixes
+### Features
 
-* **spec:** Fix casing of `types.ts` from [#749](https://github.com/a2aproject/A2A/issues/749) ([#759](https://github.com/a2aproject/A2A/issues/759)) ([14424a6](https://github.com/a2aproject/A2A/commit/14424a69d5435f70e86484b3888ef15817b3ce58))
-* **spec:** Make `AgentCard.additionalInterfaces` Optional for backwards compatibility ([#760](https://github.com/a2aproject/A2A/issues/760)) ([4a5e970](https://github.com/a2aproject/A2A/commit/4a5e970ec2c4d92439536e01ea649082b177b8b7))
-* Typo in delete push notif config ([#782](https://github.com/a2aproject/A2A/issues/782)) ([147a675](https://github.com/a2aproject/A2A/commit/147a675ba0e8c049f4892ada8c1c6753dab57cd3))
+* **spec:** Add a required protocol version to the agent card. ([#802](https://github.com/a2aproject/A2A/issues/802)) ([90fa642](https://github.com/a2aproject/A2A/commit/90fa64209498948b329a7b2ac6ec38942369157a))
+* **spec:** Support for multiple pushNotification config per task ([#738](https://github.com/a2aproject/A2A/issues/738)) ([f355d3e](https://github.com/a2aproject/A2A/commit/f355d3e922de61ba97873fe2989a8987fc89eec2))
 
 
 ### Documentation
