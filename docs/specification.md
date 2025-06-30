@@ -494,8 +494,9 @@ Configuration provided by the client to the server for sending asynchronous push
 | Field Name       | Type                                                                  | Required | Description                                                                                                                                                               |
 | :--------------- | :-------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `url`            | `string`                                                              | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
+| `id`             | `string`                                                              | No       | Optional server-generated identifier for the push notification configuration to support multiple callbacks.                                                               |
 | `token`          | `string`                                                              | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
-| `authentication` | [`PushNotificationAuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                                        |
+| `authentication` | [`PushNotificationAuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                        |
 
 ### 6.9. `PushNotificationAuthenticationInfo` Object
 
