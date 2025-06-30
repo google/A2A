@@ -36,7 +36,7 @@ hide:
     our initial blog
 
     [:octicons-arrow-right-24: Agents are not tools (Jun)](https://www.googlecloudcommunity.com/gc/Community-Blogs/Agents-are-not-tools/ba-p/922716)
-    our TL thought peice
+    our TL thought piece
 
     [:octicons-arrow-right-24: Google Cloud donates A2A to Linux Foundation (Jun)](https://developers.googleblog.com/en/google-cloud-donates-a2a-to-linux-foundation/)
     covered by [Forbes](https://www.forbes.com/sites/janakirammsv/2025/06/25/key-tech-firms-unite-as-google-donates-a2a-to-linux-foundation/)
