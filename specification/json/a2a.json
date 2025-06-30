@@ -157,6 +157,9 @@
                 },
                 "description": {
                     "description": "A human-readable description of the agent. Used to assist users and\nother agents in understanding what the agent can do.",
+                    "examples": [
+                        "Agent that helps users with recipes and cooking."
+                    ],
                     "type": "string"
                 },
                 "documentationUrl": {
@@ -169,6 +172,9 @@
                 },
                 "name": {
                     "description": "Human readable name of the agent.",
+                    "examples": [
+                        "Recipe Agent"
+                    ],
                     "type": "string"
                 },
                 "preferredTransport": {
@@ -216,6 +222,9 @@
                 },
                 "version": {
                     "description": "The version of the agent - format is up to the provider.",
+                    "examples": [
+                        "1.0.0"
+                    ],
                     "type": "string"
                 }
             },
@@ -314,6 +323,11 @@
                 },
                 "examples": {
                     "description": "The set of example scenarios that the skill can perform.\nWill be used by the client as a hint to understand how the skill can be used.",
+                    "examples": [
+                        [
+                            "I need a recipe for bread"
+                        ]
+                    ],
                     "items": {
                         "type": "string"
                     },
@@ -343,6 +357,13 @@
                 },
                 "tags": {
                     "description": "Set of tagwords describing classes of capabilities for this specific skill.",
+                    "examples": [
+                        [
+                            "cooking",
+                            "customer support",
+                            "billing"
+                        ]
+                    ],
                     "items": {
                         "type": "string"
                     },
@@ -802,7 +823,7 @@
                             "$ref": "#/definitions/GetTaskPushNotificationConfigParams"
                         }
                     ],
-                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method.\nTaskIdParams type is deprecated for this method"
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method.\nTaskIdParams type is deprecated for this method use `GetTaskPushNotificationConfigParams` instead."
                 }
             },
             "required": [
@@ -1251,6 +1272,12 @@
                 },
                 {
                     "$ref": "#/definitions/GetTaskPushNotificationConfigSuccessResponse"
+                },
+                {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigSuccessResponse"
+                },
+                {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigSuccessResponse"
                 }
             ],
             "description": "Represents a JSON-RPC 2.0 Response object."
@@ -2206,6 +2233,9 @@
                 },
                 "timestamp": {
                     "description": "ISO 8601 datetime string when the status was recorded.",
+                    "examples": [
+                        "2023-10-27T10:00:00Z"
+                    ],
                     "type": "string"
                 }
             },

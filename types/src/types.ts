@@ -753,7 +753,9 @@ export type JSONRPCResponse =
   | GetTaskResponse
   | CancelTaskResponse
   | SetTaskPushNotificationConfigResponse
-  | GetTaskPushNotificationConfigResponse;
+  | GetTaskPushNotificationConfigResponse
+  | ListTaskPushNotificationConfigResponse
+  | DeleteTaskPushNotificationConfigResponse;
 // --8<-- [end:JSONRPCResponse]
 
 // --8<-- [start:SendMessageRequest]
@@ -918,8 +920,9 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
   id: number | string;
   /** A String containing the name of the method to be invoked. */
   method: "tasks/pushNotificationConfig/get";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method.
-   * TaskIdParams type is deprecated for this method
+  /**
+   * A Structured value that holds the parameter values to be used during the invocation of the method.
+   * TaskIdParams type is deprecated for this method use `GetTaskPushNotificationConfigParams` instead.
    */
   params: GetTaskPushNotificationConfigParams | TaskIdParams;
 }
