@@ -16,6 +16,8 @@ Key attributes of an `AgentSkill` (defined in `a2a.types`):
 - `tags`: Keywords for categorization and discovery.
 - `examples`: Sample prompts or use cases.
 - `inputModes` / `outputModes`: Supported Media Types for input and output (e.g., "text/plain", "application/json").
+- `inputFields` / `outputFields`: Structured input/output fields (see `FieldDefinition`).
+
 
 In `__main__.py`, you can see how a skill for the Helloworld agent is defined:
 
@@ -24,6 +26,20 @@ In `__main__.py`, you can see how a skill for the Helloworld agent is defined:
 ```
 
 This skill is very simple: it's named "Returns hello world" and primarily deals with text.
+
+### FieldDefinition: Describing Structured Inputs and Outputs
+
+A **FieldDefinition** describes a structured input or output field for an agent skill. This is useful when a skill expects (or produces) more than just free-form text—such as a JSON object, a file, or a set of named parameters.
+
+Key attributes of a `FieldDefinition` (from `a2a.types`):
+
+- `name`: (optional) The name of the field.
+- `kind`: (optional) The type of content: `"text"`, `"file"`, or `"data"`.
+- `mimeTypes`: (optional) List of supported MIME types for this field (e.g., `["application/json"]`).
+- `schema`: (optional) A JSON schema describing the expected structure for `"data"` fields.
+- `description`: (optional) Human-readable description of the field.
+- `optional`: (optional) Whether this field is optional (`True` or `False`).
+
 
 ## Agent Card
 

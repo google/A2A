@@ -233,15 +233,34 @@ Describes a specific capability, function, or area of expertise the agent can pe
 --8<-- "types/src/types.ts:AgentSkill"
 ```
 
-| Field Name    | Type       | Required | Description                                                                    |
-| :------------ | :--------- | :------- | :----------------------------------------------------------------------------- |
-| `id`          | `string`   | Yes      | Unique skill identifier within this agent.                                     |
-| `name`        | `string`   | Yes      | Human-readable skill name.                                                     |
-| `description` | `string`   | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
-| `tags`        | `string[]` | Yes      | Keywords/categories for discoverability.                                       |
-| `examples`    | `string[]` | No       | Example prompts or use cases demonstrating skill usage.                        |
-| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted Media Types.    |
-| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced Media Types.   |
+| Field Name    | Type                | Required | Description                                                                    |
+| :------------ | :------------------ | :------- | :----------------------------------------------------------------------------- |
+| `id`          | `string`            | Yes      | Unique skill identifier within this agent.                                     |
+| `name`        | `string`            | Yes      | Human-readable skill name.                                                     |
+| `description` | `string`            | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
+| `tags`        | `string[]`          | Yes      | Keywords/categories for discoverability.                                       |
+| `examples`    | `string[]`          | No       | Example prompts or use cases demonstrating skill usage.                        |
+| `inputModes`  | `string[]`          | No       | [Deprecated] Accepted Media Types for input.                                   |
+| `outputModes` | `string[]`          | No       | [Deprecated] Produced Media Types for output.                                  |
+| `inputFields` | `FieldDefinition[]` | No       | Structured input fields expected by this skill.                                |
+| `outputFields`| `FieldDefinition[]` | No       | Structured output fields produced by this skill.                               |
+
+#### 5.5.4.1. `FieldDefinition` Object
+
+Describes an expected input or output field for an agent skill. This allows agents to declare the structure, type, and semantics of the fields they expect as input or produce as output, enabling richer client validation and UI generation.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:FieldDefinition"
+```
+
+| Field Name   | Type                | Required | Description                                                        |
+| :----------- | :------------------ | :------- | :----------------------------------------------------------------- |
+| `name`       | `string`            | No      | Optional name of the field.                                        |
+| `kind`       | `"text" \| "file" \| "data"` | No      | The kind of content for this field: text, file, or data.           |
+| `mimeTypes`  | `string[]`          | No      | Optional list of supported mime types for this field.              |
+| `schema`     | `object`            | No      | Optional schema for data parts (structured data).                  |
+| `description`| `string`            | No      | Optional description of the field.                                 |
+| `optional`   | `boolean`           | No      | Whether this field is optional.                                    |
 
 ### 5.6. Sample Agent Card
 
@@ -281,28 +300,52 @@ Describes a specific capability, function, or area of expertise the agent can pe
         "Plan a route from '1600 Amphitheatre Parkway, Mountain View, CA' to 'San Francisco International Airport' avoiding tolls.",
         "{\"origin\": {\"lat\": 37.422, \"lng\": -122.084}, \"destination\": {\"lat\": 37.7749, \"lng\": -122.4194}, \"preferences\": [\"avoid_ferries\"]}"
       ],
-      "inputModes": ["application/json", "text/plain"],
-      "outputModes": [
-        "application/json",
-        "application/vnd.geo+json",
-        "text/html"
-      ]
+      "inputModes": ["text/plain"],
+      "outputModes": ["application/json", "application/vnd.geo+json", "text/html"],
+      "inputFields": [
+        {"name": "origin", "kind": "text", "optional": "false"},
+        {"name": "destination", "kind": "text", "optional": "false"},
+        {"name": "preference", "kind": "text", "optional": "false"}
+      ],
+      "outputFields": [
+        {
+          "name": "route",
+          "kind": "data",
+          "mimeTypes": ["application/json", "application/vnd.geo+json", "text/html"],
+          "description": "A JSON object containing the computed route details, including geometry, directions, and any relevant metadata.",
+          "optional": "false"
+        }
+      ],
     },
     {
-      "id": "custom-map-generator",
+    "id": "custom-map-generator",
       "name": "Personalized Map Generator",
       "description": "Creates custom map images or interactive map views based on user-defined points of interest, routes, and style preferences. Can overlay data layers.",
-      "tags": ["maps", "customization", "visualization", "cartography"],
-      "examples": [
-        "Generate a map of my upcoming road trip with all planned stops highlighted.",
-        "Show me a map visualizing all coffee shops within a 1-mile radius of my current location."
-      ],
       "inputModes": ["application/json"],
-      "outputModes": [
-        "image/png",
-        "image/jpeg",
-        "application/json",
-        "text/html"
+      "outputModes": ["image/png", "image/jpeg", "application/json", "text/html"],
+      "inputFields": [
+        {
+          "kind": "data",
+          "mimeTypes": ["application/json"],
+          "description": "List of locations to plot on the map",
+          "optional": "false"
+        }
+      ],
+      "outputFields": [
+        {
+          "name": "mapImage",
+          "kind": "file",
+          "mimeTypes": ["image/png", "image/jpeg"],
+          "description": "Rendered map image",
+          "optional": "true",
+        },
+        {
+          "name": "mapData",
+          "kind": "data",
+          "mimeTypes": ["application/json"],
+          "description": "Data representing the map",
+          "optional": "true",
+        }
       ]
     }
   ],

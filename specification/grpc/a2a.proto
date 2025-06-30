@@ -435,6 +435,10 @@ message AgentSkill {
   repeated string input_modes = 6;
   // Possible output modalities produced
   repeated string output_modes = 7;
+  // Structured input fields expected by this skill.
+  repeated FieldDefinition input_fields = 8;
+  // Structured output fields produced by this skill.
+  repeated FieldDefinition output_fields = 9;
 }
 
 message TaskPushNotificationConfig {

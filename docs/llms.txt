@@ -74,6 +74,8 @@ Key features of the A2A protocol highlighted by the specification and samples in
     - `examples`: (string[]) Example prompts or use cases demonstrating skill usage (optional).
     - `inputModes`: (string[]) Overrides `defaultInputModes` for this specific skill. Accepted Media Types (optional).
     - `outputModes`: (string[]) Overrides `defaultOutputModes` for this specific skill. Produced Media Types (optional).
+    - `inputFields`: (FieldDefinition[]) Structured input fields expected by this skill (richer metadata, see FieldDefinition).
+    - `outputFields`: (FieldDefinition[]) Structured output fields produced by this skill (richer metadata, see FieldDefinition).
 - **`Task`:** Represents a unit of work processed by an agent.
     - `id`: (string) Unique task identifier.
     - `contextId`: (string) Groups related tasks in a conversation or session.

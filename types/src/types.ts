@@ -48,6 +48,26 @@ export interface AgentExtension {
 }
 // --8<-- [end:AgentExtension]
 
+// --8<-- [start:FieldDefinition]
+/**
+ * Describes an expected input or output field for an agent skill.
+ */
+export interface FieldDefinition {
+  /** Optional name of the field. */
+  name?: string;
+  /** The kind of content for this field: text, file, or data. */
+  kind?: "text" | "file" | "data";
+  /** Optional list of supported mime types for this field. */
+  mimeTypes?: string[];
+  /** Optional schema for data parts (structured data). */
+  schema?: { [key: string]: any };
+  /** Optional description of the field. */
+  description?: string;
+  /** Whether this field is optional. */
+  optional?: boolean;
+}
+// --8<-- [end:FieldDefinition]
+
 // --8<-- [start:AgentSkill]
 /**
  * Represents a unit of capability that an agent can perform.
@@ -81,6 +101,14 @@ export interface AgentSkill {
   inputModes?: string[];
   /** Supported media types for output. */
   outputModes?: string[];
+  /**
+   * Structured input fields expected by this skill.
+   */
+  inputFields?: FieldDefinition[];
+  /**
+   * Structured output fields produced by this skill.
+   */
+  outputFields?: FieldDefinition[];
 }
 // --8<-- [end:AgentSkill]
 
