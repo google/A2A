@@ -28,6 +28,7 @@ EUR
 EUg
 FBT
 FHIR
+Fbr
 GAPI
 GAPIC
 GBP
@@ -53,11 +54,13 @@ OOa
 Ollama
 PLE
 PLW
+PMEEi
 PTH
 RPCs
 RUF
 SLAs
 SLF
+Solax
 TJS
 TMDB
 URLTo
@@ -141,6 +144,7 @@ googleblog
 gpt
 gstatic
 gweb
+hqdefault
 iat
 ietf
 inbox
