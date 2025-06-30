@@ -111,7 +111,7 @@ export interface AgentInterface {
 export interface AgentCard {
   /**
    * The version of the A2A protocol this agent supports.
-   * @TJS-examples ["0.2.5"]
+   * @default "0.2.5"
    */
   protocolVersion: string;
   /**
