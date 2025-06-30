@@ -11,12 +11,6 @@
                 "useTabs": false,
                 "trailingComma": "es5"
             }
-        },
-        {
-            "files": ".mkdocs/overrides/**/*.html",
-            "options": {
-              "parser": "jinja-html"
-            }
         }
     ]
 }

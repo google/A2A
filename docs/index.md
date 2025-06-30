@@ -24,8 +24,6 @@ hide:
     **![A2A Logo](./assets/a2a-logo-black.svg){class="twemoji sm middle"} A2A**,
     to remote agents, local agents, and humans.
 
-## Intro to A2A
-
 <div class="grid cards" markdown>
 
 - :material-lightbulb-outline:{ .lg .middle } **A2A** Announcements
@@ -53,7 +51,7 @@ hide:
 
 </div>
 
-### Why A2A Matters
+## Why A2A Matters
 
 ![A2A Main Graphic](assets/a2a-main.png){width="50%"}
 {style="text-align: center; margin-bottom:1em; margin-top:2em;"}
@@ -76,7 +74,7 @@ hide:
 
 ---
 
-### A2A and MCP: Complementary Protocols
+## A2A and MCP: Complementary Protocols
 
 ![A2A MCP Graphic](assets/a2a-mcp-readme.png){width="60%"}
 {style="text-align: center; margin-bottom:1em; margin-top:1em;"}
@@ -90,7 +88,7 @@ A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are
 
 ---
 
-### Get Started with A2A
+## Get Started with A2A
 
 <div class="grid cards" markdown>
 
