@@ -54,7 +54,7 @@ jobs:
           LOG_LEVEL: WARN
           SHELLCHECK_OPTS: -e SC1091 -e 2086
           VALIDATE_ALL_CODEBASE: false
-          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|\\.mkdocs/overrides/).*|CODE_OF_CONDUCT.md|CHANGELOG.md|GOVERNANCE.md"
+          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/).*|CODE_OF_CONDUCT.md|CHANGELOG.md|GOVERNANCE.md|\\.mkdocs/overrides/.*"
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
