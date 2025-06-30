@@ -64,13 +64,13 @@ export interface AgentSkill {
   description: string;
   /**
    * Set of tagwords describing classes of capabilities for this specific skill.
-   * @example ["cooking", "customer support", "billing"]
+   * @TJS-examples [["cooking", "customer support", "billing"]]
    */
   tags: string[];
   /**
    * The set of example scenarios that the skill can perform.
    * Will be used by the client as a hint to understand how the skill can be used.
-   * @example ["I need a recipe for bread"]
+   * @TJS-examples [["I need a recipe for bread"]]
    */
   examples?: string[]; // example prompts for tasks
   /**
@@ -111,13 +111,13 @@ export interface AgentInterface {
 export interface AgentCard {
   /**
    * Human readable name of the agent.
-   * @example "Recipe Agent"
+   * @TJS-examples ["Recipe Agent"]
    */
   name: string;
   /**
    * A human-readable description of the agent. Used to assist users and
    * other agents in understanding what the agent can do.
-   * @example "Agent that helps users with recipes and cooking."
+   * @TJS-examples ["Agent that helps users with recipes and cooking."]
    */
   description: string;
   /**
@@ -140,7 +140,7 @@ export interface AgentCard {
   provider?: AgentProvider;
   /**
    * The version of the agent - format is up to the provider.
-   * @example "1.0.0"
+   * @TJS-examples ["1.0.0"]
    */
   version: string;
   /** A URL to documentation for the agent. */
@@ -196,7 +196,7 @@ export interface TaskStatus {
   message?: Message;
   /**
    * ISO 8601 datetime string when the status was recorded.
-   * @example "2023-10-27T10:00:00Z"
+   * @TJS-examples ["2023-10-27T10:00:00Z"]
    * */
   timestamp?: string;
 }
