@@ -183,6 +183,9 @@
                 },
                 "protocolVersion": {
                     "description": "The version of the A2A protocol this agent supports.",
+                    "examples": [
+                        "0.2.5"
+                    ],
                     "type": "string"
                 },
                 "provider": {
