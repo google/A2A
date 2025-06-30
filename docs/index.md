@@ -49,7 +49,7 @@ hide:
 
 -   :material-play-circle:{ .lg .middle } **Video** Intro in <8 min
 
-    <iframe src="https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:7336822404003807232?compact=1" style="width: 100%; max-width: 504px;" height="399" frameborder="0" allowfullscreen="" title="A2A Protocol Intro Video"></iframe>
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/Fbr_Solax1w?si=QxPMEEiO5kLr5_0F" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 </div>
 
