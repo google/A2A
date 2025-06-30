@@ -1,7 +1,7 @@
 ---
 hide:
-    - navigation
-    - toc
+  - navigation
+  - toc
 ---
 
 # Agent2Agent (A2A) Protocol
