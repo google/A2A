@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/a2aproject/A2A/compare/v0.2.3...v0.2.4) (2025-06-30)
+
+
+### Features
+
+* feat: Add support for multiple transport announcement in AgentCard ([#749](https://github.com/a2aproject/A2A/issues/749)) ([b35485e](https://github.com/a2aproject/A2A/commit/b35485e02e796d15232dec01acfab93fc858c3ec))
+
 ## [0.2.3](https://github.com/a2aproject/A2A/compare/v0.2.2...v0.2.3) (2025-06-12)
 
 

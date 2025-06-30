@@ -49,6 +49,7 @@ extra_css:
 # Configuration
 theme:
   name: material
+  custom_dir: .mkdocs/overrides
   font:
     text: Google Sans
     code: Roboto Mono
@@ -56,6 +57,19 @@ theme:
   favicon: assets/a2a-logo-black.svg
   icon:
     repo: fontawesome/brands/github
+    admonition:
+      note: fontawesome/solid/note-sticky
+      abstract: fontawesome/solid/book
+      info: fontawesome/solid/circle-info
+      tip: fontawesome/solid/bullhorn
+      success: fontawesome/solid/check
+      question: fontawesome/solid/circle-question
+      warning: fontawesome/solid/triangle-exclamation
+      failure: fontawesome/solid/bomb
+      danger: fontawesome/solid/skull
+      bug: fontawesome/solid/robot
+      example: fontawesome/solid/flask
+      quote: fontawesome/solid/quote-left
   palette:
     - scheme: default
       primary: indigo
@@ -70,6 +84,7 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
+    - announce.dismiss
     - content.code.annotate
     - content.code.copy
     - content.code.select
@@ -89,6 +104,7 @@ theme:
 
 # Extensions
 markdown_extensions:
+  - footnotes
   - admonition
   - attr_list
   - md_in_html
@@ -158,6 +174,19 @@ plugins:
             show_object_full_path: false
             show_if_no_docstring: true
             filters: ["!^_"]
+            exclude:
+              - ".git"
+              - ".idea"
+              - ".vscode"
+              - ".nox"
+              - ".venv"
+              - ".tmp"
+              - ".gemini"
+              - ".scripts"
+              - "venv"
+              - ".ruff_cache"
+              - "node_modules"
+              - "__pycache__"
             extra:
               show_value: true
               show_qualifiers: false

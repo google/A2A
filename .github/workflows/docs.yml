@@ -71,9 +71,9 @@ jobs:
         if: github.event_name == 'release'
         run: |
           # The release tag (e.g., v0.2.2) is used as the version number
-          VERSION=${{ github.event.release.tag_name }}
-          echo "Deploying docs for version $VERSION and setting it as 'latest'..."
-          mike deploy --push --update-aliases $VERSION latest
+          export MIKE_VERSION=${{ github.event.release.tag_name }}
+          echo "Deploying docs for version $MIKE_VERSION and setting it as 'latest'..."
+          mike deploy --push --update-aliases $MIKE_VERSION latest
 
           echo "Setting 'latest' as the default version for the site..."
           mike set-default --push latest
