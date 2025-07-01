@@ -240,8 +240,8 @@ Describes a specific capability, function, or area of expertise the agent can pe
 | `description` | `string`            | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
 | `tags`        | `string[]`          | Yes      | Keywords/categories for discoverability.                                       |
 | `examples`    | `string[]`          | No       | Example prompts or use cases demonstrating skill usage.                        |
-| `inputModes`  | `string[]`          | No       | [Deprecated] Accepted Media Types for input.                                   |
-| `outputModes` | `string[]`          | No       | [Deprecated] Produced Media Types for output.                                  |
+| `inputModes`  | `string[]`          | No       | Accepted Media Types for input.                                   |
+| `outputModes` | `string[]`          | No       | Produced Media Types for output.                                  |
 | `inputFields` | `FieldDefinition[]` | No       | Structured input fields expected by this skill.                                |
 | `outputFields`| `FieldDefinition[]` | No       | Structured output fields produced by this skill.                               |
 
@@ -303,9 +303,9 @@ Describes an expected input or output field for an agent skill. This allows agen
       "inputModes": ["text/plain"],
       "outputModes": ["application/json", "application/vnd.geo+json", "text/html"],
       "inputFields": [
-        {"name": "origin", "kind": "text", "optional": "false"},
-        {"name": "destination", "kind": "text", "optional": "false"},
-        {"name": "preference", "kind": "text", "optional": "false"}
+        {"name": "origin", "kind": "text", "optional": false},
+        {"name": "destination", "kind": "text", "optional": false},
+        {"name": "preference", "kind": "text", "optional": false}
       ],
       "outputFields": [
         {
@@ -313,7 +313,7 @@ Describes an expected input or output field for an agent skill. This allows agen
           "kind": "data",
           "mimeTypes": ["application/json", "application/vnd.geo+json", "text/html"],
           "description": "A JSON object containing the computed route details, including geometry, directions, and any relevant metadata.",
-          "optional": "false"
+          "optional": false
         }
       ],
     },
@@ -321,6 +321,11 @@ Describes an expected input or output field for an agent skill. This allows agen
     "id": "custom-map-generator",
       "name": "Personalized Map Generator",
       "description": "Creates custom map images or interactive map views based on user-defined points of interest, routes, and style preferences. Can overlay data layers.",
+      "tags": ["maps", "customization", "visualization", "cartography"],
+      "examples": [
+        "Generate a map of my upcoming road trip with all planned stops highlighted.",
+        "Show me a map visualizing all coffee shops within a 1-mile radius of my current location."
+      ],
       "inputModes": ["application/json"],
       "outputModes": ["image/png", "image/jpeg", "application/json", "text/html"],
       "inputFields": [
@@ -328,7 +333,7 @@ Describes an expected input or output field for an agent skill. This allows agen
           "kind": "data",
           "mimeTypes": ["application/json"],
           "description": "List of locations to plot on the map",
-          "optional": "false"
+          "optional": false
         }
       ],
       "outputFields": [
@@ -337,14 +342,14 @@ Describes an expected input or output field for an agent skill. This allows agen
           "kind": "file",
           "mimeTypes": ["image/png", "image/jpeg"],
           "description": "Rendered map image",
-          "optional": "true",
+          "optional": true,
         },
         {
           "name": "mapData",
           "kind": "data",
           "mimeTypes": ["application/json"],
           "description": "Data representing the map",
-          "optional": "true",
+          "optional": true,
         }
       ]
     }

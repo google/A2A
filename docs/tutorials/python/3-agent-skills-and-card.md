@@ -18,7 +18,6 @@ Key attributes of an `AgentSkill` (defined in `a2a.types`):
 - `inputModes` / `outputModes`: Supported Media Types for input and output (e.g., "text/plain", "application/json").
 - `inputFields` / `outputFields`: Structured input/output fields (see `FieldDefinition`).
 
-
 In `__main__.py`, you can see how a skill for the Helloworld agent is defined:
 
 ```python { .no-copy }
@@ -39,7 +38,6 @@ Key attributes of a `FieldDefinition` (from `a2a.types`):
 - `schema`: (optional) A JSON schema describing the expected structure for `"data"` fields.
 - `description`: (optional) Human-readable description of the field.
 - `optional`: (optional) Whether this field is optional (`True` or `False`).
-
 
 ## Agent Card
 
