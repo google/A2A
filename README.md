@@ -44,6 +44,7 @@ As AI agents become more prevalent, their ability to interoperate is crucial for
 - 🐍 Use the SDKs:
     - [A2A Python SDK](https://github.com/a2aproject/a2a-python) `pip install a2a-sdk`
     - [A2A JS SDK](https://github.com/a2aproject/a2a-js) `npm install @a2a-js/sdk`
+    - [A2A Java SDK](https://github.com/a2aproject/a2a-java) using maven
 - 🎬 Use our [samples](https://github.com/a2aproject/a2a-samples) to see A2A in action
 
 ## Contributing
