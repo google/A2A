@@ -5,7 +5,7 @@ When a message is sent to an agent, it can choose to reply with either:
 - A stateless `Message`.
 - A stateful `Task` and zero or more `TaskStatusUpdateEvent` or `TaskArtifactUpdateEvent`.
 
-If the response is a `Message`, the interaction is completed. On the other hand, A `Task` will keep getting updated until it is in a interrupted state ()`input-required` or `auth-required`) or a terminal state (`completed`, `cancelled`, `rejected` or `failed`).
+If the response is a `Message`, the interaction is completed. On the other hand, A `Task` will keep getting updated until it is in a interrupted state (`input-required` or `auth-required`) or a terminal state (`completed`, `cancelled`, `rejected` or `failed`).
 
 ## Context
 
