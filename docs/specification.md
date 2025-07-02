@@ -7,7 +7,7 @@ hide:
 
 **Version:** `{{ a2a_version }}`
 
-See [CHANGELOG](https://github.com/a2aproject/A2A/blob/main/CHANGELOG.md) for changes made between versions.
+See [CHANGELOG](https://github.com/a2aproject/A2A/releases) for changes made between versions.
 
 ## 1. Introduction
 
