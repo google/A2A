@@ -1078,7 +1078,7 @@ _If the task were longer-running, the server might initially respond with `statu
        "artifact": {
          "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
          "parts": [
-           {"type":"text", "text": "<section 1...>"}
+           {"kind":"text", "text": "<section 1...>"}
          ]
        },
        "append": false,
@@ -1096,7 +1096,7 @@ _If the task were longer-running, the server might initially respond with `statu
        "artifact": {
          "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
          "parts": [
-           {"type":"text", "text": "<section 2...>"}
+           {"kind":"text", "text": "<section 2...>"}
          ],
        },
        "append": true,
@@ -1115,7 +1115,7 @@ _If the task were longer-running, the server might initially respond with `statu
        "artifact": {
          "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
          "parts": [
-           {"type":"text", "text": "<section 3...>"}
+           {"kind":"text", "text": "<section 3...>"}
          ]
        },
        "append": true,
