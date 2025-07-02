@@ -365,8 +365,6 @@ message AgentCard {
   string version = 5;
   // A url to provide additional documentation about the agent.
   string documentation_url = 6;
-  // A url to an icon for the agent.
-  string icon_url = 17;
   // A2A Capability set supported by the agent.
   AgentCapabilities capabilities = 7;
   // The security scheme details used for authenticating with this agent.
