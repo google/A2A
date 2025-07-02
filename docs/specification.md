@@ -7,6 +7,8 @@ hide:
 
 **Version:** `{{ a2a_version }}`
 
+See [CHANGELOG](https://github.com/a2aproject/A2A/blob/main/CHANGELOG.md) for changes made between versions.
+
 ## 1. Introduction
 
 The Agent2Agent (A2A) Protocol is an open standard designed to facilitate communication and interoperability between independent, potentially opaque AI agent systems. In an ecosystem where agents might be built using different frameworks, languages, or by different vendors, A2A provides a common language and interaction model.
