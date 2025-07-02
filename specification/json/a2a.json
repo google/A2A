@@ -2337,7 +2337,7 @@
             "type": "object"
         },
         "WellKnownUris": {
-            "description": "Well-known URIs used in the A2A protocol.",
+            "description": "Well-known URIs used in the A2A protocol.\nhttps://datatracker.ietf.org/doc/html/rfc8615",
             "properties": {
                 "AGENT_CARD_WELL_KNOWN_URI": {
                     "const": "/.well-known/agent.json",

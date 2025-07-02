@@ -4,7 +4,7 @@
 
 /**
  * Well-known URIs used in the A2A protocol.
- * @see https://datatracker.ietf.org/doc/html/rfc8615
+ * https://datatracker.ietf.org/doc/html/rfc8615
  */
 export interface WellKnownUris {
   /**
