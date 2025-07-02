@@ -70,11 +70,6 @@
             ],
             "description": "A2A supported request types"
         },
-        "AGENT_CARD_WELL_KNOWN_URI": {
-            "const": "/.well-known/agent.json",
-            "description": "The well-known URI at which an AgentCard should be hosted according to the A2A protocol.\nThis URI is used by clients to discover the agent's capabilities and metadata.",
-            "type": "string"
-        },
         "APIKeySecurityScheme": {
             "description": "API Key security scheme.",
             "properties": {
@@ -133,7 +128,7 @@
             "type": "object"
         },
         "AgentCard": {
-            "description": "An AgentCard conveys key information:\n- Overall details (version, name, description, uses)\n- Skills: A set of capabilities the agent can perform\n- Default modalities/content types supported by the agent.\n- Authentication requirements\n\nThe AgentCard SHOULD be hosted at the well-known URI specified by\n`AGENT_CARD_WELL_KNOWN_URI`.",
+            "description": "An AgentCard conveys key information:\n- Overall details (version, name, description, uses)\n- Skills: A set of capabilities the agent can perform\n- Default modalities/content types supported by the agent.\n- Authentication requirements\n\nThe AgentCard SHOULD be hosted at the well-known URI specified by the\n`WellKnownUris.AGENT_CARD_WELL_KNOWN_URI` constant (\"/.well-known/agent.json\").",
             "properties": {
                 "additionalInterfaces": {
                     "description": "Announcement of additional supported transports. Client can use any of\nthe supported transports.",
@@ -2338,6 +2333,20 @@
             "required": [
                 "code",
                 "message"
+            ],
+            "type": "object"
+        },
+        "WellKnownUris": {
+            "description": "Well-known URIs used in the A2A protocol.",
+            "properties": {
+                "AGENT_CARD_WELL_KNOWN_URI": {
+                    "const": "/.well-known/agent.json",
+                    "description": "The well-known URI at which an AgentCard should be hosted.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "AGENT_CARD_WELL_KNOWN_URI"
             ],
             "type": "object"
         }
