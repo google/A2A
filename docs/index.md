@@ -118,4 +118,11 @@ A2A and the [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) are
 
     [:fontawesome-brands-github: GitHub Samples](https://github.com/a2aproject/a2a-samples)
 
+- :material-code-braces:{ .lg .middle } **Download a SDK**
+
+    [:octicons-arrow-right-24: A2A Python SDK](https://github.com/a2aproject/a2a-python)
+    [:octicons-arrow-right-24: A2A JS SDK](https://github.com/a2aproject/a2a-js)
+    [:octicons-arrow-right-24: A2A Java SDK](https://github.com/a2aproject/a2a-java)
+    
+
 </div>
