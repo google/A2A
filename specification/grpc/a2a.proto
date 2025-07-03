@@ -593,13 +593,16 @@ message GetTaskRequest {
 }
 
 message ListTasksRequest {
-  // Filter tasks by context ID to get tasks from a specific conversation or session.
+  // Filter tasks by context ID to get tasks from a specific conversation
+  // or session.
   string context_id = 1;
   // Filter tasks by their current status state.
   TaskState status = 2;
-  // Maximum number of tasks to return. Must be between 1 and 1000. Defaults to 50 if not specified.
+  // Maximum number of tasks to return. Must be between 1 and 1000.
+  // Defaults to 50 if not specified.
   int32 page_size = 3;
-  // Token for pagination. Use the next_page_token from a previous ListTasksResponse.
+  // Token for pagination. Use the next_page_token from a previous
+  // ListTasksResponse.
   string page_token = 4;
   // Number of recent messages to include in each task's history.
   int32 history_length = 5;
