@@ -170,6 +170,10 @@ Key features of the A2A protocol highlighted by the specification and samples in
     - Retrieves the current state of a task.
     - `params`: `TaskQueryParams` (includes `id`, optionally `historyLength`).
     - `result`: `Task`.
+- **`tasks/list`:** (Request/Response)
+    - Retrieves a list of tasks with optional filtering and pagination.
+    - `params`: `ListTasksParams` (optional: `contextId`, `status`, `limit`, `offset`, `historyLength`).
+    - `result`: `ListTasksResult` (includes `tasks[]`, `total`, `limit`, `offset`).
 - **`tasks/cancel`:** (Request/Response)
     - Requests cancellation of a running task.
     - `params`: `TaskIdParams` (includes `id`).

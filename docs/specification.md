@@ -661,7 +661,31 @@ Retrieves the current state (including status, artifacts, and optionally history
 
 </div>
 
-### 7.4. `tasks/cancel`
+### 7.4. `tasks/list`
+
+Retrieves a list of tasks with optional filtering and pagination capabilities. This method allows clients to discover and manage multiple tasks across different contexts or with specific status criteria.
+
+- **Request `params` type**: [`ListTasksParams`](#741-listtasksparams-object) (Optional parameters for filtering and pagination)
+- **Response `result` type (on success)**: [`ListTasksResult`](#742-listtasksresult-object) (A paginated list of tasks matching the criteria)
+- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., validation errors for invalid parameters)
+
+#### 7.4.1. `ListTasksParams` Object
+
+Parameters for filtering and paginating task results.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:ListTasksParams"
+```
+
+#### 7.4.2. `ListTasksResult` Object
+
+Result object containing the filtered tasks and pagination information.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:ListTasksResult"
+```
+
+### 7.5. `tasks/cancel`
 
 Requests the cancellation of an ongoing task. The server will attempt to cancel the task, but success is not guaranteed (e.g., the task might have already completed or failed, or cancellation might not be supported at its current stage).
 
@@ -670,8 +694,8 @@ Requests the cancellation of an ongoing task. The server will attempt to cancel 
 === "JSON-RPC"
     -   **URL:** `tasks/cancel`
     -   **HTTP Method:** `POST`
-    -   **Payload**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
-    -   **Response**: `Task`
+    -   **Payload**: [`TaskIdParams`](#751-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+    -   **Response**: [`Task`](#61-task-object)
 
 === "gRPC"
     -   **URL:** `CancelTask`
@@ -683,7 +707,7 @@ Requests the cancellation of an ongoing task. The server will attempt to cancel 
           string name;
         }
         ```
-    -   **Response**: `Task`
+    -   **Response**: [`Task`](#61-task-object)
 
 === "REST"
     -   **URL:** `/v1/tasks/{id}:cancel`
@@ -694,11 +718,13 @@ Requests the cancellation of an ongoing task. The server will attempt to cancel 
           name: string
         }
         ```
-    -   **Response**: `Task`
+    -   **Response**: [`Task`](#61-task-object)
 
 </div>
 
-#### 7.4.1. `TaskIdParams` Object (for `tasks/cancel` and `tasks/pushNotificationConfig/get`)
+- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`TaskNotFoundError`](#82-a2a-specific-errors), [`TaskNotCancelableError`](#82-a2a-specific-errors)).
+
+#### 7.5.1. `TaskIdParams` Object (for `tasks/cancel` and `tasks/pushNotificationConfig/get`)
 
 A simple object containing just the task ID and optional metadata.
 
@@ -706,7 +732,7 @@ A simple object containing just the task ID and optional metadata.
 --8<-- "types/src/types.ts:TaskIdParams"
 ```
 
-### 7.5. `tasks/pushNotificationConfig/set`
+### 7.6. `tasks/pushNotificationConfig/set`
 
 Sets or updates the push notification configuration for a specified task. This allows the client to tell the server where and how to send asynchronous updates for the task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
@@ -742,7 +768,7 @@ Sets or updates the push notification configuration for a specified task. This a
 
 </div>
 
-### 7.6. `tasks/pushNotificationConfig/get`
+### 7.7. `tasks/pushNotificationConfig/get`
 
 Retrieves the current push notification configuration for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
@@ -751,7 +777,7 @@ Retrieves the current push notification configuration for a specified task. Requ
 === "JSON-RPC"
     -   **URL:** `tasks/pushNotificationConfig/get`
     -   **HTTP Method:** `POST`
-    -   **Payload**: [`GetTaskPushNotificationConfigParams`](#761-gettaskpushnotificationconfigparams-object-taskspushnotificationconfigget)
+    -   **Payload**: [`GetTaskPushNotificationConfigParams`](#771-gettaskpushnotificationconfigparams-object-taskspushnotificationconfigget)
     -   **Response**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
 
 === "gRPC"
@@ -776,7 +802,7 @@ Retrieves the current push notification configuration for a specified task. Requ
 
 **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
 
-#### 7.6.1. `GetTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/get`)
+#### 7.7.1. `GetTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/get`)
 
 A object for fetching the push notification configuration for a task.
 
@@ -784,7 +810,7 @@ A object for fetching the push notification configuration for a task.
 --8<-- "types/src/types.ts:GetTaskPushNotificationConfigParams"
 ```
 
-### 7.7. `tasks/pushNotificationConfig/list`
+### 7.8. `tasks/pushNotificationConfig/list`
 
 Retrieves the associated push notification configurations for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
@@ -793,7 +819,7 @@ Retrieves the associated push notification configurations for a specified task. 
 === "JSON-RPC"
     -   **URL:** `tasks/pushNotificationConfig/list`
     -   **HTTP Method:** `POST`
-    -   **Payload:** [`ListTaskPushNotificationConfigParams`](#771-listtaskpushnotificationconfigparams-object-taskspushnotificationconfiglist)
+    -   **Payload:** [`ListTaskPushNotificationConfigParams`](#781-listtaskpushnotificationconfigparams-object-taskspushnotificationconfiglist)
     -   **Response**: `TaskPushNotificationConfig[]`
 
 === "gRPC"
@@ -816,7 +842,9 @@ Retrieves the associated push notification configurations for a specified task. 
 
 </div>
 
-#### 7.7.1. `ListTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/list`)
+- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
+
+#### 7.8.1. `ListTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/list`)
 
 A object for fetching the push notification configurations for a task.
 
@@ -824,15 +852,15 @@ A object for fetching the push notification configurations for a task.
 --8<-- "types/src/types.ts:ListTaskPushNotificationConfigRequest"
 ```
 
-### 7.8. `tasks/pushNotificationConfig/delete`
+### 7.9. `tasks/pushNotificationConfig/delete`
 
 Deletes an associated push notification configuration for a task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`DeleteTaskPushNotificationConfigParams`](#781-deletetaskpushnotificationconfigparams-object-taskspushnotificationconfigdelete)
+- **Request `params` type**: [`DeleteTaskPushNotificationConfigParams`](#791-deletetaskpushnotificationconfigparams-object-taskspushnotificationconfigdelete)
 - **Response `result` type (on success)**: [`null`]
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
 
-#### 7.8.1. `DeleteTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/delete`)
+#### 7.9.1. `DeleteTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/delete`)
 
 A object for deleting an associated push notification configuration for a task.
 
@@ -840,7 +868,7 @@ A object for deleting an associated push notification configuration for a task.
 --8<-- "types/src/types.ts:DeleteTaskPushNotificationConfigParams"
 ```
 
-### 7.9. `tasks/resubscribe`
+### 7.10. `tasks/resubscribe`
 
 Allows a client to reconnect to an SSE stream for an ongoing task after a previous connection (from `message/stream` or an earlier `tasks/resubscribe`) was interrupted. Requires the server to have `AgentCard.capabilities.streaming: true`.
 
@@ -897,7 +925,11 @@ The purpose is to resume receiving _subsequent_ updates. The server's behavior r
 
 </div>
 
-### 7.10. `agent/authenticatedExtendedCard`
+- **Response (on resubscription failure)**:
+    - Standard HTTP error code (e.g., 4xx, 5xx).
+    - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
+
+### 7.11. `agent/authenticatedExtendedCard`
 
 Retrieves a potentially more detailed version of the Agent Card after the client has authenticated. This endpoint is available only if `AgentCard.supportsAuthenticatedExtendedCard` is `true`.
 
@@ -936,11 +968,11 @@ Retrieves a potentially more detailed version of the Agent Card after the client
 
 Clients retrieving this authenticated card **SHOULD** replace their cached public Agent Card with the content received from this endpoint for the duration of their authenticated session or until the card's version changes.
 
-#### 7.10.1. `AuthenticatedExtendedCardParams` Object
+#### 7.11.1. `AuthenticatedExtendedCardParams` Object
 
 This endpoint does not use JSON-RPC `params`. Any parameters would be included as HTTP query parameters if needed (though none are defined by the standard).
 
-#### 7.10.2. `AuthenticatedExtendedCardResponse` Object
+#### 7.11.2. `AuthenticatedExtendedCardResponse` Object
 
 The successful response body is a JSON object conforming to the `AgentCard` interface.
 
@@ -1452,7 +1484,126 @@ _If the task were longer-running, the server might initially respond with `statu
    }
    ```
 
-### 9.5. Push Notification Setup and Usage
+### 9.5. Task Listing and Management
+
+**Scenario:** Client wants to see all tasks from a specific context or all tasks with a particular status.
+
+1. **Client requests all tasks from a specific context:**
+
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "list-001",
+     "method": "tasks/list",
+     "params": {
+       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+       "limit": 10,
+       "offset": 0,
+       "historyLength": 3
+     }
+   }
+   ```
+
+2. **Server responds with matching tasks:**
+
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "list-001",
+     "result": {
+       "tasks": [
+         {
+           "id": "3f36680c-7f37-4a5f-945e-d78981fafd36",
+           "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+           "status": {
+             "state": "completed",
+             "timestamp": "2024-03-15T10:15:00Z"
+           },
+           "artifacts": [
+             {
+               "artifactId": "flight-confirmation-456",
+               "name": "Flight Booking Confirmation",
+               "parts": [
+                 {
+                   "kind": "text",
+                   "text": "Flight booked: NYC to SF on March 20th"
+                 }
+               ]
+             }
+           ],
+           "history": [
+             {
+               "role": "user",
+               "parts": [
+                 {
+                   "kind": "text",
+                   "text": "I'd like to book a flight."
+                 }
+               ],
+               "messageId": "c53ba666-3f97-433c-a87b-6084276babe2",
+               "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4"
+             }
+           ],
+           "kind": "task"
+         }
+       ],
+       "total": 5,
+       "limit": 10,
+       "offset": 0
+     }
+   }
+   ```
+
+3. **Client requests all working tasks across all contexts:**
+
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "list-002",
+     "method": "tasks/list",
+     "params": {
+       "status": "working",
+       "limit": 20
+     }
+   }
+   ```
+
+4. **Server responds with all currently working tasks:**
+
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "list-002",
+     "result": {
+       "tasks": [
+         {
+           "id": "789abc-def0-1234-5678-9abcdef01234",
+           "contextId": "another-context-id",
+           "status": {
+             "state": "working",
+             "message": {
+               "role": "agent",
+               "parts": [
+                 {
+                   "kind": "text",
+                   "text": "Processing your document analysis..."
+                 }
+               ],
+               "messageId": "msg-status-update"
+             },
+             "timestamp": "2024-03-15T10:20:00Z"
+           },
+           "kind": "task"
+         }
+       ],
+       "total": 1,
+       "limit": 20,
+       "offset": 0
+     }
+   }
+   ```
+
+### 9.6. Push Notification Setup and Usage
 
 **Scenario:** Client requests a long-running report generation and wants to be notified via webhook when it's done.
 
@@ -1530,7 +1681,7 @@ _If the task were longer-running, the server might initially respond with `statu
    - Validates the `X-A2A-Notification-Token`.
    - Internally processes the notification (e.g., updates application state, notifies end user).
 
-### 9.6. File Exchange (Upload and Download)
+### 9.7. File Exchange (Upload and Download)
 
 **Scenario:** Client sends an image for analysis, and the agent returns a modified image.
 
@@ -1598,7 +1749,7 @@ _If the task were longer-running, the server might initially respond with `statu
    }
    ```
 
-### 9.7. Structured Data Exchange (Requesting and Providing JSON)
+### 9.8. Structured Data Exchange (Requesting and Providing JSON)
 
 **Scenario:** Client asks for a list of open support tickets in a specific JSON format.
 
