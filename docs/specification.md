@@ -405,7 +405,7 @@ A generic structure for specifying authentication requirements, typically used w
 
 ### 6.10. `TaskPushNotificationConfig` Object
 
-Used as the `params` object for the [`tasks/pushNotificationConfig/set`](#75-taskspushnotificationconfigset) method and as the `result` object for the [`tasks/pushNotificationConfig/get`](#76-taskspushnotificationconfigget) method.
+Used as the `params` object for the [`tasks/pushNotificationConfig/set`](#76-taskspushnotificationconfigset) method and as the `result` object for the [`tasks/pushNotificationConfig/get`](#77-taskspushnotificationconfigget) method.
 
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskPushNotificationConfig"
