@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "generate": "./node_modules/.bin/typescript-json-schema tsconfig.json \"*\" --defaultNumberType integer --required > ../specification/json/a2a.json",
+    "generate": "./node_modules/.bin/typescript-json-schema tsconfig.json \"*\" --defaultNumberType integer --required --out ../specification/json/a2a.json",
     "prettier": "prettier src/types.ts --write"
   },
   "author": "",

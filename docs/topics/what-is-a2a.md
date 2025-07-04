@@ -43,6 +43,46 @@ Adopting A2A can lead to significant advantages:
 
 By establishing common ground for agent-to-agent communication, A2A aims to accelerate the adoption and utility of AI agents across diverse industries and applications, paving the way for more powerful and collaborative AI systems.
 
-[Watch the A2A Demo Video](https://storage.googleapis.com/gweb-developer-goog-blog-assets/original_videos/A2A_demo_v4.mp4)
+## A2A Request Lifecycle
+
+```mermaid
+sequenceDiagram
+    participant Client
+    participant A2A Server
+    participant Auth Server
+
+    rect rgb(240, 240, 240)
+    Note over Client, A2A Server: 1. Agent Discovery
+    Client->>A2A Server: GET agent card eg: (/.well-known/agent-card)
+    A2A Server-->>Client: Returns Agent Card
+    end
+
+    rect rgb(240, 240, 240)
+    Note over Client, Auth Server: 2. Authentication
+    Client->>Client: Parse Agent Card for securitySchemes
+    alt securityScheme is openIdConnect
+        Client->>Auth Server: Request token based on "authorizationUrl" and "tokenUrl"
+        Auth Server-->>Client: Returns JWT
+    end
+    end
+
+    rect rgb(240, 240, 240)
+    Note over Client, A2A Server: 3. sendMessage API
+    Client->>Client: Parse Agent Card for "url" param to send API requests to.
+    Client->>A2A Server: POST /sendMessage (with JWT)
+    A2A Server->>A2A Server: Process message and create task
+    A2A Server-->>Client: Returns Task Response
+    end
+
+    rect rgb(240, 240, 240)
+    Note over Client, A2A Server: 4. sendMessageStream API
+    Client->>A2A Server: POST /sendMessageStream (with JWT)
+    A2A Server-->>Client: Stream: Task (Submitted)
+    A2A Server-->>Client: Stream: TaskStatusUpdateEvent (Working)
+    A2A Server-->>Client: Stream: TaskArtifactUpdateEvent (artifact A)
+    A2A Server-->>Client: Stream: TaskArtifactUpdateEvent (artifact B)
+    A2A Server-->>Client: Stream: TaskStatusUpdateEvent (Completed)
+    end
+```
 
 Next, learn about the [Key Concepts](./key-concepts.md) that form the foundation of the A2A protocol.

@@ -15,6 +15,7 @@ AServer
 AService
 AStarlette
 Autogen
+Blogs
 CAs
 CLIs
 Camry
@@ -27,6 +28,7 @@ EUR
 EUg
 FBT
 FHIR
+Fbr
 GAPI
 GAPIC
 GBP
@@ -34,6 +36,7 @@ GVsb
 Gapic
 Genkit
 Ghw
+Hackathon
 IFdvcmxk
 INR
 JHv
@@ -51,12 +54,14 @@ OOa
 Ollama
 PLE
 PLW
+PMEEi
 PTH
 Petstore
 RPCs
 RUF
 SLAs
 SLF
+Solax
 TJS
 TMDB
 Tful
@@ -115,6 +120,7 @@ dotnet
 efaab
 efbd
 embeddings
+endblock
 envoyproxy
 evt
 excinfo
@@ -123,6 +129,7 @@ fafd
 ffbb
 firewalls
 flightbook
+forbes
 fsv
 fyi
 gapic
@@ -139,6 +146,7 @@ googleblog
 gpt
 gstatic
 gweb
+hqdefault
 iat
 ietf
 inbox
@@ -175,6 +183,7 @@ ollama
 oneof
 openapis
 openrpc
+oreilly
 pqr
 prefecthq
 protoc
@@ -212,6 +221,8 @@ utm
 versioned
 vnd
 voa
+vscode
+weavehacks
 webpage
 whatwg
 wikipedia

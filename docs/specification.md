@@ -7,6 +7,8 @@ hide:
 
 **Version:** `{{ a2a_version }}`
 
+See [Release Notes](https://github.com/a2aproject/A2A/releases) for changes made between versions.
+
 ## 1. Introduction
 
 The Agent2Agent (A2A) Protocol is an open standard designed to facilitate communication and interoperability between independent, potentially opaque AI agent systems. In an ecosystem where agents might be built using different frameworks, languages, or by different vendors, A2A provides a common language and interaction model.
@@ -159,6 +161,7 @@ Agent Cards themselves might contain information that is considered sensitive.
 
 | Field Name                          | Type                                                               | Required | Description                                                                                                                                 |
 | :---------------------------------- | :----------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `protocolVersion`                   | `string`                                                           | Yes      | The version of the A2A protocol this agent supports.                                                                                        |
 | `name`                              | `string`                                                           | Yes      | Human-readable name of the agent.                                                                                                           |
 | `description`                       | `string`                                                           | Yes      | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                                              |
 | `url`                               | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                                               |
@@ -247,6 +250,7 @@ Describes a specific capability, function, or area of expertise the agent can pe
 
 ```json
 {
+  "protocolVersion": "0.2.9",
   "name": "GeoSpatial Route Planner Agent",
   "description": "Provides advanced route planning, traffic analysis, and custom map generation services. This agent can calculate optimal routes, estimate travel times considering real-time traffic, and create personalized maps with points of interest.",
   "url": "https://georoute-agent.example.com/a2a/v1",
@@ -494,8 +498,9 @@ Configuration provided by the client to the server for sending asynchronous push
 | Field Name       | Type                                                                  | Required | Description                                                                                                                                                               |
 | :--------------- | :-------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `url`            | `string`                                                              | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
+| `id`             | `string`                                                              | No       | Optional server-generated identifier for the push notification configuration to support multiple callbacks.                                                               |
 | `token`          | `string`                                                              | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
-| `authentication` | [`PushNotificationAuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                                        |
+| `authentication` | [`PushNotificationAuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                        |
 
 ### 6.9. `PushNotificationAuthenticationInfo` Object
 
@@ -1075,7 +1080,7 @@ _If the task were longer-running, the server might initially respond with `statu
        "artifact": {
          "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
          "parts": [
-           {"type":"text", "text": "<section 1...>"}
+           {"kind":"text", "text": "<section 1...>"}
          ]
        },
        "append": false,
@@ -1093,7 +1098,7 @@ _If the task were longer-running, the server might initially respond with `statu
        "artifact": {
          "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
          "parts": [
-           {"type":"text", "text": "<section 2...>"}
+           {"kind":"text", "text": "<section 2...>"}
          ],
        },
        "append": true,
@@ -1112,7 +1117,7 @@ _If the task were longer-running, the server might initially respond with `statu
        "artifact": {
          "artifactId": "9b6934dd-37e3-4eb1-8766-962efaab63a1",
          "parts": [
-           {"type":"text", "text": "<section 3...>"}
+           {"kind":"text", "text": "<section 3...>"}
          ]
        },
        "append": true,
