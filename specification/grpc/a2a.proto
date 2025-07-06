@@ -179,13 +179,8 @@ enum TaskState {
   // an interrupted or terminal state.
   TASK_STATE_AUTH_REQUIRED = 8;
   TASK_STATE_USER_CONSENT_REQUIRED=9;
-  //The integration of USER CONSENT REQUIRED into the TaskState enum elevates the
-  //protocol’s control over task execution. Unlike existing states such as INPUT REQUIRED,
-  //which merely indicate that additional information is needed, this new state explicitly
-  //denotes that a task is paused until the end-user provides affirmative consent. Embedding
-  //this state into the task lifecycle ensures that AI agents and back-end services stop sensitive
-  //operations like booking travel, executing financial transactions, or sharing personal data
-  //until a human user explicitly approves.
+  // Pauses the task until the end-user provides explicit consent for
+  // sensitive operations, such as booking travel or sharing personal data.
 }
 
 // A container for the status of a task
