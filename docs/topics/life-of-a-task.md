@@ -75,7 +75,7 @@ Or in case of ambiguity or context not supported, agent can use "input-required"
 
 ### Example Follow-up
 
-#### Client sends message to agent
+#### Client sends message to agent for image generation
 
 ```json
 {
@@ -210,7 +210,7 @@ Refers to previous taskID and uses same contextId.
 
 The client requests the agent to book a flight, which requires user consent due to the sensitive nature of the operation.
 
-##### Client sends message to agent
+##### Client sends message to agent for flight booking
 
 ```json
 {
