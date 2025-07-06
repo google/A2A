@@ -9,7 +9,7 @@ The A2A Python SDK provides an `A2AStarletteApplication` class that simplifies r
 Let's look at `__main__.py` again to see how the server is initialized and started.
 
 ```python { .no-copy }
---8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/__main__.py"
+--8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/__main__.py"
 ```
 
 Let's break this down:

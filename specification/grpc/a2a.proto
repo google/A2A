@@ -1,10 +1,11 @@
-// edition = "2023";
+// Older protoc compilers don't understand edition yet.
 syntax = "proto3";
 package a2a.v1;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
 import "google/protobuf/struct.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -17,14 +18,13 @@ option java_package = "com.google.a2a.v1";
 // A2AService defines the gRPC version of the A2A protocol. This has a slightly
 // different shape than the JSONRPC version to better conform to AIP-127,
 // where appropriate. The nouns are AgentCard, Message, Task and
-// TaskPushNotification.
+// TaskPushNotificationConfig.
 // - Messages are not a standard resource so there is no get/delete/update/list
 //   interface, only a send and stream custom methods.
 // - Tasks have a get interface and custom cancel and subscribe methods.
-// - TaskPushNotification are a resource whose parent is a task. They have get,
-//   list and create methods.
+// - TaskPushNotificationConfig are a resource whose parent is a task.
+//   They have get, list and create methods.
 // - AgentCard is a static resource with only a get method.
-// Of particular note of deviation from JSONRPC approach the request metadata
 // fields are not present as they don't comply with AIP rules, and the
 // optional history_length on the get task method is not present as it also
 // violates AIP-127 and AIP-131.
@@ -33,7 +33,7 @@ service A2AService {
   // task once it is completed, or a LRO if requested.
   rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {
     option (google.api.http) = {
-      post: "/v1//message:send"
+      post: "/v1/message:send"
       body: "*"
     };
   }
@@ -57,7 +57,7 @@ service A2AService {
   // more task updates for the task.
   rpc CancelTask(CancelTaskRequest) returns (Task) {
     option (google.api.http) = {
-      post: "/v1/tasks/{id}:cancel"
+      post: "/v1/{name=tasks/*}:cancel"
       body: "*"
     };
   }
@@ -73,27 +73,27 @@ service A2AService {
   }
 
   // Set a push notification config for a task.
-  rpc CreateTaskPushNotification(CreateTaskPushNotificationRequest)
+  rpc CreateTaskPushNotificationConfig(CreateTaskPushNotificationConfigRequest)
       returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
-      post: "/v1/{parent=task/*/pushNotifications}"
+      post: "/v1/{parent=task/*/pushNotificationConfigs}"
       body: "config"
     };
     option (google.api.method_signature) = "parent,config";
   }
   // Get a push notification config for a task.
-  rpc GetTaskPushNotification(GetTaskPushNotificationRequest)
+  rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest)
       returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
-      get: "/v1/{name=tasks/*/pushNotifications/*}"
+      get: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
     };
     option (google.api.method_signature) = "name";
   }
   // Get a list of push notifications configured for a task.
-  rpc ListTaskPushNotification(ListTaskPushNotificationRequest)
-      returns (ListTaskPushNotificationResponse) {
+  rpc ListTaskPushNotificationConfig(ListTaskPushNotificationConfigRequest)
+      returns (ListTaskPushNotificationConfigResponse) {
     option (google.api.http) = {
-      get: "/v1/{parent=tasks/*}/pushNotifications"
+      get: "/v1/{parent=tasks/*}/pushNotificationConfigs"
     };
     option (google.api.method_signature) = "parent";
   }
@@ -102,6 +102,14 @@ service A2AService {
     option (google.api.http) = {
       get: "/v1/card"
     };
+  }
+  // Delete a push notification config for a task.
+  rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest)
+      returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
+    };
+    option (google.api.method_signature) = "name";
   }
 }
 
@@ -128,9 +136,9 @@ message SendMessageConfiguration {
 // artifact. If there are multiple turns for a task, these are stored in
 // history.
 message Task {
-  // Unique identifer for a task, created by the A2A server.
+  // Unique identifier for a task, created by the A2A server.
   string id = 1;
-  // Unique identifer for the contextual collection of interactions (tasks
+  // Unique identifier for the contextual collection of interactions (tasks
   // and messages). Created by the A2A server.
   string context_id = 2;
   // The current status of a Task, including state and a message.
@@ -179,6 +187,7 @@ message TaskStatus {
   // A message associated with the status.
   Message update = 2;
   // Timestamp when the status was recorded.
+  // Example: "2023-10-27T10:00:00Z"
   google.protobuf.Timestamp timestamp = 3;
 }
 
@@ -317,21 +326,42 @@ message AuthenticationInfo {
   string credentials = 2;
 }
 
+// Defines additional transport information for the agent.
+message AgentInterface {
+  // The url this interface is found at.
+  string url = 1;
+  // The transport supported this url. This is an open form string, to be
+  // easily extended for many transport protocols. The core ones officially
+  // supported are JSONRPC, GRPC and HTTP+JSON.
+  string transport = 2;
+}
+
 // AgentCard conveys key information:
 // - Overall details (version, name, description, uses)
 // - Skills; a set of actions/solutions the agent can perform
 // - Default modalities/content types supported by the agent.
 // - Authentication requirements
 message AgentCard {
+  // The version of the A2A protocol this agent supports.
+  string protocol_version = 16;
   // A human readable name for the agent.
+  // Example: "Recipe Agent"
   string name = 1;
-  // A description of the agents domain of action/solution space.
+  // A description of the agent's domain of action/solution space.
+  // Example: "Agent that helps users with recipes and cooking."
   string description = 2;
-  // The base url to interact with the agent at.
+  // A URL to the address the agent is hosted at. This represents the
+  // preferred endpoint as declared by the agent.
   string url = 3;
-  // Information about the service provider of the agent.
+  // The transport of the preferred endpoint. If empty, defaults to JSONRPC.
+  string preferred_transport = 14;
+  // Announcement of additional supported transports. Client can use any of
+  // the supported transports.
+  repeated AgentInterface additional_interfaces = 15;
+  // The service provider of the agent.
   AgentProvider provider = 4;
   // The version of the agent.
+  // Example: "1.0.0"
   string version = 5;
   // A url to provide additional documentation about the agent.
   string documentation_url = 6;
@@ -361,8 +391,10 @@ message AgentCard {
 // Represents information about the service provider of an agent.
 message AgentProvider {
   // The providers reference url
+  // Example: "https://ai.google.dev"
   string url = 1;
   // The providers organization name
+  // Example: "Google"
   string organization = 2;
 }
 
@@ -379,10 +411,13 @@ message AgentCapabilities {
 // A declaration of an extension supported by an Agent.
 message AgentExtension {
   // The URI of the extension.
+  // Example: "https://developers.google.com/identity/protocols/oauth2"
   string uri = 1;
   // A description of how this agent uses this extension.
+  // Example: "Google OAuth 2.0 authentication"
   string description = 2;
   // Whether the client must follow specific requirements of the extension.
+  // Example: false
   bool required = 3;
   // Optional configuration for the extension.
   google.protobuf.Struct params = 4;
@@ -402,10 +437,12 @@ message AgentSkill {
   // details and behaviors.
   string description = 3;
   // A set of tags for the skill to enhance categorization/utilization.
+  // Example: ["cooking", "customer support", "billing"]
   repeated string tags = 4;
   // A set of example queries that this skill is designed to address.
   // These examples should help the caller to understand how to craft requests
   // to the agent to achieve specific goals.
+  // Example: ["I need a recipe for bread"]
   repeated string examples = 5;
   // Possible input modalities supported.
   repeated string input_modes = 6;
@@ -414,7 +451,7 @@ message AgentSkill {
 }
 
 message TaskPushNotificationConfig {
-  // name=tasks/{id}/pushNotifications/{id}
+  // name=tasks/{id}/pushNotificationConfigs/{id}
   string name = 1;
   PushNotificationConfig push_notification_config = 2;
 }
@@ -554,12 +591,17 @@ message CancelTaskRequest {
   string name = 1;
 }
 
-message GetTaskPushNotificationRequest {
-  // name=tasks/{id}/pushNotifications/{push_id}
+message GetTaskPushNotificationConfigRequest {
+  // name=tasks/{id}/pushNotificationConfigs/{push_id}
   string name = 1;
 }
 
-message CreateTaskPushNotificationRequest {
+message DeleteTaskPushNotificationConfigRequest {
+  // name=tasks/{id}/pushNotificationConfigs/{push_id}
+  string name = 1;
+}
+
+message CreateTaskPushNotificationConfigRequest {
   // The task resource for this config.
   // Format: tasks/{id}
   string parent = 1 [(google.api.field_behavior) = REQUIRED];
@@ -573,7 +615,7 @@ message TaskSubscriptionRequest {
   string name = 1;
 }
 
-message ListTaskPushNotificationRequest {
+message ListTaskPushNotificationConfigRequest {
   // parent=tasks/{id}
   string parent = 1;
   // For AIP-158 these fields are present. Usually not used/needed.
@@ -581,10 +623,11 @@ message ListTaskPushNotificationRequest {
   // If unspecified, all configs will be returned.
   int32 page_size = 2;
 
-  // A page token, received from a previous `ListTaskPushNotificationRequest
-  //  call. Provide this to retrieve the subsequent page.
+  // A page token received from a previous
+  // ListTaskPushNotificationConfigRequest call.
+  // Provide this to retrieve the subsequent page.
   // When paginating, all other parameters provided to
-  // `ListTaskPushNotificationRequest` must match the call that provided
+  // `ListTaskPushNotificationConfigRequest` must match the call that provided
   // the page token.
   string page_token = 3;
 }
@@ -619,7 +662,7 @@ message StreamResponse {
   }
 }
 
-message ListTaskPushNotificationResponse {
+message ListTaskPushNotificationConfigResponse {
   repeated TaskPushNotificationConfig configs = 1;
   // A token, which can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.

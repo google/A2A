@@ -60,6 +60,12 @@
                 },
                 {
                     "$ref": "#/definitions/TaskResubscriptionRequest"
+                },
+                {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigRequest"
+                },
+                {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigRequest"
                 }
             ],
             "description": "A2A supported request types"
@@ -124,6 +130,13 @@
         "AgentCard": {
             "description": "An AgentCard conveys key information:\n- Overall details (version, name, description, uses)\n- Skills: A set of capabilities the agent can perform\n- Default modalities/content types supported by the agent.\n- Authentication requirements",
             "properties": {
+                "additionalInterfaces": {
+                    "description": "Announcement of additional supported transports. Client can use any of\nthe supported transports.",
+                    "items": {
+                        "$ref": "#/definitions/AgentInterface"
+                    },
+                    "type": "array"
+                },
                 "capabilities": {
                     "$ref": "#/definitions/AgentCapabilities",
                     "description": "Optional capabilities supported by the agent."
@@ -144,6 +157,9 @@
                 },
                 "description": {
                     "description": "A human-readable description of the agent. Used to assist users and\nother agents in understanding what the agent can do.",
+                    "examples": [
+                        "Agent that helps users with recipes and cooking."
+                    ],
                     "type": "string"
                 },
                 "documentationUrl": {
@@ -156,6 +172,18 @@
                 },
                 "name": {
                     "description": "Human readable name of the agent.",
+                    "examples": [
+                        "Recipe Agent"
+                    ],
+                    "type": "string"
+                },
+                "preferredTransport": {
+                    "description": "The transport of the preferred endpoint. If empty, defaults to JSONRPC.",
+                    "type": "string"
+                },
+                "protocolVersion": {
+                    "default": "0.2.5",
+                    "description": "The version of the A2A protocol this agent supports.",
                     "type": "string"
                 },
                 "provider": {
@@ -194,11 +222,14 @@
                     "type": "boolean"
                 },
                 "url": {
-                    "description": "A URL to the address the agent is hosted at.",
+                    "description": "A URL to the address the agent is hosted at. This represents the\npreferred endpoint as declared by the agent.",
                     "type": "string"
                 },
                 "version": {
                     "description": "The version of the agent - format is up to the provider.",
+                    "examples": [
+                        "1.0.0"
+                    ],
                     "type": "string"
                 }
             },
@@ -208,6 +239,7 @@
                 "defaultOutputModes",
                 "description",
                 "name",
+                "protocolVersion",
                 "skills",
                 "url",
                 "version"
@@ -216,6 +248,13 @@
         },
         "AgentExtension": {
             "description": "A declaration of an extension supported by an Agent.",
+            "examples": [
+                {
+                    "description": "Google OAuth 2.0 authentication",
+                    "required": false,
+                    "uri": "https://developers.google.com/identity/protocols/oauth2"
+                }
+            ],
             "properties": {
                 "description": {
                     "description": "A description of how this agent uses this extension.",
@@ -240,8 +279,31 @@
             ],
             "type": "object"
         },
+        "AgentInterface": {
+            "description": "AgentInterface provides a declaration of a combination of the\ntarget url and the supported transport to interact with the agent.",
+            "properties": {
+                "transport": {
+                    "description": "The transport supported this url. This is an open form string, to be\neasily extended for many transport protocols. The core ones officially\nsupported are JSONRPC, GRPC and HTTP+JSON.",
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "transport",
+                "url"
+            ],
+            "type": "object"
+        },
         "AgentProvider": {
             "description": "Represents the service provider of an agent.",
+            "examples": [
+                {
+                    "organization": "Google",
+                    "url": "https://ai.google.dev"
+                }
+            ],
             "properties": {
                 "organization": {
                     "description": "Agent provider's organization name.",
@@ -267,6 +329,11 @@
                 },
                 "examples": {
                     "description": "The set of example scenarios that the skill can perform.\nWill be used by the client as a hint to understand how the skill can be used.",
+                    "examples": [
+                        [
+                            "I need a recipe for bread"
+                        ]
+                    ],
                     "items": {
                         "type": "string"
                     },
@@ -296,6 +363,13 @@
                 },
                 "tags": {
                     "description": "Set of tagwords describing classes of capabilities for this specific skill.",
+                    "examples": [
+                        [
+                            "cooking",
+                            "customer support",
+                            "billing"
+                        ]
+                    ],
                     "items": {
                         "type": "string"
                     },
@@ -526,6 +600,99 @@
             ],
             "type": "object"
         },
+        "DeleteTaskPushNotificationConfigParams": {
+            "description": "Parameters for removing pushNotificationConfiguration associated with a Task",
+            "properties": {
+                "id": {
+                    "description": "Task id.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "type": "object"
+                },
+                "pushNotificationConfigId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id",
+                "pushNotificationConfigId"
+            ],
+            "type": "object"
+        },
+        "DeleteTaskPushNotificationConfigRequest": {
+            "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/delete' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "method": {
+                    "const": "tasks/pushNotificationConfig/delete",
+                    "description": "A String containing the name of the method to be invoked.",
+                    "type": "string"
+                },
+                "params": {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigParams",
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "method",
+                "params"
+            ],
+            "type": "object"
+        },
+        "DeleteTaskPushNotificationConfigResponse": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/JSONRPCErrorResponse"
+                },
+                {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigSuccessResponse"
+                }
+            ],
+            "description": "JSON-RPC response for the 'tasks/pushNotificationConfig/delete' method."
+        },
+        "DeleteTaskPushNotificationConfigSuccessResponse": {
+            "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/delete' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer",
+                        "null"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "result": {
+                    "description": "The result object on success.",
+                    "type": "null"
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "result"
+            ],
+            "type": "object"
+        },
         "FileBase": {
             "description": "Represents the base entity for FileParts",
             "properties": {
@@ -613,6 +780,26 @@
             ],
             "type": "object"
         },
+        "GetTaskPushNotificationConfigParams": {
+            "description": "Parameters for fetching a pushNotificationConfiguration associated with a Task",
+            "properties": {
+                "id": {
+                    "description": "Task id.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "type": "object"
+                },
+                "pushNotificationConfigId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "type": "object"
+        },
         "GetTaskPushNotificationConfigRequest": {
             "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.",
             "properties": {
@@ -634,8 +821,15 @@
                     "type": "string"
                 },
                 "params": {
-                    "$ref": "#/definitions/TaskIdParams",
-                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/TaskIdParams"
+                        },
+                        {
+                            "$ref": "#/definitions/GetTaskPushNotificationConfigParams"
+                        }
+                    ],
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method.\nTaskIdParams type is deprecated for this method use `GetTaskPushNotificationConfigParams` instead."
                 }
             },
             "required": [
@@ -1084,6 +1278,12 @@
                 },
                 {
                     "$ref": "#/definitions/GetTaskPushNotificationConfigSuccessResponse"
+                },
+                {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigSuccessResponse"
+                },
+                {
+                    "$ref": "#/definitions/DeleteTaskPushNotificationConfigSuccessResponse"
                 }
             ],
             "description": "Represents a JSON-RPC 2.0 Response object."
@@ -1106,6 +1306,98 @@
                 },
                 "result": {
                     "description": "The result object on success"
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "result"
+            ],
+            "type": "object"
+        },
+        "ListTaskPushNotificationConfigParams": {
+            "description": "Parameters for getting list of pushNotificationConfigurations associated with a Task",
+            "properties": {
+                "id": {
+                    "description": "Task id.",
+                    "type": "string"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "type": "object"
+                }
+            },
+            "required": [
+                "id"
+            ],
+            "type": "object"
+        },
+        "ListTaskPushNotificationConfigRequest": {
+            "description": "JSON-RPC request model for the 'tasks/pushNotificationConfig/list' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "method": {
+                    "const": "tasks/pushNotificationConfig/list",
+                    "description": "A String containing the name of the method to be invoked.",
+                    "type": "string"
+                },
+                "params": {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigParams",
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "method",
+                "params"
+            ],
+            "type": "object"
+        },
+        "ListTaskPushNotificationConfigResponse": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/JSONRPCErrorResponse"
+                },
+                {
+                    "$ref": "#/definitions/ListTaskPushNotificationConfigSuccessResponse"
+                }
+            ],
+            "description": "JSON-RPC response for the 'tasks/pushNotificationConfig/list' method."
+        },
+        "ListTaskPushNotificationConfigSuccessResponse": {
+            "description": "JSON-RPC success response model for the 'tasks/pushNotificationConfig/list' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer",
+                        "null"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "result": {
+                    "description": "The result object on success.",
+                    "items": {
+                        "$ref": "#/definitions/TaskPushNotificationConfig"
+                    },
+                    "type": "array"
                 }
             },
             "required": [
@@ -1947,6 +2239,9 @@
                 },
                 "timestamp": {
                     "description": "ISO 8601 datetime string when the status was recorded.",
+                    "examples": [
+                        "2023-10-27T10:00:00Z"
+                    ],
                     "type": "string"
                 }
             },

@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     # if on repo to avoid failing runs on forks
     if: |
-      github.repository == 'google-a2a/A2A'
+      github.repository == 'a2aproject/A2A'
 
     ##################
     # Load all steps #
@@ -54,7 +54,7 @@ jobs:
           LOG_LEVEL: WARN
           SHELLCHECK_OPTS: -e SC1091 -e 2086
           VALIDATE_ALL_CODEBASE: false
-          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
+          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/).*|CODE_OF_CONDUCT.md|CHANGELOG.md|GOVERNANCE.md|\\.mkdocs/overrides/.*"
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false

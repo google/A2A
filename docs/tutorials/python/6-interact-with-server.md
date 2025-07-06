@@ -40,7 +40,7 @@ Let's look at key parts of `test_client.py`:
 1. **Fetching the Agent Card & Initializing the Client**:
 
     ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:A2ACardResolver"
+    --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:A2ACardResolver"
     ```
 
     The `A2ACardResolver` class is a convenience. It first fetches the `AgentCard` from the server's `/.well-known/agent.json` endpoint (based on the provided base URL) and then initializes the client with it.
@@ -48,7 +48,7 @@ Let's look at key parts of `test_client.py`:
 2. **Sending a Non-Streaming Message (`send_message`)**:
 
     ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message"
+    --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message"
     ```
 
     - The `send_message_payload` constructs the data for `MessageSendParams`.
@@ -64,7 +64,7 @@ Let's look at key parts of `test_client.py`:
 4. **Sending a Streaming Message (`send_message_streaming`)**:
 
     ```python { .no-copy }
-    --8<-- "https://raw.githubusercontent.com/google-a2a/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message_streaming"
+    --8<-- "https://raw.githubusercontent.com/a2aproject/a2a-samples/refs/heads/main/samples/python/agents/helloworld/test_client.py:send_message_streaming"
     ```
 
     - This method calls the agent's `message/stream` endpoint. The `DefaultRequestHandler` will invoke the `HelloWorldAgentExecutor.execute` method.

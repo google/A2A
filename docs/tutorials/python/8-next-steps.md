@@ -15,8 +15,8 @@ You now have a solid foundation for building and integrating your own A2A-compli
 Here are some ideas and resources to continue your A2A journey:
 
 - **Explore Other Examples:**
-    - Check out the other examples in the `a2a-samples/samples/` directory in the [A2A GitHub repository](https://github.com/google-a2a/a2a-samples/tree/main/samples) for more complex agent integrations and features.
-    - The main A2A repository also has [samples for other languages and frameworks](https://github.com/google-a2a/A2A/tree/main/samples).
+    - Check out the other examples in the `a2a-samples/samples/` directory in the [A2A GitHub repository](https://github.com/a2aproject/a2a-samples/tree/main/samples) for more complex agent integrations and features.
+    - The main A2A repository also has [samples for other languages and frameworks](https://github.com/a2aproject/A2A/tree/main/samples).
 - **Deepen Your Protocol Understanding:**
     - 📚 Read the complete [A2A Protocol Documentation site](https://google.github.io/A2A/) for a comprehensive overview.
     - 📝 Review the detailed [A2A Protocol Specification](../../specification.md) to understand the nuances of all data structures and RPC methods.
@@ -34,8 +34,8 @@ Here are some ideas and resources to continue your A2A journey:
     - Explore implementing push notifications if your agent's tasks are very long-lived.
     - Consider more complex input and output modalities (e.g., handling file uploads/downloads, or structured data via `DataPart`).
 - **Contribute to the A2A Community:**
-    - Join the discussions on the [A2A GitHub Discussions page](https://github.com/google-a2a/A2A/discussions).
-    - Report issues or suggest improvements via [GitHub Issues](https://github.com/google-a2a/A2A/issues).
-    - Consider contributing code, examples, or documentation. See the [CONTRIBUTING.md](https://github.com/google-a2a/A2A/blob/main/CONTRIBUTING.md) guide.
+    - Join the discussions on the [A2A GitHub Discussions page](https://github.com/a2aproject/A2A/discussions).
+    - Report issues or suggest improvements via [GitHub Issues](https://github.com/a2aproject/A2A/issues).
+    - Consider contributing code, examples, or documentation. See the [CONTRIBUTING.md](https://github.com/a2aproject/A2A/blob/main/CONTRIBUTING.md) guide.
 
 The A2A protocol aims to foster an ecosystem of interoperable AI agents. By building and sharing A2A-compliant agents, you can be a part of this exciting development!

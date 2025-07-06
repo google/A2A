@@ -11,13 +11,11 @@ Follow the installation instructions on the official `buf` GitHub repository:
 
 ## Validation
 
-To validate your protobuf definitions and ensure they adhere to linting rules and are free of breaking changes (if configured), run the following command from the root of this folder:
+To validate your protobuf definitions and ensure they adhere to linting rules, run the following command from the root of this folder:
 
 ```sh
-buf build
+buf lint
 ```
-
-Modify `buf.yaml` to suit your specific requirements.
 
 ## Code Generation
 
