@@ -211,6 +211,7 @@ Refers to previous taskID and uses same contextId.
 The client requests the agent to book a flight, which requires user consent due to the sensitive nature of the operation.
 
 ##### Client sends message to agent
+
 ```json
 {
   "jsonrpc": "2.0",
@@ -231,6 +232,7 @@ The client requests the agent to book a flight, which requires user consent due 
   }
 }
 ```
+
 ##### Agent responds with a task requiring consent
 
 ```json
@@ -307,7 +309,3 @@ The client requests the agent to book a flight, which requires user consent due 
   }
 }
 ```
-
-
-
-
