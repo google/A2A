@@ -369,6 +369,7 @@ Defines the possible lifecycle states of a `Task`.
 | `rejected`       | Task terminated due to rejection by remote agent. `TaskStatus.message` may contain error details.         | Yes        |
 | `auth-required`  | Agent requires additional authentication from the client/user to proceed. The task is effectively paused. | No (Pause) |
 | `unknown`        | The state of the task cannot be determined (e.g., task ID is invalid, unknown, or has expired).           | Yes        |
+| `user-consent-required` | Agent requires explicit user consent to proceed with sensitive operations, pausing the task until approved. | No (Pause) |
 
 ### 6.4. `Message` Object
 

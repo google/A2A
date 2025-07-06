@@ -5,7 +5,7 @@ When a message is sent to an agent, it can choose to reply with either:
 - A stateless `Message`.
 - A stateful `Task` and zero or more `TaskStatusUpdateEvent` or `TaskArtifactUpdateEvent`.
 
-If the response is a `Message`, the interaction is completed. On the other hand, A `Task` will keep getting updated until it is in a interrupted state (`input-required` or `auth-required`) or a terminal state (`completed`, `cancelled`, `rejected` or `failed`).
+If the response is a `Message`, the interaction is completed. On the other hand, A `Task` will keep getting updated until it is in an interrupted state (`input-required`, `auth-required`, or `user-consent-required`) or a terminal state (`completed`, `cancelled`, `rejected`, or `failed`). The `user-consent-required` state pauses the task until the end-user provides explicit consent for sensitive operations, such as booking travel or sharing personal data.
 
 ## Context
 
@@ -205,3 +205,109 @@ Refers to previous taskID and uses same contextId.
   }
 }
 ```
+
+#### Requiring User Consent for a Sensitive Operation
+
+The client requests the agent to book a flight, which requires user consent due to the sensitive nature of the operation.
+
+##### Client sends message to agent
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "req-003",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "parts": [
+        {
+          "kind": "text",
+          "text": "Book a flight to Helsinki for next week."
+        }
+      ],
+      "messageId": "msg-user-003",
+      "contextId": "ctx-travel-xyz"
+    }
+  }
+}
+```
+##### Agent responds with a task requiring consent
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "req-003",
+  "result": {
+    "id": "task-flight-booking-789",
+    "contextId": "ctx-travel-xyz",
+    "status": {
+      "state": "user-consent-required",
+      "message": "Please confirm consent to proceed with booking the flight."
+    },
+    "artifacts": [],
+    "kind": "task"
+  }
+}
+```
+
+##### Client provides consent
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "req-004",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "messageId": "msg-user-004",
+      "contextId": "ctx-travel-xyz",
+      "referenceTaskIds": ["task-flight-booking-789"],
+      "parts": [
+        {
+          "kind": "text",
+          "text": "I consent to booking the flight."
+        }
+      ]
+    }
+  }
+}
+```
+
+##### Agent completes the task
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": "req-004",
+  "result": {
+    "id": "task-flight-booking-789",
+    "contextId": "ctx-travel-xyz",
+    "status": {
+      "state": "completed"
+    },
+    "artifacts": [
+      {
+        "artifactId": "artifact-flight-confirmation-abc",
+        "name": "flight_confirmation.pdf",
+        "description": "Flight booking confirmation for Helsinki.",
+        "parts": [
+          {
+            "kind": "file",
+            "file": {
+              "name": "flight_confirmation.pdf",
+              "mimeType": "application/pdf",
+              "bytes": "<base64_encoded_pdf_data>"
+            }
+          }
+        ]
+      }
+    ],
+    "kind": "task"
+  }
+}
+```
+
+
+
+
