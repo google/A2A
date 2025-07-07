@@ -343,6 +343,13 @@
                     "description": "Unique identifier for the agent's skill.",
                     "type": "string"
                 },
+                "inputFields": {
+                    "description": "Structured input fields expected by this skill.",
+                    "items": {
+                        "$ref": "#/definitions/FieldDefinition"
+                    },
+                    "type": "array"
+                },
                 "inputModes": {
                     "description": "The set of interaction modes that the skill supports\n(if different than the default).\nSupported media types for input.",
                     "items": {
@@ -353,6 +360,13 @@
                 "name": {
                     "description": "Human readable name of the skill.",
                     "type": "string"
+                },
+                "outputFields": {
+                    "description": "Structured output fields produced by this skill.",
+                    "items": {
+                        "$ref": "#/definitions/FieldDefinition"
+                    },
+                    "type": "array"
                 },
                 "outputModes": {
                     "description": "Supported media types for output.",
@@ -691,6 +705,45 @@
                 "jsonrpc",
                 "result"
             ],
+            "type": "object"
+        },
+        "FieldDefinition": {
+            "description": "Describes an expected input or output field for an agent skill.",
+            "properties": {
+                "description": {
+                    "description": "Optional description of the field.",
+                    "type": "string"
+                },
+                "kind": {
+                    "description": "The kind of content for this field: text, file, or data.",
+                    "enum": [
+                        "data",
+                        "file",
+                        "text"
+                    ],
+                    "type": "string"
+                },
+                "mimeTypes": {
+                    "description": "Optional list of supported mime types for this field.",
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "name": {
+                    "description": "Optional name of the field.",
+                    "type": "string"
+                },
+                "optional": {
+                    "description": "Whether this field is optional.",
+                    "type": "boolean"
+                },
+                "schema": {
+                    "additionalProperties": {},
+                    "description": "Optional schema for data parts (structured data).",
+                    "type": "object"
+                }
+            },
             "type": "object"
         },
         "FileBase": {

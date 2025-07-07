@@ -10,7 +10,7 @@ The Agent Card is a JSON document that serves as a digital "business card" for a
 - **Service Endpoint:** The `url` where the A2A service can be reached.
 - **A2A Capabilities:** Supported protocol features like `streaming` or `pushNotifications`.
 - **Authentication:** Required authentication `schemes` (e.g., "Bearer", "OAuth2") to interact with the agent.
-- **Skills:** A list of specific tasks or functions the agent can perform (`AgentSkill` objects), including their `id`, `name`, `description`, `inputModes`, `outputModes`, and `examples`.
+- **Skills:** A list of specific tasks or functions the agent can perform (`AgentSkill` objects), including their `id`, `name`, `description`, `inputModes`, `outputModes`, `examples`, as well as optional structured `inputFields` and `outputFields` describing the expected input and output for each skill.
 
 Client agents parse the Agent Card to determine if a remote agent is suitable for a given task, how to structure requests for its skills, and how to communicate with it securely.
 

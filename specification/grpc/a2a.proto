@@ -448,7 +448,28 @@ message AgentSkill {
   repeated string input_modes = 6;
   // Possible output modalities produced
   repeated string output_modes = 7;
+  // Structured input fields expected by this skill.
+  repeated FieldDefinition input_fields = 8;
+  // Structured output fields produced by this skill.
+  repeated FieldDefinition output_fields = 9;
 }
+
+// FieldDefinition describes an expected input/output field for a skill.
+message FieldDefinition {
+  // Optional name of the field.
+  string name = 1;
+  // The kind of content for this field: "text", "file", or "data".
+  string kind = 2;
+  // Optional list of supported mime types for this field.
+  repeated string mime_types = 3;
+  // Optional schema for data parts (structured data).
+  google.protobuf.Struct schema = 4;
+  // Optional description of the field.
+  string description = 5;
+  // Whether this field is optional.
+  bool optional = 6;
+}
+
 
 message TaskPushNotificationConfig {
   // name=tasks/{id}/pushNotificationConfigs/{id}
