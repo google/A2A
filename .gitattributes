@@ -5,6 +5,4 @@
 noxfile.py linguist-vendored=true
 
 # Merge and diff setting
-package-lock.json merge=union
-yarn.lock merge=union
 CHANGELOG.md merge=union
