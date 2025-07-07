@@ -23,10 +23,10 @@ Here are common strategies for how a client agent might discover the Agent Card 
 This is a recommended approach for public agents or agents intended for broad discoverability within a specific domain.
 
 - **Mechanism:** A2A Servers host their Agent Card at a standardized, "well-known" path on their domain.
-- **Standard Path:** `https://{agent-server-domain}/.well-known/agent.json` (following the principles of [RFC 8615](https://www.ietf.org/rfc/rfc8615.txt) for well-known URIs).
+- **Standard Path:** `https://{agent-server-domain}/.well-known/agent-card.json` (following the principles of [RFC 8615](https://www.ietf.org/rfc/rfc8615.txt) for well-known URIs).
 - **Process:**
     1. A client agent knows or programmatically discovers the domain of a potential A2A Server (e.g., `smart-thermostat.example.com`).
-    2. The client performs an HTTP `GET` request to `https://smart-thermostat.example.com/.well-known/agent.json`.
+    2. The client performs an HTTP `GET` request to `https://smart-thermostat.example.com/.well-known/agent-card.json`.
     3. If the Agent Card exists and is accessible, the server returns it as a JSON response.
 - **Advantages:** Simple, standardized, and enables automated discovery by crawlers or systems that can resolve domains. Effectively reduces the discovery problem to "find the agent's domain."
 - **Considerations:** Best suited for agents intended for open discovery or discovery within an organization that controls the domain. The endpoint serving the Agent Card may itself require authentication if the card contains sensitive information.
@@ -66,7 +66,7 @@ Agent Cards themselves can sometimes contain information that should be protecte
 
 **Protection Mechanisms:**
 
-- **Access Control on the Endpoint:** The HTTP endpoint serving the Agent Card (whether it's the `/.well-known/agent.json` path, a registry API, or a custom URL) should be secured using standard web practices if the card is not intended for public, unauthenticated access.
+- **Access Control on the Endpoint:** The HTTP endpoint serving the Agent Card (whether it's the `/.well-known/agent-card.json` path, a registry API, or a custom URL) should be secured using standard web practices if the card is not intended for public, unauthenticated access.
     - **mTLS:** Require mutual TLS for client authentication if appropriate for the trust model.
     - **Network Restrictions:** Limit access to specific IP ranges, VPCs, or private networks.
     - **Authentication:** Require standard HTTP authentication (e.g., OAuth 2.0 Bearer token, API Key) to access the Agent Card itself.
