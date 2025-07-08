@@ -186,6 +186,7 @@ plugins:
               - ".ruff_cache"
               - "node_modules"
               - "__pycache__"
+              - ".DS_Store"
             extra:
               show_value: true
               show_qualifiers: false

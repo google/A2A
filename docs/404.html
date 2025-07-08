@@ -5,17 +5,42 @@
     <meta charset="utf-8">
     <title>Redirecting...</title>
     <script>
-        var newUrl = "https://a2aproject.github.io/A2A";
-        window.location.replace(newUrl);
+        (function () {
+            const basePath = '/A2A/';
+            const latestVersion = 'latest';
+
+            const path = window.location.pathname;
+            const redirected = sessionStorage.getItem('redirected');
+
+            // Avoid redirect loops. If we've already tried to redirect, stop.
+            if (redirected) {
+                sessionStorage.removeItem('redirected');
+                return;
+            }
+
+            // Check if the path is an asset or already a versioned path
+            const isAsset = path.includes('/assets/') || path.includes('/stylesheets/');
+            const isVersioned = new RegExp(basePath + '(v?(\\d+\\.\\d+(\\.\\d+)?)|' + latestVersion + ')/').test(path);
+
+            if (!isVersioned && !isAsset) {
+                // Construct the new URL.
+                // Example: /A2A/specification.md -> /A2A/latest/specification.md
+                const newPath = path.replace(basePath, basePath + latestVersion + '/');
+
+                // Store a marker in sessionStorage to prevent loops
+                sessionStorage.setItem('redirected', 'true');
+
+                // Perform the redirect
+                window.location.replace(newPath + window.location.search + window.location.hash);
+            }
+        })();
     </script>
 </head>
 
 <body>
-    <h1>Redirecting to the new site...</h1>
-    <p>If you are not redirected automatically, please <a id="redirectLink">click here</a>.</p>
-    <script>
-        document.getElementById('redirectLink').href = newUrl;
-    </script>
+    <h1>Page Not Found</h1>
+    <p>We are attempting to redirect you to the latest version of this page.</p>
+    <p>If you are not redirected automatically, please navigate to the <a href="/A2A/">project homepage</a>.</p>
 </body>
 
 </html>

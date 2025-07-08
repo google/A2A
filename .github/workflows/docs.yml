@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - ".github/workflows/docs.yml"
+      - ".github/scripts/deploy-docs.sh"
       - "requirements-docs.txt"
       - "mkdocs.yml"
       - "docs/**"
@@ -14,6 +15,7 @@ on:
       - main
     paths:
       - ".github/workflows/docs.yml"
+      - ".github/scripts/deploy-docs.sh"
       - "requirements-docs.txt"
       - "mkdocs.yml"
       - "docs/**"
@@ -64,8 +66,16 @@ jobs:
       - name: Deploy development version from main branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          echo "Deploying docs from main to the 'dev' version..."
-          mike deploy --push --update-aliases dev
+          # Use the short commit hash as the version name for dev builds
+          echo "MIKE_VERSION=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "Deploying docs from main commit ${{ env.MIKE_VERSION }} to 'dev' and 'latest' aliases..."
+          mike deploy --push --update-aliases "${{ env.MIKE_VERSION }}" dev latest
+
+          echo "Setting 'latest' as the default version for the site..."
+          mike set-default --push latest
+
+          # Deploy 404 page
+          bash .github/scripts/deploy-docs.sh ${{ github.repository }}
 
       - name: Deploy new release version and set as latest
         if: github.event_name == 'release'
@@ -77,3 +87,6 @@ jobs:
 
           echo "Setting 'latest' as the default version for the site..."
           mike set-default --push latest
+
+          # Deploy 404 page
+          bash .github/scripts/deploy-docs.sh ${{ github.repository }}
