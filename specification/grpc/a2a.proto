@@ -185,7 +185,7 @@ message TaskStatus {
   // The current state of this task
   TaskState state = 1;
   // A message associated with the status.
-  Message update = 2;
+  Message update = 2 [json_name = "message"];
   // Timestamp when the status was recorded.
   // Example: "2023-10-27T10:00:00Z"
   google.protobuf.Timestamp timestamp = 3;
@@ -640,7 +640,7 @@ message GetAgentCardRequest {
 message SendMessageResponse {
   oneof payload {
     Task task = 1;
-    Message msg = 2;
+    Message msg = 2 [json_name = "message"];
   }
 }
 
@@ -656,7 +656,7 @@ message SendMessageResponse {
 message StreamResponse {
   oneof payload {
     Task task = 1;
-    Message msg = 2;
+    Message msg = 2 [json_name = "message"];
     TaskStatusUpdateEvent status_update = 3;
     TaskArtifactUpdateEvent artifact_update = 4;
   }
