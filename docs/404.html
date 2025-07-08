@@ -12,9 +12,9 @@
             const path = window.location.pathname;
             const redirected = sessionStorage.getItem('redirected');
 
-            // Avoid redirect loops. If we've already tried to redirect, stop.
             if (redirected) {
                 sessionStorage.removeItem('redirected');
+                console.warn('Redirect loop detected. Stopping redirect.'); // Add this line
                 return;
             }
 
