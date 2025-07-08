@@ -6,7 +6,7 @@ site_description: >-
 site_dir: site
 
 extra:
-  a2a_version: !ENV [MIKE_VERSION, 'local-dev']
+  a2a_version: !ENV [MIKE_VERSION, 'dev']
 
 # Navigation
 nav:
@@ -140,8 +140,7 @@ plugins:
   - redirects:
       redirect_maps:
         "spec-json.md": https://raw.githubusercontent.com/a2aproject/A2A/refs/heads/main/specification/json/a2a.json
-        "specification/overview.md": "latest/specification.md"
-        "robots.txt": "v0.2.5/robots.txt"
+        "specification/overview.md": "specification.md"
         "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
         "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
         "specification/sample-messages.md": "specification.md#9-common-workflows-examples"
@@ -188,6 +187,7 @@ plugins:
               - ".ruff_cache"
               - "node_modules"
               - "__pycache__"
+              - ".DS_Store"
             extra:
               show_value: true
               show_qualifiers: false
