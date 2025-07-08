@@ -32,12 +32,12 @@ REST: {root\_url}/
 | tasks/pushNotificationConfig/get | URL |  | GetTaskPushNotification | /v1/tasks/\*/pushNotificationConfigs/\* |
 |  | Method Type | POST | POST | GET |
 |  | Payload | id: string<br> metadata?: \[key: string\]: any | message TaskSubscriptionRequest {<br>   // name=tasks/{id}/pushNotification/{id}<br>   string name;<br> } | name: string  |
-|  | Response | TaskPushNotificationConfig \| TaskPushNotificationConfig \| TaskPushNotificationConfig |
+|  | Response | TaskPushNotificationConfig | TaskPushNotificationConfig | TaskPushNotificationConfig |
 | tasks/pushNotificationConfig/set | URL |  | CreateTaskPushNotification | /v1/tasks/{id}/pushNotificationConfigs |
 |  | Method Type | POST | POST | POST |
 |  | Payload | TaskPushNotificationConfig | message SetTaskPushNotificationRequest {<br>   TaskPushNotificationConfig config \= 1;<br> } | config: TaskPushNotificationConfig |
-|  | Response | TaskPushNotificationConfig \| TaskPushNotificationConfig \| TaskPushNotificationConfig |
-| card/get | URL | Not defined now | GetAgentCard | v1/card |
+|  | Response | TaskPushNotificationConfig | TaskPushNotificationConfig | TaskPushNotificationConfig |
+| card/get | URL | Not defined now | GetAgentCard | /v1/card |
 |  | Method Type | POST | POST | GET |
 |  | Payload | None | None | None |
 |  | Response | AgentCard | AgentCard | AgentCard |
