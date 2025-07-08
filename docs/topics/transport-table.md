@@ -1,4 +1,4 @@
-### API Structures
+# API Structures
 
 This document provides the mappings of the 3 different transport types/structures we intend to support in A2A and how these are defined. Though not officially a REST api, it is REST-like and is referred to as the A2A REST API for simplicity.
 
@@ -50,7 +50,7 @@ REST: {root\_url}/
 |  | Payload |  | {} | {} |
 |  | Response |  | repeated Task | \[Task\] |
 
-### Caveats
+# Caveats
 
 * The REST API defines a wrapper structure for the streaming responses. This is not the same as the JSONRPC approach.
 * The push notification setter method has a wrapper class for the input payload for REST as well. This is intended to make this more consistent with the gRPC approach
