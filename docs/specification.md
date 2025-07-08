@@ -681,6 +681,8 @@ Retrieves the current state (including status, artifacts, and optionally history
 
 Retrieves a list of tasks with optional filtering and pagination capabilities. This method allows clients to discover and manage multiple tasks across different contexts or with specific status criteria.
 
+**Pagination Strategy:** This method uses cursor-based pagination (via `pageToken`/`nextPageToken`) rather than offset-based pagination for better performance and consistency, especially with large datasets. Cursor-based pagination avoids the "deep pagination problem" where skipping large numbers of records becomes inefficient for databases. This approach is consistent with the gRPC specification, which also uses cursor-based pagination (`page_token`/`next_page_token`).
+
 - **Request `params` type**: [`ListTasksParams`](#741-listtasksparams-object) (Optional parameters for filtering and pagination)
 - **Response `result` type (on success)**: [`ListTasksResult`](#742-listtasksresult-object) (A paginated list of tasks matching the criteria)
 - **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., validation errors for invalid parameters)
@@ -697,8 +699,8 @@ Parameters for filtering and paginating task results.
 | :-------------- | :-------------------- | :------- | :------ | :--------------------------------------------------------------------------------------- |
 | `contextId`     | `string`              | No       |         | Filter tasks by context ID to get tasks from a specific conversation or session.         |
 | `status`        | [`TaskState`](#63-taskstate-enum) | No |         | Filter tasks by their current status state.                                              |
-| `limit`         | `integer`             | No       | `50`    | Maximum number of tasks to return. Must be between 1 and 1000.                          |
-| `offset`        | `integer`             | No       | `0`     | Number of tasks to skip for pagination. Must be 0 or greater.                           |
+| `pageSize`      | `integer`             | No       | `50`    | Maximum number of tasks to return. Must be between 1 and 1000.                          |
+| `pageToken`     | `string`              | No       |         | Token for pagination. Use the `nextPageToken` from a previous `ListTasksResult` response. |
 | `historyLength` | `integer`             | No       |         | Number of recent messages to include in each task's history.                             |
 | `metadata`      | `Record<string, any>` | No       |         | Request-specific metadata.                                                               |
 
@@ -710,12 +712,12 @@ Result object containing the filtered tasks and pagination information.
 --8<-- "types/src/types.ts:ListTasksResult"
 ```
 
-| Field Name | Type                              | Required | Description                                           |
-| :--------- | :-------------------------------- | :------- | :---------------------------------------------------- |
-| `tasks`    | [`Task[]`](#61-task-object)       | Yes      | Array of tasks matching the specified criteria.       |
-| `total`    | `integer`                         | Yes      | Total number of tasks available (before pagination).  |
-| `limit`    | `integer`                         | Yes      | Maximum number of tasks returned in this response.    |
-| `offset`   | `integer`                         | Yes      | Number of tasks skipped for pagination.               |
+| Field Name      | Type                              | Required | Description                                               |
+| :-------------- | :-------------------------------- | :------- | :-------------------------------------------------------- |
+| `tasks`         | [`Task[]`](#61-task-object)       | Yes      | Array of tasks matching the specified criteria.           |
+| `totalSize`     | `integer`                         | Yes      | Total number of tasks available (before pagination).      |
+| `pageSize`      | `integer`                         | Yes      | Maximum number of tasks returned in this response.        |
+| `nextPageToken` | `string`                          | No       | Token for retrieving the next page. Empty if no more results. |
 
 ### 7.5. `tasks/cancel`
 
@@ -1373,8 +1375,7 @@ _If the task were longer-running, the server might initially respond with `statu
      "method": "tasks/list",
      "params": {
        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
-       "limit": 10,
-       "offset": 0,
+       "pageSize": 10,
        "historyLength": 3
      }
    }
@@ -1423,9 +1424,9 @@ _If the task were longer-running, the server might initially respond with `statu
            "kind": "task"
          }
        ],
-       "total": 5,
-       "limit": 10,
-       "offset": 0
+       "totalSize": 5,
+       "pageSize": 10,
+       "nextPageToken": ""
      }
    }
    ```
@@ -1439,7 +1440,7 @@ _If the task were longer-running, the server might initially respond with `statu
      "method": "tasks/list",
      "params": {
        "status": "working",
-       "limit": 20
+       "pageSize": 20
      }
    }
    ```
@@ -1472,9 +1473,41 @@ _If the task were longer-running, the server might initially respond with `statu
            "kind": "task"
          }
        ],
-       "total": 1,
-       "limit": 20,
-       "offset": 0
+       "totalSize": 1,
+       "pageSize": 20,
+       "nextPageToken": ""
+     }
+   }
+   ```
+
+5. **Continuing pagination - Client requests the next page using nextPageToken:**
+
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "list-003",
+     "method": "tasks/list",
+     "params": {
+       "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
+       "pageSize": 10,
+       "pageToken": "eyJjdXJzb3IiOiIyMDI0LTAzLTE1VDE0OjMwOjAwWiIsImlkIjoiM2YzNjY4MGMtN2YzNy00YTVmLTk0NWUtZDc4OTgxZmFmZDM2In0"
+     }
+   }
+   ```
+
+6. **Server responds with the next page of results:**
+
+   ```json
+   {
+     "jsonrpc": "2.0",
+     "id": "list-003",
+     "result": {
+       "tasks": [
+         // ... additional tasks
+       ],
+       "totalSize": 15,
+       "pageSize": 10,
+       "nextPageToken": "eyJjdXJzb3IiOiIyMDI0LTAzLTE1VDE2OjQ1OjAwWiIsImlkIjoiNzg5YWJjLWRlZjAtMTIzNC01Njc4LTlhYmNkZWYwMTIzNCJ9"
      }
    }
    ```
