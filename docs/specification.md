@@ -1614,7 +1614,7 @@ _If the task were longer-running, the server might initially respond with `statu
      "params": {
        "contextId": "c295ea44-7543-4f78-b524-7a38915ad6e4",
        "pageSize": 10,
-       "pageToken": "eyJjdXJzb3IiOiIyMDI0LTAzLTE1VDE0OjMwOjAwWiIsImlkIjoiM2YzNjY4MGMtN2YzNy00YTVmLTk0NWUtZDc4OTgxZmFmZDM2In0"
+       "pageToken": "<base64-encoded-cursor-token>"
      }
    }
    ```
@@ -1631,7 +1631,7 @@ _If the task were longer-running, the server might initially respond with `statu
        ],
        "totalSize": 15,
        "pageSize": 10,
-       "nextPageToken": "eyJjdXJzb3IiOiIyMDI0LTAzLTE1VDE2OjQ1OjAwWiIsImlkIjoiNzg5YWJjLWRlZjAtMTIzNC01Njc4LTlhYmNkZWYwMTIzNCJ9"
+       "nextPageToken": "<base64-encoded-cursor-token>"
      }
    }
    ```
