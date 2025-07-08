@@ -74,8 +74,8 @@ To help with the tracking, the serving agent should maintain the same artifact-n
 
 For follow-up or refinement tasks, the client is best suited to refer to the "latest" or what it considers to be the intended artifact to be refined upon. If the artifact reference is not explicitly specified, the serving agent can:
 
-* Use context to figure out the latest artifact.
-* Or in case of ambiguity or context not supported, agent can use `input-required` task state.
+- Use context to figure out the latest artifact.
+- Or in case of ambiguity or context not supported, agent can use `input-required` task state.
 
 ### Example Follow-up
 
