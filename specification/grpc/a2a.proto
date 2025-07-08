@@ -178,6 +178,9 @@ enum TaskState {
   // client. Authentication is expected to come out-of-band thus this is not
   // an interrupted or terminal state.
   TASK_STATE_AUTH_REQUIRED = 8;
+  TASK_STATE_USER_CONSENT_REQUIRED=9;
+  // Pauses the task until the end-user provides explicit consent for
+  // sensitive operations, such as booking travel or sharing personal data.
 }
 
 // A container for the status of a task
