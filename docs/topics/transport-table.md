@@ -52,7 +52,7 @@ REST: {root\_url}/
 
 ### Caveats
 
-* The REST API defines a wrapper structure for the streaming responses. This is not the same as the JSONRPC approach. This aligns with the [discussion](https://discord.com/channels/1362108044737253548/1362204635347026100/1374496543482187902) on Discord \[[https://discord.com/channels/1362108044737253548/1362204635347026100/1374496543482187902](https://discord.com/channels/1362108044737253548/1362204635347026100/1374496543482187902)\]   
-* The push notification setter method has a wrapper class for the input payload for REST as well. This is intended to make this more consistent with the gRPC approach  
-* The metadata fields at the request level are overly broad and hard to utilize. Removed these in the gRPC version.  
-* The REST API is based on the transcoding and best practices as defined by AIP-127. 
+* The REST API defines a wrapper structure for the streaming responses. This is not the same as the JSONRPC approach.
+* The push notification setter method has a wrapper class for the input payload for REST as well. This is intended to make this more consistent with the gRPC approach
+* The metadata fields at the request level are overly broad and hard to utilize. Removed these in the gRPC version.
+* The REST API is based on the transcoding and best practices as defined by AIP-127.
