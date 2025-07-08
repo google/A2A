@@ -3,7 +3,7 @@
 When a message is sent to an agent, it can choose to reply with either:
 
 - A stateless `Message`.
-- A stateful `Task` and followed by zero or more `TaskStatusUpdateEvent` or `TaskArtifactUpdateEvent`.
+- A stateful `Task` followed by zero or more `TaskStatusUpdateEvent` or `TaskArtifactUpdateEvent`.
 
 If the response is a `Message`, the interaction is completed. On the other hand, if the response is a `Task`, then the task will be processed by the agent, until it is in a interrupted state (`input-required` or `auth-required`) or a terminal state (`completed`, `cancelled`, `rejected` or `failed`).
 
@@ -38,12 +38,12 @@ Once a task has reached a terminal state (`completed`, `cancelled`, `rejected` o
     - Useful for mapping client orchestrator to task execution.
 - **Clear Unit of Work**: Every new request, refinement, or a follow-up becomes a distinct task, simplifying bookkeeping and allowing for granular tracking of an agent's work.
     - Each artifact can be traced to a unit task.
-    - This unit of work can be referenced much more granularly by parent agents or other systems like agent optimizers. In case of restartable tasks, all the subsequent refinements are clubbed together and any reference to an interaction, would need to resort to some kind of message index range.
+    - This unit of work can be referenced much more granularly by parent agents or other systems like agent optimizers. In case of restartable tasks, all the subsequent refinements are combined, and any reference to an interaction would need to resort to some kind of message index range.
 - **Easier Implementation**: No ambiguity for agent developers, whether to create a new task or restart an existing task. Once a task is in terminal state, any related subsequent interaction would need to be within a new task.
 
 ### Parallel Follow-ups
 
-Parallel work is supported by having the agents create distinct, parallel tasks for each follow-up message sent within the same contextId. This allows clients to track individual tasks and create new dependent tasks as soon as a prerequisite task is complete.
+Parallel work is supported by having agents create distinct, parallel tasks for each follow-up message sent within the same contextId. This allows clients to track individual tasks and create new dependent tasks as soon as a prerequisite task is complete.
 
 For example:
 
@@ -58,7 +58,7 @@ Task 4: Based on Task 2, add a spa reservation to the hotel booking.
 
 ### Referencing Previous Artifacts
 
-The serving agent is responsible for inferring the relevant artifact from the referenced task or from the `contextId`. The serving agent is best suited to resolve ambiguity or identify missing information, as they are domain expert and  the one who generated the artifacts.
+The serving agent is responsible for inferring the relevant artifact from the referenced task or from the `contextId`. The serving agent, as the domain expert, is best suited to resolve ambiguity or identify missing information because they are the ones who generated the artifacts.
 
 If there is ambiguity (e.g., multiple artifacts could fit the request), the agent will ask the client for clarification by returning an input-required state. The client can then specify the artifact in its response. Client can optionally populate artifact reference {artifactId, taskId} in part metadata. This allows for linkage between inputs for follow-up tasks and previously generated artifacts.
 
