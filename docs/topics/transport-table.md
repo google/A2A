@@ -50,7 +50,7 @@ REST: {root\_url}/
 |  | Payload |  | {} | {} |
 |  | Response |  | repeated Task | \[Task\] |
 
-# Caveats
+## Caveats
 
 * The REST API defines a wrapper structure for the streaming responses. This is not the same as the JSONRPC approach.
 * The push notification setter method has a wrapper class for the input payload for REST as well. This is intended to make this more consistent with the gRPC approach
