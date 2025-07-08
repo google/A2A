@@ -70,7 +70,7 @@ A follow up or refinement can result in an older artifact being modified and new
 
 But the client is best suited, as well as is the real judge of what it considers as an acceptable result. And in fact can reject the mutation as well. Hence, the serving agent should not own this linkage and hence this linkage does not need to be part of A2A protocol spec. Clients can maintain the linkage on their end and show the latest version to the user.
 
-To help with the trascking, the serving agent should maintain the same artifact-name when generating a refinement on the original artifact.
+To help with the tracking, the serving agent should maintain the same artifact-name when generating a refinement on the original artifact.
 
 For follow-up or refinement tasks, the client is best suited to refer to the "latest" or what it considers to be the intended artifact to be refined upon. If the artifact reference is not explicitly specified, the serving agent can:
 
