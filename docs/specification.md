@@ -254,6 +254,12 @@ Describes a specific capability, function, or area of expertise the agent can pe
   "name": "GeoSpatial Route Planner Agent",
   "description": "Provides advanced route planning, traffic analysis, and custom map generation services. This agent can calculate optimal routes, estimate travel times considering real-time traffic, and create personalized maps with points of interest.",
   "url": "https://georoute-agent.example.com/a2a/v1",
+  "preferredTransport": "JSONRPC",
+  "additionalInterfaces" : [
+    {"url": "https://georoute-agent.example.com/a2a/v1", "transport": "JSONRPC"},
+    {"url": "https://georoute-agent.example.com/a2a/grpc", "transport": "GRPC"},
+    {"url": "https://georoute-agent.example.com/a2a/json", "transport": "HTTP+JSON"}
+  ],
   "provider": {
     "organization": "Example Geo Services Inc.",
     "url": "https://www.examplegeoservices.com"
