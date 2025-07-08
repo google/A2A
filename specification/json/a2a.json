@@ -1424,18 +1424,18 @@
                     "description": "Number of recent messages to include in each task's history.",
                     "type": "integer"
                 },
-                "limit": {
-                    "description": "Maximum number of tasks to return. Defaults to 50 if not specified.",
-                    "type": "integer"
-                },
                 "metadata": {
                     "additionalProperties": {},
                     "description": "Request-specific metadata.",
                     "type": "object"
                 },
-                "offset": {
-                    "description": "Number of tasks to skip for pagination. Defaults to 0 if not specified.",
+                "pageSize": {
+                    "description": "Maximum number of tasks to return. Defaults to 50 if not specified.",
                     "type": "integer"
+                },
+                "pageToken": {
+                    "description": "Token for pagination. Use the nextPageToken from a previous ListTasksResult response.",
+                    "type": "string"
                 },
                 "status": {
                     "$ref": "#/definitions/TaskState",
@@ -1490,12 +1490,12 @@
         "ListTasksResult": {
             "description": "Result object for tasks/list method containing an array of tasks and pagination information.",
             "properties": {
-                "limit": {
-                    "description": "Maximum number of tasks returned in this response.",
-                    "type": "integer"
+                "nextPageToken": {
+                    "description": "Token for retrieving the next page. Empty if no more results.",
+                    "type": "string"
                 },
-                "offset": {
-                    "description": "Number of tasks skipped for pagination.",
+                "pageSize": {
+                    "description": "Maximum number of tasks returned in this response.",
                     "type": "integer"
                 },
                 "tasks": {
@@ -1505,16 +1505,15 @@
                     },
                     "type": "array"
                 },
-                "total": {
+                "totalSize": {
                     "description": "Total number of tasks available (before pagination).",
                     "type": "integer"
                 }
             },
             "required": [
-                "limit",
-                "offset",
+                "pageSize",
                 "tasks",
-                "total"
+                "totalSize"
             ],
             "type": "object"
         },
