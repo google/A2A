@@ -138,7 +138,7 @@ export interface AgentCard {
    * Announcement of additional supported transports. Client can use any of
    * the supported transports.
    */
-  additional_interfaces: AgentInterface[];
+  additionalInterfaces: AgentInterface[];
   /** A URL to an icon for the agent. */
   iconUrl?: string;
   /** The service provider of the agent */
