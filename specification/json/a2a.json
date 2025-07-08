@@ -186,9 +186,6 @@
                     "description": "The version of the A2A protocol this agent supports.",
                     "type": "string"
                 },
-                "preferred_transport": {
-                    "type": "string"
-                },
                 "provider": {
                     "$ref": "#/definitions/AgentProvider",
                     "description": "The service provider of the agent"
