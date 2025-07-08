@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script>
+        var newUrl = "https://a2aproject.github.io/A2A";
+        window.location.replace(newUrl);
+    </script>
+</head>
+
+<body>
+    <h1>Redirecting to the new site...</h1>
+    <p>If you are not redirected automatically, please <a id="redirectLink">click here</a>.</p>
+    <script>
+        document.getElementById('redirectLink').href = newUrl;
+    </script>
+</body>
+
+</html>

@@ -140,8 +140,6 @@ plugins:
   - redirects:
       redirect_maps:
         "spec-json.md": https://raw.githubusercontent.com/a2aproject/A2A/refs/heads/main/specification/json/a2a.json
-        "specification/overview.md": "latest/specification.md"
-        "robots.txt": "v0.2.5/robots.txt"
         "specification/agent-card.md": "specification.md#5-agent-discovery-the-agent-card"
         "specification/agent-to-agent-communication.md": "specification.md#6-protocol-data-objects"
         "specification/sample-messages.md": "specification.md#9-common-workflows-examples"
