@@ -56,6 +56,7 @@ PLE
 PLW
 PMEEi
 PTH
+Petstore
 RPCs
 RUF
 SLAs
@@ -63,6 +64,7 @@ SLF
 Solax
 TJS
 TMDB
+Tful
 URLTo
 Upserting
 Urke
@@ -179,6 +181,8 @@ objc
 octicons
 ollama
 oneof
+openapis
+openrpc
 oreilly
 pqr
 prefecthq
@@ -204,6 +208,7 @@ styleguide
 svn
 systemctl
 tagwords
+tasksget
 taskssend
 taskstate
 taskstatus
