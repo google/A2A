@@ -928,8 +928,8 @@ Retrieves the current push notification configuration for a specified task. Requ
     -   **Response**: `TaskPushNotificationConfig`
 
 === "REST"
-    -   **URL:** `/v1/tasks/*/pushNotificationConfigs/*`
-    -   **HTTP Method:** `POST`
+    -   **URL:** `/v1/tasks/{taskId}/pushNotificationConfigs/{configId}`
+    -   **HTTP Method:** `GET`
     -   **Payload:**
         ```typescript
         {
