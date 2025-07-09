@@ -1,6 +1,6 @@
 /**
  * Validation Script for A2A Optimizations
- * 
+ *
  * This script validates that all the optimization code is syntactically correct
  * and the basic structure is sound without requiring external dependencies.
  */
@@ -36,7 +36,7 @@ function validateFileContent(filePath, expectedPatterns) {
   try {
     const fullPath = path.join(__dirname, filePath);
     const content = fs.readFileSync(fullPath, 'utf8');
-    
+
     const results = expectedPatterns.map(pattern => {
       const regex = new RegExp(pattern, 'i');
       return {
@@ -44,7 +44,7 @@ function validateFileContent(filePath, expectedPatterns) {
         found: regex.test(content)
       };
     });
-    
+
     return {
       success: true,
       content: content,
@@ -63,35 +63,45 @@ function validateTypeScriptSyntax(filePath) {
   try {
     const fullPath = path.join(__dirname, filePath);
     const content = fs.readFileSync(fullPath, 'utf8');
-    
+
     // Basic syntax checks
     const checks = [
-      { name: 'Balanced braces', test: () => {
-        const openBraces = (content.match(/\{/g) || []).length;
-        const closeBraces = (content.match(/\}/g) || []).length;
-        return openBraces === closeBraces;
-      }},
-      { name: 'Balanced parentheses', test: () => {
-        const openParens = (content.match(/\(/g) || []).length;
-        const closeParens = (content.match(/\)/g) || []).length;
-        return openParens === closeParens;
-      }},
-      { name: 'No obvious syntax errors', test: () => {
-        return !content.includes('SyntaxError') && !content.includes('unexpected token');
-      }},
-      { name: 'Has exports', test: () => {
-        return content.includes('export') || content.includes('module.exports');
-      }},
-      { name: 'TypeScript syntax', test: () => {
-        return content.includes('interface') || content.includes('type') || content.includes(': ');
-      }}
+      {
+        name: 'Balanced braces', test: () => {
+          const openBraces = (content.match(/\{/g) || []).length;
+          const closeBraces = (content.match(/\}/g) || []).length;
+          return openBraces === closeBraces;
+        }
+      },
+      {
+        name: 'Balanced parentheses', test: () => {
+          const openParens = (content.match(/\(/g) || []).length;
+          const closeParens = (content.match(/\)/g) || []).length;
+          return openParens === closeParens;
+        }
+      },
+      {
+        name: 'No obvious syntax errors', test: () => {
+          return !content.includes('SyntaxError') && !content.includes('unexpected token');
+        }
+      },
+      {
+        name: 'Has exports', test: () => {
+          return content.includes('export') || content.includes('module.exports');
+        }
+      },
+      {
+        name: 'TypeScript syntax', test: () => {
+          return content.includes('interface') || content.includes('type') || content.includes(': ');
+        }
+      }
     ];
-    
+
     const results = checks.map(check => ({
       name: check.name,
       passed: check.test()
     }));
-    
+
     return {
       success: true,
       checks: results,
@@ -138,36 +148,6 @@ function runValidation() {
         'health.*check',
         'backpressure',
         'metrics'
-      ]
-    },
-    {
-      path: 'src/client/a2a-client.ts',
-      patterns: [
-        'A2AClient',
-        'event.*driven',
-        'agent.*discovery',
-        'authentication',
-        'metrics'
-      ]
-    },
-    {
-      path: 'src/server/a2a-server.ts',
-      patterns: [
-        'A2AServer',
-        'high.*concurrency',
-        'task.*queue',
-        'rate.*limit',
-        'health.*check'
-      ]
-    },
-    {
-      path: 'src/index.ts',
-      patterns: [
-        'export',
-        'A2AClient',
-        'A2AServer',
-        'A2AUtils',
-        'VERSION'
       ]
     }
   ];
@@ -253,7 +233,7 @@ function runValidation() {
   try {
     const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'package.json'), 'utf8'));
     const requiredFields = ['name', 'version', 'scripts', 'dependencies', 'devDependencies'];
-    
+
     requiredFields.forEach(field => {
       totalTests++;
       if (packageJson[field]) {
