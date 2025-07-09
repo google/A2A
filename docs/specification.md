@@ -970,7 +970,7 @@ Retrieves the associated push notification configurations for a specified task. 
 
 === "gRPC"
     -   **URL:** `ListTaskPushNotification`
-    -   **HTTP Method:** `GET`
+    -   **HTTP Method:** `POST`
     -   **Payload:**
         ```proto
         message ListTaskPushNotificationRequest {
