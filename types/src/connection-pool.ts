@@ -1,6 +1,6 @@
 /**
  * High-Performance Connection Pool and Resource Management for A2A Protocol (KISS Version)
- * 
+ *
  * This module provides efficient connection pooling with connection reuse,
  * resource management, and backpressure handling for A2A client-server
  * communications following KISS principles.
@@ -55,7 +55,7 @@ export interface ConnectionFactory {
 export class HTTPConnectionFactory implements ConnectionFactory {
   async createConnection(agentUrl: string): Promise<A2AConnection> {
     const connectionId = `http-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     return {
       info: {
         id: connectionId,
@@ -66,12 +66,12 @@ export class HTTPConnectionFactory implements ConnectionFactory {
         agentUrl,
         metadata: { protocol: 'http' }
       },
-      
+
       async sendRequest(method: string, params: any): Promise<any> {
         this.info.state = ConnectionState.ACTIVE;
         this.info.lastUsedAt = Date.now();
         this.info.useCount++;
-        
+
         try {
           // HTTP request implementation
           const response = await fetch(agentUrl, {
@@ -79,11 +79,11 @@ export class HTTPConnectionFactory implements ConnectionFactory {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ method, params, id: Date.now() })
           });
-          
+
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
-          
+
           const result = await response.json();
           this.info.state = ConnectionState.IDLE;
           return result;
@@ -92,7 +92,7 @@ export class HTTPConnectionFactory implements ConnectionFactory {
           throw error;
         }
       },
-      
+
       async isHealthy(): Promise<boolean> {
         try {
           await this.sendRequest('ping', {});
@@ -101,11 +101,11 @@ export class HTTPConnectionFactory implements ConnectionFactory {
           return false;
         }
       },
-      
+
       async close(): Promise<void> {
         this.info.state = ConnectionState.CLOSED;
       },
-      
+
       async reset(): Promise<void> {
         this.info.state = ConnectionState.IDLE;
         this.info.useCount = 0;
@@ -115,8 +115,8 @@ export class HTTPConnectionFactory implements ConnectionFactory {
   }
 
   async validateConnection(connection: A2AConnection): Promise<boolean> {
-    return connection.info.state !== ConnectionState.CLOSED && 
-           connection.info.state !== ConnectionState.ERROR;
+    return connection.info.state !== ConnectionState.CLOSED &&
+      connection.info.state !== ConnectionState.ERROR;
   }
 }
 
@@ -160,7 +160,7 @@ export class A2AConnectionPool {
     reject: (error: Error) => void;
     timestamp: number;
   }> = [];
-  
+
   private metrics: ConnectionPoolMetrics = {
     totalConnections: 0,
     activeConnections: 0,
@@ -171,7 +171,7 @@ export class A2AConnectionPool {
     averageResponseTime: 0,
     connectionUtilization: 0
   };
-  
+
   private healthCheckTimer?: NodeJS.Timeout;
   private cleanupTimer?: NodeJS.Timeout;
 
@@ -191,13 +191,13 @@ export class A2AConnectionPool {
     if (this.config.healthCheckInterval > 0) {
       this.startHealthCheck();
     }
-    
+
     this.startCleanup();
   }
 
   async acquireConnection(agentUrl: string): Promise<A2AConnection> {
     const startTime = Date.now();
-    
+
     try {
       // Try to get an existing idle connection
       const connection = await this.getIdleConnection(agentUrl);
@@ -221,34 +221,50 @@ export class A2AConnectionPool {
       if (this.config.enableMetrics) {
         this.metrics.totalRequests++;
         const responseTime = Date.now() - startTime;
-        this.metrics.averageResponseTime = 
-          (this.metrics.averageResponseTime * (this.metrics.totalRequests - 1) + responseTime) / 
+        this.metrics.averageResponseTime =
+          (this.metrics.averageResponseTime * (this.metrics.totalRequests - 1) + responseTime) /
           this.metrics.totalRequests;
       }
     }
   }
 
   async releaseConnection(connection: A2AConnection): Promise<void> {
-    connection.info.state = ConnectionState.IDLE;
+    // Only set to IDLE if connection is not in ERROR state
+    if (connection.info.state !== ConnectionState.ERROR) {
+      connection.info.state = ConnectionState.IDLE;
+    }
     connection.info.lastUsedAt = Date.now();
-    
-    // Process queued requests
+
+    // Process queued requests (important for both success and error cases)
     await this.processQueue();
     this.updateMetrics();
   }
 
   async executeRequest(agentUrl: string, method: string, params: any): Promise<any> {
     const connection = await this.acquireConnection(agentUrl);
-    
+
     try {
       const result = await connection.sendRequest(method, params);
       await this.releaseConnection(connection);
       return result;
     } catch (error) {
+      // Mark connection as error state
       connection.info.state = ConnectionState.ERROR;
+
+      // Update metrics
       if (this.config.enableMetrics) {
         this.metrics.failedRequests++;
       }
+
+      // Critical: Release the connection back to pool and process queue
+      // This prevents connection leaks and ensures waiting requests are processed
+      try {
+        await this.releaseConnection(connection);
+      } catch (releaseError) {
+        // Log release error but don't throw to avoid masking original error
+        console.error('Failed to release connection after error:', releaseError);
+      }
+
       throw error;
     }
   }
@@ -262,7 +278,7 @@ export class A2AConnectionPool {
     if (this.healthCheckTimer) {
       clearInterval(this.healthCheckTimer);
     }
-    
+
     if (this.cleanupTimer) {
       clearInterval(this.cleanupTimer);
     }
@@ -273,14 +289,14 @@ export class A2AConnectionPool {
         await connection.close();
       }
     }
-    
+
     this.connections.clear();
     this.requestQueue.length = 0;
   }
 
   private async getIdleConnection(agentUrl: string): Promise<A2AConnection | null> {
     const connections = this.connections.get(agentUrl) || [];
-    
+
     for (const connection of connections) {
       if (connection.info.state === ConnectionState.IDLE) {
         const isValid = await this.factory.validateConnection(connection);
@@ -291,20 +307,20 @@ export class A2AConnectionPool {
         }
       }
     }
-    
+
     return null;
   }
 
   private async createConnection(agentUrl: string): Promise<A2AConnection> {
     const connection = await this.factory.createConnection(agentUrl);
-    
+
     if (!this.connections.has(agentUrl)) {
       this.connections.set(agentUrl, []);
     }
-    
+
     this.connections.get(agentUrl)!.push(connection);
     this.metrics.totalConnections++;
-    
+
     return connection;
   }
 
@@ -331,7 +347,7 @@ export class A2AConnectionPool {
         },
         timestamp: Date.now()
       });
-      
+
       this.metrics.queuedRequests++;
     });
   }
@@ -339,8 +355,12 @@ export class A2AConnectionPool {
   private async processQueue(): Promise<void> {
     while (this.requestQueue.length > 0) {
       const request = this.requestQueue[0];
+
+      // Clean up any ERROR state connections for this agent before processing queue
+      await this.cleanupErrorConnections(request.agentUrl);
+
       const connection = await this.getIdleConnection(request.agentUrl);
-      
+
       if (connection) {
         this.requestQueue.shift();
         this.metrics.queuedRequests--;
@@ -349,6 +369,20 @@ export class A2AConnectionPool {
       } else {
         break;
       }
+    }
+  }
+
+  /**
+   * Clean up connections in ERROR state to prevent connection leaks
+   */
+  private async cleanupErrorConnections(agentUrl: string): Promise<void> {
+    const connections = this.connections.get(agentUrl);
+    if (!connections) return;
+
+    const errorConnections = connections.filter(conn => conn.info.state === ConnectionState.ERROR);
+
+    for (const errorConnection of errorConnections) {
+      await this.removeConnection(agentUrl, errorConnection);
     }
   }
 
@@ -377,7 +411,7 @@ export class A2AConnectionPool {
 
     let active = 0;
     let idle = 0;
-    
+
     for (const connections of this.connections.values()) {
       for (const connection of connections) {
         if (connection.info.state === ConnectionState.ACTIVE) {
@@ -387,10 +421,10 @@ export class A2AConnectionPool {
         }
       }
     }
-    
+
     this.metrics.activeConnections = active;
     this.metrics.idleConnections = idle;
-    this.metrics.connectionUtilization = 
+    this.metrics.connectionUtilization =
       this.metrics.totalConnections > 0 ? active / this.metrics.totalConnections : 0;
   }
 
@@ -412,14 +446,14 @@ export class A2AConnectionPool {
   private startCleanup(): void {
     this.cleanupTimer = setInterval(async () => {
       const now = Date.now();
-      
+
       for (const [agentUrl, connections] of this.connections.entries()) {
         for (const connection of [...connections]) {
           const age = now - connection.info.createdAt;
           const idleTime = now - connection.info.lastUsedAt;
-          
-          if (age > this.config.maxLifetime || 
-              (connection.info.state === ConnectionState.IDLE && idleTime > this.config.idleTimeout)) {
+
+          if (age > this.config.maxLifetime ||
+            (connection.info.state === ConnectionState.IDLE && idleTime > this.config.idleTimeout)) {
             await this.removeConnection(agentUrl, connection);
           }
         }
