@@ -596,9 +596,57 @@ The A2A Server's HTTP response body **MUST** be a `JSONRPCResponse` object (or, 
 
 Sends a message to an agent to initiate a new interaction or to continue an existing one. This method is suitable for synchronous request/response interactions or when client-side polling (using `tasks/get`) is acceptable for monitoring longer-running tasks. A task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
 
-- **Request `params` type**: [`MessageSendParams`](#711-messagesendparams-object)
-- **Response `result` type (on success)**: [`Task` | `Message`](#61-task-object) (A message object or the current or final state of the task after processing the message).
-- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object).
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `message/send`
+    -   **HTTP Method:** `POST`
+    -   **Payload**: [`MessageSendParams`](#711-messagesendparams-object)
+    -   **Response**: [`Task` | `Message`](#61-task-object) (A message object or the current or final state of the task after processing the message).
+
+=== "gRPC"
+    -   **URL:** `SendMessage`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```proto
+        message SendMessageRequest {
+          Message msg = 1;
+          SendMessageConfiguration configuration = 2;
+        }
+        ```
+    -   **Response:**
+        ```proto
+        message SendMessageResponse {
+          oneof payload {
+            Task task = 1;
+            Message msg = 2;
+          }
+        }
+        ```
+
+=== "REST"
+    -   **URL:** `/v1/message:send`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```typescript
+        {
+          message: Message,
+          configuration?: MessageSendConfiguration,
+          metadata?: { [key: string]: any }
+        }
+        ```
+    -   **Response:**
+        ```typescript
+        // Returns one of a message or a task
+        {
+          message?: Message,
+          task?: Task
+        }
+        ```
+
+</div>
+
+The `error` response for all transports in case of failure is a [`JSONRPCError`](#612-jsonrpcerror-object) or equivalent.
 
 #### 7.1.1. `MessageSendParams` Object
 
@@ -608,24 +656,62 @@ Sends a message to an agent to initiate a new interaction or to continue an exis
 --8<-- "types/src/types.ts:MessageSendConfiguration"
 ```
 
-| Field Name      | Type                                                            | Required | Description                                                        |
-| :-------------- | :-------------------------------------------------------------- | :------- | :----------------------------------------------------------------- |
-| `message`       | [`Message`](#64-message-object)                                 | Yes      | The message content to send. `Message.role` is typically `"user"`. |
-| `configuration` | [`MessageSendConfiguration`](#711-messagesendparams-object) | No       | Optional: additional message configuration                         |
-| `metadata`      | `Record<string, any>`                                           | No       | Request-specific metadata.                                         |
-
 ### 7.2. `message/stream`
 
 Sends a message to an agent to initiate/continue a task AND subscribes the client to real-time updates for that task via Server-Sent Events (SSE). This method requires the server to have `AgentCard.capabilities.streaming: true`. Just like `message/send`, a task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
 
-- **Request `params` type**: [`MessageSendParams`](#711-messagesendparams-object) (same as `message/send`).
-- **Response (on successful subscription)**:
-    - HTTP Status: `200 OK`.
-    - HTTP `Content-Type`: `text/event-stream`.
-    - HTTP Body: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) JSON object.
-- **Response (on initial subscription failure)**:
-    - Standard HTTP error code (e.g., 4xx, 5xx).
-    - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object detailing the failure.
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `message/stream`
+    -   **HTTP Method:** `POST`
+    -   **Payload**: [`MessageSendParams`](#711-messagesendparams-object) (same as `message/send`)
+    -   **Response**: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object)
+
+=== "gRPC"
+    -   **URL:** `SendStreamingMessage`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```proto
+        message SendMessageRequest {
+          Message msg = 1;
+          SendMessageConfiguration configuration = 2;
+        }
+        ```
+    -   **Response:**
+        ```proto
+        message StreamResponse {
+          oneof payload {
+            Task task;
+            Message msg;
+            TaskStatusUpdateEvent status_update;
+            TaskArtifactUpdateEvent artifact_update;
+          }
+        }
+        ```
+
+=== "REST"
+    -   **URL:** `/v1/message:stream`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```typescript
+        {
+          message: Message,
+          configuration?: MessageSendConfiguration,
+          metadata?: { [key: string]: any }
+        }
+        ```
+    -   **Response:**
+        ```typescript
+        {
+          message?: Message
+          task?: Task
+          statusUpdate?: TaskStatusUpdateEvent
+          artifactUpdate?: TaskArtifactUpdateEvent
+        }
+        ```
+
+</div>
 
 #### 7.2.1. `SendStreamingMessageResponse` Object
 
@@ -637,12 +723,6 @@ This is the structure of the JSON object found in the `data` field of each Serve
 --8<-- "types/src/types.ts:SendStreamingMessageSuccessResponse"
 ```
 
-| Field Name | Type                                                                                                                                                                                          | Required | Description                                                                            |
-| :--------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------- |
-| `jsonrpc`  | `"2.0"` (literal)                                                                                                                                                                             | Yes      | JSON-RPC version string.                                                               |
-| `id`       | `string` \| `number`                                                                                                                                                                          | Yes      | Matches the `id` from the originating `message/stream` or `tasks/resubscribe` request. |
-| `result`   | **Either** `Message` <br> **OR** `Task` <br> **OR** [`TaskStatusUpdateEvent`](#722-taskstatusupdateevent-object) <br> **OR** [`TaskArtifactUpdateEvent`](#723-taskartifactupdateevent-object) | Yes      | The event payload                                                                      |
-
 #### 7.2.2. `TaskStatusUpdateEvent` Object
 
 Carries information about a change in the task's status during streaming. This is one of the possible `result` types in a `SendStreamingMessageSuccessResponse`.
@@ -650,15 +730,6 @@ Carries information about a change in the task's status during streaming. This i
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskStatusUpdateEvent"
 ```
-
-| Field Name  | Type                                  | Required | Default         | Description                                                                                                                                      |
-| :---------- | :------------------------------------ | :------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `taskId`    | `string`                              | Yes      |                 | Task ID being updated                                                                                                                            |
-| `contextId` | `string`                              | Yes      |                 | Context ID the task is associated with                                                                                                           |
-| `kind`      | `string`, literal                     | Yes      | `status-update` | Type discriminator, literal value                                                                                                                |
-| `status`    | [`TaskStatus`](#62-taskstatus-object) | Yes      |                 | The new `TaskStatus` object.                                                                                                                     |
-| `final`     | `boolean`                             | No       | `false`         | If `true`, indicates this is the terminal status update for the current stream cycle. The server typically closes the SSE connection after this. |
-| `metadata`  | `Record<string, any>`                 | No       | `undefined`     | Event-specific metadata.                                                                                                                         |
 
 #### 7.2.3. `TaskArtifactUpdateEvent` Object
 
@@ -668,23 +739,44 @@ Carries a new or updated artifact (or a chunk of an artifact) generated by the t
 --8<-- "types/src/types.ts:TaskArtifactUpdateEvent"
 ```
 
-| Field Name  | Type                              | Required | Default           | Description                                                                |
-| :---------- | :-------------------------------- | :------- | :---------------- | :------------------------------------------------------------------------- |
-| `taskId`    | `string`                          | Yes      |                   | Task ID associated with the generated artifact part                        |
-| `contextId` | `string`                          | Yes      |                   | Context ID the task is associated with                                     |
-| `kind`      | `string`, literal                 | Yes      | `artifact-update` | Type discriminator, literal value                                          |
-| `artifact`  | [`Artifact`](#67-artifact-object) | Yes      |                   | The `Artifact` data. Could be a complete artifact or an incremental chunk. |
-| `append`    | `boolean`                         | No       | `false`           | `true` means append parts to artifact; `false` (default) means replace.    |
-| `lastChunk` | `boolean`                         | No       | `false`           | `true` indicates this is the final update for the artifact.                |
-| `metadata`  | `Record<string, any>`             | No       | `undefined`       | Event-specific metadata.                                                   |
-
 ### 7.3. `tasks/get`
 
 Retrieves the current state (including status, artifacts, and optionally history) of a previously initiated task. This is typically used for polling the status of a task initiated with `message/send`, or for fetching the final state of a task after being notified via a push notification or after an SSE stream has ended.
 
-- **Request `params` type**: [`TaskQueryParams`](#731-taskqueryparams-object)
-- **Response `result` type (on success)**: [`Task`](#61-task-object) (A snapshot of the task's current state).
-- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., if the task ID is not found, see [`TaskNotFoundError`](#82-a2a-specific-errors)).
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `tasks/get`
+    -   **HTTP Method:** `POST`
+    -   **Payload**: [`TaskQueryParams`](#731-taskqueryparams-object)
+    -   **Response**: `Task`
+
+=== "gRPC"
+    -   **URL:** `GetTask`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```proto
+        message GetTaskRequest {
+          // name=tasks/{id}
+          string name;
+          int32 history_length;
+        }
+        ```
+    -   **Response**: `Task`
+
+=== "REST"
+    -   **URL:** `/v1/tasks/{id}`
+    -   **HTTP Method:** `GET`
+    -   **Payload:**
+        ```typescript
+        {
+          name: string
+          historyLength?: number
+        }
+        ```
+    -   **Response**: `Task`
+
+</div>
 
 #### 7.3.1. `TaskQueryParams` Object
 
@@ -698,13 +790,70 @@ Retrieves the current state (including status, artifacts, and optionally history
 | `historyLength` | `integer`             | No       | If positive, requests the server to include up to `N` recent messages in `Task.history`. |
 | `metadata`      | `Record<string, any>` | No       | Request-specific metadata.                                                               |
 
+
+### `tasks/list`
+
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -  N/A
+
+=== "gRPC"
+    -   **URL:** `ListTask`
+    -   **HTTP Method:** `GET`
+    -   **Payload:**
+        ```proto
+        {}
+        ```
+    -   **Response**: `repeated Task`
+
+=== "REST"
+    -   **URL:** `/v1/tasks`
+    -   **HTTP Method:** `GET`
+    -   **Payload:**
+        ```typescript
+        {}
+        ```
+    -   **Response**: `[Task]`
+
+</div>
+
 ### 7.4. `tasks/cancel`
 
 Requests the cancellation of an ongoing task. The server will attempt to cancel the task, but success is not guaranteed (e.g., the task might have already completed or failed, or cancellation might not be supported at its current stage).
 
-- **Request `params` type**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
-- **Response `result` type (on success)**: [`Task`](#61-task-object) (The state of the task after the cancellation attempt. Ideally, `Task.status.state` will be `"canceled"` if successful).
-- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`TaskNotFoundError`](#82-a2a-specific-errors), [`TaskNotCancelableError`](#82-a2a-specific-errors)).
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `tasks/cancel`
+    -   **HTTP Method:** `POST`
+    -   **Payload**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+    -   **Response**: `Task`
+
+=== "gRPC"
+    -   **URL:** `CancelTask`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```proto
+        message CancelTaskRequest{
+          // name=tasks/{id}
+          string name;
+        }
+        ```
+    -   **Response**: `Task`
+
+=== "REST"
+    -   **URL:** `/v1/tasks/{id}:cancel`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```typescript
+        {
+          name: string
+        }
+        ```
+    -   **Response**: `Task`
+
+</div>
 
 #### 7.4.1. `TaskIdParams` Object (for `tasks/cancel` and `tasks/pushNotificationConfig/get`)
 
@@ -723,18 +872,76 @@ A simple object containing just the task ID and optional metadata.
 
 Sets or updates the push notification configuration for a specified task. This allows the client to tell the server where and how to send asynchronous updates for the task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
-- **Response `result` type (on success)**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object) (Confirms the configuration that was set. The server MAY omit or mask any sensitive details like secrets from the `authentication.credentials` field in the response).
-- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors), errors related to invalid `PushNotificationConfig`).
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `tasks/pushNotificationConfig/set`
+    -   **HTTP Method:** `POST`
+    -   **Payload**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
+    -   **Response**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
+
+=== "gRPC"
+    -   **URL:** `CreateTaskPushNotification`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```proto
+        message SetTaskPushNotificationRequest {
+          TaskPushNotificationConfig config = 1;
+        }
+        ```
+    -   **Response**: `TaskPushNotificationConfig`
+
+=== "REST"
+    -   **URL:** `/v1/tasks/{id}/pushNotificationConfigs`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```typescript
+        {
+          config: TaskPushNotificationConfig
+        }
+        ```
+    -   **Response**: `TaskPushNotificationConfig`
+
+</div>
 
 ### 7.6. `tasks/pushNotificationConfig/get`
 
 Retrieves the current push notification configuration for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`GetTaskPushNotificationConfigParams`](#761-gettaskpushnotificationconfigparams-object-taskspushnotificationconfigget) | [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
-_(Note: TaskIdParams type is deprecated for this method. Use GetTaskPushNotificationConfigParams instead.)_
-- **Response `result` type (on success)**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object) (The current push notification configuration for the task. Server may return an error if no push notification configuration is associated with the task).
-- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `tasks/pushNotificationConfig/get`
+    -   **HTTP Method:** `POST`
+    -   **Payload**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
+    -   **Response**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
+
+=== "gRPC"
+    -   **URL:** `GetTaskPushNotification`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```proto
+        message TaskSubscriptionRequest {
+          // name=tasks/{id}/pushNotification/{id}
+          string name;
+        }
+        ```
+    -   **Response**: `TaskPushNotificationConfig`
+
+=== "REST"
+    -   **URL:** `/v1/tasks/*/pushNotificationConfigs/*`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```typescript
+        {
+          name: string
+        }
+        ```
+    -   **Response**: `TaskPushNotificationConfig`
+
+</div>
+
+**Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
 
 #### 7.6.1. `GetTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/get`)
 
@@ -754,9 +961,38 @@ A object for fetching the push notification configuration for a task.
 
 Retrieves the associated push notification configurations for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
 
-- **Request `params` type**: [`ListTaskPushNotificationConfigParams`](#771-listtaskpushnotificationconfigparams-object-taskspushnotificationconfiglist)
-- **Response `result` type (on success)**: [`TaskPushNotificationConfig[]`](#610-taskpushnotificationconfig-object) (The push notification configurations associated with the task.).
-- **Response `error` type (on failure)**: [`JSONRPCError`](#612-jsonrpcerror-object) (e.g., [`PushNotificationNotSupportedError`](#82-a2a-specific-errors), [`TaskNotFoundError`](#82-a2a-specific-errors)).
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `ListTaskPushNotification`
+    -   **HTTP Method:** `GET`
+    -   **Payload:** [`ListTaskPushNotificationConfigParams`](#771-listtaskpushnotificationconfigparams-object-taskspushnotificationconfiglist)
+    -   **Response**: `TaskPushNotificationConfig[]`
+
+=== "gRPC"
+    -   **URL:** `ListTaskPushNotification`
+    -   **HTTP Method:** `GET`
+    -   **Payload:**
+        ```proto
+        message ListTaskPushNotificationRequest {
+          // parent=tasks/{id}
+          string parent = 1;
+        }
+        ```
+    -   **Response**: `repeated TaskPushNotificationConfig`
+
+=== "REST"
+    -   **URL:** `/v1/tasks/{id}/pushNotificationConfigs`
+    -   **HTTP Method:** `GET`
+    -   **Payload:**
+        ```typescript
+        {
+          parent: string
+        }
+        ```
+    -   **Response**: `[TaskPushNotificationConfig]`
+
+</div>
 
 #### 7.7.1. `ListTaskPushNotificationConfigParams` Object (`tasks/pushNotificationConfig/list`)
 
@@ -799,18 +1035,60 @@ Allows a client to reconnect to an SSE stream for an ongoing task after a previo
 
 The purpose is to resume receiving _subsequent_ updates. The server's behavior regarding events missed during the disconnection period (e.g., whether it attempts to backfill some missed events or only sends new ones from the point of resubscription) is implementation-dependent and not strictly defined by this specification.
 
-- **Request `params` type**: [`TaskIdParams`](#731-taskqueryparams-object)
-- **Response (on successful resubscription)**:
-    - HTTP Status: `200 OK`.
-    - HTTP `Content-Type`: `text/event-stream`.
-    - HTTP Body: A stream of Server-Sent Events, identical in format to `message/stream`, carrying _subsequent_ [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object) events for the task.
-- **Response (on resubscription failure)**:
-    - Standard HTTP error code (e.g., 4xx, 5xx).
-    - The HTTP body MAY contain a standard `JSONRPCResponse` with an `error` object. Failures can occur if the task is no longer active, doesn't exist, or streaming is not supported/enabled for it.
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** `tasks/resubscribe`
+    -   **HTTP Method:** `POST`
+    -   **Payload**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+    -   **Response**: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object)
+
+=== "gRPC"
+    -   **URL:** `TaskSubscription`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```proto
+        message TaskSubscriptionRequest{
+          // name=tasks/{id}
+          string name;
+        }
+        ```
+    -   **Response:**
+        ```proto
+        message StreamResponse {
+          oneof payload {
+            Task task;
+            Message msg;
+            TaskStatusUpdateEvent status_update;
+            TaskArtifactUpdateEvent artifact_update;
+          }
+        }
+        ```
+
+=== "REST"
+    -   **URL:** `/v1/tasks/{id}:resubscribe`
+    -   **HTTP Method:** `POST`
+    -   **Payload:**
+        ```typescript
+        {
+          name: string
+        }
+        ```
+    -   **Response:**
+        ```typescript
+        {
+          message?: Message
+          task?: Task
+          statusUpdate?: TaskStatusUpdateEvent
+          artifactUpdate?: TaskArtifactUpdateEvent
+        }
+        ```
+
+</div>
 
 ### 7.10. `agent/authenticatedExtendedCard`
 
-Retrieves a potentially more detailed version of the Agent Card after the client has authenticated. This endpoint is available only if `AgentCard.supportsAuthenticatedExtendedCard` is `true`. This is an HTTP GET endpoint, not a JSON-RPC method.
+Retrieves a potentially more detailed version of the Agent Card after the client has authenticated. This endpoint is available only if `AgentCard.supportsAuthenticatedExtendedCard` is `true`.
 
 - **Endpoint URL**: `{AgentCard.url}/../agent/authenticatedExtendedCard` (relative to the base URL specified in the public Agent Card).
 - **HTTP Method**: `GET`
@@ -836,6 +1114,30 @@ The successful response body is a JSON object conforming to the `AgentCard` inte
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:AuthenticatedExtendedCardResponse"
 ```
+
+### 7.11. `card/get`
+
+<div class="grid cards" markdown>
+
+=== "JSON-RPC"
+    -   **URL:** Not Defined Now
+    -   **HTTP Method:** `GET`
+    -   **Payload:** None
+    -   **Response:** `AgentCard`
+
+=== "gRPC"
+    -   **URL:** `GetAgentCard`
+    -   **HTTP Method:** `POST`
+    -   **Payload:** None
+    -   **Response:** `AgentCard`
+
+=== "REST"
+    -   **URL:** `/v1/card`
+    -   **HTTP Method:** `GET`
+    -   **Payload:** None
+    -   **Response:** `AgentCard`
+
+</div>
 
 ## 8. Error Handling
 
