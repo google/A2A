@@ -1,9 +1,9 @@
 /**
  * Task Persistence and Recovery System for A2A Protocol (KISS Version)
- * 
+ *
  * This module provides essential task state management with persistence,
  * optimistic locking, and version control following KISS principles.
- * 
+ *
  * Key Features:
  * - Memory-based storage (simple, reliable)
  * - Optimistic locking with version-based concurrency control
@@ -108,15 +108,15 @@ export interface PersistedTask {
 export interface TaskStorage {
   initialize(): Promise<void>;
   shutdown(): Promise<void>;
-  
+
   create(task: PersistedTask): Promise<PersistedTask>;
   get(taskId: string): Promise<PersistedTask | null>;
   update(taskId: string, updates: Partial<PersistedTask>, expectedVersion: number): Promise<PersistedTask>;
   delete(taskId: string): Promise<boolean>;
-  
+
   list(contextId?: string, state?: TaskState, limit?: number, offset?: number): Promise<PersistedTask[]>;
   count(contextId?: string, state?: TaskState): Promise<number>;
-  
+
   cleanup(olderThan: Date): Promise<number>;
   getMetrics(): Promise<TaskStorageMetrics>;
 }
@@ -152,11 +152,11 @@ export class MemoryTaskStorage implements TaskStorage {
 
   async create(task: PersistedTask): Promise<PersistedTask> {
     this.ensureInitialized();
-    
+
     if (this.tasks.has(task.id)) {
       throw new Error(`Task ${task.id} already exists`);
     }
-    
+
     const persistedTask = { ...task };
     this.tasks.set(task.id, persistedTask);
     return persistedTask;
@@ -169,7 +169,7 @@ export class MemoryTaskStorage implements TaskStorage {
 
   async update(taskId: string, updates: Partial<PersistedTask>, expectedVersion: number): Promise<PersistedTask> {
     this.ensureInitialized();
-    
+
     const existingTask = this.tasks.get(taskId);
     if (!existingTask) {
       throw new Error(`Task ${taskId} not found`);
@@ -197,28 +197,28 @@ export class MemoryTaskStorage implements TaskStorage {
 
   async list(contextId?: string, state?: TaskState, limit?: number, offset?: number): Promise<PersistedTask[]> {
     this.ensureInitialized();
-    
+
     let tasks = Array.from(this.tasks.values());
-    
+
     if (contextId) {
       tasks = tasks.filter(task => task.contextId === contextId);
     }
-    
+
     if (state) {
       tasks = tasks.filter(task => task.status.state === state);
     }
-    
+
     // Sort by creation time (newest first)
     tasks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    
+
     if (offset) {
       tasks = tasks.slice(offset);
     }
-    
+
     if (limit) {
       tasks = tasks.slice(0, limit);
     }
-    
+
     return tasks;
   }
 
@@ -229,10 +229,10 @@ export class MemoryTaskStorage implements TaskStorage {
 
   async cleanup(olderThan: Date): Promise<number> {
     this.ensureInitialized();
-    
+
     let deletedCount = 0;
     const cutoffTime = olderThan.getTime();
-    
+
     for (const [taskId, task] of this.tasks.entries()) {
       const taskTime = new Date(task.createdAt).getTime();
       if (taskTime < cutoffTime) {
@@ -240,17 +240,17 @@ export class MemoryTaskStorage implements TaskStorage {
         deletedCount++;
       }
     }
-    
+
     return deletedCount;
   }
 
   async getMetrics(): Promise<TaskStorageMetrics> {
     this.ensureInitialized();
-    
+
     const tasks = Array.from(this.tasks.values());
     const tasksByState: Record<TaskState, number> = {} as Record<TaskState, number>;
     const tasksByPriority: Record<TaskPriority, number> = {} as Record<TaskPriority, number>;
-    
+
     // Initialize counters
     Object.values(TaskState).forEach(state => {
       tasksByState[state] = 0;
@@ -258,17 +258,17 @@ export class MemoryTaskStorage implements TaskStorage {
     Object.values(TaskPriority).forEach(priority => {
       tasksByPriority[priority] = 0;
     });
-    
+
     // Count tasks
     tasks.forEach(task => {
       tasksByState[task.status.state]++;
       tasksByPriority[task.priority]++;
     });
-    
+
     // Calculate average duration for completed tasks
     const completedTasks = tasks.filter(task => task.status.state === TaskState.Completed);
     let averageTaskDuration = 0;
-    
+
     if (completedTasks.length > 0) {
       const totalDuration = completedTasks.reduce((sum, task) => {
         const created = new Date(task.createdAt).getTime();
@@ -277,7 +277,7 @@ export class MemoryTaskStorage implements TaskStorage {
       }, 0);
       averageTaskDuration = totalDuration / completedTasks.length;
     }
-    
+
     return {
       totalTasks: tasks.length,
       tasksByState,
@@ -325,7 +325,7 @@ export class TaskPersistenceManager {
 
   async initialize(): Promise<void> {
     await this.storage.initialize();
-    
+
     if (this.config.cleanupInterval > 0) {
       this.startCleanupTimer();
     }
@@ -336,13 +336,13 @@ export class TaskPersistenceManager {
       clearInterval(this.cleanupTimer);
       this.cleanupTimer = undefined;
     }
-    
+
     await this.storage.shutdown();
   }
 
   async createTask(task: Partial<PersistedTask>): Promise<PersistedTask> {
     const now = new Date().toISOString();
-    
+
     const persistedTask: PersistedTask = {
       id: task.id || this.generateTaskId(),
       contextId: task.contextId || 'default',
@@ -371,8 +371,8 @@ export class TaskPersistenceManager {
   }
 
   async updateTask(
-    taskId: string, 
-    updates: Partial<PersistedTask>, 
+    taskId: string,
+    updates: Partial<PersistedTask>,
     expectedVersion?: number
   ): Promise<PersistedTask> {
     const existingTask = await this.storage.get(taskId);
@@ -381,7 +381,7 @@ export class TaskPersistenceManager {
     }
 
     const version = expectedVersion ?? existingTask.version;
-    
+
     // Add history entry if state is changing
     if (updates.status && updates.status.state !== existingTask.status.state) {
       const historyEntry: TaskHistoryEntry = {
@@ -390,17 +390,23 @@ export class TaskPersistenceManager {
         newState: updates.status.state,
         reason: updates.status.message
       };
-      
+
       updates.history = [...(existingTask.history || []), historyEntry];
     }
 
-    const updatedTask = await this.storage.update(taskId, updates, version);
-    
+    // Calculate checksum BEFORE storage update to ensure it's persisted
     if (this.config.enableChecksums) {
-      updatedTask.checksum = this.calculateChecksum(updatedTask);
+      // Create merged task state to calculate accurate checksum
+      const mergedTask = {
+        ...existingTask,
+        ...updates,
+        version: version + 1, // Include the new version in checksum calculation
+        updatedAt: new Date().toISOString()
+      };
+      updates.checksum = this.calculateChecksum(mergedTask);
     }
 
-    return updatedTask;
+    return await this.storage.update(taskId, updates, version);
   }
 
   async deleteTask(taskId: string): Promise<boolean> {
@@ -408,9 +414,9 @@ export class TaskPersistenceManager {
   }
 
   async listTasks(
-    contextId?: string, 
-    state?: TaskState, 
-    limit?: number, 
+    contextId?: string,
+    state?: TaskState,
+    limit?: number,
     offset?: number
   ): Promise<PersistedTask[]> {
     return await this.storage.list(contextId, state, limit, offset);
@@ -432,14 +438,14 @@ export class TaskPersistenceManager {
       status: task.status,
       metadata: task.metadata
     });
-    
+
     let hash = 0;
     for (let i = 0; i < data.length; i++) {
       const char = data.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
       hash = hash & hash; // Convert to 32-bit integer
     }
-    
+
     return Math.abs(hash).toString(16);
   }
 
