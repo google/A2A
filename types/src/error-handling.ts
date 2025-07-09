@@ -105,7 +105,7 @@ export class A2AErrorClass extends Error {
   public readonly correlationId?: string;
   public readonly timestamp: string;
   public readonly context: Record<string, any>;
-  public readonly retryable: boolean;
+  public readonly retriable: boolean;
   public readonly cause?: Error;
 
   constructor(options: {
@@ -115,7 +115,7 @@ export class A2AErrorClass extends Error {
     severity?: ErrorSeverity;
     correlationId?: string;
     context?: Record<string, any>;
-    retryable?: boolean;
+    retriable?: boolean;
     cause?: Error;
   }) {
     super(options.message);
@@ -126,7 +126,7 @@ export class A2AErrorClass extends Error {
     this.correlationId = options.correlationId;
     this.timestamp = new Date().toISOString();
     this.context = options.context || {};
-    this.retryable = options.retryable ?? this.inferRetryable(options.code);
+    this.retriable = options.retriable ?? this.inferRetriable(options.code);
     this.cause = options.cause;
 
     // Maintain proper stack trace
@@ -164,8 +164,8 @@ export class A2AErrorClass extends Error {
     return ErrorSeverity.LOW;
   }
 
-  private inferRetryable(code: A2AErrorCode): boolean {
-    const nonRetryableCodes = [
+  private inferRetriable(code: A2AErrorCode): boolean {
+    const nonRetriableCodes = [
       A2AErrorCode.AUTHENTICATION_FAILED,
       A2AErrorCode.AUTHORIZATION_DENIED,
       A2AErrorCode.INVALID_INPUT,
@@ -176,7 +176,7 @@ export class A2AErrorClass extends Error {
       A2AErrorCode.INVALID_PARAMS
     ];
 
-    return !nonRetryableCodes.includes(code);
+    return !nonRetriableCodes.includes(code);
   }
 
   /**
@@ -192,7 +192,7 @@ export class A2AErrorClass extends Error {
         correlationId: this.correlationId,
         timestamp: this.timestamp,
         context: this.context,
-        retryable: this.retryable
+        retriable: this.retriable
       }
     };
   }
@@ -208,7 +208,7 @@ export class A2AErrorClass extends Error {
       severity: error.data?.severity,
       correlationId: correlationId || error.data?.correlationId,
       context: error.data?.context,
-      retryable: error.data?.retryable
+      retriable: error.data?.retriable
     });
   }
 }
@@ -369,8 +369,8 @@ export class A2AErrorHandler {
 
         this.recordError(a2aError);
 
-        // Check if error is retryable
-        if (!a2aError.retryable || attempt >= this.retryConfig.maxRetries) {
+        // Check if error is retriable
+        if (!a2aError.retriable || attempt >= this.retryConfig.maxRetries) {
           this.handleFailure();
           throw a2aError;
         }
