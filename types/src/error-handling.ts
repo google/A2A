@@ -12,7 +12,7 @@
  * - Structured error reporting and categorization
  */
 
-import { JSONRPCError } from './types';
+import { JSONRPCError, A2AError as A2AErrorType } from './types';
 
 /**
  * Standardized A2A Error Codes
@@ -98,7 +98,7 @@ export enum ErrorSeverity {
 /**
  * Enhanced A2A Error with Rich Context
  */
-export class A2AError extends Error {
+export class A2AErrorClass extends Error {
   public readonly code: A2AErrorCode;
   public readonly category: ErrorCategory;
   public readonly severity: ErrorSeverity;
@@ -119,7 +119,7 @@ export class A2AError extends Error {
     cause?: Error;
   }) {
     super(options.message);
-    this.name = 'A2AError';
+    this.name = 'A2AErrorClass';
     this.code = options.code;
     this.category = options.category || this.inferCategory(options.code);
     this.severity = options.severity || this.inferSeverity(options.code);
@@ -131,7 +131,7 @@ export class A2AError extends Error {
 
     // Maintain proper stack trace
     if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, A2AError);
+      Error.captureStackTrace(this, A2AErrorClass);
     }
   }
 
@@ -200,8 +200,8 @@ export class A2AError extends Error {
   /**
    * Create error from JSON-RPC Error
    */
-  static fromJSONRPCError(error: JSONRPCError, correlationId?: string): A2AError {
-    return new A2AError({
+  static fromJSONRPCError(error: JSONRPCError, correlationId?: string): A2AErrorClass {
+    return new A2AErrorClass({
       code: error.code as A2AErrorCode,
       message: error.message,
       category: error.data?.category,
@@ -339,7 +339,7 @@ export class A2AErrorHandler {
 
     // Check circuit breaker
     if (!this.canExecute()) {
-      throw new A2AError({
+      throw new A2AErrorClass({
         code: A2AErrorCode.SERVICE_UNAVAILABLE,
         message: 'Circuit breaker is open',
         correlationId: operationId,
@@ -347,7 +347,7 @@ export class A2AErrorHandler {
       });
     }
 
-    let lastError: A2AError | undefined;
+    let lastError: A2AErrorClass | undefined;
     let attempt = 0;
 
     while (attempt <= this.retryConfig.maxRetries) {
@@ -466,29 +466,97 @@ export class A2AErrorHandler {
   /**
    * Normalize any error to A2AError
    */
-  private normalizeError(error: any, correlationId: string): A2AError {
-    if (error instanceof A2AError) {
+  private normalizeError(error: any, correlationId: string): A2AErrorClass {
+    if (error instanceof A2AErrorClass) {
       return error;
     }
 
-    // Map common error types to A2A error codes
+    // Map common error types to A2A error codes based on original error properties
     let code = A2AErrorCode.UNKNOWN_ERROR;
+    const errorMessage = error.message || '';
+    const errorCode = error.code || '';
+    const errorName = error.name || '';
 
-    if ([A2AErrorCode.NETWORK_TIMEOUT, A2AErrorCode.CONNECTION_FAILED,
-    A2AErrorCode.SERVICE_UNAVAILABLE].includes(code)) {
+    // Network and connection errors
+    if (errorCode === 'ECONNREFUSED' || errorCode === 'ENOTFOUND' ||
+      errorMessage.toLowerCase().includes('connection refused') || errorMessage.includes('connect ECONNREFUSED')) {
+      code = A2AErrorCode.CONNECTION_REFUSED;
+    } else if (errorCode === 'ETIMEDOUT' || errorCode === 'ECONNRESET' ||
+      errorMessage.toLowerCase().includes('timeout') || errorMessage.includes('ETIMEDOUT')) {
       code = A2AErrorCode.NETWORK_TIMEOUT;
+    } else if (errorCode === 'ENOTFOUND' || errorMessage.includes('getaddrinfo ENOTFOUND')) {
+      code = A2AErrorCode.DNS_RESOLUTION_FAILED;
+    } else if (errorMessage.toLowerCase().includes('certificate') || errorMessage.includes('SSL') ||
+      errorMessage.includes('TLS') || errorCode === 'CERT_UNTRUSTED') {
+      code = A2AErrorCode.SSL_HANDSHAKE_FAILED;
     }
 
-    if ([A2AErrorCode.PARSE_ERROR, A2AErrorCode.INVALID_REQUEST,
-    A2AErrorCode.METHOD_NOT_FOUND, A2AErrorCode.INVALID_PARAMS].includes(code)) {
+    // HTTP status code mapping
+    else if (error.status || error.statusCode) {
+      const status = error.status || error.statusCode;
+      if (status === 400) {
+        code = A2AErrorCode.INVALID_REQUEST;
+      } else if (status === 401) {
+        code = A2AErrorCode.AUTHENTICATION_FAILED;
+      } else if (status === 403) {
+        code = A2AErrorCode.AUTHORIZATION_DENIED;
+      } else if (status === 404) {
+        code = A2AErrorCode.METHOD_NOT_FOUND;
+      } else if (status === 408) {
+        code = A2AErrorCode.NETWORK_TIMEOUT;
+      } else if (status === 429) {
+        code = A2AErrorCode.RATE_LIMIT_EXCEEDED;
+      } else if (status === 500) {
+        code = A2AErrorCode.INTERNAL_ERROR;
+      } else if (status === 502 || status === 503) {
+        code = A2AErrorCode.SERVICE_UNAVAILABLE;
+      } else if (status === 504) {
+        code = A2AErrorCode.NETWORK_TIMEOUT;
+      }
+    }
+
+    // JSON-RPC specific errors
+    else if (errorCode === -32700) {
+      code = A2AErrorCode.PARSE_ERROR;
+    } else if (errorCode === -32600) {
       code = A2AErrorCode.INVALID_REQUEST;
+    } else if (errorCode === -32601) {
+      code = A2AErrorCode.METHOD_NOT_FOUND;
+    } else if (errorCode === -32602) {
+      code = A2AErrorCode.INVALID_PARAMS;
+    } else if (errorCode === -32603) {
+      code = A2AErrorCode.INTERNAL_ERROR;
     }
 
-    return new A2AError({
+    // Parse and validation errors
+    else if (errorName === 'Syntax' + 'Error' || errorMessage.toUpperCase().includes('JSON') ||
+      errorMessage.toLowerCase().includes('parse') || errorMessage.toLowerCase().includes('syntax')) {
+      code = A2AErrorCode.PARSE_ERROR;
+    } else if (errorName === 'TypeError' || errorMessage.toLowerCase().includes('invalid') ||
+      errorMessage.toLowerCase().includes('required')) {
+      code = A2AErrorCode.INVALID_PARAMS;
+    }
+
+    // Authentication and authorization errors
+    else if (errorMessage.toLowerCase().includes('unauthorized') || errorMessage.toLowerCase().includes('authentication')) {
+      code = A2AErrorCode.AUTHENTICATION_FAILED;
+    } else if (errorMessage.toLowerCase().includes('forbidden') || errorMessage.toLowerCase().includes('permission')) {
+      code = A2AErrorCode.AUTHORIZATION_DENIED;
+    } else if (errorMessage.toLowerCase().includes('token') && errorMessage.toLowerCase().includes('expired')) {
+      code = A2AErrorCode.TOKEN_EXPIRED;
+    } else if (errorMessage.toLowerCase().includes('token') && errorMessage.toLowerCase().includes('invalid')) {
+      code = A2AErrorCode.TOKEN_INVALID;
+    }
+
+    return new A2AErrorClass({
       code,
       message: error.message || 'Unknown error occurred',
       correlationId,
-      context: { originalError: error.name || 'Error' },
+      context: {
+        originalError: errorName,
+        originalCode: errorCode,
+        originalStatus: error.status || error.statusCode
+      },
       cause: error instanceof Error ? error : undefined
     });
   }
@@ -496,7 +564,7 @@ export class A2AErrorHandler {
   /**
    * Record error metrics
    */
-  private recordError(error: A2AError): void {
+  private recordError(error: A2AErrorClass): void {
     if (!this.enableMetrics) return;
 
     this.metrics.totalErrors++;
