@@ -399,11 +399,9 @@ export class A2AConnectionPool {
   }
 
   private getTotalConnections(): number {
-    let total = 0;
-    for (const connections of this.connections.values()) {
-      total += connections.length;
-    }
-    return total;
+    // Use existing metric instead of iterating through all connections
+    // This is more efficient and avoids redundant calculations
+    return this.metrics.totalConnections;
   }
 
   private updateMetrics(): void {
