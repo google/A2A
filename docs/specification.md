@@ -912,7 +912,7 @@ Retrieves the current push notification configuration for a specified task. Requ
 === "JSON-RPC"
     -   **URL:** `tasks/pushNotificationConfig/get`
     -   **HTTP Method:** `POST`
-    -   **Payload**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
+    -   **Payload**: [`GetTaskPushNotificationConfigParams`](#761-gettaskpushnotificationconfigparams-object-taskspushnotificationconfigget)
     -   **Response**: [`TaskPushNotificationConfig`](#610-taskpushnotificationconfig-object)
 
 === "gRPC"
