@@ -12,7 +12,7 @@
  * - Structured error reporting and categorization
  */
 
-import { JSONRPCError, A2AError as A2AErrorType } from './types';
+import { JSONRPCError } from './types';
 
 /**
  * Standardized A2A Error Codes
@@ -532,8 +532,7 @@ export class A2AErrorHandler {
     else if (errorName === 'Syntax' + 'Error' || errorMessage.toUpperCase().includes('JSON') ||
       errorMessage.toLowerCase().includes('parse') || errorMessage.toLowerCase().includes('syntax')) {
       code = A2AErrorCode.PARSE_ERROR;
-    } else if (errorName === 'TypeError' || errorMessage.toLowerCase().includes('invalid') ||
-      errorMessage.toLowerCase().includes('required')) {
+    } else if (errorName === 'TypeError' || errorMessage.toLowerCase().includes('required')) {
       code = A2AErrorCode.INVALID_PARAMS;
     }
 
@@ -546,6 +545,8 @@ export class A2AErrorHandler {
       code = A2AErrorCode.TOKEN_EXPIRED;
     } else if (errorMessage.toLowerCase().includes('token') && errorMessage.toLowerCase().includes('invalid')) {
       code = A2AErrorCode.TOKEN_INVALID;
+    } else if (errorMessage.toLowerCase().includes('invalid')) {
+      code = A2AErrorCode.INVALID_PARAMS;
     }
 
     return new A2AErrorClass({

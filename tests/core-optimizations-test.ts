@@ -52,7 +52,6 @@ import {
 
 import {
   A2AConnectionPool,
-  HTTPConnectionFactory,
   ConnectionState,
 } from '../types/src/connection-pool';
 
@@ -282,7 +281,7 @@ async function runCoreOptimizationTests(): Promise<void> {
 
   if (summary.failed > 0) {
     console.log('\n❌ Some tests failed');
-    process.exit(1);
+    throw new Error(`${summary.failed} tests failed`);
   } else {
     console.log('\n✅ All core optimization tests passed!');
   }
@@ -292,7 +291,7 @@ async function runCoreOptimizationTests(): Promise<void> {
 if (require.main === module) {
   runCoreOptimizationTests().catch(error => {
     console.error('❌ Core optimization tests failed:', error);
-    process.exit(1);
+    throw error;
   });
 }
 
