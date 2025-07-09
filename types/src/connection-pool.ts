@@ -130,6 +130,7 @@ export interface ConnectionPoolConfig {
   idleTimeout: number;
   maxLifetime: number;
   healthCheckInterval: number;
+  cleanupInterval: number;
   enableMetrics: boolean;
 }
 
@@ -184,6 +185,7 @@ export class A2AConnectionPool {
       idleTimeout: 300000,
       maxLifetime: 3600000,
       healthCheckInterval: 60000,
+      cleanupInterval: 60000,
       enableMetrics: true,
       ...config
     };
@@ -192,7 +194,9 @@ export class A2AConnectionPool {
       this.startHealthCheck();
     }
 
-    this.startCleanup();
+    if (this.config.cleanupInterval > 0) {
+      this.startCleanup();
+    }
   }
 
   async acquireConnection(agentUrl: string): Promise<A2AConnection> {
@@ -456,6 +460,6 @@ export class A2AConnectionPool {
           }
         }
       }
-    }, 60000); // Run cleanup every minute
+    }, this.config.cleanupInterval); // Use configurable cleanup interval
   }
 }
