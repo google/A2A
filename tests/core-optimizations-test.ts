@@ -71,7 +71,7 @@ function createTestTask(id: string = 'test-task'): Partial<PersistedTask> {
   };
 }
 
-function createMockConnection(agentUrl: string): any {
+function createMockConnection(agentUrl: string): A2AConnection {
   return {
     info: {
       id: `mock-${Date.now()}`,
