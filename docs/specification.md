@@ -790,7 +790,6 @@ Retrieves the current state (including status, artifacts, and optionally history
 | `historyLength` | `integer`             | No       | If positive, requests the server to include up to `N` recent messages in `Task.history`. |
 | `metadata`      | `Record<string, any>` | No       | Request-specific metadata.                                                               |
 
-
 ### `tasks/list`
 
 <div class="grid cards" markdown>
