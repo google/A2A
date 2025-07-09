@@ -963,8 +963,8 @@ Retrieves the associated push notification configurations for a specified task. 
 <div class="grid cards" markdown>
 
 === "JSON-RPC"
-    -   **URL:** `ListTaskPushNotification`
-    -   **HTTP Method:** `GET`
+    -   **URL:** `tasks/pushNotificationConfig/list`
+    -   **HTTP Method:** `POST`
     -   **Payload:** [`ListTaskPushNotificationConfigParams`](#771-listtaskpushnotificationconfigparams-object-taskspushnotificationconfiglist)
     -   **Response**: `TaskPushNotificationConfig[]`
 
