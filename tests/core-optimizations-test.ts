@@ -57,7 +57,7 @@ import {
 } from '../types/src/connection-pool';
 
 // Test utilities
-function createTestTask(id: string = 'test-task'): any {
+function createTestTask(id: string = 'test-task'): Partial<PersistedTask> {
   return {
     id,
     contextId: 'test-context',
