@@ -53,6 +53,12 @@ service A2AService {
     };
     option (google.api.method_signature) = "name";
   }
+  // List tasks with optional filtering and pagination.
+  rpc ListTasks(ListTasksRequest) returns (ListTasksResponse) {
+    option (google.api.http) = {
+      get: "/v1/tasks"
+    };
+  }
   // Cancel a task from the agent. If supported one should expect no
   // more task updates for the task.
   rpc CancelTask(CancelTaskRequest) returns (Task) {
@@ -584,6 +590,31 @@ message GetTaskRequest {
   // name=tasks/{id}
   string name = 1 [(google.api.field_behavior) = REQUIRED];
   int32 history_length = 2;
+}
+
+message ListTasksRequest {
+  // Filter tasks by context ID to get tasks from a specific conversation
+  // or session.
+  string context_id = 1;
+  // Filter tasks by their current status state.
+  TaskState status = 2;
+  // Maximum number of tasks to return. Must be between 1 and 1000.
+  // Defaults to 50 if not specified.
+  int32 page_size = 3;
+  // Token for pagination. Use the next_page_token from a previous
+  // ListTasksResponse.
+  string page_token = 4;
+  // Number of recent messages to include in each task's history.
+  int32 history_length = 5;
+}
+
+message ListTasksResponse {
+  // Array of tasks matching the specified criteria.
+  repeated Task tasks = 1;
+  // Token for retrieving the next page of results. Empty if no more results.
+  string next_page_token = 2;
+  // Total number of tasks available (before pagination).
+  int32 total_size = 3;
 }
 
 message CancelTaskRequest {
