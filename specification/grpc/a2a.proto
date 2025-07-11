@@ -193,13 +193,15 @@ message TaskStatus {
 
 // Part represents a container for a section of communication content.
 // Parts can be purely textual, some sort of file (image, video, etc) or
-// a structured data blob (i.e. JSON).
+// a structured data blob (i.e. JSON). Parts are optionally named.
 message Part {
   oneof part {
     string text = 1;
     FilePart file = 2;
     DataPart data = 3;
   }
+  // Optional name for the part
+  optional string name = 4;
 }
 
 // FilePart represents the different ways files can be provided. If files are

@@ -122,6 +122,7 @@ Key features of the A2A protocol highlighted by the specification and samples in
         - `data`: (any) Structured data in JSON-serializable format.
         - `mimeType`: (string) Format specification (e.g., "application/json").
         - `inline`: (boolean) Whether the data should be displayed inline (optional).
+    - `name`: (string | null) Optional name for the specific part.
     - `metadata`: (object | null) Optional metadata for the specific part.
 - **`FileWithUri`:** Represents a file reference with URI.
     - `name`: (string) Filename with extension.
