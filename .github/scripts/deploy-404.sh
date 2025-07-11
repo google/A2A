@@ -12,9 +12,9 @@ set -e
 
 # --- Validate Input ---
 if [ -z "$1" ] || [ -z "$2" ]; then
-  echo "Error: Missing required arguments."
-  echo "Usage: $0 <owner/repo> <github_token>"
-  exit 1
+	echo "Error: Missing required arguments."
+	echo "Usage: $0 <owner/repo> <github_token>"
+	exit 1
 fi
 
 REPO_NAME=$1
@@ -38,11 +38,11 @@ git add 404.html
 
 # Commit and push only if the 404 page has actually changed
 if git diff --staged --quiet; then
-  echo "404.html is up-to-date. No new commit needed."
+	echo "404.html is up-to-date. No new commit needed."
 else
-  echo "Committing and pushing updated 404.html..."
-  git commit -m "docs: deploy custom 404.html for redirects"
-  git push
+	echo "Committing and pushing updated 404.html..."
+	git commit -m "docs: deploy custom 404.html for redirects"
+	git push
 fi
 
 echo "404 page deployment complete."
