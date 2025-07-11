@@ -23,7 +23,7 @@ Let's break this down:
 2. **`A2AStarletteApplication`**:
 
     - The `A2AStarletteApplication` class is instantiated with the `agent_card` and the `request_handler` (referred to as `http_handler` in its constructor).
-    - The `agent_card` is crucial because the server will expose it at the `/.well-known/agent.json` endpoint (by default).
+    - The `agent_card` is crucial because the server will expose it at the `/.well-known/agent-card.json` endpoint (by default).
     - The `request_handler` is responsible for processing all incoming A2A method calls by interacting with your `AgentExecutor`.
 
 3. **`uvicorn.run(server_app_builder.build(), ...)`**:

@@ -18,7 +18,7 @@ The repository provides:
 
 Key features of the A2A protocol highlighted by the specification and samples include: agent discovery via Agent Cards, standardized task management (send, get, cancel), support for different content types (text, files, structured data) via `Parts` and `Artifacts`, streaming updates for long-running tasks, and mechanisms for push notifications. The project is open source and encourages community contribution.
 
-# A2A (Agent2Agent) Protocol 
+# A2A (Agent2Agent) Protocol
 
 ## 1. Overview
 
@@ -48,7 +48,7 @@ Key features of the A2A protocol highlighted by the specification and samples in
 
 ### 2.2. Key A2A Data Objects
 
-- **`AgentCard`:** Metadata describing an agent. Found typically at `/.well-known/agent.json`.
+- **`AgentCard`:** Metadata describing an agent. Found typically at `/.well-known/agent-card.json`.
     - `name`: (string) Human-readable name.
     - `description`: (string) Agent description.
     - `url`: (string) Base URL endpoint for the agent's A2A service.
@@ -229,7 +229,7 @@ Key features of the A2A protocol highlighted by the specification and samples in
 
 ## 3. Core Concepts
 
-- **Agent Discovery:** Clients find agents and their capabilities by fetching the `AgentCard` JSON, typically from `/.well-known/agent.json`.
+- **Agent Discovery:** Clients find agents and their capabilities by fetching the `AgentCard` JSON, typically from `/.well-known/agent-card.json`.
 - **Task Lifecycle:** Tasks progress through states defined in `TaskState` (submitted -> working -> [input_required] -> completed/failed/canceled/rejected/unknown).
 - **Communication:** Uses `Message` objects containing `Part`s (text, file, data). Task outputs are represented as `Artifact`s, also containing `Part`s.
 - **Streaming:** Long-running tasks can provide real-time updates using Server-Sent Events (SSE) via `message/stream`. Updates are sent as `MessageEvent`, `TaskStatusUpdateEvent` and `TaskArtifactUpdateEvent`. Reconnection after interruptions is supported via `tasks/resubscribe`.

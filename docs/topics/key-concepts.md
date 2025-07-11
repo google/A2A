@@ -14,7 +14,7 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
 
 - **Agent Card:**
 
-    - A JSON metadata document, typically discoverable at a well-known URL (e.g., `/.well-known/agent.json`), that describes an A2A Server.
+    - A JSON metadata document, typically discoverable at a well-known URL (e.g., `/.well-known/agent-card.json`), that describes an A2A Server.
     - It details the agent's identity (name, description), service endpoint URL, version, supported A2A capabilities (like streaming or push notifications), specific skills it offers, default input/output modalities, and authentication requirements.
     - Clients use the Agent Card to discover agents and understand how to interact with them securely and effectively.
     - See details in the [Protocol Specification: Agent Card](../specification.md#5-agent-discovery-the-agent-card).
