@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.6](https://github.com/a2aproject/A2A/compare/v0.2.5...v0.2.6) (2025-07-11)
+
+
+### Features
+
+* **spec:** Add AGENT_CARD_WELL_KNOWN_URI to spec ([#824](https://github.com/a2aproject/A2A/issues/824)) ([66da9d1](https://github.com/a2aproject/A2A/commit/66da9d10ee87dc1f8baa20a21360bebbe7d4ff1b))
+
+
+### Bug Fixes
+
+* Update json names of gRPC objects for proper transcoding  ([#847](https://github.com/a2aproject/A2A/issues/847)) ([6ba72f0](https://github.com/a2aproject/A2A/commit/6ba72f0d51c2e3d0728f84e9743b6d0e88730b51))
+
 ## [0.2.5](https://github.com/a2aproject/A2A/compare/v0.2.4...v0.2.5) (2025-06-30)
 
 
