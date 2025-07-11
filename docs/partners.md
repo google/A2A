@@ -113,6 +113,7 @@ collaborate effectively with each other and with users.
 - [Productive Edge](https://www.productiveedge.com/)
 - [Proofs](https://proofs.io)
 - [Publicis Sapient](https://www.publicissapient.com/)
+- [Poppulo](https://www.poppulo.com/blog/poppulo-google-a2a-the-future-of-workplace-communication)
 - [PWC](https://www.pwc.com)
 - [Quantiphi](https://www.quantiphi.com)
 - [Radix](https://radix.website/)
