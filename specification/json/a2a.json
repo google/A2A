@@ -142,17 +142,19 @@
                     "description": "Optional capabilities supported by the agent."
                 },
                 "defaultInputModes": {
-                    "description": "The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.\nSupported media types for input.",
+                    "description": "The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.\nSupported media types for input. Must contain at least one mode.",
                     "items": {
                         "type": "string"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "defaultOutputModes": {
-                    "description": "Supported media types for output.",
+                    "description": "Supported media types for output. Must contain at least one mode.",
                     "items": {
                         "type": "string"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "description": {
@@ -164,10 +166,12 @@
                 },
                 "documentationUrl": {
                     "description": "A URL to documentation for the agent.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "iconUrl": {
                     "description": "A URL to an icon for the agent.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "name": {
@@ -211,10 +215,11 @@
                     "type": "object"
                 },
                 "skills": {
-                    "description": "Skills are a unit of capability that an agent can perform.",
+                    "description": "Skills are a unit of capability that an agent can perform. An agent must have at least one skill.",
                     "items": {
                         "$ref": "#/definitions/AgentSkill"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "supportsAuthenticatedExtendedCard": {
@@ -223,13 +228,15 @@
                 },
                 "url": {
                     "description": "A URL to the address the agent is hosted at. This represents the\npreferred endpoint as declared by the agent.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "version": {
-                    "description": "The version of the agent - format is up to the provider.",
+                    "description": "The version of the agent. Semantic Versioning MUST be used.",
                     "examples": [
                         "1.0.0"
                     ],
+                    "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-\\d][0-9a-zA-Z-\\d]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-\\d][0-9a-zA-Z-\\d]*))*))?(?:\\+([0-9A-Za-z-\\d]+(?:\\.[0-9A-Za-z-\\d]+)*))?$",
                     "type": "string"
                 }
             },
@@ -271,6 +278,7 @@
                 },
                 "uri": {
                     "description": "The URI of the extension.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -287,6 +295,8 @@
                     "type": "string"
                 },
                 "url": {
+                    "description": "The url this interface is found at.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -311,6 +321,7 @@
                 },
                 "url": {
                     "description": "Agent provider's URL.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -412,10 +423,11 @@
                     "type": "string"
                 },
                 "parts": {
-                    "description": "Artifact parts.",
+                    "description": "Artifact parts. Must contain at least one part.",
                     "items": {
                         "$ref": "#/definitions/Part"
                     },
+                    "minItems": 1,
                     "type": "array"
                 }
             },
@@ -430,10 +442,12 @@
             "properties": {
                 "authorizationUrl": {
                     "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS",
+                    "format": "uri",
                     "type": "string"
                 },
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -445,6 +459,7 @@
                 },
                 "tokenUrl": {
                     "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -532,6 +547,7 @@
             "properties": {
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -543,6 +559,7 @@
                 },
                 "tokenUrl": {
                     "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -771,7 +788,8 @@
                     "type": "string"
                 },
                 "uri": {
-                    "description": "URL for the File content",
+                    "description": "URL for the File content.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -982,10 +1000,12 @@
             "properties": {
                 "authorizationUrl": {
                     "description": "The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS",
+                    "format": "uri",
                     "type": "string"
                 },
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -1411,7 +1431,7 @@
             "description": "Represents a single message exchanged between user and agent.",
             "properties": {
                 "contextId": {
-                    "description": "The context the message is associated with",
+                    "description": "The context the message is associated with.",
                     "type": "string"
                 },
                 "extensions": {
@@ -1423,11 +1443,11 @@
                 },
                 "kind": {
                     "const": "message",
-                    "description": "Event type",
+                    "description": "Event type.",
                     "type": "string"
                 },
                 "messageId": {
-                    "description": "Identifier created by the message creator",
+                    "description": "Identifier created by the message creator.",
                     "type": "string"
                 },
                 "metadata": {
@@ -1436,10 +1456,11 @@
                     "type": "object"
                 },
                 "parts": {
-                    "description": "Message content",
+                    "description": "Message content. Must contain at least one part.",
                     "items": {
                         "$ref": "#/definitions/Part"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "referenceTaskIds": {
@@ -1458,7 +1479,7 @@
                     "type": "string"
                 },
                 "taskId": {
-                    "description": "Identifier of task the message is related to",
+                    "description": "Identifier of task the message is related to.",
                     "type": "string"
                 }
             },
@@ -1478,6 +1499,7 @@
                     "items": {
                         "type": "string"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "blocking": {
@@ -1596,6 +1618,7 @@
                 },
                 "openIdConnectUrl": {
                     "description": "Well-known URL to discover the [[OpenID-Connect-Discovery]] provider metadata.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "type": {
@@ -1639,6 +1662,7 @@
             "properties": {
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2\nstandard requires the use of TLS.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -1650,6 +1674,7 @@
                 },
                 "tokenUrl": {
                     "description": "The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard\nrequires the use of TLS.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -1695,6 +1720,7 @@
                 },
                 "url": {
                     "description": "URL for sending the push notifications.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -2014,7 +2040,7 @@
                 },
                 "kind": {
                     "const": "task",
-                    "description": "Event type",
+                    "description": "Event type.",
                     "type": "string"
                 },
                 "metadata": {
@@ -2024,7 +2050,7 @@
                 },
                 "status": {
                     "$ref": "#/definitions/TaskStatus",
-                    "description": "Current status of the task"
+                    "description": "Current status of the task."
                 }
             },
             "required": [
@@ -2039,12 +2065,12 @@
             "description": "Sent by server during sendStream or subscribe requests",
             "properties": {
                 "append": {
-                    "description": "Indicates if this artifact appends to a previous one",
+                    "description": "Indicates if this artifact appends to a previous one.",
                     "type": "boolean"
                 },
                 "artifact": {
                     "$ref": "#/definitions/Artifact",
-                    "description": "Generated artifact"
+                    "description": "Generated artifact."
                 },
                 "contextId": {
                     "description": "The context the task is associated with",
@@ -2052,11 +2078,11 @@
                 },
                 "kind": {
                     "const": "artifact-update",
-                    "description": "Event type",
+                    "description": "Event type.",
                     "type": "string"
                 },
                 "lastChunk": {
-                    "description": "Indicates if this is the last chunk of the artifact",
+                    "description": "Indicates if this is the last chunk of the artifact.",
                     "type": "boolean"
                 },
                 "metadata": {
@@ -2242,6 +2268,7 @@
                     "examples": [
                         "2023-10-27T10:00:00Z"
                     ],
+                    "format": "date-time",
                     "type": "string"
                 }
             },
@@ -2258,12 +2285,12 @@
                     "type": "string"
                 },
                 "final": {
-                    "description": "Indicates the end of the event stream",
+                    "description": "Indicates the end of the event stream.",
                     "type": "boolean"
                 },
                 "kind": {
                     "const": "status-update",
-                    "description": "Event type",
+                    "description": "Event type.",
                     "type": "string"
                 },
                 "metadata": {
@@ -2273,7 +2300,7 @@
                 },
                 "status": {
                     "$ref": "#/definitions/TaskStatus",
-                    "description": "Current status of the task"
+                    "description": "Current status of the task."
                 },
                 "taskId": {
                     "description": "Task id",
