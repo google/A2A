@@ -7,6 +7,11 @@ site_dir: site
 
 extra:
   a2a_version: !ENV [MIKE_VERSION, 'dev']
+  # ADDED THIS SECTION FOR GOOGLE ANALYTICS 
+  analytics:
+    provider: google
+    property: G-886VW76ZDS    
+ 
 
 # Navigation
 nav:
