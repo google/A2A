@@ -452,7 +452,7 @@ message AgentSkill {
 
 message TaskPushNotificationConfig {
   string task_id = 1;
-  string config_id = 2;
+  string config_id = 3;
   PushNotificationConfig push_notification_config = 2;
 }
 
