@@ -602,7 +602,8 @@ message DeleteTaskPushNotificationConfigRequest {
 message CreateTaskPushNotificationConfigRequest {
   // The task resource for this config.
   string id = 1 [ (google.api.field_behavior) = REQUIRED];
-  // BUG?: config_id is not referenced in the google.api.http spec for CreateTaskPushNotificationConfig.
+  // BUG?: config_id is not referenced in the google.api.http
+  // spec for CreateTaskPushNotificationConfig.
   string config_id = 2 [(google.api.field_behavior) = REQUIRED];
   TaskPushNotificationConfig config = 3
       [(google.api.field_behavior) = REQUIRED];
