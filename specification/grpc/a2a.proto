@@ -49,15 +49,15 @@ service A2AService {
   // Get the current state of a task from the agent.
   rpc GetTask(GetTaskRequest) returns (Task) {
     option (google.api.http) = {
-      get: "/v1/{name=tasks/*}"
+      get: "/v1/tasks/{id}"
     };
-    option (google.api.method_signature) = "name";
+    option (google.api.method_signature) = "id";
   }
   // Cancel a task from the agent. If supported one should expect no
   // more task updates for the task.
   rpc CancelTask(CancelTaskRequest) returns (Task) {
     option (google.api.http) = {
-      post: "/v1/{name=tasks/*}:cancel"
+      post: "/v1/tasks/{id}:cancel"
       body: "*"
     };
   }
@@ -68,7 +68,7 @@ service A2AService {
   rpc TaskSubscription(TaskSubscriptionRequest)
       returns (stream StreamResponse) {
     option (google.api.http) = {
-      get: "/v1/{name=tasks/*}:subscribe"
+      get: "/v1/tasks/{id}:subscribe"
     };
   }
 
@@ -76,26 +76,26 @@ service A2AService {
   rpc CreateTaskPushNotificationConfig(CreateTaskPushNotificationConfigRequest)
       returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
-      post: "/v1/{parent=task/*/pushNotificationConfigs}"
+      post: "/v1/task/{id}/pushNotificationConfigs"
       body: "config"
     };
-    option (google.api.method_signature) = "parent,config";
+    option (google.api.method_signature) = "id,config";
   }
   // Get a push notification config for a task.
   rpc GetTaskPushNotificationConfig(GetTaskPushNotificationConfigRequest)
       returns (TaskPushNotificationConfig) {
     option (google.api.http) = {
-      get: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
+      get: "/v1/tasks/{task_id}/pushNotificationConfigs/{config_id}"
     };
-    option (google.api.method_signature) = "name";
+    option (google.api.method_signature) = "task_id,config_id";
   }
   // Get a list of push notifications configured for a task.
   rpc ListTaskPushNotificationConfig(ListTaskPushNotificationConfigRequest)
       returns (ListTaskPushNotificationConfigResponse) {
     option (google.api.http) = {
-      get: "/v1/{parent=tasks/*}/pushNotificationConfigs"
+      get: "/v1/tasks/{id}/pushNotificationConfigs"
     };
-    option (google.api.method_signature) = "parent";
+    option (google.api.method_signature) = "id";
   }
   // GetAgentCard returns the agent card for the agent.
   rpc GetAgentCard(GetAgentCardRequest) returns (AgentCard) {
@@ -107,9 +107,9 @@ service A2AService {
   rpc DeleteTaskPushNotificationConfig(DeleteTaskPushNotificationConfigRequest)
       returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/{name=tasks/*/pushNotificationConfigs/*}"
+      delete: "/v1/tasks/{task_id}/pushNotificationConfigs/{config_id}"
     };
-    option (google.api.method_signature) = "name";
+    option (google.api.method_signature) = "task_id,config_id";
   }
 }
 
@@ -451,8 +451,8 @@ message AgentSkill {
 }
 
 message TaskPushNotificationConfig {
-  // name=tasks/{id}/pushNotificationConfigs/{id}
-  string name = 1;
+  string task_id = 1;
+  string config_id = 2;
   PushNotificationConfig push_notification_config = 2;
 }
 
@@ -581,43 +581,39 @@ message SendMessageRequest {
 }
 
 message GetTaskRequest {
-  // name=tasks/{id}
-  string name = 1 [(google.api.field_behavior) = REQUIRED];
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
   int32 history_length = 2;
 }
 
 message CancelTaskRequest {
-  // name=tasks/{id}
-  string name = 1;
+  string id = 1;
 }
 
 message GetTaskPushNotificationConfigRequest {
-  // name=tasks/{id}/pushNotificationConfigs/{push_id}
-  string name = 1;
+  string task_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string config_id = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message DeleteTaskPushNotificationConfigRequest {
-  // name=tasks/{id}/pushNotificationConfigs/{push_id}
-  string name = 1;
+  string task_id = 1 [(google.api.field_behavior) = REQUIRED];
+  string config_id = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 message CreateTaskPushNotificationConfigRequest {
   // The task resource for this config.
-  // Format: tasks/{id}
-  string parent = 1 [(google.api.field_behavior) = REQUIRED];
+  string id = 1 [ (google.api.field_behavior) = REQUIRED];
+  // BUG?: config_id is not referenced in the google.api.http spec for CreateTaskPushNotificationConfig.
   string config_id = 2 [(google.api.field_behavior) = REQUIRED];
   TaskPushNotificationConfig config = 3
       [(google.api.field_behavior) = REQUIRED];
 }
 
 message TaskSubscriptionRequest {
-  // name=tasks/{id}
-  string name = 1;
+  string id = 1;
 }
 
 message ListTaskPushNotificationConfigRequest {
-  // parent=tasks/{id}
-  string parent = 1;
+  string id = 1 [(google.api.field_behavior) = REQUIRED];
   // For AIP-158 these fields are present. Usually not used/needed.
   // The maximum number of configurations to return.
   // If unspecified, all configs will be returned.
