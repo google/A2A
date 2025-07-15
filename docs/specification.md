@@ -165,6 +165,8 @@ Agent Cards themselves might contain information that is considered sensitive.
 | `name`                              | `string`                                                           | Yes      | Human-readable name of the agent.                                                                                                           |
 | `description`                       | `string`                                                           | Yes      | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                                              |
 | `url`                               | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                                               |
+| `preferredTransport`                | `string`                                                           | No       | The transport of the preferred endpoint. Official transports supported are JSONRPC, GRPC or HTTP+JSON                                       |
+| `additionalInterfaces`              | [`AgentInterface[]`](#555-agentinterface-object)                   | No       | Additional transports supported by the service for clients to use.                                                                          |
 | `provider`                          | [`AgentProvider`](#551-agentprovider-object)                       | No       | Information about the agent's provider.                                                                                                     |
 | `iconUrl`                           | `string`                                                           | No       | A URL to an icon for the agent.                                                                                                             |
 | `version`                           | `string`                                                           | Yes      | Agent or A2A implementation version string.                                                                                                 |
@@ -243,8 +245,21 @@ Describes a specific capability, function, or area of expertise the agent can pe
 | `description` | `string`   | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
 | `tags`        | `string[]` | Yes      | Keywords/categories for discoverability.                                       |
 | `examples`    | `string[]` | No       | Example prompts or use cases demonstrating skill usage.                        |
-| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted Media Types.    |
-| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced Media Types.   |
+| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted Media Types.   |
+| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced Media Types.  |
+
+#### 5.5.5. `AgentInterface` Object
+
+Provides a declaration of a combination of the target url and the supported transport to interact with the agent.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:AgentInterface"
+```
+
+| Field Name     | Type     | Required | Description                                                              |
+| :------------- | :------- | :------- | :----------------------------------------------------------------------- |
+| `url`          | `string` | Yes      | The url for this interface.                                              |
+| `transport`    | `string` | Yes      | The transport supported by this url (one of JSONRPC, GRPC or HTTP+JSON). |
 
 ### 5.6. Sample Agent Card
 
@@ -254,6 +269,12 @@ Describes a specific capability, function, or area of expertise the agent can pe
   "name": "GeoSpatial Route Planner Agent",
   "description": "Provides advanced route planning, traffic analysis, and custom map generation services. This agent can calculate optimal routes, estimate travel times considering real-time traffic, and create personalized maps with points of interest.",
   "url": "https://georoute-agent.example.com/a2a/v1",
+  "preferredTransport": "JSONRPC",
+  "additionalInterfaces" : [
+    {"url": "https://georoute-agent.example.com/a2a/v1", "transport": "JSONRPC"},
+    {"url": "https://georoute-agent.example.com/a2a/grpc", "transport": "GRPC"},
+    {"url": "https://georoute-agent.example.com/a2a/json", "transport": "HTTP+JSON"}
+  ],
   "provider": {
     "organization": "Example Geo Services Inc.",
     "url": "https://www.examplegeoservices.com"

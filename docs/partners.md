@@ -110,6 +110,7 @@ collaborate effectively with each other and with users.
 - [Pendo](https://www.pendo.io)
 - [PerfAI.ai](https://perfai.ai)
 - [Personal AI](https://personal.ai)
+- [Poppulo](https://www.poppulo.com/blog/poppulo-google-a2a-the-future-of-workplace-communication)
 - [Productive Edge](https://www.productiveedge.com/)
 - [Proofs](https://proofs.io)
 - [Publicis Sapient](https://www.publicissapient.com/)
