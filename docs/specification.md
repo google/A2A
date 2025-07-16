@@ -881,7 +881,7 @@ The purpose is to resume receiving _subsequent_ updates. The server's behavior r
 === "JSON-RPC"
     -   **URL:** `tasks/resubscribe`
     -   **HTTP Method:** `POST`
-    -   **Payload**: [`TaskIdParams`](#741-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
+    -   **Payload**: [`TaskIdParams`](#751-taskidparams-object-for-taskscancel-and-taskspushnotificationconfigget)
     -   **Response**: A stream of Server-Sent Events. Each SSE `data` field contains a [`SendStreamingMessageResponse`](#721-sendstreamingmessageresponse-object)
 
 === "gRPC"
