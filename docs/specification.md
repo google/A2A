@@ -325,6 +325,10 @@ Represents a distinct piece of content within a `Message` or `Artifact`. A `Part
 --8<-- "types/src/types.ts:Part"
 ```
 
+```ts { .no-copy }
+--8<-- "types/src/types.ts:PartBase"
+```
+
 It **MUST** be one of the following:
 
 #### 6.5.1. `TextPart` Object
@@ -351,7 +355,15 @@ For conveying structured JSON data. Useful for forms, parameters, or any machine
 --8<-- "types/src/types.ts:DataPart"
 ```
 
-### 6.6.1 `FileWithBytes` Object
+### 6.6 `FileBase` Object
+
+Base entity for File Contents.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:FileBase"
+```
+
+#### 6.6.1 `FileWithBytes` Object
 
 Represents the data for a file, used within a `FilePart`.
 
@@ -359,7 +371,7 @@ Represents the data for a file, used within a `FilePart`.
 --8<-- "types/src/types.ts:FileWithBytes"
 ```
 
-### 6.6.2 `FileWithUri` Object
+#### 6.6.2 `FileWithUri` Object
 
 Represents the URI for a file, used within a `FilePart`.
 
