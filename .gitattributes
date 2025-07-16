@@ -1,0 +1,8 @@
+# Documentation overrides
+/docs/** linguist-documentation=true
+/.mkdocs/** linguist-documentation=true
+/specification/json/a2a.json linguist-generated=true
+noxfile.py linguist-vendored=true
+
+# Merge and diff setting
+CHANGELOG.md merge=union

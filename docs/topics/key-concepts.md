@@ -60,7 +60,7 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
     - For tasks that produce results incrementally or provide real-time progress updates.
     - The client initiates an interaction with the server using `message/stream`.
     - The server responds with an HTTP connection that remains open, over which it sends a stream of Server-Sent Events (SSE).
-    - These events can be `Task`, `Message`, or ``TaskStatusUpdateEvent` (for status changes) or `TaskArtifactUpdateEvent` (for new or updated artifact chunks).
+    - These events can be `Task`, `Message`, or `TaskStatusUpdateEvent` (for status changes) or `TaskArtifactUpdateEvent` (for new or updated artifact chunks).
     - This requires the server to advertise the `streaming` capability in its Agent Card.
     - Learn more about [Streaming & Asynchronous Operations](./streaming-and-async.md).
 

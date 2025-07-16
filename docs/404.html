@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Redirecting...</title>
+    <script>
+        (function () {
+            const basePath = '/A2A/';
+            const latestVersion = 'latest';
+
+            const path = window.location.pathname;
+            const redirected = sessionStorage.getItem('redirected');
+
+            if (redirected) {
+                sessionStorage.removeItem('redirected');
+                console.warn('Redirect loop detected. Stopping redirect.');
+                return;
+            }
+
+            // Check if the path is an asset or already a versioned path
+            const isAsset = path.includes('/assets/') || path.includes('/stylesheets/');
+            const isVersioned = new RegExp(`${basePath}(v?(\d+\.\d+(\.\d+)?)|${latestVersion})/`).test(path);
+
+            if (!isVersioned && !isAsset) {
+                // Construct the new URL.
+                // Example: /A2A/specification.md -> /A2A/latest/specification.md
+                const newPath = path.replace(basePath, basePath + latestVersion + '/');
+
+                // Store a marker in sessionStorage to prevent loops
+                sessionStorage.setItem('redirected', 'true');
+
+                // Perform the redirect
+                window.location.replace(newPath + window.location.search + window.location.hash);
+            } else {
+                window.location.replace("https://a2aproject.github.io/A2A/");
+            }
+        })();
+    </script>
+</head>
+
+<body>
+    <h1>Page Not Found</h1>
+    <p>We are attempting to redirect you to the latest version of this page.</p>
+    <p>If you are not redirected automatically, please navigate to the <a href="/A2A/">project homepage</a>.</p>
+</body>
+
+</html>
