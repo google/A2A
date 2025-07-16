@@ -159,26 +159,6 @@ Agent Cards themselves might contain information that is considered sensitive.
 --8<-- "types/src/types.ts:AgentCard"
 ```
 
-| Field Name                          | Type                                                               | Required | Description                                                                                                                                 |
-| :---------------------------------- | :----------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| `protocolVersion`                   | `string`                                                           | Yes      | The version of the A2A protocol this agent supports.                                                                                        |
-| `name`                              | `string`                                                           | Yes      | Human-readable name of the agent.                                                                                                           |
-| `description`                       | `string`                                                           | Yes      | Human-readable description. [CommonMark](https://commonmark.org/) MAY be used.                                                              |
-| `url`                               | `string`                                                           | Yes      | Base URL for the agent's A2A service. Must be absolute. HTTPS for production.                                                               |
-| `preferredTransport`                | `string`                                                           | No       | The transport of the preferred endpoint. Official transports supported are JSONRPC, GRPC or HTTP+JSON                                       |
-| `additionalInterfaces`              | [`AgentInterface[]`](#555-agentinterface-object)                   | No       | Additional transports supported by the service for clients to use.                                                                          |
-| `provider`                          | [`AgentProvider`](#551-agentprovider-object)                       | No       | Information about the agent's provider.                                                                                                     |
-| `iconUrl`                           | `string`                                                           | No       | A URL to an icon for the agent.                                                                                                             |
-| `version`                           | `string`                                                           | Yes      | Agent or A2A implementation version string.                                                                                                 |
-| `documentationUrl`                  | `string`                                                           | No       | URL to human-readable documentation for the agent.                                                                                          |
-| `capabilities`                      | [`AgentCapabilities`](#552-agentcapabilities-object)               | Yes      | Specifies optional A2A protocol features supported (e.g., streaming, push notifications).                                                   |
-| `securitySchemes`                   | { [scheme: string]: [SecurityScheme](#553-securityscheme-object) } | No       | Security scheme details used for authenticating with this agent. undefined implies no A2A-advertised auth (not recommended for production). |
-| `security`                          | `{ [scheme: string]: string[]; }[]`                                | No       | Security requirements for contacting the agent.                                                                                             |
-| `defaultInputModes`                 | `string[]`                                                         | Yes      | Input Media Types accepted by the agent.                                                                                                    |
-| `defaultOutputModes`                | `string[]`                                                         | Yes      | Output Media Types produced by the agent.                                                                                                   |
-| `skills`                            | [`AgentSkill[]`](#554-agentskill-object)                           | Yes      | Array of skills. Must have at least one if the agent performs actions.                                                                      |
-| `supportsAuthenticatedExtendedCard` | `boolean`                                                          | No       | Indicates support for retrieving a more detailed Agent Card via an authenticated endpoint.                                                  |
-
 #### 5.5.1. `AgentProvider` Object
 
 Information about the organization or entity providing the agent.
@@ -186,11 +166,6 @@ Information about the organization or entity providing the agent.
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:AgentProvider"
 ```
-
-| Field Name     | Type     | Required | Description                             |
-| :------------- | :------- | :------- | :-------------------------------------- |
-| `organization` | `string` | Yes      | Name of the organization/entity.        |
-| `url`          | `string` | Yes      | URL for the provider's website/contact. |
 
 #### 5.5.2. `AgentCapabilities` Object
 
@@ -200,13 +175,6 @@ Specifies optional A2A protocol features supported by the agent.
 --8<-- "types/src/types.ts:AgentCapabilities"
 ```
 
-| Field Name               | Type             | Required | Default | Description                                                                          |
-| :----------------------- | :--------------- | :------- | :------ | :----------------------------------------------------------------------------------- |
-| `streaming`              | `boolean`        | No       | `false` | Indicates support for SSE streaming methods (`message/stream`, `tasks/resubscribe`). |
-| `pushNotifications`      | `boolean`        | No       | `false` | Indicates support for push notification methods (`tasks/pushNotificationConfig/*`).  |
-| `stateTransitionHistory` | `boolean`        | No       | `false` | Placeholder for future feature: exposing detailed task status change history.        |
-| `extensions`             | [`AgentExtension`[]](#5521-agentextension-object) | No       | `[]`    | A list of extensions supported by this agent.                                        |
-
 #### 5.5.2.1. `AgentExtension` Object
 
 Specifies an extension to the A2A protocol supported by the agent.
@@ -214,13 +182,6 @@ Specifies an extension to the A2A protocol supported by the agent.
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:AgentExtension"
 ```
-
-| Field Name    | Type      | Required | Description                                                                                 |
-| :-------------| :-------- | :------- | :------------------------------------------------------------------------------------------ |
-| `uri`         | `string`  | Yes      | The URI for the supported extension.                                                        |
-| `required`    | `boolean` | No       | Whether the agent requires clients to follow some protocol logic specific to the extension. Clients should expect failures when attempting to interact with a server that requires an extension the client does not support. |
-| `description` | `string`  | No       | A description of how the extension is used by the agent.                                    |
-| `params`      | `object`  | No       | Configuration parameters specific to the extension                                          |
 
 #### 5.5.3. `SecurityScheme` Object
 
@@ -238,16 +199,6 @@ Describes a specific capability, function, or area of expertise the agent can pe
 --8<-- "types/src/types.ts:AgentSkill"
 ```
 
-| Field Name    | Type       | Required | Description                                                                    |
-| :------------ | :--------- | :------- | :----------------------------------------------------------------------------- |
-| `id`          | `string`   | Yes      | Unique skill identifier within this agent.                                     |
-| `name`        | `string`   | Yes      | Human-readable skill name.                                                     |
-| `description` | `string`   | Yes      | Detailed skill description. [CommonMark](https://commonmark.org/) MAY be used. |
-| `tags`        | `string[]` | Yes      | Keywords/categories for discoverability.                                       |
-| `examples`    | `string[]` | No       | Example prompts or use cases demonstrating skill usage.                        |
-| `inputModes`  | `string[]` | No       | Overrides `defaultInputModes` for this specific skill. Accepted Media Types.   |
-| `outputModes` | `string[]` | No       | Overrides `defaultOutputModes` for this specific skill. Produced Media Types.  |
-
 #### 5.5.5. `AgentInterface` Object
 
 Provides a declaration of a combination of the target url and the supported transport to interact with the agent.
@@ -255,11 +206,6 @@ Provides a declaration of a combination of the target url and the supported tran
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:AgentInterface"
 ```
-
-| Field Name     | Type     | Required | Description                                                              |
-| :------------- | :------- | :------- | :----------------------------------------------------------------------- |
-| `url`          | `string` | Yes      | The url for this interface.                                              |
-| `transport`    | `string` | Yes      | The transport supported by this url (one of JSONRPC, GRPC or HTTP+JSON). |
 
 ### 5.6. Sample Agent Card
 
@@ -347,16 +293,6 @@ Represents the stateful unit of work being processed by the A2A Server for an A2
 --8<-- "types/src/types.ts:Task"
 ```
 
-| Field Name  | Type                                  | Required | Description                                                                   |
-|:------------|:--------------------------------------| :------- | :---------------------------------------------------------------------------- |
-| `id`        | `string`                              | Yes      | Server generated unique task identifier (e.g., UUID)                          |
-| `contextId` | `string`                              | Yes      | Server generated ID for contextual alignment across interactions              |
-| `status`    | [`TaskStatus`](#62-taskstatus-object) | Yes      | Current status of the task (state, message, timestamp).                       |
-| `artifacts` | [`Artifact[]`](#67-artifact-object)   | No       | Array of outputs generated by the agent for this task.                        |
-| `history`   | [`Message[]`](#64-message-object)     | No       | Optional array of recent messages exchanged, if requested by `historyLength`. |
-| `metadata`  | `Record<string, any>`                 | No       | Arbitrary key-value metadata associated with the task.                        |
-| `kind`      | `"task"`                              | Yes      | Type discriminator, literal value                                                |
-
 ### 6.2. `TaskStatus` Object
 
 Represents the current state and associated context (e.g., a message from the agent) of a `Task`.
@@ -364,12 +300,6 @@ Represents the current state and associated context (e.g., a message from the ag
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskStatus"
 ```
-
-| Field Name  | Type                              | Required | Description                                                |
-| :---------- | :-------------------------------- | :------- | :--------------------------------------------------------- |
-| `state`     | [`TaskState`](#63-taskstate-enum) | Yes      | Current lifecycle state of the task.                       |
-| `message`   | [`Message`](#64-message-object)   | No       | Optional message providing context for the current status. |
-| `timestamp` | `string` (ISO 8601)               | No       | Timestamp (UTC recommended) when this status was recorded. |
 
 ### 6.3. `TaskState` Enum
 
@@ -379,18 +309,6 @@ Defines the possible lifecycle states of a `Task`.
 --8<-- "types/src/types.ts:TaskState"
 ```
 
-| Value            | Description                                                                                               | Terminal?  |
-| :--------------- | :-------------------------------------------------------------------------------------------------------- | :--------- |
-| `submitted`      | Task received by the server and acknowledged, but processing has not yet actively started.                | No         |
-| `working`        | Task is actively being processed by the agent. Client may expect further updates or a terminal state.     | No         |
-| `input-required` | Agent requires additional input from the client/user to proceed. The task is effectively paused.          | No (Pause) |
-| `completed`      | Task finished successfully. Results are typically available in `Task.artifacts` or `TaskStatus.message`.  | Yes        |
-| `canceled`       | Task was canceled (e.g., by a `tasks/cancel` request or server-side policy).                              | Yes        |
-| `failed`         | Task terminated due to an error during processing. `TaskStatus.message` may contain error details.        | Yes        |
-| `rejected`       | Task terminated due to rejection by remote agent. `TaskStatus.message` may contain error details.         | Yes        |
-| `auth-required`  | Agent requires additional authentication from the client/user to proceed. The task is effectively paused. | No (Pause) |
-| `unknown`        | The state of the task cannot be determined (e.g., task ID is invalid, unknown, or has expired).           | Yes        |
-
 ### 6.4. `Message` Object
 
 Represents a single communication turn or a piece of contextual information between a client and an agent. Messages are used for instructions, prompts, replies, and status updates.
@@ -398,18 +316,6 @@ Represents a single communication turn or a piece of contextual information betw
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:Message"
 ```
-
-| Field Name         | Type                            | Required | Description                                                                      |
-| :----------------- | :------------------------------ | :------- | :------------------------------------------------------------------------------- |
-| `role`             | `"user"` \| `"agent"`           | Yes      | Indicates the sender: `"user"` (from A2A Client) or `"agent"` (from A2A Server). |
-| `parts`            | [`Part[]`](#65-part-union-type) | Yes      | Array of content parts. Must contain at least one part.                          |
-| `metadata`         | `Record<string, any>`           | No       | Arbitrary key-value metadata associated with this message.                       |
-| `extensions`       | `string[]`                      | No       | A list of extension URIs that contributed to this message.                       |
-| `referenceTaskIds` | `string[]`                      | No       | List of tasks referenced as contextual hint by this message.                     |
-| `messageId`        | `string`                        | Yes      | Message identifier generated by the message sender                               |
-| `taskId`           | `string`                        | No       | Task identifier the current message is related to                                |
-| `contextId`        | `string`                        | No       | Context identifier the message is associated with                                |
-| `kind`             | `"message"`                     | Yes      | Type discriminator, literal value                                                |
 
 ### 6.5. `Part` Union Type
 
@@ -429,12 +335,6 @@ For conveying plain textual content.
 --8<-- "types/src/types.ts:TextPart"
 ```
 
-| Field Name | Type                  | Required | Description                                   |
-| :--------- | :-------------------- | :------- | :-------------------------------------------- |
-| `kind`     | `"text"` (literal)    | Yes      | Identifies this part as textual content.      |
-| `text`     | `string`              | Yes      | The textual content of the part.              |
-| `metadata` | `Record<string, any>` | No       | Optional metadata specific to this text part. |
-
 #### 6.5.2. `FilePart` Object
 
 For conveying file-based content.
@@ -442,12 +342,6 @@ For conveying file-based content.
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:FilePart"
 ```
-
-| Field Name | Type                  | Required    | Description                                   |
-| :--------- | :-------------------- | :---------- | :-------------------------------------------- |
-| `kind`     | `"file"` (literal)    | Yes         | Identifies this part as file content.         |
-| `file`     | `FileWithBytes` \| `FileWithUri` | Yes  | Contains the file details and data/reference. |
-| `metadata` | `Record<string, any>` | No          | Optional metadata specific to this file part. |
 
 #### 6.5.3. `DataPart` Object
 
@@ -457,12 +351,6 @@ For conveying structured JSON data. Useful for forms, parameters, or any machine
 --8<-- "types/src/types.ts:DataPart"
 ```
 
-| Field Name | Type                  | Required | Description                                                                 |
-| :--------- | :-------------------- | :------- | :-------------------------------------------------------------------------- |
-| `kind`     | `"data"` (literal)    | Yes      | Identifies this part as structured data.                                    |
-| `data`     | `Record<string, any>` | Yes      | The structured JSON data payload (an object or an array).                   |
-| `metadata` | `Record<string, any>` | No       | Optional metadata specific to this data part (e.g., reference to a schema). |
-
 ### 6.6.1 `FileWithBytes` Object
 
 Represents the data for a file, used within a `FilePart`.
@@ -470,12 +358,6 @@ Represents the data for a file, used within a `FilePart`.
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:FileWithBytes"
 ```
-
-| Field Name | Type     | Required | Description                                                                                                                         |
-| :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
-| `mimeType` | `string` | No       | [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
-| `bytes`    | `string` | Yes      | Base64 encoded file content.                                                                                                        |
 
 ### 6.6.2 `FileWithUri` Object
 
@@ -485,12 +367,6 @@ Represents the URI for a file, used within a `FilePart`.
 --8<-- "types/src/types.ts:FileWithUri"
 ```
 
-| Field Name | Type     | Required | Description                                                                                                                         |
-| :--------- | :------- | :------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `name`     | `string` | No       | Original filename (e.g., "report.pdf").                                                                                             |
-| `mimeType` | `string` | No       | [Media Type](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types) (e.g., `image/png`). Strongly recommended. |
-| `uri`      | `string` | Yes      | URI (absolute URL strongly recommended) to file content. Accessibility is context-dependent.                                        |
-
 ### 6.7. `Artifact` Object
 
 Represents a tangible output generated by the agent during a task. Artifacts are the results or products of the agent's work.
@@ -498,15 +374,6 @@ Represents a tangible output generated by the agent during a task. Artifacts are
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:Artifact"
 ```
-
-| Field Name    | Type                            | Required | Description                                                                     |
-| :------------ | :------------------------------ | :------- | ------------------------------------------------------------------------------- |
-| `artifactId`  | `string`                        | Yes      | Identifier for the artifact generated by the agent.                             |
-| `name`        | `string`                        | No       | Descriptive name for the artifact.                                              |
-| `description` | `string`                        | No       | Human-readable description of the artifact.                                     |
-| `parts`       | [`Part[]`](#65-part-union-type) | Yes      | Content of the artifact, as one or more `Part` objects. Must have at least one. |
-| `metadata`    | `Record<string, any>`           | No       | Arbitrary key-value metadata associated with the artifact.                      |
-| `extensions`  | `string[]`                 | No       | A list of extension URIs that contributed to this artifact.                         |
 
 ### 6.8. `PushNotificationConfig` Object
 
@@ -516,13 +383,6 @@ Configuration provided by the client to the server for sending asynchronous push
 --8<-- "types/src/types.ts:PushNotificationConfig"
 ```
 
-| Field Name       | Type                                                                  | Required | Description                                                                                                                                                               |
-| :--------------- | :-------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `url`            | `string`                                                              | Yes      | Absolute HTTPS webhook URL for the A2A Server to POST task updates to.                                                                                                    |
-| `id`             | `string`                                                              | No       | Optional server-generated identifier for the push notification configuration to support multiple callbacks.                                                               |
-| `token`          | `string`                                                              | No       | Optional client-generated opaque token for the client's webhook receiver to validate the notification (e.g., server includes it in an `X-A2A-Notification-Token` header). |
-| `authentication` | [`PushNotificationAuthenticationInfo`](#69-pushnotificationauthenticationinfo-object) | No       | Authentication details the A2A Server must use when calling the `url`. The client's webhook (receiver) defines these requirements.                        |
-
 ### 6.9. `PushNotificationAuthenticationInfo` Object
 
 A generic structure for specifying authentication requirements, typically used within `PushNotificationConfig` to describe how the A2A Server should authenticate to the client's webhook.
@@ -531,11 +391,6 @@ A generic structure for specifying authentication requirements, typically used w
 --8<-- "types/src/types.ts:PushNotificationAuthenticationInfo"
 ```
 
-| Field Name    | Type       | Required | Description                                                                                                                                                                                |
-| :------------ | :--------- | :------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `schemes`     | `string[]` | Yes      | Array of auth scheme names the A2A Server must use when calling the client's webhook (e.g., "Bearer", "ApiKey").                                                                           |
-| `credentials` | `string`   | No       | Optional static credentials or scheme-specific configuration info. **Handle with EXTREME CAUTION if secrets are involved.** Prefer server-side dynamic credential fetching where possible. |
-
 ### 6.10. `TaskPushNotificationConfig` Object
 
 Used as the `params` object for the [`tasks/pushNotificationConfig/set`](#75-taskspushnotificationconfigset) method and as the `result` object for the [`tasks/pushNotificationConfig/get`](#76-taskspushnotificationconfigget) method.
@@ -543,11 +398,6 @@ Used as the `params` object for the [`tasks/pushNotificationConfig/set`](#75-tas
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskPushNotificationConfig"
 ```
-
-| Field Name               | Type                                                          | Required | Description                                                                                                                           |
-| :----------------------- | :------------------------------------------------------------ | :------- | :------------------------------------------------------------------------------------------------------------------------------------ |
-| `taskId`                 | `string`                                                      | Yes      | The ID of the task to configure push notifications for, or retrieve configuration from.                                               |
-| `pushNotificationConfig` | [`PushNotificationConfig`](#68-pushnotificationconfig-object) | Yes      | The push notification configuration. For `set`, the desired config. For `get`, the current config (secrets MAY be omitted by server). |
 
 ### 6.11. JSON-RPC Structures
 
@@ -579,12 +429,6 @@ When a JSON-RPC call encounters an error, the Response Object will contain an `e
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:JSONRPCError"
 ```
-
-| Field Name | Type      | Required | Description                                                                                                  |
-| :--------- | :-------- | :------- | :----------------------------------------------------------------------------------------------------------- |
-| `code`     | `integer` | Yes      | Integer error code. See [Section 8 (Error Handling)](#8-error-handling) for standard and A2A-specific codes. |
-| `message`  | `string`  | Yes      | Short, human-readable summary of the error.                                                                  |
-| `data`     | `any`     | No       | Optional additional structured information about the error.                                                  |
 
 ## 7. Protocol RPC Methods
 
@@ -656,12 +500,6 @@ The `error` response for all transports in case of failure is a [`JSONRPCError`]
 --8<-- "types/src/types.ts:MessageSendConfiguration"
 ```
 
-| Field Name      | Type                                                            | Required | Description                                                        |
-| :-------------- | :-------------------------------------------------------------- | :------- | :----------------------------------------------------------------- |
-| `message`       | [`Message`](#64-message-object)                                 | Yes      | The message content to send. `Message.role` is typically `"user"`. |
-| `configuration` | [`MessageSendConfiguration`](#711-messagesendparams-object) | No       | Optional: additional message configuration                         |
-| `metadata`      | `Record<string, any>`                                           | No       | Request-specific metadata.                                         |
-
 ### 7.2. `message/stream`
 
 Sends a message to an agent to initiate/continue a task AND subscribes the client to real-time updates for that task via Server-Sent Events (SSE). This method requires the server to have `AgentCard.capabilities.streaming: true`. Just like `message/send`, a task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
@@ -729,12 +567,6 @@ This is the structure of the JSON object found in the `data` field of each Serve
 --8<-- "types/src/types.ts:SendStreamingMessageSuccessResponse"
 ```
 
-| Field Name | Type                                                                                                                                                                                          | Required | Description                                                                            |
-| :--------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------- |
-| `jsonrpc`  | `"2.0"` (literal)                                                                                                                                                                             | Yes      | JSON-RPC version string.                                                               |
-| `id`       | `string` \| `number`                                                                                                                                                                          | Yes      | Matches the `id` from the originating `message/stream` or `tasks/resubscribe` request. |
-| `result`   | **Either** `Message` <br> **OR** `Task` <br> **OR** [`TaskStatusUpdateEvent`](#722-taskstatusupdateevent-object) <br> **OR** [`TaskArtifactUpdateEvent`](#723-taskartifactupdateevent-object) | Yes      | The event payload                                                                      |
-
 #### 7.2.2. `TaskStatusUpdateEvent` Object
 
 Carries information about a change in the task's status during streaming. This is one of the possible `result` types in a `SendStreamingMessageSuccessResponse`.
@@ -743,15 +575,6 @@ Carries information about a change in the task's status during streaming. This i
 --8<-- "types/src/types.ts:TaskStatusUpdateEvent"
 ```
 
-| Field Name  | Type                                  | Required | Default         | Description                                                                                                                                      |
-| :---------- | :------------------------------------ | :------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `taskId`    | `string`                              | Yes      |                 | Task ID being updated                                                                                                                            |
-| `contextId` | `string`                              | Yes      |                 | Context ID the task is associated with                                                                                                           |
-| `kind`      | `string`, literal                     | Yes      | `status-update` | Type discriminator, literal value                                                                                                                |
-| `status`    | [`TaskStatus`](#62-taskstatus-object) | Yes      |                 | The new `TaskStatus` object.                                                                                                                     |
-| `final`     | `boolean`                             | No       | `false`         | If `true`, indicates this is the terminal status update for the current stream cycle. The server typically closes the SSE connection after this. |
-| `metadata`  | `Record<string, any>`                 | No       | `undefined`     | Event-specific metadata.                                                                                                                         |
-
 #### 7.2.3. `TaskArtifactUpdateEvent` Object
 
 Carries a new or updated artifact (or a chunk of an artifact) generated by the task during streaming. This is one of the possible `result` types in a `SendTaskStreamingResponse`.
@@ -759,16 +582,6 @@ Carries a new or updated artifact (or a chunk of an artifact) generated by the t
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskArtifactUpdateEvent"
 ```
-
-| Field Name  | Type                              | Required | Default           | Description                                                                |
-| :---------- | :-------------------------------- | :------- | :---------------- | :------------------------------------------------------------------------- |
-| `taskId`    | `string`                          | Yes      |                   | Task ID associated with the generated artifact part                        |
-| `contextId` | `string`                          | Yes      |                   | Context ID the task is associated with                                     |
-| `kind`      | `string`, literal                 | Yes      | `artifact-update` | Type discriminator, literal value                                          |
-| `artifact`  | [`Artifact`](#67-artifact-object) | Yes      |                   | The `Artifact` data. Could be a complete artifact or an incremental chunk. |
-| `append`    | `boolean`                         | No       | `false`           | `true` means append parts to artifact; `false` (default) means replace.    |
-| `lastChunk` | `boolean`                         | No       | `false`           | `true` indicates this is the final update for the artifact.                |
-| `metadata`  | `Record<string, any>`             | No       | `undefined`       | Event-specific metadata.                                                   |
 
 ### 7.3. `tasks/get`
 
@@ -808,12 +621,6 @@ Retrieves the current state (including status, artifacts, and optionally history
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskQueryParams"
 ```
-
-| Field Name      | Type                  | Required | Description                                                                              |
-| :-------------- | :-------------------- | :------- | :--------------------------------------------------------------------------------------- |
-| `id`            | `string`              | Yes      | The ID of the task whose current state is to be retrieved.                               |
-| `historyLength` | `integer`             | No       | If positive, requests the server to include up to `N` recent messages in `Task.history`. |
-| `metadata`      | `Record<string, any>` | No       | Request-specific metadata.                                                               |
 
 ### `tasks/list`
 
@@ -886,11 +693,6 @@ A simple object containing just the task ID and optional metadata.
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskIdParams"
 ```
-
-| Field Name | Type                  | Required | Description                |
-| :--------- | :-------------------- | :------- | :------------------------- |
-| `id`       | `string`              | Yes      | The ID of the task.        |
-| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
 
 ### 7.5. `tasks/pushNotificationConfig/set`
 
@@ -970,12 +772,6 @@ A object for fetching the push notification configuration for a task.
 --8<-- "types/src/types.ts:GetTaskPushNotificationConfigParams"
 ```
 
-| Field Name | Type                  | Required | Description                |
-| :--------- | :-------------------- | :------- | :------------------------- |
-| `id`       | `string`              | Yes      | The ID of the task.        |
-| `pushNotificationConfigId`       | `string` | No      | Push notification configuration id. Server will return one of the associated configurations if config id is not specified |
-| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
-
 ### 7.7. `tasks/pushNotificationConfig/list`
 
 Retrieves the associated push notification configurations for a specified task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
@@ -1016,11 +812,6 @@ A object for fetching the push notification configurations for a task.
 --8<-- "types/src/types.ts:ListTaskPushNotificationConfigRequest"
 ```
 
-| Field Name | Type                  | Required | Description                |
-| :--------- | :-------------------- | :------- | :------------------------- |
-| `id`       | `string`              | Yes      | The ID of the task.        |
-| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
-
 ### 7.8. `tasks/pushNotificationConfig/delete`
 
 Deletes an associated push notification configuration for a task. Requires the server to have `AgentCard.capabilities.pushNotifications: true`.
@@ -1036,12 +827,6 @@ A object for deleting an associated push notification configuration for a task.
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:DeleteTaskPushNotificationConfigParams"
 ```
-
-| Field Name | Type                  | Required | Description                |
-| :--------- | :-------------------- | :------- | :------------------------- |
-| `id`       | `string`              | Yes      | The ID of the task.        |
-| `pushNotificationConfigId` | `string`   | Yes | Push notification configuration id |
-| `metadata` | `Record<string, any>` | No       | Request-specific metadata. |
 
 ### 7.9. `tasks/resubscribe`
 
