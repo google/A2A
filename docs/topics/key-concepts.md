@@ -31,7 +31,7 @@ The Agent2Agent (A2A) protocol is built around a set of core concepts that defin
 
     - Represents a single turn or unit of communication between a client and an agent.
     - Messages have a `role` (either `"user"` for client-sent messages or `"agent"` for server-sent messages) and contain one or more `Part` objects that carry the actual content. `messageId` part of the Message object is a unique identifier for each message set by the sender of the message.
-    - Used for conveying instructions, context, questions, answers, or status updates that are not necessarily `Tasks` that do not result in formal `Artifacts`.
+    - Used for conveying instructions, context, questions, answers, or status updates that are not necessarily formal `Artifacts` part of a `Task`.
     - See details in the [Protocol Specification: Message Object](../specification.md#64-message-object).
 
 - **Part:**
