@@ -765,15 +765,9 @@ Retrieves the current state (including status, artifacts, and optionally history
     -   **Response**: `Task`
 
 === "REST"
-    -   **URL:** `/v1/tasks/{id}`
+    -   **URL:** `v1/tasks/{id}?historyLength={historyLength}`
     -   **HTTP Method:** `GET`
-    -   **Payload:**
-        ```typescript
-        {
-          name: string
-          historyLength?: number
-        }
-        ```
+    -   **Payload:** None
     -   **Response**: `Task`
 
 </div>
@@ -930,12 +924,7 @@ Retrieves the current push notification configuration for a specified task. Requ
 === "REST"
     -   **URL:** `/v1/tasks/{taskId}/pushNotificationConfigs/{configId}`
     -   **HTTP Method:** `GET`
-    -   **Payload:**
-        ```typescript
-        {
-          name: string
-        }
-        ```
+    -   **Payload:** None
     -   **Response**: `TaskPushNotificationConfig`
 
 </div>
@@ -983,12 +972,7 @@ Retrieves the associated push notification configurations for a specified task. 
 === "REST"
     -   **URL:** `/v1/tasks/{id}/pushNotificationConfigs`
     -   **HTTP Method:** `GET`
-    -   **Payload:**
-        ```typescript
-        {
-          parent: string
-        }
-        ```
+    -   **Payload:**: None
     -   **Response**: `[TaskPushNotificationConfig]`
 
 </div>
@@ -1100,26 +1084,10 @@ Retrieves a potentially more detailed version of the Agent Card after the client
     - `404 Not Found`: The `supportsAuthenticatedExtendedCard` capability is declared, but the server has not implemented this endpoint at the specified path.
     - `5xx Server Error`: An internal server error occurred.
 
-Clients retrieving this authenticated card **SHOULD** replace their cached public Agent Card with the content received from this endpoint for the duration of their authenticated session or until the card's version changes.
-
-#### 7.10.1. `AuthenticatedExtendedCardParams` Object
-
-This endpoint does not use JSON-RPC `params`. Any parameters would be included as HTTP query parameters if needed (though none are defined by the standard).
-
-#### 7.10.2. `AuthenticatedExtendedCardResponse` Object
-
-The successful response body is a JSON object conforming to the `AgentCard` interface.
-
-```ts { .no-copy }
---8<-- "types/src/types.ts:AuthenticatedExtendedCardResponse"
-```
-
-### 7.11. `card/get`
-
 <div class="grid cards" markdown>
 
 === "JSON-RPC"
-    -   **URL:** Not Defined Now
+    -   **URL:** `agent/authenticatedExtendedCard`
     -   **HTTP Method:** `GET`
     -   **Payload:** None
     -   **Response:** `AgentCard`
@@ -1137,6 +1105,20 @@ The successful response body is a JSON object conforming to the `AgentCard` inte
     -   **Response:** `AgentCard`
 
 </div>
+
+Clients retrieving this authenticated card **SHOULD** replace their cached public Agent Card with the content received from this endpoint for the duration of their authenticated session or until the card's version changes.
+
+#### 7.10.1. `AuthenticatedExtendedCardParams` Object
+
+This endpoint does not use JSON-RPC `params`. Any parameters would be included as HTTP query parameters if needed (though none are defined by the standard).
+
+#### 7.10.2. `AuthenticatedExtendedCardResponse` Object
+
+The successful response body is a JSON object conforming to the `AgentCard` interface.
+
+```ts { .no-copy }
+--8<-- "types/src/types.ts:AuthenticatedExtendedCardResponse"
+```
 
 ## 8. Error Handling
 
