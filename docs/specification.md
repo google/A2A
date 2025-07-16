@@ -1049,7 +1049,7 @@ The purpose is to resume receiving _subsequent_ updates. The server's behavior r
         ```
 
 === "REST"
-    -   **URL:** `/v1/tasks/{id}:resubscribe`
+    -   **URL:** `/v1/tasks/{id}:subscribe`
     -   **HTTP Method:** `POST`
     -   **Payload:**
         ```typescript
@@ -1088,7 +1088,7 @@ Retrieves a potentially more detailed version of the Agent Card after the client
 
 === "JSON-RPC"
     -   **URL:** `agent/authenticatedExtendedCard`
-    -   **HTTP Method:** `GET`
+    -   **HTTP Method:** `POST`
     -   **Payload:** None
     -   **Response:** `AgentCard`
 
