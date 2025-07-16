@@ -656,6 +656,12 @@ The `error` response for all transports in case of failure is a [`JSONRPCError`]
 --8<-- "types/src/types.ts:MessageSendConfiguration"
 ```
 
+| Field Name      | Type                                                            | Required | Description                                                        |
+| :-------------- | :-------------------------------------------------------------- | :------- | :----------------------------------------------------------------- |
+| `message`       | [`Message`](#64-message-object)                                 | Yes      | The message content to send. `Message.role` is typically `"user"`. |
+| `configuration` | [`MessageSendConfiguration`](#711-messagesendparams-object) | No       | Optional: additional message configuration                         |
+| `metadata`      | `Record<string, any>`                                           | No       | Request-specific metadata.                                         |
+
 ### 7.2. `message/stream`
 
 Sends a message to an agent to initiate/continue a task AND subscribes the client to real-time updates for that task via Server-Sent Events (SSE). This method requires the server to have `AgentCard.capabilities.streaming: true`. Just like `message/send`, a task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. Sending a message to such a task will result in an error. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
@@ -723,6 +729,12 @@ This is the structure of the JSON object found in the `data` field of each Serve
 --8<-- "types/src/types.ts:SendStreamingMessageSuccessResponse"
 ```
 
+| Field Name | Type                                                                                                                                                                                          | Required | Description                                                                            |
+| :--------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------- | :------------------------------------------------------------------------------------- |
+| `jsonrpc`  | `"2.0"` (literal)                                                                                                                                                                             | Yes      | JSON-RPC version string.                                                               |
+| `id`       | `string` \| `number`                                                                                                                                                                          | Yes      | Matches the `id` from the originating `message/stream` or `tasks/resubscribe` request. |
+| `result`   | **Either** `Message` <br> **OR** `Task` <br> **OR** [`TaskStatusUpdateEvent`](#722-taskstatusupdateevent-object) <br> **OR** [`TaskArtifactUpdateEvent`](#723-taskartifactupdateevent-object) | Yes      | The event payload                                                                      |
+
 #### 7.2.2. `TaskStatusUpdateEvent` Object
 
 Carries information about a change in the task's status during streaming. This is one of the possible `result` types in a `SendStreamingMessageSuccessResponse`.
@@ -731,6 +743,15 @@ Carries information about a change in the task's status during streaming. This i
 --8<-- "types/src/types.ts:TaskStatusUpdateEvent"
 ```
 
+| Field Name  | Type                                  | Required | Default         | Description                                                                                                                                      |
+| :---------- | :------------------------------------ | :------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `taskId`    | `string`                              | Yes      |                 | Task ID being updated                                                                                                                            |
+| `contextId` | `string`                              | Yes      |                 | Context ID the task is associated with                                                                                                           |
+| `kind`      | `string`, literal                     | Yes      | `status-update` | Type discriminator, literal value                                                                                                                |
+| `status`    | [`TaskStatus`](#62-taskstatus-object) | Yes      |                 | The new `TaskStatus` object.                                                                                                                     |
+| `final`     | `boolean`                             | No       | `false`         | If `true`, indicates this is the terminal status update for the current stream cycle. The server typically closes the SSE connection after this. |
+| `metadata`  | `Record<string, any>`                 | No       | `undefined`     | Event-specific metadata.                                                                                                                         |
+
 #### 7.2.3. `TaskArtifactUpdateEvent` Object
 
 Carries a new or updated artifact (or a chunk of an artifact) generated by the task during streaming. This is one of the possible `result` types in a `SendTaskStreamingResponse`.
@@ -738,6 +759,16 @@ Carries a new or updated artifact (or a chunk of an artifact) generated by the t
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:TaskArtifactUpdateEvent"
 ```
+
+| Field Name  | Type                              | Required | Default           | Description                                                                |
+| :---------- | :-------------------------------- | :------- | :---------------- | :------------------------------------------------------------------------- |
+| `taskId`    | `string`                          | Yes      |                   | Task ID associated with the generated artifact part                        |
+| `contextId` | `string`                          | Yes      |                   | Context ID the task is associated with                                     |
+| `kind`      | `string`, literal                 | Yes      | `artifact-update` | Type discriminator, literal value                                          |
+| `artifact`  | [`Artifact`](#67-artifact-object) | Yes      |                   | The `Artifact` data. Could be a complete artifact or an incremental chunk. |
+| `append`    | `boolean`                         | No       | `false`           | `true` means append parts to artifact; `false` (default) means replace.    |
+| `lastChunk` | `boolean`                         | No       | `false`           | `true` indicates this is the final update for the artifact.                |
+| `metadata`  | `Record<string, any>`             | No       | `undefined`       | Event-specific metadata.                                                   |
 
 ### 7.3. `tasks/get`
 
