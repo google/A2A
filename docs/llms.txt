@@ -18,7 +18,7 @@ The repository provides:
 
 Key features of the A2A protocol highlighted by the specification and samples include: agent discovery via Agent Cards, standardized task management (send, get, cancel), support for different content types (text, files, structured data) via `Parts` and `Artifacts`, streaming updates for long-running tasks, and mechanisms for push notifications. The project is open source and encourages community contribution.
 
-# A2A (Agent2Agent) Protocol 
+# A2A (Agent2Agent) Protocol
 
 ## 1. Overview
 
