@@ -287,7 +287,7 @@ These objects define the structure of data exchanged within the JSON-RPC methods
 
 ### 6.1. `Task` Object
 
-Represents the stateful unit of work being processed by the A2A Server for an A2A Client. A task encapsulates the entire interaction related to a specific goal or request. A task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
+Represents the stateful unit of work being processed by the A2A Server for an A2A Client. A task encapsulates the entire interaction related to a specific goal or request. A task which has reached a terminal state (completed, canceled, rejected, or failed) can't be restarted. Tasks in completed state SHOULD use artifacts for returning the generated output to the clients. For more information, refer to the [Life of a Task guide](./topics/life-of-a-task.md).
 
 ```ts { .no-copy }
 --8<-- "types/src/types.ts:Task"
