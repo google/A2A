@@ -3,11 +3,6 @@
 ## [0.2.6](https://github.com/a2aproject/A2A/compare/v0.2.5...v0.2.6) (2025-07-17)
 
 
-### Features
-
-* **spec:** Add AGENT_CARD_WELL_KNOWN_URI to spec ([#824](https://github.com/a2aproject/A2A/issues/824)) ([66da9d1](https://github.com/a2aproject/A2A/commit/66da9d10ee87dc1f8baa20a21360bebbe7d4ff1b))
-
-
 ### Bug Fixes
 
 * Type fix and doc clarification ([#877](https://github.com/a2aproject/A2A/issues/877)) ([6f1d17b](https://github.com/a2aproject/A2A/commit/6f1d17ba806c32f2b6fbe465be93ec13bfe7d83c))
