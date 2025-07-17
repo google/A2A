@@ -35,4 +35,4 @@ Disallow: /_drafts/
 
 # Specify the location of your XML sitemap.
 # This helps search engines discover all the pages on your site.
-Sitemap: https://a2aproject.github.io/A2A/v0.2.5/sitemap.xml
+Sitemap: https://a2a-protocol.org/v0.2.5/sitemap.xml
