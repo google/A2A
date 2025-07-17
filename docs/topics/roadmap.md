@@ -5,8 +5,8 @@ Last updated: Jul 16, 2025
 ## Near-term initiatives
 
 - Release 0.3 version of the protocol which we intend to keep supported and without breaking changes for a significant amount of time with backward compatibility of the SDKs starting at version 0.3. As part of this release there are a few known breaking changes including:
-  - Update the `/.well-known/agent.json` path for hosting Agent Cards to `/.well-known/agent-card.json` based on feedback from IANA.
-  - Refactor class fields to be more Pythonic and adopt snake case. [PR 199](https://github.com/a2aproject/a2a-python/pull/199)
+    - Update the `/.well-known/agent.json` path for hosting Agent Cards to `/.well-known/agent-card.json` based on feedback from IANA.
+    - Refactor class fields to be more Pythonic and adopt snake case. [PR 199](https://github.com/a2aproject/a2a-python/pull/199)
 - Solidify the support for [A2A extensions](https://a2aproject.github.io/A2A/latest/) with SDK support (starting with the Python SDK) and publishing sample extensions.
 - Introduce support for signed Agent Cards [Discussion 199](https://github.com/a2aproject/A2A/discussions/199#discussioncomment-13770576) to allow verifying the integrity of Agent Card content.
 - Enhance the client side support in SDK (starting with Python) to expose ready-to-use A2A clients, streamlined auth handling and improved handling of tasks.
