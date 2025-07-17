@@ -50,6 +50,9 @@
                     "$ref": "#/definitions/GetTaskRequest"
                 },
                 {
+                    "$ref": "#/definitions/ListTasksRequest"
+                },
+                {
                     "$ref": "#/definitions/CancelTaskRequest"
                 },
                 {
@@ -1274,6 +1277,9 @@
                     "$ref": "#/definitions/CancelTaskSuccessResponse"
                 },
                 {
+                    "$ref": "#/definitions/ListTasksSuccessResponse"
+                },
+                {
                     "$ref": "#/definitions/SetTaskPushNotificationConfigSuccessResponse"
                 },
                 {
@@ -1398,6 +1404,138 @@
                         "$ref": "#/definitions/TaskPushNotificationConfig"
                     },
                     "type": "array"
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "result"
+            ],
+            "type": "object"
+        },
+        "ListTasksParams": {
+            "description": "Parameters for listing tasks with optional filtering criteria.",
+            "properties": {
+                "contextId": {
+                    "description": "Filter tasks by context ID to get tasks from a specific conversation or session.",
+                    "type": "string"
+                },
+                "historyLength": {
+                    "description": "Number of recent messages to include in each task's history.",
+                    "type": "integer"
+                },
+                "metadata": {
+                    "additionalProperties": {},
+                    "description": "Request-specific metadata.",
+                    "type": "object"
+                },
+                "pageSize": {
+                    "description": "Maximum number of tasks to return. Defaults to 50 if not specified.",
+                    "type": "integer"
+                },
+                "pageToken": {
+                    "description": "Token for pagination. Use the nextPageToken from a previous ListTasksResult response.",
+                    "type": "string"
+                },
+                "status": {
+                    "$ref": "#/definitions/TaskState",
+                    "description": "Filter tasks by their current status state."
+                }
+            },
+            "type": "object"
+        },
+        "ListTasksRequest": {
+            "description": "JSON-RPC request model for the 'tasks/list' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "method": {
+                    "const": "tasks/list",
+                    "description": "A String containing the name of the method to be invoked.",
+                    "type": "string"
+                },
+                "params": {
+                    "$ref": "#/definitions/ListTasksParams",
+                    "description": "A Structured value that holds the parameter values to be used during the invocation of the method."
+                }
+            },
+            "required": [
+                "id",
+                "jsonrpc",
+                "method"
+            ],
+            "type": "object"
+        },
+        "ListTasksResponse": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/JSONRPCErrorResponse"
+                },
+                {
+                    "$ref": "#/definitions/ListTasksSuccessResponse"
+                }
+            ],
+            "description": "JSON-RPC response for the 'tasks/list' method."
+        },
+        "ListTasksResult": {
+            "description": "Result object for tasks/list method containing an array of tasks and pagination information.",
+            "properties": {
+                "nextPageToken": {
+                    "description": "Token for retrieving the next page. Empty if no more results.",
+                    "type": "string"
+                },
+                "pageSize": {
+                    "description": "Maximum number of tasks returned in this response.",
+                    "type": "integer"
+                },
+                "tasks": {
+                    "description": "Array of tasks matching the specified criteria.",
+                    "items": {
+                        "$ref": "#/definitions/Task"
+                    },
+                    "type": "array"
+                },
+                "totalSize": {
+                    "description": "Total number of tasks available (before pagination).",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "pageSize",
+                "tasks",
+                "totalSize"
+            ],
+            "type": "object"
+        },
+        "ListTasksSuccessResponse": {
+            "description": "JSON-RPC success response model for the 'tasks/list' method.",
+            "properties": {
+                "id": {
+                    "description": "An identifier established by the Client that MUST contain a String, Number.\nNumbers SHOULD NOT contain fractional parts.",
+                    "type": [
+                        "string",
+                        "integer",
+                        "null"
+                    ]
+                },
+                "jsonrpc": {
+                    "const": "2.0",
+                    "description": "Specifies the version of the JSON-RPC protocol. MUST be exactly \"2.0\".",
+                    "type": "string"
+                },
+                "result": {
+                    "$ref": "#/definitions/ListTasksResult",
+                    "description": "The result object on success."
                 }
             },
             "required": [
