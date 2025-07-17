@@ -17,6 +17,7 @@ nav:
   - Home: index.md
   - Topics:
     - What is A2A?: topics/what-is-a2a.md
+    - Roadmap: topics/roadmap.md
     - Key Concepts: topics/key-concepts.md
     - A2A and MCP: topics/a2a-and-mcp.md
     - Agent Discovery: topics/agent-discovery.md
