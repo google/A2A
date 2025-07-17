@@ -1,4 +1,4 @@
-# A2A protocol roadmap 
+# A2A protocol roadmap
 
 Last updated: Jul 16, 2025
 
