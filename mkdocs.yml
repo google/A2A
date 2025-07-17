@@ -9,8 +9,8 @@ extra:
   a2a_version: !ENV [MIKE_VERSION, 'dev']
   analytics:
     provider: google
-    property: G-886VW76ZDS    
- 
+    property: G-886VW76ZDS
+
 
 # Navigation
 nav:
