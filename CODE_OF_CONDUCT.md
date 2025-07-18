@@ -69,13 +69,10 @@ dispute. If you are unable to resolve the matter for any reason, or if the
 behavior is threatening or harassing, report it. We are dedicated to providing
 an environment where participants feel welcome and safe.
 
-Reports should be directed to *[PROJECT STEWARD NAME(s) AND EMAIL(s)]*, the
-Project Steward(s) for *[PROJECT NAME]*. It is the Project Steward’s duty to
+Reports should be directed to a2a-coc@googlegroups.com, the
+Project Steward(s) for A2A. It is the Project Steward’s duty to
 receive and address reported violations of the code of conduct. They will then
-work with a committee consisting of representatives from the Open Source
-Programs Office and the Google Open Source Strategy team. If for any reason you
-are uncomfortable reaching out to the Project Steward, please email
-opensource@google.com.
+work with a committee consisting of representatives from the A2A project and leadership. 
 
 We will investigate every complaint, but you may not receive a direct response.
 We will use our discretion in determining when and how to follow up on reported
@@ -91,6 +88,3 @@ harassment or threats to anyone's safety, we may take action without notice.
 This Code of Conduct is adapted from the Contributor Covenant, version 1.4,
 available at
 https://www.contributor-covenant.org/version/1/4/code-of-conduct.html
-
-Note: A version of this file is also available in the
-[New Project repo](https://github.com/google/new-project/blob/master/docs/code-of-conduct.md).
