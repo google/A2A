@@ -90,7 +90,10 @@ export interface AgentSkill {
  * target url and the supported transport to interact with the agent.
  */
 export interface AgentInterface {
-  url: string; // the url this interface is found at
+  /**
+   * The url this interface is found at.
+   */
+  url: string;
   /**
    * The transport supported this url. This is an open form string, to be
    * easily extended for many transport protocols. The core ones officially
@@ -179,7 +182,7 @@ export interface Task {
   id: string;
   /** Server-generated id for contextual alignment across interactions */
   contextId: string;
-  /** Current status of the task */
+  /** Current status of the task. */
   status: TaskStatus;
   history?: Message[];
   /** Collection of artifacts created by the agent. */
@@ -188,8 +191,8 @@ export interface Task {
   metadata?: {
     [key: string]: any;
   };
-  /** Event type */
-  kind: "task";
+  /** Event type. */
+  readonly kind: "task";
 }
 // --8<-- [end:Task]
 
@@ -214,11 +217,11 @@ export interface TaskStatusUpdateEvent {
   taskId: string;
   /** The context the task is associated with */
   contextId: string;
-  /** Event type */
-  kind: "status-update";
-  /** Current status of the task */
+  /** Event type. */
+  readonly kind: "status-update";
+  /** Current status of the task. */
   status: TaskStatus;
-  /** Indicates the end of the event stream */
+  /** Indicates the end of the event stream. */
   final: boolean;
   /** Extension metadata. */
   metadata?: {
@@ -234,13 +237,13 @@ export interface TaskArtifactUpdateEvent {
   taskId: string;
   /** The context the task is associated with */
   contextId: string;
-  /** Event type */
-  kind: "artifact-update";
-  /** Generated artifact */
+  /** Event type. */
+  readonly kind: "artifact-update";
+  /** Generated artifact. */
   artifact: Artifact;
-  /** Indicates if this artifact appends to a previous one */
+  /** Indicates if this artifact appends to a previous one. */
   append?: boolean;
-  /** Indicates if this is the last chunk of the artifact */
+  /** Indicates if this is the last chunk of the artifact. */
   lastChunk?: boolean;
   /** Extension metadata. */
   metadata?: {
@@ -365,14 +368,14 @@ export interface Message {
   extensions?: string[];
   /** List of tasks referenced as context by this message.*/
   referenceTaskIds?: string[];
-  /** Identifier created by the message creator*/
+  /** Identifier created by the message creator. */
   messageId: string;
-  /** Identifier of task the message is related to */
+  /** Identifier of task the message is related to. */
   taskId?: string;
-  /** The context the message is associated with */
+  /** The context the message is associated with. */
   contextId?: string;
-  /** Event type */
-  kind: "message";
+  /** Event type. */
+  readonly kind: "message";
 }
 // --8<-- [end:Message]
 
@@ -389,8 +392,8 @@ export interface PartBase {
 // --8<-- [start:TextPart]
 /** Represents a text segment within parts.*/
 export interface TextPart extends PartBase {
-  /** Part type - text for TextParts*/
-  kind: "text";
+  /** Part type - text for TextParts */
+  readonly kind: "text";
   /** Text content */
   text: string;
 }
@@ -418,7 +421,9 @@ export interface FileWithBytes extends FileBase {
 // --8<-- [start:FileWithUri]
 /** Define the variant where 'uri' is present and 'bytes' is absent  */
 export interface FileWithUri extends FileBase {
-  /** URL for the File content */
+  /**
+   * URL for the File content.
+   */
   uri: string;
   bytes?: never;
 }
@@ -428,7 +433,7 @@ export interface FileWithUri extends FileBase {
 /** Represents a File segment within parts.*/
 export interface FilePart extends PartBase {
   /** Part type - file for FileParts */
-  kind: "file";
+  readonly kind: "file";
   /** File content either as url or bytes */
   file: FileWithBytes | FileWithUri;
 }
@@ -438,7 +443,7 @@ export interface FilePart extends PartBase {
 /** Represents a structured data segment within a message part. */
 export interface DataPart extends PartBase {
   /** Part type - data for DataParts */
-  kind: "data";
+  readonly kind: "data";
   /** Structured data content
    */
   data: {
@@ -508,7 +513,7 @@ export interface SecuritySchemeBase {
 // --8<-- [start:APIKeySecurityScheme]
 /** API Key security scheme. */
 export interface APIKeySecurityScheme extends SecuritySchemeBase {
-  type: "apiKey";
+  readonly type: "apiKey";
   /** The location of the API key. Valid values are "query", "header", or "cookie".  */
   in: "query" | "header" | "cookie";
   /** The name of the header, query or cookie parameter to be used. */
@@ -519,7 +524,7 @@ export interface APIKeySecurityScheme extends SecuritySchemeBase {
 // --8<-- [start:HTTPAuthSecurityScheme]
 /** HTTP Authentication security scheme. */
 export interface HTTPAuthSecurityScheme extends SecuritySchemeBase {
-  type: "http";
+  readonly type: "http";
   /**
    * The name of the HTTP Authentication scheme to be used in the Authorization header as defined
    * in RFC7235. The values used SHOULD be registered in the IANA Authentication Scheme registry.
@@ -538,7 +543,7 @@ export interface HTTPAuthSecurityScheme extends SecuritySchemeBase {
 // --8<-- [start:OAuth2SecurityScheme]
 /** OAuth2.0 security scheme configuration. */
 export interface OAuth2SecurityScheme extends SecuritySchemeBase {
-  type: "oauth2";
+  readonly type: "oauth2";
   /** An object containing configuration information for the flow types supported. */
   flows: OAuthFlows;
 }
@@ -547,8 +552,10 @@ export interface OAuth2SecurityScheme extends SecuritySchemeBase {
 // --8<-- [start:OpenIdConnectSecurityScheme]
 /** OpenID Connect security scheme configuration. */
 export interface OpenIdConnectSecurityScheme extends SecuritySchemeBase {
-  type: "openIdConnect";
-  /** Well-known URL to discover the [[OpenID-Connect-Discovery]] provider metadata. */
+  readonly type: "openIdConnect";
+  /**
+   * Well-known URL to discover the [[OpenID-Connect-Discovery]] provider metadata.
+   */
   openIdConnectUrl: string;
 }
 // --8<-- [end:OpenIdConnectSecurityScheme]
@@ -1056,7 +1063,7 @@ export type A2ARequest =
 export interface JSONParseError extends JSONRPCError {
   code: -32700;
   /**
-   * @default Invalid JSON payload
+   * @default "Invalid JSON payload"
    */
   message: string;
 }
@@ -1070,7 +1077,7 @@ export interface InvalidRequestError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32600;
   /**
-   * @default Request payload validation error
+   * @default "Request payload validation error"
    */
   message: string;
 }
@@ -1084,7 +1091,7 @@ export interface MethodNotFoundError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32601;
   /**
-   * @default Method not found
+   * @default "Method not found"
    */
   message: string;
 }
@@ -1098,7 +1105,7 @@ export interface InvalidParamsError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32602;
   /**
-   * @default Invalid parameters
+   * @default "Invalid parameters"
    */
   message: string;
 }
@@ -1112,7 +1119,7 @@ export interface InternalError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32603;
   /**
-   * @default Internal error
+   * @default "Internal error"
    */
   message: string;
 }
@@ -1126,7 +1133,7 @@ export interface TaskNotFoundError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32001;
   /**
-   * @default Task not found
+   * @default "Task not found"
    */
   message: string;
 }
@@ -1140,7 +1147,7 @@ export interface TaskNotCancelableError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32002;
   /**
-   * @default Task cannot be canceled
+   * @default "Task cannot be canceled"
    */
   message: string;
 }
@@ -1154,7 +1161,7 @@ export interface PushNotificationNotSupportedError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32003;
   /**
-   * @default Push Notification is not supported
+   * @default "Push Notification is not supported"
    */
   message: string;
 }
@@ -1168,7 +1175,7 @@ export interface UnsupportedOperationError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32004;
   /**
-   * @default This operation is not supported
+   * @default "This operation is not supported"
    */
   message: string;
 }
@@ -1182,7 +1189,7 @@ export interface ContentTypeNotSupportedError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32005;
   /**
-   * @default Incompatible content types
+   * @default "Incompatible content types"
    */
   message: string;
 }
@@ -1196,7 +1203,7 @@ export interface InvalidAgentResponseError extends JSONRPCError {
   /** A Number that indicates the error type that occurred. */
   code: -32006;
   /**
-   * @default Invalid agent response
+   * @default "Invalid agent response"
    */
   message: string;
 }
