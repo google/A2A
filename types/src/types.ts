@@ -1,16 +1,19 @@
 /**
- * @title A2A
+ * @title A2A (Agent2Agent) Protocol
+ * @description This file defines the interfaces and types for the Agent2Agent (A2A) specification.
+ * The A2A specification facilitates interoperability between AI agents and clients.
  */
 
 // --8<-- [start:AgentProvider]
 /**
  * Represents the service provider of an agent.
+ *
  * @TJS-examples [{ "organization": "Google", "url": "https://ai.google.dev" }]
  */
 export interface AgentProvider {
-  /** Agent provider's organization name. */
+  /** The name of the agent provider's organization. */
   organization: string;
-  /** Agent provider's URL. */
+  /** A URL for the agent provider's website or relevant documentation. */
   url: string;
 }
 // --8<-- [end:AgentProvider]
@@ -20,84 +23,86 @@ export interface AgentProvider {
  * Defines optional capabilities supported by an agent.
  */
 export interface AgentCapabilities {
-  /** true if the agent supports SSE. */
+  /** Indicates if the agent supports Server-Sent Events (SSE) for streaming responses. */
   streaming?: boolean;
-  /** true if the agent can notify updates to client. */
+  /** Indicates if the agent supports sending push notifications for asynchronous task updates. */
   pushNotifications?: boolean;
-  /** true if the agent exposes status change history for tasks. */
+  /** Indicates if the agent provides a history of state transitions for a task. */
   stateTransitionHistory?: boolean;
-  /** extensions supported by this agent. */
+  /** A list of protocol extensions supported by the agent. */
   extensions?: AgentExtension[];
 }
 // --8<-- [end:AgentCapabilities]
 
 // --8<-- [start:AgentExtension]
 /**
- * A declaration of an extension supported by an Agent.
+ * A declaration of a protocol extension supported by an Agent.
+ *
  * @TJS-examples [{"uri": "https://developers.google.com/identity/protocols/oauth2", "description": "Google OAuth 2.0 authentication", "required": false}]
  */
 export interface AgentExtension {
-  /** The URI of the extension. */
+  /** The unique URI identifying the extension. */
   uri: string;
-  /** A description of how this agent uses this extension. */
+  /** A human-readable description of how this agent uses the extension. */
   description?: string;
-  /** Whether the client must follow specific requirements of the extension. */
+  /**
+   * If true, the client must understand and comply with the extension's requirements
+   * to interact with the agent.
+   */
   required?: boolean;
-  /** Optional configuration for the extension. */
+  /** Optional, extension-specific configuration parameters. */
   params?: { [key: string]: any };
 }
 // --8<-- [end:AgentExtension]
 
 // --8<-- [start:AgentSkill]
 /**
- * Represents a unit of capability that an agent can perform.
+ * Represents a distinct capability or function that an agent can perform.
  */
 export interface AgentSkill {
-  /** Unique identifier for the agent's skill. */
+  /** A unique identifier for the agent's skill. */
   id: string;
-  /** Human readable name of the skill. */
+  /** A human-readable name for the skill. */
   name: string;
   /**
-   * Description of the skill - will be used by the client or a human
-   * as a hint to understand what the skill does.
+   * A detailed description of the skill, intended to help clients or users
+   * understand its purpose and functionality.
    */
   description: string;
   /**
-   * Set of tagwords describing classes of capabilities for this specific skill.
+   * A set of keywords describing the skill's capabilities.
+   *
    * @TJS-examples [["cooking", "customer support", "billing"]]
    */
   tags: string[];
   /**
-   * The set of example scenarios that the skill can perform.
-   * Will be used by the client as a hint to understand how the skill can be used.
+   * Example prompts or scenarios that this skill can handle. Provides a hint to
+   * the client on how to use the skill.
+   *
    * @TJS-examples [["I need a recipe for bread"]]
    */
-  examples?: string[]; // example prompts for tasks
+  examples?: string[];
   /**
-   * The set of interaction modes that the skill supports
-   * (if different than the default).
-   * Supported media types for input.
+   * The set of supported input MIME types for this skill, overriding the agent's defaults.
    */
   inputModes?: string[];
-  /** Supported media types for output. */
+  /**
+   * The set of supported output MIME types for this skill, overriding the agent's defaults.
+   */
   outputModes?: string[];
 }
 // --8<-- [end:AgentSkill]
 
 // --8<-- [start:AgentInterface]
 /**
- * AgentInterface provides a declaration of a combination of the
- * target url and the supported transport to interact with the agent.
+ * Declares a combination of a target URL and a transport protocol for interacting with the agent.
  */
 export interface AgentInterface {
-  /**
-   * The url this interface is found at.
-   */
+  /** The URL where this interface is available. */
   url: string;
   /**
-   * The transport supported this url. This is an open form string, to be
-   * easily extended for many transport protocols. The core ones officially
-   * supported are JSONRPC, GRPC and HTTP+JSON.
+   * The transport protocol supported at this URL. This is a string to allow for future
+   * extension. Core supported transports include 'JSONRPC', 'GRPC', and 'HTTP+JSON'.
    */
   transport: string;
 }
@@ -105,11 +110,9 @@ export interface AgentInterface {
 
 // --8<-- [start:AgentCard]
 /**
- * An AgentCard conveys key information:
- * - Overall details (version, name, description, uses)
- * - Skills: A set of capabilities the agent can perform
- * - Default modalities/content types supported by the agent.
- * - Authentication requirements
+ * The AgentCard is a self-describing manifest for an agent. It provides essential
+ * metadata including the agent's identity, capabilities, skills, supported
+ * communication methods, and security requirements.
  */
 export interface AgentCard {
   /**
@@ -118,114 +121,132 @@ export interface AgentCard {
    */
   protocolVersion: string;
   /**
-   * Human readable name of the agent.
+   * A human-readable name for the agent.
+   *
    * @TJS-examples ["Recipe Agent"]
    */
   name: string;
   /**
-   * A human-readable description of the agent. Used to assist users and
-   * other agents in understanding what the agent can do.
+   * A human-readable description of the agent, assisting users and other agents
+   * in understanding its purpose.
+   *
    * @TJS-examples ["Agent that helps users with recipes and cooking."]
    */
   description: string;
-  /**
-   * A URL to the address the agent is hosted at. This represents the
-   * preferred endpoint as declared by the agent.
-   */
+  /** The preferred endpoint URL for interacting with the agent. */
   url: string;
   /**
-   * The transport of the preferred endpoint. If empty, defaults to JSONRPC.
+   * The transport protocol for the preferred endpoint. Defaults to 'JSONRPC' if not specified.
    */
   preferredTransport?: string;
   /**
-   * Announcement of additional supported transports. Client can use any of
-   * the supported transports.
+   * A list of additional supported interfaces (transport and URL combinations).
+   * A client can use any of these to communicate with the agent.
    */
   additionalInterfaces?: AgentInterface[];
-  /** A URL to an icon for the agent. */
+  /** An optional URL to an icon for the agent. */
   iconUrl?: string;
-  /** The service provider of the agent */
+  /** Information about the agent's service provider. */
   provider?: AgentProvider;
   /**
-   * The version of the agent - format is up to the provider.
+   * The agent's own version number. The format is defined by the provider.
+   *
    * @TJS-examples ["1.0.0"]
    */
   version: string;
-  /** A URL to documentation for the agent. */
+  /** An optional URL to the agent's documentation. */
   documentationUrl?: string;
-  /** Optional capabilities supported by the agent. */
+  /** A declaration of optional capabilities supported by the agent. */
   capabilities: AgentCapabilities;
-  /** Security scheme details used for authenticating with this agent. */
+  /**
+   * A declaration of the security schemes available to authorize requests. The key is the
+   * scheme name. Follows the OpenAPI 3.0 Security Scheme Object.
+   */
   securitySchemes?: { [scheme: string]: SecurityScheme };
-  /** Security requirements for contacting the agent. */
+  /**
+   * A list of security requirement objects that apply to all agent interactions. Each object
+   * lists security schemes that can be used. Follows the OpenAPI 3.0 Security Requirement Object.
+   */
   security?: { [scheme: string]: string[] }[];
   /**
-   * The set of interaction modes that the agent supports across all skills. This can be overridden per-skill.
-   * Supported media types for input.
+   * Default set of supported input MIME types for all skills, which can be
+   * overridden on a per-skill basis.
    */
   defaultInputModes: string[];
-  /** Supported media types for output. */
+  /**
+   * Default set of supported output MIME types for all skills, which can be
+   * overridden on a per-skill basis.
+   */
   defaultOutputModes: string[];
-  /** Skills are a unit of capability that an agent can perform. */
+  /** The set of skills, or distinct capabilities, that the agent can perform. */
   skills: AgentSkill[];
   /**
-   * true if the agent supports providing an extended agent card when the user is authenticated.
-   * Defaults to false if not specified.
+   * If true, the agent can provide an extended agent card with additional details
+   * to authenticated users. Defaults to false.
    */
   supportsAuthenticatedExtendedCard?: boolean;
 }
 // --8<-- [end:AgentCard]
 
 // --8<-- [start:Task]
+/**
+ * Represents a single, stateful operation or conversation between a client and an agent.
+ */
 export interface Task {
-  /** Unique identifier for the task */
+  /** A unique identifier for the task, generated by the client for a new task or provided by the agent. */
   id: string;
-  /** Server-generated id for contextual alignment across interactions */
+  /** A server-generated identifier for maintaining context across multiple related tasks or interactions. */
   contextId: string;
-  /** Current status of the task. */
+  /** The current status of the task, including its state and a descriptive message. */
   status: TaskStatus;
-  /** History of messages related to the task. */
+  /** An array of messages exchanged during the task, representing the conversation history. */
   history?: Message[];
-  /** Collection of artifacts created by the agent. */
+  /** A collection of artifacts generated by the agent during the execution of the task. */
   artifacts?: Artifact[];
-  /** Extension metadata. */
+  /** Optional metadata for extensions. The key is an extension-specific identifier. */
   metadata?: {
     [key: string]: any;
   };
-  /** Event type. */
+  /** The type of this object, used as a discriminator. Always 'task' for a Task. */
   readonly kind: "task";
 }
 // --8<-- [end:Task]
 
 // --8<-- [start:TaskStatus]
-/** TaskState and accompanying message. */
+/**
+ * Represents the status of a task at a specific point in time.
+ */
 export interface TaskStatus {
-  /** The current state of the task. */
+  /** The current state of the task's lifecycle. */
   state: TaskState;
-  /** Additional status updates for the client. */
+  /** An optional, human-readable message providing more details about the current status. */
   message?: Message;
   /**
-   * ISO 8601 datetime string when the status was recorded.
+   * An ISO 8601 datetime string indicating when this status was recorded.
+   *
    * @TJS-examples ["2023-10-27T10:00:00Z"]
-   * */
+   */
   timestamp?: string;
 }
 // --8<-- [end:TaskStatus]
 
 // --8<-- [start:TaskStatusUpdateEvent]
-/** Sent by the server during sendStream or subscribe requests. */
+/**
+ * An event sent by the agent to notify the client of a change in a task's status.
+ * This is typically used in streaming or subscription models.
+ */
 export interface TaskStatusUpdateEvent {
-  /** The ID of the task. */
+  /** The ID of the task that was updated. */
   taskId: string;
-  /** The context the task is associated with. */
+  /** The context ID associated with the task. */
   contextId: string;
-  /** Event type. */
+  /** The type of this event, used as a discriminator. Always 'status-update'. */
   readonly kind: "status-update";
-  /** Current status of the task. */
+  /** The new status of the task. */
   status: TaskStatus;
-  /** Indicates the end of the event stream. */
+  /** If true, this is the final event in the stream for this interaction. */
   final: boolean;
-  /** Extension metadata. */
+  /** Optional metadata for extensions. */
   metadata?: {
     [key: string]: any;
   };
@@ -233,21 +254,24 @@ export interface TaskStatusUpdateEvent {
 // --8<-- [end:TaskStatusUpdateEvent]
 
 // --8<-- [start:TaskArtifactUpdateEvent]
-/** Sent by the server during sendStream or subscribe requests. */
+/**
+ * An event sent by the agent to notify the client that an artifact has been
+ * generated or updated. This is typically used in streaming models.
+ */
 export interface TaskArtifactUpdateEvent {
-  /** The ID of the task. */
+  /** The ID of the task this artifact belongs to. */
   taskId: string;
-  /** The context the task is associated with. */
+  /** The context ID associated with the task. */
   contextId: string;
-  /** Event type. */
+  /** The type of this event, used as a discriminator. Always 'artifact-update'. */
   readonly kind: "artifact-update";
-  /** The generated artifact. */
+  /** The artifact that was generated or updated. */
   artifact: Artifact;
-  /** Indicates if this artifact appends to a previous one. */
+  /** If true, the content of this artifact should be appended to a previously sent artifact with the same ID. */
   append?: boolean;
-  /** Indicates if this is the last chunk of the artifact. */
+  /** If true, this is the final chunk of the artifact. */
   lastChunk?: boolean;
-  /** Extension metadata. */
+  /** Optional metadata for extensions. */
   metadata?: {
     [key: string]: any;
   };
@@ -255,11 +279,13 @@ export interface TaskArtifactUpdateEvent {
 // --8<-- [end:TaskArtifactUpdateEvent]
 
 // --8<-- [start:TaskIdParams]
-/** Parameters containing only a task ID, used for simple task operations. */
+/**
+ * Defines parameters containing a task ID, used for simple task operations.
+ */
 export interface TaskIdParams {
-  /** The ID of the task. */
+  /** The unique identifier of the task. */
   id: string;
-  /** Optional metadata. */
+  /** Optional metadata associated with the request. */
   metadata?: {
     [key: string]: any;
   };
@@ -267,56 +293,69 @@ export interface TaskIdParams {
 // --8<-- [end:TaskIdParams]
 
 // --8<-- [start:TaskQueryParams]
-/** Parameters for querying a task, including optional history length. */
+/**
+ * Defines parameters for querying a task, with an option to limit history length.
+ */
 export interface TaskQueryParams extends TaskIdParams {
-  /** Number of recent messages to be retrieved. */
+  /** The number of most recent messages from the task's history to retrieve. */
   historyLength?: number;
 }
 // --8<-- [end:TaskQueryParams]
 
 // --8<-- [start:GetTaskPushNotificationConfigParams]
-/** Parameters for fetching a pushNotificationConfiguration associated with a Task. */
+/**
+ * Defines parameters for fetching a specific push notification configuration for a task.
+ */
 export interface GetTaskPushNotificationConfigParams extends TaskIdParams {
-  /** The ID of the push notification configuration. */
+  /** The ID of the push notification configuration to retrieve. */
   pushNotificationConfigId?: string;
 }
 // --8<-- [end:GetTaskPushNotificationConfigParams]
 
 // --8<-- [start:ListTaskPushNotificationConfigParams]
-/** Parameters for getting a list of pushNotificationConfigurations associated with a Task. */
+/**
+ * Defines parameters for listing all push notification configurations associated with a task.
+ */
 export interface ListTaskPushNotificationConfigParams extends TaskIdParams {}
 // --8<-- [end:ListTaskPushNotificationConfigParams]
 
 // --8<-- [start:DeleteTaskPushNotificationConfigParams]
-/** Parameters for removing a pushNotificationConfiguration associated with a Task. */
+/**
+ * Defines parameters for deleting a specific push notification configuration for a task.
+ */
 export interface DeleteTaskPushNotificationConfigParams extends TaskIdParams {
-  /** The ID of the push notification configuration. */
+  /** The ID of the push notification configuration to delete. */
   pushNotificationConfigId: string;
 }
 // --8<-- [end:DeleteTaskPushNotificationConfigParams]
 
 // --8<-- [start:MessageSendConfiguration]
-/** Configuration for the send message request. */
+/**
+ * Defines configuration options for a `message/send` or `message/stream` request.
+ */
 export interface MessageSendConfiguration {
-  /** Accepted output modalities by the client. */
+  /** A list of output MIME types the client is prepared to accept in the response. */
   acceptedOutputModes?: string[];
-  /** Number of recent messages to be retrieved. */
+  /** The number of most recent messages from the task's history to retrieve in the response. */
   historyLength?: number;
-  /** Where the server should send notifications when disconnected. */
+  /** Configuration for the agent to send push notifications for updates after the initial response. */
   pushNotificationConfig?: PushNotificationConfig;
-  /** If the server should treat the client as a blocking request. */
+  /** If true, the client will wait for the task to complete. The server may reject this if the task is long-running. */
   blocking?: boolean;
 }
 // --8<-- [end:MessageSendConfiguration]
 
 // --8<-- [start:MessageSendParams]
-/** Sent by the client to the agent as a request. May create, continue or restart a task. */
+/**
+ * Defines the parameters for a request to send a message to an agent. This can be used
+ * to create a new task, continue an existing one, or restart a task.
+ */
 export interface MessageSendParams {
-  /** The message being sent to the server. */
+  /** The message object being sent to the agent. */
   message: Message;
-  /** Send message configuration. */
+  /** Optional configuration for the send request. */
   configuration?: MessageSendConfiguration;
-  /** Extension metadata. */
+  /** Optional metadata for extensions. */
   metadata?: {
     [key: string]: any;
   };
@@ -324,72 +363,90 @@ export interface MessageSendParams {
 // --8<-- [end:MessageSendParams]
 
 // --8<-- [start:TaskState]
-/** Represents the possible states of a Task. */
+/**
+ * Defines the lifecycle states of a Task.
+ */
 export enum TaskState {
+  /** The task has been submitted and is awaiting execution. */
   Submitted = "submitted",
+  /** The agent is actively working on the task. */
   Working = "working",
+  /** The task is paused and waiting for input from the user. */
   InputRequired = "input-required",
+  /** The task has been successfully completed. */
   Completed = "completed",
+  /** The task has been canceled by the user. */
   Canceled = "canceled",
+  /** The task failed due to an error during execution. */
   Failed = "failed",
+  /** The task was rejected by the agent and was not started. */
   Rejected = "rejected",
+  /** The task requires authentication to proceed. */
   AuthRequired = "auth-required",
+  /** The task is in an unknown or indeterminate state. */
   Unknown = "unknown",
 }
 // --8<-- [end:TaskState]
 
 // --8<-- [start:Artifact]
-/** Represents an artifact generated for a task. */
+/**
+ * Represents a file, data structure, or other resource generated by an agent during a task.
+ */
 export interface Artifact {
-  /** Unique identifier for the artifact. */
+  /** A unique identifier for the artifact within the scope of the task. */
   artifactId: string;
-  /** Optional name for the artifact. */
+  /** An optional, human-readable name for the artifact. */
   name?: string;
-  /** Optional description for the artifact. */
+  /** An optional, human-readable description of the artifact. */
   description?: string;
-  /** Artifact parts. */
+  /** An array of content parts that make up the artifact. */
   parts: Part[];
-  /** Extension metadata. */
+  /** Optional metadata for extensions. The key is an extension-specific identifier. */
   metadata?: {
     [key: string]: any;
   };
-  /** The URIs of extensions that are present or contributed to this Artifact. */
+  /** The URIs of extensions that are relevant to this artifact. */
   extensions?: string[];
 }
 // --8<-- [end:Artifact]
 
 // --8<-- [start:Message]
-/** Represents a single message exchanged between user and agent. */
+/**
+ * Represents a single message in the conversation between a user and an agent.
+ */
 export interface Message {
-  /** Message sender's role. */
+  /** Identifies the sender of the message. `user` for the client, `agent` for the service. */
   readonly role: "user" | "agent";
   /**
-   * Message content.
+   * An array of content parts that form the message body. A message can be
+   * composed of multiple parts of different types (e.g., text and files).
    */
   parts: Part[];
-  /** Extension metadata. */
+  /** Optional metadata for extensions. The key is an extension-specific identifier. */
   metadata?: {
     [key: string]: any;
   };
-  /** The URIs of extensions that are present or contributed to this Message. */
+  /** The URIs of extensions that are relevant to this message. */
   extensions?: string[];
-  /** List of tasks referenced as context by this message. */
+  /** A list of other task IDs that this message references for additional context. */
   referenceTaskIds?: string[];
-  /** Identifier created by the message creator. */
+  /** A unique identifier for the message, typically a UUID, generated by the sender. */
   messageId: string;
-  /** Identifier of the task the message is related to. */
+  /** The identifier of the task this message is part of. Can be omitted for the first message of a new task. */
   taskId?: string;
-  /** The context the message is associated with. */
+  /** The context identifier for this message, used to group related interactions. */
   contextId?: string;
-  /** Event type. */
+  /** The type of this object, used as a discriminator. Always 'message' for a Message. */
   readonly kind: "message";
 }
 // --8<-- [end:Message]
 
 // --8<-- [start:PartBase]
-/** Base properties common to all message parts. */
+/**
+ * Defines base properties common to all message or artifact parts.
+ */
 export interface PartBase {
-  /** Optional metadata associated with the part. */
+  /** Optional metadata associated with this part. */
   metadata?: {
     [key: string]: any;
   };
@@ -397,63 +454,74 @@ export interface PartBase {
 // --8<-- [end:PartBase]
 
 // --8<-- [start:TextPart]
-/** Represents a text segment within parts. */
+/**
+ * Represents a text segment within a message or artifact.
+ */
 export interface TextPart extends PartBase {
-  /** Part type - text for TextParts. */
+  /** The type of this part, used as a discriminator. Always 'text'. */
   readonly kind: "text";
-  /** Text content. */
+  /** The string content of the text part. */
   text: string;
 }
 // --8<-- [end:TextPart]
 
 // --8<-- [start:FileBase]
-/** Represents the base entity for FileParts. */
+/**
+ * Defines base properties for a file.
+ */
 export interface FileBase {
-  /** Optional name for the file. */
+  /** An optional name for the file (e.g., "document.pdf"). */
   name?: string;
-  /** Optional mimeType for the file. */
+  /** The MIME type of the file (e.g., "application/pdf"). */
   mimeType?: string;
 }
 // --8<-- [end:FileBase]
 
 // --8<-- [start:FileWithBytes]
-/** Defines the variant where 'bytes' is present and 'uri' is absent. */
+/**
+ * Represents a file with its content provided directly as a base64-encoded string.
+ */
 export interface FileWithBytes extends FileBase {
-  /** base64 encoded content of the file. */
+  /** The base64-encoded content of the file. */
   bytes: string;
-  /** URI is not present in this variant. */
+  /** The `uri` property must be absent when `bytes` is present. */
   uri?: never;
 }
 // --8<-- [end:FileWithBytes]
 
 // --8<-- [start:FileWithUri]
-/** Defines the variant where 'uri' is present and 'bytes' is absent. */
+/**
+ * Represents a file with its content located at a specific URI.
+ */
 export interface FileWithUri extends FileBase {
-  /**
-   * URL for the File content.
-   */
+  /** A URL pointing to the file's content. */
   uri: string;
-  /** Bytes are not present in this variant. */
+  /** The `bytes` property must be absent when `uri` is present. */
   bytes?: never;
 }
 // --8<-- [end:FileWithUri]
 
 // --8<-- [start:FilePart]
-/** Represents a File segment within parts. */
+/**
+ * Represents a file segment within a message or artifact. The file content can be
+ * provided either directly as bytes or as a URI.
+ */
 export interface FilePart extends PartBase {
-  /** Part type - file for FileParts. */
+  /** The type of this part, used as a discriminator. Always 'file'. */
   readonly kind: "file";
-  /** File content either as url or bytes. */
+  /** The file content, represented as either a URI or as base64-encoded bytes. */
   file: FileWithBytes | FileWithUri;
 }
 // --8<-- [end:FilePart]
 
 // --8<-- [start:DataPart]
-/** Represents a structured data segment within a message part. */
+/**
+ * Represents a structured data segment (e.g., JSON) within a message or artifact.
+ */
 export interface DataPart extends PartBase {
-  /** Part type - data for DataParts. */
+  /** The type of this part, used as a discriminator. Always 'data'. */
   readonly kind: "data";
-  /** Structured data content. */
+  /** The structured data content. */
   data: {
     [key: string]: any;
   };
@@ -461,49 +529,62 @@ export interface DataPart extends PartBase {
 // --8<-- [end:DataPart]
 
 // --8<-- [start:Part]
-/** Represents a part of a message, which can be text, a file, or structured data. */
+/**
+ * A discriminated union representing a part of a message or artifact, which can
+ * be text, a file, or structured data.
+ */
 export type Part = TextPart | FilePart | DataPart;
 // --8<-- [end:Part]
 
 // --8<-- [start:PushNotificationAuthenticationInfo]
-/** Defines authentication details for push notifications. */
+/**
+ * Defines authentication details for a push notification endpoint.
+ */
 export interface PushNotificationAuthenticationInfo {
-  /** Supported authentication schemes - e.g. Basic, Bearer. */
+  /** A list of supported authentication schemes (e.g., 'Basic', 'Bearer'). */
   schemes: string[];
-  /** Optional credentials. */
+  /** Optional credentials required by the push notification endpoint. */
   credentials?: string;
 }
 // --8<-- [end:PushNotificationAuthenticationInfo]
 
 // --8<-- [start:PushNotificationConfig]
-/** Configuration for setting up push notifications for task updates. */
+/**
+ * Defines the configuration for setting up push notifications for task updates.
+ */
 export interface PushNotificationConfig {
-  /** Push Notification ID - created by the server to support multiple callbacks. */
-  id?: string;
   /**
-   * URL for sending the push notifications. */
+   * A unique ID for the push notification configuration, created by the server
+   * to support multiple notification callbacks.
+   */
+  id?: string;
+  /** The callback URL where the agent should send push notifications. */
   url: string;
-  /** Token unique to this task/session. */
+  /** A unique token for this task or session to validate incoming push notifications. */
   token?: string;
-  /** Authentication details for the push notification. */
+  /** Optional authentication details for the agent to use when calling the notification URL. */
   authentication?: PushNotificationAuthenticationInfo;
 }
 // --8<-- [end:PushNotificationConfig]
 
 // --8<-- [start:TaskPushNotificationConfig]
-/** Parameters for setting or getting push notification configuration for a task. */
+/**
+ * A container associating a push notification configuration with a specific task.
+ */
 export interface TaskPushNotificationConfig {
   /** The ID of the task. */
   taskId: string;
-  /** Push notification configuration. */
+  /** The push notification configuration for this task. */
   pushNotificationConfig: PushNotificationConfig;
 }
 // --8<-- [end:TaskPushNotificationConfig]
 
 // --8<-- [start:SecurityScheme]
 /**
- * Mirrors the OpenAPI Security Scheme Object.
- * (https://swagger.io/specification/#security-scheme-object)
+ * Defines a security scheme that can be used to secure an agent's endpoints.
+ * This is a discriminated union type based on the OpenAPI 3.0 Security Scheme Object.
+ *
+ * @see {@link https://swagger.io/specification/#security-scheme-object}
  */
 export type SecurityScheme =
   | APIKeySecurityScheme
@@ -513,65 +594,81 @@ export type SecurityScheme =
 // --8<-- [end:SecurityScheme]
 
 // --8<-- [start:SecuritySchemeBase]
-/** Base properties shared by all security schemes. */
+/**
+ * Defines base properties shared by all security scheme objects.
+ */
 export interface SecuritySchemeBase {
-  /** Description of this security scheme. */
+  /** An optional description for the security scheme. */
   description?: string;
 }
 // --8<-- [end:SecuritySchemeBase]
 
 // --8<-- [start:APIKeySecurityScheme]
-/** API Key security scheme. */
+/**
+ * Defines a security scheme using an API key.
+ */
 export interface APIKeySecurityScheme extends SecuritySchemeBase {
+  /** The type of the security scheme. Must be 'apiKey'. */
   readonly type: "apiKey";
-  /** The location of the API key. Valid values are "query", "header", or "cookie". */
+  /** The location of the API key. */
   readonly in: "query" | "header" | "cookie";
-  /** The name of the header, query or cookie parameter to be used. */
+  /** The name of the header, query, or cookie parameter to be used. */
   name: string;
 }
 // --8<-- [end:APIKeySecurityScheme]
 
 // --8<-- [start:HTTPAuthSecurityScheme]
-/** HTTP Authentication security scheme. */
+/**
+ * Defines a security scheme using HTTP authentication.
+ */
 export interface HTTPAuthSecurityScheme extends SecuritySchemeBase {
+  /** The type of the security scheme. Must be 'http'. */
   readonly type: "http";
   /**
-   * The name of the HTTP Authentication scheme to be used in the Authorization header as defined
-   * in RFC7235. The values used SHOULD be registered in the IANA Authentication Scheme registry.
-   * The value is case-insensitive, as defined in RFC7235.
+   * The name of the HTTP Authentication scheme to be used in the Authorization header,
+   * as defined in RFC7235 (e.g., "Bearer").
+   * This value should be registered in the IANA Authentication Scheme registry.
    */
   scheme: string;
   /**
-   * A hint to the client to identify how the bearer token is formatted. Bearer tokens are usually
-   * generated by an authorization server, so this information is primarily for documentation
-   * purposes.
+   * A hint to the client to identify how the bearer token is formatted (e.g., "JWT").
+   * This is primarily for documentation purposes.
    */
   bearerFormat?: string;
 }
 // --8<-- [end:HTTPAuthSecurityScheme]
 
 // --8<-- [start:OAuth2SecurityScheme]
-/** OAuth2.0 security scheme configuration. */
+/**
+ * Defines a security scheme using OAuth 2.0.
+ */
 export interface OAuth2SecurityScheme extends SecuritySchemeBase {
+  /** The type of the security scheme. Must be 'oauth2'. */
   readonly type: "oauth2";
-  /** An object containing configuration information for the flow types supported. */
+  /** An object containing configuration information for the supported OAuth 2.0 flows. */
   flows: OAuthFlows;
 }
 // --8<-- [end:OAuth2SecurityScheme]
 
 // --8<-- [start:OpenIdConnectSecurityScheme]
-/** OpenID Connect security scheme configuration. */
+/**
+ * Defines a security scheme using OpenID Connect.
+ */
 export interface OpenIdConnectSecurityScheme extends SecuritySchemeBase {
+  /** The type of the security scheme. Must be 'openIdConnect'. */
   readonly type: "openIdConnect";
   /**
-   * Well-known URL to discover the [[OpenID-Connect-Discovery]] provider metadata.
+   * The OpenID Connect Discovery URL for the OIDC provider's metadata.
+   * @see {@link https://openid.net/specs/openid-connect-discovery-1_0.html}
    */
   openIdConnectUrl: string;
 }
 // --8<-- [end:OpenIdConnectSecurityScheme]
 
 // --8<-- [start:OAuthFlows]
-/** Allows configuration of the supported OAuth Flows. */
+/**
+ * Defines the configuration for the supported OAuth 2.0 flows.
+ */
 export interface OAuthFlows {
   /** Configuration for the OAuth Authorization Code flow. Previously called accessCode in OpenAPI 2.0. */
   authorizationCode?: AuthorizationCodeOAuthFlow;
@@ -585,89 +682,91 @@ export interface OAuthFlows {
 // --8<-- [end:OAuthFlows]
 
 // --8<-- [start:AuthorizationCodeOAuthFlow]
-/** Configuration details for a supported OAuth Flow. */
+/**
+ * Defines configuration details for the OAuth 2.0 Authorization Code flow.
+ */
 export interface AuthorizationCodeOAuthFlow {
   /**
-   * The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2
-   * standard requires the use of TLS.
+   * The authorization URL to be used for this flow.
+   * This MUST be a URL and use TLS.
    */
   authorizationUrl: string;
   /**
-   * The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard
-   * requires the use of TLS.
+   * The token URL to be used for this flow.
+   * This MUST be a URL and use TLS.
    */
   tokenUrl: string;
   /**
-   * The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2
-   * standard requires the use of TLS.
+   * The URL to be used for obtaining refresh tokens.
+   * This MUST be a URL and use TLS.
    */
   refreshUrl?: string;
   /**
-   * The available scopes for the OAuth2 security scheme. A map between the scope name and a short
-   * description for it. The map MAY be empty.
+   * The available scopes for the OAuth2 security scheme. A map between the scope
+   * name and a short description for it.
    */
   scopes: { [name: string]: string };
 }
 // --8<-- [end:AuthorizationCodeOAuthFlow]
 
 // --8<-- [start:ClientCredentialsOAuthFlow]
-/** Configuration details for a supported OAuth Flow. */
+/**
+ * Defines configuration details for the OAuth 2.0 Client Credentials flow.
+ */
 export interface ClientCredentialsOAuthFlow {
   /**
-   * The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard
-   * requires the use of TLS.
+   * The token URL to be used for this flow. This MUST be a URL.
    */
   tokenUrl: string;
   /**
-   * The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2
-   * standard requires the use of TLS.
+   * The URL to be used for obtaining refresh tokens. This MUST be a URL.
    */
   refreshUrl?: string;
   /**
-   * The available scopes for the OAuth2 security scheme. A map between the scope name and a short
-   * description for it. The map MAY be empty.
+   * The available scopes for the OAuth2 security scheme. A map between the scope
+   * name and a short description for it.
    */
   scopes: { [name: string]: string };
 }
 // --8<-- [end:ClientCredentialsOAuthFlow]
 
 // --8<-- [start:ImplicitOAuthFlow]
-/** Configuration details for a supported OAuth Flow. */
+/**
+ * Defines configuration details for the OAuth 2.0 Implicit flow.
+ */
 export interface ImplicitOAuthFlow {
   /**
-   * The authorization URL to be used for this flow. This MUST be in the form of a URL. The OAuth2
-   * standard requires the use of TLS.
+   * The authorization URL to be used for this flow. This MUST be a URL.
    */
   authorizationUrl: string;
   /**
-   * The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2
-   * standard requires the use of TLS.
+   * The URL to be used for obtaining refresh tokens. This MUST be a URL.
    */
   refreshUrl?: string;
   /**
-   * The available scopes for the OAuth2 security scheme. A map between the scope name and a short
-   * description for it. The map MAY be empty.
+   * The available scopes for the OAuth2 security scheme. A map between the scope
+   * name and a short description for it.
    */
   scopes: { [name: string]: string };
 }
 // --8<-- [end:ImplicitOAuthFlow]
 
 // --8<-- [start:PasswordOAuthFlow]
-/** Configuration details for a supported OAuth Flow. */
+/**
+ * Defines configuration details for the OAuth 2.0 Resource Owner Password flow.
+ */
 export interface PasswordOAuthFlow {
   /**
-   * The token URL to be used for this flow. This MUST be in the form of a URL. The OAuth2 standard
-   * requires the use of TLS.
+   * The token URL to be used for this flow. This MUST be a URL.
    */
   tokenUrl: string;
   /**
-   * The URL to be used for obtaining refresh tokens. This MUST be in the form of a URL. The OAuth2
-   * standard requires the use of TLS.
+   * The URL to be used for obtaining refresh tokens. This MUST be a URL.
    */
   refreshUrl?: string;
   /**
-   * The available scopes for the OAuth2 security scheme. A map between the scope name and a short
-   * description for it. The map MAY be empty.
+   * The available scopes for the OAuth2 security scheme. A map between the scope
+   * name and a short description for it.
    */
   scopes: { [name: string]: string };
 }
@@ -675,18 +774,18 @@ export interface PasswordOAuthFlow {
 
 // --8<-- [start:JSONRPCMessage]
 /**
- * Base interface for any JSON-RPC 2.0 request or response.
+ * Defines the base structure for any JSON-RPC 2.0 request, response, or notification.
  */
 export interface JSONRPCMessage {
   /**
-   * Specifies the version of the JSON-RPC protocol. MUST be exactly "2.0".
+   * The version of the JSON-RPC protocol. MUST be exactly "2.0".
    */
   readonly jsonrpc: "2.0";
-
   /**
-   * An identifier established by the Client that MUST contain a String, Number.
-   * Numbers SHOULD NOT contain fractional parts.
-   * @nullable true
+   * A unique identifier established by the client. It must be a String, a Number, or null.
+   * The server must reply with the same value in the response. This property is omitted for notifications.
+   *
+   * @nullable
    */
   id?: number | string | null;
 }
@@ -698,12 +797,11 @@ export interface JSONRPCMessage {
  */
 export interface JSONRPCRequest extends JSONRPCMessage {
   /**
-   * A String containing the name of the method to be invoked.
+   * A string containing the name of the method to be invoked.
    */
   method: string;
-
   /**
-   * A Structured value that holds the parameter values to be used during the invocation of the method.
+   * A structured value holding the parameter values to be used during the method invocation.
    */
   params?: { [key: string]: any };
 }
@@ -711,22 +809,19 @@ export interface JSONRPCRequest extends JSONRPCMessage {
 
 // --8<-- [start:JSONRPCError]
 /**
- * Represents a JSON-RPC 2.0 Error object.
- * This is typically included in a JSONRPCErrorResponse when an error occurs.
+ * Represents a JSON-RPC 2.0 Error object, included in an error response.
  */
 export interface JSONRPCError {
   /**
-   * A Number that indicates the error type that occurred.
+   * A number that indicates the error type that occurred.
    */
   code: number;
-
   /**
-   * A String providing a short description of the error.
+   * A string providing a short description of the error.
    */
   message: string;
-
   /**
-   * A Primitive or Structured value that contains additional information about the error.
+   * A primitive or structured value containing additional information about the error.
    * This may be omitted.
    */
   data?: any;
@@ -735,18 +830,21 @@ export interface JSONRPCError {
 
 // --8<-- [start:JSONRPCResult]
 /**
- * Represents a JSON-RPC 2.0 Success Response object.
+ * Represents a successful JSON-RPC 2.0 Response object.
  */
 export interface JSONRPCSuccessResponse extends JSONRPCMessage {
   /**
-   * @nullable true
+   * The identifier established by the client.
+   * @nullable
    */
   id: number | string | null;
   /**
-   * The result object on success.
+   * The value of this member is determined by the method invoked on the Server.
    */
   result: any;
-  /** Error should not be present in a success response. */
+  /**
+   * This field MUST NOT exist in a success response.
+   */
   error?: never;
 }
 // --8<-- [end:JSONRPCResult]
@@ -757,19 +855,25 @@ export interface JSONRPCSuccessResponse extends JSONRPCMessage {
  */
 export interface JSONRPCErrorResponse extends JSONRPCMessage {
   /**
-   * @nullable true
+   * The identifier established by the client.
+   * @nullable
    */
   id: number | string | null;
-  /** Result should not be present in an error response. */
+  /**
+   * This field MUST NOT exist in an error response.
+   */
   result?: never;
-  /** The error object. */
+  /**
+   * An object describing the error that occurred.
+   */
   error: JSONRPCError | A2AError;
 }
 // --8<-- [end:JSONRPCErrorResponse]
 
 // --8<-- [start:JSONRPCResponse]
 /**
- * Represents a JSON-RPC 2.0 Response object.
+ * A discriminated union representing all possible JSON-RPC 2.0 responses
+ * for the A2A specification methods.
  */
 export type JSONRPCResponse =
   | SendMessageResponse
@@ -784,27 +888,31 @@ export type JSONRPCResponse =
 
 // --8<-- [start:SendMessageRequest]
 /**
- * JSON-RPC request model for the 'message/send' method.
+ * Represents a JSON-RPC request for the `message/send` method.
  */
 export interface SendMessageRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
+  /** The method name. Must be 'message/send'. */
   readonly method: "message/send";
+  /** The parameters for sending a message. */
   params: MessageSendParams;
 }
 // --8<-- [end:SendMessageRequest]
 
 // --8<-- [start:SendMessageSuccessResponse]
 /**
- * JSON-RPC success response model for the 'message/send' method.
+ * Represents a successful JSON-RPC response for the `message/send` method.
  */
 export interface SendMessageSuccessResponse extends JSONRPCSuccessResponse {
+  /** The result, which can be a direct reply Message or the initial Task object. */
   result: Message | Task;
 }
 // --8<-- [end:SendMessageSuccessResponse]
 
 // --8<-- [start:SendMessageResponse]
 /**
- * JSON-RPC response model for the 'message/send' method.
+ * Represents a JSON-RPC response for the `message/send` method.
  */
 export type SendMessageResponse =
   | SendMessageSuccessResponse
@@ -813,28 +921,33 @@ export type SendMessageResponse =
 
 // --8<-- [start:SendStreamingMessageRequest]
 /**
- * JSON-RPC request model for the 'message/stream' method.
+ * Represents a JSON-RPC request for the `message/stream` method.
  */
 export interface SendStreamingMessageRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
+  /** The method name. Must be 'message/stream'. */
   readonly method: "message/stream";
+  /** The parameters for sending a message. */
   params: MessageSendParams;
 }
 // --8<-- [end:SendStreamingMessageRequest]
 
 // --8<-- [start:SendStreamingMessageSuccessResponse]
 /**
- * JSON-RPC success response model for the 'message/stream' method.
+ * Represents a successful JSON-RPC response for the `message/stream` method.
+ * The server may send multiple response objects for a single request.
  */
 export interface SendStreamingMessageSuccessResponse
   extends JSONRPCSuccessResponse {
+  /** The result, which can be a Message, Task, or a streaming update event. */
   result: Message | Task | TaskStatusUpdateEvent | TaskArtifactUpdateEvent;
 }
 // --8<-- [end:SendStreamingMessageSuccessResponse]
 
 // --8<-- [start:SendStreamingMessageResponse]
 /**
- * JSON-RPC response model for the 'message/stream' method.
+ * Represents a JSON-RPC response for the `message/stream` method.
  */
 export type SendStreamingMessageResponse =
   | SendStreamingMessageSuccessResponse
@@ -843,60 +956,62 @@ export type SendStreamingMessageResponse =
 
 // --8<-- [start:GetTaskRequest]
 /**
- * JSON-RPC request model for the 'tasks/get' method.
+ * Represents a JSON-RPC request for the `tasks/get` method.
  */
 export interface GetTaskRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
-  /** A String containing the name of the method to be invoked. */
+  /** The method name. Must be 'tasks/get'. */
   readonly method: "tasks/get";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  /** The parameters for querying a task. */
   params: TaskQueryParams;
 }
 // --8<-- [end:GetTaskRequest]
 
 // --8<-- [start:GetTaskSuccessResponse]
 /**
- * JSON-RPC success response for the 'tasks/get' method.
+ * Represents a successful JSON-RPC response for the `tasks/get` method.
  */
 export interface GetTaskSuccessResponse extends JSONRPCSuccessResponse {
-  /** The result object on success. */
+  /** The result, containing the requested Task object. */
   result: Task;
 }
 // --8<-- [end:GetTaskSuccessResponse]
 
 // --8<-- [start:GetTaskResponse]
 /**
- * JSON-RPC response for the 'tasks/get' method.
+ * Represents a JSON-RPC response for the `tasks/get` method.
  */
 export type GetTaskResponse = GetTaskSuccessResponse | JSONRPCErrorResponse;
 // --8<-- [end:GetTaskResponse]
 
 // --8<-- [start:CancelTaskRequest]
 /**
- * JSON-RPC request model for the 'tasks/cancel' method.
+ * Represents a JSON-RPC request for the `tasks/cancel` method.
  */
 export interface CancelTaskRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
-  /** A String containing the name of the method to be invoked. */
+  /** The method name. Must be 'tasks/cancel'. */
   readonly method: "tasks/cancel";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  /** The parameters identifying the task to cancel. */
   params: TaskIdParams;
 }
 // --8<-- [end:CancelTaskRequest]
 
 // --8<-- [start:CancelTaskSuccessResponse]
 /**
- * JSON-RPC success response model for the 'tasks/cancel' method.
+ * Represents a successful JSON-RPC response for the `tasks/cancel` method.
  */
 export interface CancelTaskSuccessResponse extends JSONRPCSuccessResponse {
-  /** The result object on success. */
+  /** The result, containing the final state of the canceled Task object. */
   result: Task;
 }
 // --8<-- [end:CancelTaskSuccessResponse]
 
 // --8<-- [start:CancelTaskResponse]
 /**
- * JSON-RPC response for the 'tasks/cancel' method.
+ * Represents a JSON-RPC response for the `tasks/cancel` method.
  */
 export type CancelTaskResponse =
   | CancelTaskSuccessResponse
@@ -905,31 +1020,32 @@ export type CancelTaskResponse =
 
 // --8<-- [start:SetTaskPushNotificationConfigRequest]
 /**
- * JSON-RPC request model for the 'tasks/pushNotificationConfig/set' method.
+ * Represents a JSON-RPC request for the `tasks/pushNotificationConfig/set` method.
  */
 export interface SetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
-  /** A String containing the name of the method to be invoked. */
+  /** The method name. Must be 'tasks/pushNotificationConfig/set'. */
   readonly method: "tasks/pushNotificationConfig/set";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  /** The parameters for setting the push notification configuration. */
   params: TaskPushNotificationConfig;
 }
 // --8<-- [end:SetTaskPushNotificationConfigRequest]
 
 // --8<-- [start:SetTaskPushNotificationConfigSuccessResponse]
 /**
- * JSON-RPC success response model for the 'tasks/pushNotificationConfig/set' method.
+ * Represents a successful JSON-RPC response for the `tasks/pushNotificationConfig/set` method.
  */
 export interface SetTaskPushNotificationConfigSuccessResponse
   extends JSONRPCSuccessResponse {
-  /** The result object on success. */
+  /** The result, containing the configured push notification settings. */
   result: TaskPushNotificationConfig;
 }
 // --8<-- [end:SetTaskPushNotificationConfigSuccessResponse]
 
 // --8<-- [start:SetTaskPushNotificationConfigResponse]
 /**
- * JSON-RPC response for the 'tasks/pushNotificationConfig/set' method.
+ * Represents a JSON-RPC response for the `tasks/pushNotificationConfig/set` method.
  */
 export type SetTaskPushNotificationConfigResponse =
   | SetTaskPushNotificationConfigSuccessResponse
@@ -938,15 +1054,17 @@ export type SetTaskPushNotificationConfigResponse =
 
 // --8<-- [start:GetTaskPushNotificationConfigRequest]
 /**
- * JSON-RPC request model for the 'tasks/pushNotificationConfig/get' method.
+ * Represents a JSON-RPC request for the `tasks/pushNotificationConfig/get` method.
  */
 export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
-  /** A String containing the name of the method to be invoked. */
+  /** The method name. Must be 'tasks/pushNotificationConfig/get'. */
   readonly method: "tasks/pushNotificationConfig/get";
   /**
-   * A Structured value that holds the parameter values to be used during the invocation of the method.
-   * @deprecated TaskIdParams type is deprecated for this method use `GetTaskPushNotificationConfigParams` instead.
+   * The parameters for getting a push notification configuration.
+   *
+   * @deprecated The `TaskIdParams` type is deprecated for this method. Use `GetTaskPushNotificationConfigParams` instead.
    */
   params: GetTaskPushNotificationConfigParams | TaskIdParams;
 }
@@ -954,18 +1072,18 @@ export interface GetTaskPushNotificationConfigRequest extends JSONRPCRequest {
 
 // --8<-- [start:GetTaskPushNotificationConfigSuccessResponse]
 /**
- * JSON-RPC success response model for the 'tasks/pushNotificationConfig/get' method.
+ * Represents a successful JSON-RPC response for the `tasks/pushNotificationConfig/get` method.
  */
 export interface GetTaskPushNotificationConfigSuccessResponse
   extends JSONRPCSuccessResponse {
-  /** The result object on success. */
+  /** The result, containing the requested push notification configuration. */
   result: TaskPushNotificationConfig;
 }
 // --8<-- [end:GetTaskPushNotificationConfigSuccessResponse]
 
 // --8<-- [start:GetTaskPushNotificationConfigResponse]
 /**
- * JSON-RPC response for the 'tasks/pushNotificationConfig/get' method.
+ * Represents a JSON-RPC response for the `tasks/pushNotificationConfig/get` method.
  */
 export type GetTaskPushNotificationConfigResponse =
   | GetTaskPushNotificationConfigSuccessResponse
@@ -974,44 +1092,46 @@ export type GetTaskPushNotificationConfigResponse =
 
 // --8<-- [start:TaskResubscriptionRequest]
 /**
- * JSON-RPC request model for the 'tasks/resubscribe' method.
+ * Represents a JSON-RPC request for the `tasks/resubscribe` method, used to resume a streaming connection.
  */
 export interface TaskResubscriptionRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
-  /** A String containing the name of the method to be invoked. */
+  /** The method name. Must be 'tasks/resubscribe'. */
   readonly method: "tasks/resubscribe";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  /** The parameters identifying the task to resubscribe to. */
   params: TaskIdParams;
 }
 // --8<-- [end:TaskResubscriptionRequest]
 
 // --8<-- [start:ListTaskPushNotificationConfigRequest]
 /**
- * JSON-RPC request model for the 'tasks/pushNotificationConfig/list' method.
+ * Represents a JSON-RPC request for the `tasks/pushNotificationConfig/list` method.
  */
 export interface ListTaskPushNotificationConfigRequest extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
-  /** A String containing the name of the method to be invoked. */
+  /** The method name. Must be 'tasks/pushNotificationConfig/list'. */
   readonly method: "tasks/pushNotificationConfig/list";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  /** The parameters identifying the task whose configurations are to be listed. */
   params: ListTaskPushNotificationConfigParams;
 }
 // --8<-- [end:ListTaskPushNotificationConfigRequest]
 
 // --8<-- [start:ListTaskPushNotificationConfigSuccessResponse]
 /**
- * JSON-RPC success response model for the 'tasks/pushNotificationConfig/list' method.
+ * Represents a successful JSON-RPC response for the `tasks/pushNotificationConfig/list` method.
  */
 export interface ListTaskPushNotificationConfigSuccessResponse
   extends JSONRPCSuccessResponse {
-  /** The result object on success. */
+  /** The result, containing an array of all push notification configurations for the task. */
   result: TaskPushNotificationConfig[];
 }
 // --8<-- [end:ListTaskPushNotificationConfigSuccessResponse]
 
 // --8<-- [start:ListTaskPushNotificationConfigResponse]
 /**
- * JSON-RPC response for the 'tasks/pushNotificationConfig/list' method.
+ * Represents a JSON-RPC response for the `tasks/pushNotificationConfig/list` method.
  */
 export type ListTaskPushNotificationConfigResponse =
   | ListTaskPushNotificationConfigSuccessResponse
@@ -1020,32 +1140,33 @@ export type ListTaskPushNotificationConfigResponse =
 
 // --8<-- [start:DeleteTaskPushNotificationConfigRequest]
 /**
- * JSON-RPC request model for the 'tasks/pushNotificationConfig/delete' method.
+ * Represents a JSON-RPC request for the `tasks/pushNotificationConfig/delete` method.
  */
 export interface DeleteTaskPushNotificationConfigRequest
   extends JSONRPCRequest {
+  /** The identifier for this request. */
   id: number | string;
-  /** A String containing the name of the method to be invoked. */
+  /** The method name. Must be 'tasks/pushNotificationConfig/delete'. */
   readonly method: "tasks/pushNotificationConfig/delete";
-  /** A Structured value that holds the parameter values to be used during the invocation of the method. */
+  /** The parameters identifying the push notification configuration to delete. */
   params: DeleteTaskPushNotificationConfigParams;
 }
 // --8<-- [end:DeleteTaskPushNotificationConfigRequest]
 
 // --8<-- [start:DeleteTaskPushNotificationConfigSuccessResponse]
 /**
- * JSON-RPC success response model for the 'tasks/pushNotificationConfig/delete' method.
+ * Represents a successful JSON-RPC response for the `tasks/pushNotificationConfig/delete` method.
  */
 export interface DeleteTaskPushNotificationConfigSuccessResponse
   extends JSONRPCSuccessResponse {
-  /** The result object on success. */
+  /** The result is null on successful deletion. */
   result: null;
 }
 // --8<-- [end:DeleteTaskPushNotificationConfigSuccessResponse]
 
 // --8<-- [start:DeleteTaskPushNotificationConfigResponse]
 /**
- * JSON-RPC response for the 'tasks/pushNotificationConfig/delete' method.
+ * Represents a JSON-RPC response for the `tasks/pushNotificationConfig/delete` method.
  */
 export type DeleteTaskPushNotificationConfigResponse =
   | DeleteTaskPushNotificationConfigSuccessResponse
@@ -1054,7 +1175,7 @@ export type DeleteTaskPushNotificationConfigResponse =
 
 // --8<-- [start:A2ARequest]
 /**
- * A2A supported request types.
+ * A discriminated union representing all possible JSON-RPC 2.0 requests supported by the A2A specification.
  */
 export type A2ARequest =
   | SendMessageRequest
@@ -1070,11 +1191,13 @@ export type A2ARequest =
 
 // --8<-- [start:JSONParseError]
 /**
- * JSON-RPC error indicating invalid JSON was received by the server.
+ * An error indicating that the server received invalid JSON.
  */
 export interface JSONParseError extends JSONRPCError {
+  /** The error code for a JSON parse error. */
   readonly code: -32700;
   /**
+   * The error message.
    * @default "Invalid JSON payload"
    */
   message: string;
@@ -1083,12 +1206,13 @@ export interface JSONParseError extends JSONRPCError {
 
 // --8<-- [start:InvalidRequestError]
 /**
- * JSON-RPC error indicating the JSON sent is not a valid Request object.
+ * An error indicating that the JSON sent is not a valid Request object.
  */
 export interface InvalidRequestError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for an invalid request. */
   readonly code: -32600;
   /**
+   * The error message.
    * @default "Request payload validation error"
    */
   message: string;
@@ -1097,12 +1221,13 @@ export interface InvalidRequestError extends JSONRPCError {
 
 // --8<-- [start:MethodNotFoundError]
 /**
- * JSON-RPC error indicating the method does not exist or is not available.
+ * An error indicating that the requested method does not exist or is not available.
  */
 export interface MethodNotFoundError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for a method not found error. */
   readonly code: -32601;
   /**
+   * The error message.
    * @default "Method not found"
    */
   message: string;
@@ -1111,12 +1236,13 @@ export interface MethodNotFoundError extends JSONRPCError {
 
 // --8<-- [start:InvalidParamsError]
 /**
- * JSON-RPC error indicating invalid method parameter(s).
+ * An error indicating that the method parameters are invalid.
  */
 export interface InvalidParamsError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for an invalid parameters error. */
   readonly code: -32602;
   /**
+   * The error message.
    * @default "Invalid parameters"
    */
   message: string;
@@ -1125,12 +1251,13 @@ export interface InvalidParamsError extends JSONRPCError {
 
 // --8<-- [start:InternalError]
 /**
- * JSON-RPC error indicating an internal JSON-RPC error on the server.
+ * An error indicating an internal error on the server.
  */
 export interface InternalError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for an internal server error. */
   readonly code: -32603;
   /**
+   * The error message.
    * @default "Internal error"
    */
   message: string;
@@ -1139,12 +1266,13 @@ export interface InternalError extends JSONRPCError {
 
 // --8<-- [start:TaskNotFoundError]
 /**
- * A2A specific error indicating the requested task ID was not found.
+ * An A2A-specific error indicating that the requested task ID was not found.
  */
 export interface TaskNotFoundError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for a task not found error. */
   readonly code: -32001;
   /**
+   * The error message.
    * @default "Task not found"
    */
   message: string;
@@ -1153,12 +1281,13 @@ export interface TaskNotFoundError extends JSONRPCError {
 
 // --8<-- [start:TaskNotCancelableError]
 /**
- * A2A specific error indicating the task is in a state where it cannot be canceled.
+ * An A2A-specific error indicating that the task is in a state where it cannot be canceled.
  */
 export interface TaskNotCancelableError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for a task that cannot be canceled. */
   readonly code: -32002;
   /**
+   * The error message.
    * @default "Task cannot be canceled"
    */
   message: string;
@@ -1167,12 +1296,13 @@ export interface TaskNotCancelableError extends JSONRPCError {
 
 // --8<-- [start:PushNotificationNotSupportedError]
 /**
- * A2A specific error indicating the agent does not support push notifications.
+ * An A2A-specific error indicating that the agent does not support push notifications.
  */
 export interface PushNotificationNotSupportedError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for when push notifications are not supported. */
   readonly code: -32003;
   /**
+   * The error message.
    * @default "Push Notification is not supported"
    */
   message: string;
@@ -1181,12 +1311,13 @@ export interface PushNotificationNotSupportedError extends JSONRPCError {
 
 // --8<-- [start:UnsupportedOperationError]
 /**
- * A2A specific error indicating the requested operation is not supported by the agent.
+ * An A2A-specific error indicating that the requested operation is not supported by the agent.
  */
 export interface UnsupportedOperationError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for an unsupported operation. */
   readonly code: -32004;
   /**
+   * The error message.
    * @default "This operation is not supported"
    */
   message: string;
@@ -1195,12 +1326,14 @@ export interface UnsupportedOperationError extends JSONRPCError {
 
 // --8<-- [start:ContentTypeNotSupportedError]
 /**
- * A2A specific error indicating incompatible content types between request and agent capabilities.
+ * An A2A-specific error indicating an incompatibility between the requested
+ * content types and the agent's capabilities.
  */
 export interface ContentTypeNotSupportedError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for an unsupported content type. */
   readonly code: -32005;
   /**
+   * The error message.
    * @default "Incompatible content types"
    */
   message: string;
@@ -1209,12 +1342,14 @@ export interface ContentTypeNotSupportedError extends JSONRPCError {
 
 // --8<-- [start:InvalidAgentResponseError]
 /**
- * A2A specific error indicating the agent returned an invalid response for the current method.
+ * An A2A-specific error indicating that the agent returned a response that
+ * does not conform to the specification for the current method.
  */
 export interface InvalidAgentResponseError extends JSONRPCError {
-  /** A Number that indicates the error type that occurred. */
+  /** The error code for an invalid agent response. */
   readonly code: -32006;
   /**
+   * The error message.
    * @default "Invalid agent response"
    */
   message: string;
@@ -1222,7 +1357,9 @@ export interface InvalidAgentResponseError extends JSONRPCError {
 // --8<-- [end:InvalidAgentResponseError]
 
 // --8<-- [start:A2AError]
-/** A2A specific error types. */
+/**
+ * A discriminated union of all standard JSON-RPC and A2A-specific error types.
+ */
 export type A2AError =
   | JSONParseError
   | InvalidRequestError
