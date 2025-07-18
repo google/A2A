@@ -7,6 +7,10 @@ site_dir: site
 
 extra:
   a2a_version: !ENV [MIKE_VERSION, 'dev']
+  analytics:
+    provider: google
+    property: G-886VW76ZDS
+
 
 # Navigation
 nav:
@@ -34,6 +38,7 @@ nav:
     - Interact with Server: tutorials/python/6-interact-with-server.md
     - Streaming & Multiturn: tutorials/python/7-streaming-and-multiturn.md
     - Next Steps: tutorials/python/8-next-steps.md
+  - Roadmap: roadmap.md
 
 # Repository
 repo_name: a2aproject/A2A
@@ -154,6 +159,7 @@ plugins:
         "specification/topics/push_notification.md": "topics/streaming-and-async.md"
         "specification/topics/push_notifications.md": "topics/streaming-and-async.md"
         "topics/index.md": "topics/what-is-a2a.md"
+        "topics/roadmap.md": "roadmap.md"
         # Tutorial
         "tutorials/index.md": "tutorials/python/1-introduction.md"
         "tutorials/python/index.md": "tutorials/python/1-introduction.md"

@@ -291,7 +291,7 @@ export interface DeleteTaskPushNotificationConfigParams extends TaskIdParams {
 /**Configuration for the send message request. */
 export interface MessageSendConfiguration {
   /** Accepted output modalities by the client. */
-  acceptedOutputModes: string[];
+  acceptedOutputModes?: string[];
   /** Number of recent messages to be retrieved. */
   historyLength?: number;
   /** Where the server should send notifications when disconnected. */

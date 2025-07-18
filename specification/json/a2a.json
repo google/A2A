@@ -1493,9 +1493,6 @@
                     "description": "Where the server should send notifications when disconnected."
                 }
             },
-            "required": [
-                "acceptedOutputModes"
-            ],
             "type": "object"
         },
         "MessageSendParams": {
