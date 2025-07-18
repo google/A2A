@@ -2237,7 +2237,8 @@
                 "failed",
                 "rejected",
                 "auth-required",
-                "unknown"
+                "unknown",
+                "user-consent-required"
             ],
             "type": "string"
         },

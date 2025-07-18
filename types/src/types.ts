@@ -385,6 +385,7 @@ export enum TaskState {
   AuthRequired = "auth-required",
   /** The task is in an unknown or indeterminate state. */
   Unknown = "unknown",
+  UserConsentRequired = "user-consent-required",
 }
 // --8<-- [end:TaskState]
 
