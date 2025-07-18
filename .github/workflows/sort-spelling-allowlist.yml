@@ -1,0 +1,52 @@
+name: Auto-sort and update spelling allowlist
+
+on:
+  pull_request:
+    paths:
+      - ".github/actions/spelling/allow.txt"
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  sort_and_commit:
+    name: Sort and Commit Allowlist
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Sort allow.txt
+        run: |
+          sort -u -o .github/actions/spelling/allow.txt .github/actions/spelling/allow.txt
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Check for changes
+        id: git_status
+        run: |
+          if ! git diff --quiet .github/actions/spelling/allow.txt; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.git_status.outputs.changes == 'true' && github.event.pull_request.head.repo.full_name == github.repository
+        run: |
+          git add .github/actions/spelling/allow.txt
+          git commit -m "ci: sort and unique allow.txt"
+          git push
+
+      - name: Fail on fork with changes
+        if: steps.git_status.outputs.changes == 'true' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo "::error::The 'allow.txt' file is not sorted correctly. Please run 'sort -u -o .github/actions/spelling/allow.txt .github/actions/spelling/allow.txt' and commit the changes."
+          exit 1

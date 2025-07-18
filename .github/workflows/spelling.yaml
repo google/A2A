@@ -20,9 +20,7 @@ jobs:
       followup: ${{ steps.spelling.outputs.followup }}
     runs-on: ubuntu-latest
     # if on repo to avoid failing runs on forks
-    if: |
-      github.repository == 'a2aproject/A2A' 
-        && (contains(github.event_name, 'pull_request') || github.event_name == 'push')
+    if: github.event.pull_request.head.repo.full_name == github.repository
     concurrency:
       group: spelling-${{ github.event.pull_request.number || github.ref }}
       # note: If you use only_check_changed_files, you do not want cancel-in-progress
