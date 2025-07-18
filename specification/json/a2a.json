@@ -148,6 +148,7 @@
                     "items": {
                         "type": "string"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "defaultOutputModes": {
@@ -155,6 +156,7 @@
                     "items": {
                         "type": "string"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "description": {
@@ -166,10 +168,12 @@
                 },
                 "documentationUrl": {
                     "description": "An optional URL to the agent's documentation.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "iconUrl": {
                     "description": "An optional URL to an icon for the agent.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "name": {
@@ -217,6 +221,7 @@
                     "items": {
                         "$ref": "#/definitions/AgentSkill"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "supportsAuthenticatedExtendedCard": {
@@ -225,13 +230,15 @@
                 },
                 "url": {
                     "description": "The preferred endpoint URL for interacting with the agent.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "version": {
-                    "description": "The agent's own version number. The format is defined by the provider.",
+                    "description": "The agent's own version number. Semantic Versioning MUST be used.",
                     "examples": [
                         "1.0.0"
                     ],
+                    "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-\\d][0-9a-zA-Z-\\d]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-\\d][0-9a-zA-Z-\\d]*))*))?(?:\\+([0-9A-Za-z-\\d]+(?:\\.[0-9A-Za-z-\\d]+)*))?$",
                     "type": "string"
                 }
             },
@@ -273,6 +280,7 @@
                 },
                 "uri": {
                     "description": "The unique URI identifying the extension.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -290,6 +298,7 @@
                 },
                 "url": {
                     "description": "The URL where this interface is available.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -314,6 +323,7 @@
                 },
                 "url": {
                     "description": "A URL for the agent provider's website or relevant documentation.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -376,6 +386,7 @@
                     "items": {
                         "type": "string"
                     },
+                    "minItems": 1,
                     "type": "array"
                 }
             },
@@ -400,6 +411,7 @@
                 },
                 "extensions": {
                     "description": "The URIs of extensions that are relevant to this artifact.",
+                    "format": "uri",
                     "items": {
                         "type": "string"
                     },
@@ -419,6 +431,7 @@
                     "items": {
                         "$ref": "#/definitions/Part"
                     },
+                    "minItems": 1,
                     "type": "array"
                 }
             },
@@ -433,10 +446,12 @@
             "properties": {
                 "authorizationUrl": {
                     "description": "The authorization URL to be used for this flow.\nThis MUST be a URL and use TLS.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens.\nThis MUST be a URL and use TLS.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -448,6 +463,7 @@
                 },
                 "tokenUrl": {
                     "description": "The token URL to be used for this flow.\nThis MUST be a URL and use TLS.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -535,6 +551,7 @@
             "properties": {
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens. This MUST be a URL.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -546,6 +563,7 @@
                 },
                 "tokenUrl": {
                     "description": "The token URL to be used for this flow. This MUST be a URL.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -777,6 +795,7 @@
                 },
                 "uri": {
                     "description": "A URL pointing to the file's content.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -990,10 +1009,12 @@
             "properties": {
                 "authorizationUrl": {
                     "description": "The authorization URL to be used for this flow. This MUST be a URL.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens. This MUST be a URL.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -1426,6 +1447,7 @@
                 },
                 "extensions": {
                     "description": "The URIs of extensions that are relevant to this message.",
+                    "format": "uri",
                     "items": {
                         "type": "string"
                     },
@@ -1450,6 +1472,7 @@
                     "items": {
                         "$ref": "#/definitions/Part"
                     },
+                    "minItems": 1,
                     "type": "array"
                 },
                 "referenceTaskIds": {
@@ -1604,6 +1627,7 @@
                 },
                 "openIdConnectUrl": {
                     "description": "The OpenID Connect Discovery URL for the OIDC provider's metadata.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "type": {
@@ -1648,6 +1672,7 @@
             "properties": {
                 "refreshUrl": {
                     "description": "The URL to be used for obtaining refresh tokens. This MUST be a URL.",
+                    "format": "uri",
                     "type": "string"
                 },
                 "scopes": {
@@ -1659,6 +1684,7 @@
                 },
                 "tokenUrl": {
                     "description": "The token URL to be used for this flow. This MUST be a URL.",
+                    "format": "uri",
                     "type": "string"
                 }
             },
@@ -1680,6 +1706,7 @@
                     "items": {
                         "type": "string"
                     },
+                    "minItems": 1,
                     "type": "array"
                 }
             },
@@ -1705,6 +1732,7 @@
                 },
                 "url": {
                     "description": "The callback URL where the agent should send push notifications.",
+                    "format": "uri",
                     "type": "string"
                 }
             },

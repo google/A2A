@@ -13,7 +13,10 @@
 export interface AgentProvider {
   /** The name of the agent provider's organization. */
   organization: string;
-  /** A URL for the agent provider's website or relevant documentation. */
+  /**
+   * A URL for the agent provider's website or relevant documentation.
+   * @format uri
+   */
   url: string;
 }
 // --8<-- [end:AgentProvider]
@@ -41,7 +44,10 @@ export interface AgentCapabilities {
  * @TJS-examples [{"uri": "https://developers.google.com/identity/protocols/oauth2", "description": "Google OAuth 2.0 authentication", "required": false}]
  */
 export interface AgentExtension {
-  /** The unique URI identifying the extension. */
+  /**
+   * The unique URI identifying the extension.
+   * @format uri
+   */
   uri: string;
   /** A human-readable description of how this agent uses the extension. */
   description?: string;
@@ -73,6 +79,7 @@ export interface AgentSkill {
    * A set of keywords describing the skill's capabilities.
    *
    * @TJS-examples [["cooking", "customer support", "billing"]]
+   * @minItems 1
    */
   tags: string[];
   /**
@@ -98,7 +105,10 @@ export interface AgentSkill {
  * Declares a combination of a target URL and a transport protocol for interacting with the agent.
  */
 export interface AgentInterface {
-  /** The URL where this interface is available. */
+  /**
+   * The URL where this interface is available.
+   * @format uri
+   */
   url: string;
   /**
    * The transport protocol supported at this URL. This is a string to allow for future
@@ -133,7 +143,10 @@ export interface AgentCard {
    * @TJS-examples ["Agent that helps users with recipes and cooking."]
    */
   description: string;
-  /** The preferred endpoint URL for interacting with the agent. */
+  /**
+   * The preferred endpoint URL for interacting with the agent.
+   * @format uri
+   */
   url: string;
   /**
    * The transport protocol for the preferred endpoint. Defaults to 'JSONRPC' if not specified.
@@ -144,17 +157,23 @@ export interface AgentCard {
    * A client can use any of these to communicate with the agent.
    */
   additionalInterfaces?: AgentInterface[];
-  /** An optional URL to an icon for the agent. */
+  /**
+   * An optional URL to an icon for the agent.
+   * @format uri
+   */
   iconUrl?: string;
   /** Information about the agent's service provider. */
   provider?: AgentProvider;
   /**
-   * The agent's own version number. The format is defined by the provider.
-   *
+   * The agent's own version number. Semantic Versioning MUST be used.
    * @TJS-examples ["1.0.0"]
+   * @pattern ^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-\d][0-9a-zA-Z-\d]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-\d][0-9a-zA-Z-\d]*))*))?(?:\+([0-9A-Za-z-\d]+(?:\.[0-9A-Za-z-\d]+)*))?$
    */
   version: string;
-  /** An optional URL to the agent's documentation. */
+  /**
+   * An optional URL to the agent's documentation.
+   * @format uri
+   */
   documentationUrl?: string;
   /** A declaration of optional capabilities supported by the agent. */
   capabilities: AgentCapabilities;
@@ -171,14 +190,19 @@ export interface AgentCard {
   /**
    * Default set of supported input MIME types for all skills, which can be
    * overridden on a per-skill basis.
+   * @minItems 1
    */
   defaultInputModes: string[];
   /**
    * Default set of supported output MIME types for all skills, which can be
    * overridden on a per-skill basis.
+   * @minItems 1
    */
   defaultOutputModes: string[];
-  /** The set of skills, or distinct capabilities, that the agent can perform. */
+  /**
+   * The set of skills, or distinct capabilities, that the agent can perform.
+   * @minItems 1
+   */
   skills: AgentSkill[];
   /**
    * If true, the agent can provide an extended agent card with additional details
@@ -399,13 +423,19 @@ export interface Artifact {
   name?: string;
   /** An optional, human-readable description of the artifact. */
   description?: string;
-  /** An array of content parts that make up the artifact. */
+  /**
+   * An array of content parts that make up the artifact.
+   * @minItems 1
+   */
   parts: Part[];
   /** Optional metadata for extensions. The key is an extension-specific identifier. */
   metadata?: {
     [key: string]: any;
   };
-  /** The URIs of extensions that are relevant to this artifact. */
+  /**
+   * The URIs of extensions that are relevant to this artifact.
+   * @format uri
+   */
   extensions?: string[];
 }
 // --8<-- [end:Artifact]
@@ -420,13 +450,17 @@ export interface Message {
   /**
    * An array of content parts that form the message body. A message can be
    * composed of multiple parts of different types (e.g., text and files).
+   * @minItems 1
    */
   parts: Part[];
   /** Optional metadata for extensions. The key is an extension-specific identifier. */
   metadata?: {
     [key: string]: any;
   };
-  /** The URIs of extensions that are relevant to this message. */
+  /**
+   * The URIs of extensions that are relevant to this message.
+   * @format uri
+   */
   extensions?: string[];
   /** A list of other task IDs that this message references for additional context. */
   referenceTaskIds?: string[];
@@ -494,7 +528,10 @@ export interface FileWithBytes extends FileBase {
  * Represents a file with its content located at a specific URI.
  */
 export interface FileWithUri extends FileBase {
-  /** A URL pointing to the file's content. */
+  /**
+   * A URL pointing to the file's content.
+   * @format uri
+   */
   uri: string;
   /** The `bytes` property must be absent when `uri` is present. */
   bytes?: never;
@@ -541,7 +578,10 @@ export type Part = TextPart | FilePart | DataPart;
  * Defines authentication details for a push notification endpoint.
  */
 export interface PushNotificationAuthenticationInfo {
-  /** A list of supported authentication schemes (e.g., 'Basic', 'Bearer'). */
+  /**
+   * A list of supported authentication schemes (e.g., 'Basic', 'Bearer').
+   * @minItems 1
+   */
   schemes: string[];
   /** Optional credentials required by the push notification endpoint. */
   credentials?: string;
@@ -558,7 +598,10 @@ export interface PushNotificationConfig {
    * to support multiple notification callbacks.
    */
   id?: string;
-  /** The callback URL where the agent should send push notifications. */
+  /**
+   * The callback URL where the agent should send push notifications.
+   * @format uri
+   */
   url: string;
   /** A unique token for this task or session to validate incoming push notifications. */
   token?: string;
@@ -660,6 +703,7 @@ export interface OpenIdConnectSecurityScheme extends SecuritySchemeBase {
   /**
    * The OpenID Connect Discovery URL for the OIDC provider's metadata.
    * @see {@link https://openid.net/specs/openid-connect-discovery-1_0.html}
+   * @format uri
    */
   openIdConnectUrl: string;
 }
@@ -689,16 +733,19 @@ export interface AuthorizationCodeOAuthFlow {
   /**
    * The authorization URL to be used for this flow.
    * This MUST be a URL and use TLS.
+   * @format uri
    */
   authorizationUrl: string;
   /**
    * The token URL to be used for this flow.
    * This MUST be a URL and use TLS.
+   * @format uri
    */
   tokenUrl: string;
   /**
    * The URL to be used for obtaining refresh tokens.
    * This MUST be a URL and use TLS.
+   * @format uri
    */
   refreshUrl?: string;
   /**
@@ -716,10 +763,12 @@ export interface AuthorizationCodeOAuthFlow {
 export interface ClientCredentialsOAuthFlow {
   /**
    * The token URL to be used for this flow. This MUST be a URL.
+   * @format uri
    */
   tokenUrl: string;
   /**
    * The URL to be used for obtaining refresh tokens. This MUST be a URL.
+   * @format uri
    */
   refreshUrl?: string;
   /**
@@ -737,10 +786,12 @@ export interface ClientCredentialsOAuthFlow {
 export interface ImplicitOAuthFlow {
   /**
    * The authorization URL to be used for this flow. This MUST be a URL.
+   * @format uri
    */
   authorizationUrl: string;
   /**
    * The URL to be used for obtaining refresh tokens. This MUST be a URL.
+   * @format uri
    */
   refreshUrl?: string;
   /**
@@ -758,10 +809,12 @@ export interface ImplicitOAuthFlow {
 export interface PasswordOAuthFlow {
   /**
    * The token URL to be used for this flow. This MUST be a URL.
+   * @format uri
    */
   tokenUrl: string;
   /**
    * The URL to be used for obtaining refresh tokens. This MUST be a URL.
+   * @format uri
    */
   refreshUrl?: string;
   /**
