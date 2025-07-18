@@ -38,7 +38,7 @@ nav:
     - Interact with Server: tutorials/python/6-interact-with-server.md
     - Streaming & Multiturn: tutorials/python/7-streaming-and-multiturn.md
     - Next Steps: tutorials/python/8-next-steps.md
-  - Roadmap: topics/roadmap.md
+  - Roadmap: roadmap.md
 
 # Repository
 repo_name: a2aproject/A2A
