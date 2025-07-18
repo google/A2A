@@ -4,4 +4,9 @@
 # For syntax help see:
 # https://help.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners#codeowners-syntax
 
-*   @a2aproject/google
+*                       @a2aproject/google-a2a-eng
+/A2A/docs/              @a2aproject/tech-writing
+.mkdocs/                @a2aproject/tech-writing
+.mkdocs.yml             @a2aproject/tech-writing
+README.md               @a2aproject/tech-writing
+requirements-docs.txt   @a2aproject/tech-writing
