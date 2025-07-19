@@ -143,7 +143,7 @@ Clients can find Agent Cards through various methods, including but not limited 
 ### 5.3. Recommended Location
 
 If using the well-known URI strategy, the recommended location for an agent's Agent Card is:
-`https://{server_domain}/.well-known/agent.json`
+`https://{server_domain}/.well-known/agent-card.json`
 This follows the principles of [RFC 8615](https://datatracker.ietf.org/doc/html/rfc8615) for well-known URIs.
 
 ### 5.4. Security of Agent Cards
@@ -991,7 +991,7 @@ This section provides illustrative JSON examples of common A2A interactions. Tim
 1. **Client fetches the public Agent Card:**
 
    ```none
-   GET https://example.com/.well-known/agent.json
+   GET https://example.com/.well-known/agent-card.json
    ```
 
    _Server responds with the public Agent Card (like the example in Section 5.6), including `supportsAuthenticatedExtendedCard: true` (at the root level) and `securitySchemes`._
