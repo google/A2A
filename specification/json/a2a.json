@@ -248,6 +248,22 @@
             ],
             "type": "object"
         },
+        "AgentCatalog": {
+            "description": "Represents an API Catalog document, extending the Linkset structure defined in RFC 9264.\nThis specialized catalog uses AgentLinkContext objects to describe agent-specific metadata.\nSee: https://www.ietf.org/archive/id/draft-ietf-httpapi-api-catalog-08.html",
+            "properties": {
+                "linkset": {
+                    "description": "An array of AgentLinkContext objects.\nEach object uses the `anchor` to specify the agent's endpoint and the `describedby` link to\nindicate the endpoint of its agent card.",
+                    "items": {
+                        "$ref": "#/definitions/AgentLinkContext"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "linkset"
+            ],
+            "type": "object"
+        },
         "AgentExtension": {
             "description": "A declaration of a protocol extension supported by an Agent.",
             "examples": [
@@ -296,6 +312,46 @@
             "required": [
                 "transport",
                 "url"
+            ],
+            "type": "object"
+        },
+        "AgentLinkContext": {
+            "description": "Represents a Link Context object specifically for agents.\nExtends the general LinkContext structure by requiring an `anchor` field\nand including a `describedby` relation to link to the agent's card endpoint.",
+            "properties": {
+                "anchor": {
+                    "description": "A URI reference identifying the agent's endpoint.\nMUST be a valid URI reference (RFC 3986).\nSHOULD NOT be a relative reference.",
+                    "type": "string"
+                },
+                "describedby": {
+                    "description": "A list of links that describe the agent's metadata (agent card).",
+                    "items": {
+                        "$ref": "#/definitions/AgentLinkTarget"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "anchor",
+                "describedby"
+            ],
+            "type": "object"
+        },
+        "AgentLinkTarget": {
+            "description": "Represents a Link Target Object that specifically points to an agent card\nin JSON format. This is a specialization of the generic LinkTarget,\nwith a fixed media type of \"application/json\" as required for agent metadata.",
+            "properties": {
+                "href": {
+                    "description": "The target URI of the link.\nMUST be a valid URI reference (RFC 3986).\nSHOULD NOT be a relative reference.",
+                    "type": "string"
+                },
+                "type": {
+                    "const": "application/json",
+                    "description": "The media type of the target resource.\nMUST be \"application/json\" to indicate the agent card is in JSON format.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "href",
+                "type"
             ],
             "type": "object"
         },
@@ -1321,6 +1377,59 @@
                 "id",
                 "jsonrpc",
                 "result"
+            ],
+            "type": "object"
+        },
+        "LinkContext": {
+            "additionalProperties": {
+                "anyOf": [
+                    {
+                        "items": {
+                            "$ref": "#/definitions/LinkTarget"
+                        },
+                        "type": "array"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "description": "Represents a Link Context Object as defined in RFC 9264 Section 4.2.2.\nSee: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.2",
+            "properties": {
+                "anchor": {
+                    "description": "The URI reference representing the link context.\nMUST be a valid URI reference (RFC 3986).\nSHOULD NOT be a relative reference.",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "LinkTarget": {
+            "additionalProperties": {},
+            "description": "Represents a Link Target Object as defined in RFC 9264 Section 4.2.3.\nSee: https://www.rfc-editor.org/rfc/rfc9264#section-4.2.3\n\nWhile not a complete implementation of all target attributes defined in\nRFC 8288, this interface captures the minimal structure required for the\ncurrent use case and leaves room for extension.",
+            "properties": {
+                "href": {
+                    "description": "The target URI of the link.\nMUST be a valid URI reference (RFC 3986).\nSHOULD NOT be a relative reference.",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "href"
+            ],
+            "type": "object"
+        },
+        "Linkset": {
+            "description": "Represents a Linkset document as defined in RFC 9264.\nSee: https://www.rfc-editor.org/rfc/rfc9264",
+            "properties": {
+                "linkset": {
+                    "description": "An array of Link Context Objects.\nEach object defines a set of related links for a given anchor (context URI).",
+                    "items": {
+                        "$ref": "#/definitions/LinkContext"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "linkset"
             ],
             "type": "object"
         },
