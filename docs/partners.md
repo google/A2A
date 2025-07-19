@@ -139,7 +139,7 @@ collaborate effectively with each other and with users.
 - [Suzega](https://suzega.com/)
 - [TCS](https://www.tcs.com)
 - [Tech Mahindra](https://www.techmahindra.com/)
-- [Telefonica](https://www.telefonica.com/es/)
+- [Telefonica](https://www.telefonica.com/)
 - [Test Innovation Technology](https://www.test-it.com)
 - [the artinet project](https://artinet.io/)
 - [Think41](http://www.think41.com)
